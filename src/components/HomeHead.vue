@@ -38,6 +38,8 @@ const input = ref('')
         --el-menu-hover-text-color: #ffffff;
         --el-menu-active-color: #1D5B5E;
         --el-menu-item-font-size: 20px;
+        position:fixed;
+        width:100%;
         height:80px;
     }
 
