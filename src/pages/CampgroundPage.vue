@@ -1,0 +1,82 @@
+<template>
+    <div id="bg">
+       <img src="../assets/bg.jpg">
+    </div>
+    <HomeHead />
+    <div class="container">
+      <CampgroundAside @menu-select="handleMenuSelect"/>
+      <main>
+        <!-- 根据左侧导航栏的选项显示不同的内容 -->
+        <router-view></router-view>
+        <!-- 根据选项显示不同内容 -->
+        <CampgroundDisplay :currentMenu="currentMenu"/>
+
+      </main>
+    </div>
+
+</template>
+   
+
+
+<script>
+   import HomeHead from "../components/HomeHead.vue"
+   import CampgroundAside from "../components/CampgroundAside.vue"
+   import CampgroundDisplay from "../components/CampgroundDisplay.vue"
+
+   export default {
+     name: 'HelloWorld',
+     props: {
+       msg: String
+     },
+   
+     components: {
+       HomeHead,
+       CampgroundAside,
+       CampgroundDisplay
+     },
+     
+    data() {
+    return {
+      currentMenu: '上海' // 默认选中的菜单项
+    };
+  },
+  methods: {
+    handleMenuSelect(index) {
+      this.currentMenu = index;
+    }
+  }
+   }
+   
+ </script>
+   
+<style>
+   #bg{
+     z-index:-1;
+     top:0;
+     width: 100%;
+     height:100%;
+     position:absolute;
+   }
+   
+   #bg img {
+     position:absolute;
+     right: 0;
+     bottom: 0;  
+     object-fit: cover;
+     width: 100%;
+     height: 100%;
+     opacity:25%;
+   }
+
+   .container {
+    max-width: 70%; /* 设置容器的最大宽度 */
+    margin: 0 auto; /* 居中显示容器 */
+    display: flex;
+    background-color: #ffffff; /* 设置容器的背景色为白色 */
+    }
+
+    main {
+      flex: 1; /* main部分占据剩余空间 */
+      padding: 20px; /* 添加内边距 */
+    }
+</style>
