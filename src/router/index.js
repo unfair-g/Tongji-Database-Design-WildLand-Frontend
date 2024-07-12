@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory} from 'vue-router'
 import HelloWorld from '../pages/HelloWorld.vue'
+import ProductView from '@/views/ProductView.vue'
+import ProductDetail from '@/views/ProductDetail.vue'
 
 const routes = [
     {
@@ -15,7 +17,19 @@ const routes = [
     {
         path: '/enter',
         component: () => import('../views/EnterView.vue')
-    }
+    }，
+  {
+    path: '/goods',
+    name: 'ProductView',
+    component: ProductView
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: ProductDetail
+  }
+]
+
 
 ]
 const router = createRouter({
