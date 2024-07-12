@@ -6,9 +6,10 @@ import './fonts/fonts.css'
 import App from './App.vue'
 
 const app = createApp(App)
-app.use(ElementPlus)
-app.mount('#app')
+
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
+app.use(ElementPlus)
+app.mount('#app')

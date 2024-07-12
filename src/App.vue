@@ -1,16 +1,13 @@
 <template>
-  <HomePage />
+  <LoginView />
 </template>
 
 <script>
-//import HelloWorld from './pages/HelloWorld.vue'
-import HomePage from './pages/HomePage.vue'
-
+import LoginView from './views/LoginView.vue'
 export default {
   name: 'App',
   components: {
-    //HelloWorld,
-    HomePage
+    LoginView
   }
 }
 </script>

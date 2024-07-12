@@ -3,13 +3,20 @@
         <div class="logo">WildLand</div>
         <div class="buttons">
         
-            <el-button class="loginbutton" type="primary" color="#1D5B5E" size="large">登录</el-button>
+            <el-button class="loginbutton" type="primary" color="#1D5B5E" size="large" @click="login">登录</el-button>
             <el-button class="enrollbutton" type="primary" color="#308588" size="large">注册</el-button>
         </div>
     </div>
 </template>
 
 <script>
+export default {
+    methods: {
+        login() {
+            this.$router.push('/home')
+        }
+    }
+}
 </script>
 
 <style scoped>
@@ -34,6 +41,7 @@
     }
     
     .loginbutton{
+        margin-top: auto;
         margin-left: auto;
         margin-right: auto;
         width:calc(280vw * 80 / 1920);
@@ -42,6 +50,7 @@
     }
 
     .enrollbutton{
+        margin-top: auto;
         margin-left: auto;
         margin-right: auto;
         width:calc(280vw * 80 / 1920);

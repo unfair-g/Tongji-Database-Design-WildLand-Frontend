@@ -15,9 +15,10 @@
     <div class="flex-grow" />
     <div class="searchbox">
       <el-input
-      v-model="input2"
-      style="width: 240px ;height:50px"
-      placeholder="Type something"
+    v-model="input"
+        style="width: 240px;height:50px"
+        placeholder="Please input"
+        clearable
     />
     <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px">搜索</el-button>
     </div>
@@ -27,6 +28,8 @@
 
 <script setup>
 import { Search } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+const input = ref('')
 </script>
 
 <style>
@@ -55,7 +58,7 @@ import { Search } from '@element-plus/icons-vue'
     }
 
     .menuitem{
-        width:200px;
+        width:180px;
     }
 
 </style>
