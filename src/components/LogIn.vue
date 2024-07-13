@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import router from "@/router"
+import router from '../router'
 import { reactive } from 'vue'
 import { User, Key } from '@element-plus/icons-vue'
 

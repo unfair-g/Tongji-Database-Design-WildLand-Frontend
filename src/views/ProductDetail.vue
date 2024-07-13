@@ -1,4 +1,5 @@
 <template>
+  <HomePage/>
   <div class="product-detail">
     <div class="product-img">
         <img :src="product.product_image" class="image" alt="product image">
@@ -16,9 +17,9 @@
               <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="isStarSolid ? 'Star' : 'StarFilled'"></component></el-icon>
             </span>
           </el-tag>
-          <!--baga-->
           <div class="pay">
-            <el-button class="pay">立即租赁</el-button>
+            <el-button class="pay" @click="openDialog">立即租赁</el-button>
+            <PayWindow v-model:dialogVisible="dialogVisible" />
           </div>
       </div>
     </div>
@@ -27,13 +28,20 @@
 
 <script>
 import { ref } from 'vue'
+import HomePage from '@/pages/HomePage.vue'
+import PayWindow from '@/components/PayWindow.vue'
 
 export default {
   name: 'ProductDetail',
+  components: {
+    HomePage,
+    PayWindow
+  },
   data () {
     return {
       isStarSolid: ref(true),
-      product: {}
+      product: {},
+      dialogVisible: false
     }
   },
   created () {
@@ -53,6 +61,10 @@ export default {
       this.isStarSolid = !this.isStarSolid
       // 如果需要，你可以在这里添加额外的逻辑来改变图标的颜色
       // 但通常，我们会通过 CSS 来处理颜色的变化
+    },
+    openDialog() {
+      console.log('Opening dialog');
+      this.dialogVisible = true;
     }
   }
 }
@@ -141,10 +153,9 @@ export default {
   position: absolute;
   background-size: 60px;
   background-color: #3085887d;
-  padding: 10px;
-  right: 20px;
-  bottom: 30px;
-  font-size: larger;
+  right: 5px;
+  bottom: -60px;
+  font-size:x-large;
   color: #0c0c0c;
 }
 </style>

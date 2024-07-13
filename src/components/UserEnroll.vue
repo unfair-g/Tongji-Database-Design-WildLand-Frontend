@@ -36,6 +36,7 @@
 </template>
 
 <script setup>
+import router from '../router'
 import { reactive } from 'vue'
 import { User, Key,UserFilled,Iphone } from '@element-plus/icons-vue'
 
@@ -44,6 +45,10 @@ const formLabelAlign = reactive({
     region: '',
     type: '',
 })
+
+function toHomePage() {
+  router.push({path: '/administrator'})
+}
 </script>
 
 <style>

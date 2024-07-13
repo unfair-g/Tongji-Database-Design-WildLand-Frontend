@@ -62,4 +62,8 @@ export default {
   padding-left: 0px;
   margin-left: 10px;
 }
+
+.product-container::-webkit-scrollbar {  
+    display: none;  
+}
 </style>

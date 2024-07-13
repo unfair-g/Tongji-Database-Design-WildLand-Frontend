@@ -61,7 +61,7 @@ export default {
   methods: {
     goToProductDetail (product) {
       const productId = product.product_id
-      this.$router.push({ path: `/product/${productId}` })
+      this.$router.push({ path: `/home/product/${productId}` })
     }
   }
 }
