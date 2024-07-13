@@ -47,15 +47,15 @@
         </el-aside>
         <el-main>
           <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="title" label="帖子标题" width="240" align="center" />
-            <el-table-column prop="author" label="帖子作者" width="240" align="center" />
-            <el-table-column prop="post_kind" label="帖子类型" width="240" align="center" />
-            <el-table-column prop="post_time" label="发表时间" width="240" align="center" />
-            <el-table-column label="操作台" width="240" align="center">
+            <el-table-column prop="title" label="帖子标题" width="300" align="center" />
+            <el-table-column prop="author" label="帖子作者" width="300" align="center" />
+            <el-table-column prop="post_kind" label="帖子类型" width="300" align="center" />
+            <el-table-column prop="post_time" label="发表时间" width="300" align="center" />
+            <el-table-column label="操作台" width="300" align="center">
               <template #default="scope">
-                <el-button type="primary" :icon="scope.row.CircleCheck"></el-button>
-                <el-button type="primary" :icon="scope.row.CircleClose"></el-button>
-                <el-button type="primary" :icon="scope.row.MoreFilled"></el-button>
+                <el-button type="primary" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
+                <el-button type="primary" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
+                <el-button type="primary" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -76,12 +76,6 @@
 import { CircleCheck, CircleClose, Fold, Expand, MoreFilled, UserFilled } from '@element-plus/icons-vue'
 
 export default {
-  components: {
-    CircleCheck,
-    CircleClose,
-    MoreFilled,
-    UserFilled
-  },
   data() {
     return {
       activeIndex: '1',
@@ -103,17 +97,14 @@ export default {
     };
   },
   methods: {
-    handleSelect(key, keyPath) {
+    handleSelect(key) {
       this.activeIndex = key;
-<<<<<<< Updated upstream:L1KEAB0T/YourComponent.vue
-=======
     },
     handleAction(row, action) {
       console.log(`Action: ${action} on row:`, row);
     },
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
->>>>>>> Stashed changes:src/pages/AdministratorPage.vue
     }
   }
 };
@@ -121,18 +112,20 @@ export default {
 
 <style scoped>
 .common-layout {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   background: url('@/assets/bg.jpg') no-repeat center center fixed;
   background-size: cover;
-  opacity: 0.7; /* Ensure background opacity remains at 70% */
   display: flex;
   flex-direction: column;
 }
 
+.header, .aside, .el-main {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
 .header {
   height: 190px;
-  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -142,7 +135,7 @@ export default {
 .logo {
   position:relative;
   color:#1D5B5E;
-  font-size:60px;
+  font-size:150px;
   font-family: 'LOGO',sans-serif !important;
 }
 
@@ -175,11 +168,6 @@ export default {
 }
 
 .aside {
-<<<<<<< Updated upstream:L1KEAB0T/YourComponent.vue
-  width: 200px;
-  background-color: rgba(255, 255, 255, 0.8);
-  height: 100%; /* Ensure sidebar height is 100% */
-=======
   height: 100%;
   position: relative;
   transition: width 0.3s;
@@ -199,34 +187,10 @@ export default {
 .collapse-text {
   font-size: 16px;
   margin-left: 5px;
->>>>>>> Stashed changes:src/pages/AdministratorPage.vue
 }
 
 .el-main {
-  background-color: rgba(255, 255, 255, 0.8);
   flex-grow: 1;
-<<<<<<< Updated upstream:L1KEAB0T/YourComponent.vue
-  height: calc(100%); /* Ensure main content area height is calculated properly */
-}
-
-.el-menu-vertical-demo {
-  border-right: none;
-  height: 100%; /* Ensure menu height is 100% */
-}
-
-.el-menu-item,
-.el-submenu__title {
-  font-size: 20px;
-}
-
-.el-menu-item {
-  color: #333;
-}
-
-.el-menu-item.is-active {
-  color: #1D5B5E;
-=======
   height: calc(100%);
->>>>>>> Stashed changes:src/pages/AdministratorPage.vue
 }
 </style>
