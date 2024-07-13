@@ -59,7 +59,7 @@ function toHomePage() {
     left:0;
     height:100%;
     width:55%;
-    position: absolute;
+    position: fixed;
 }
 
 .container{

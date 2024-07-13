@@ -32,7 +32,17 @@ const routes = [
     },
     {
         path: '/enter',
-        component: () => import('../views/EnterView.vue')
+        component: () => import('../views/EnterView.vue'),
+        children: [
+            {
+                path: "login",
+                component: () => import('../components/LogIn.vue')
+            },
+            {
+                path: "enrollment",
+                component: () => import('../components/UserEnroll.vue')
+            }
+        ]
     }
 ]
 
