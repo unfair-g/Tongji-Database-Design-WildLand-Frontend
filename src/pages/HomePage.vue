@@ -1,19 +1,15 @@
 <template>
- <div id="bg">
-    <img src="../assets/bg.jpg">
- </div>
- <HomeHead />
+     <div id="bg">
+      <img src="../assets/bg.jpg">
+     </div>
+      <HomeHead />
+      <router-view></router-view>
 </template>
 
 <script>
 import HomeHead from "../components/HomeHead.vue"
 
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  },
-
   components: {
     HomeHead
   }
