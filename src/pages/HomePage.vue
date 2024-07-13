@@ -15,7 +15,6 @@ export default {
 }
 
 </script>
-
 <style scoped>
   .homepage{
     background: url(../assets/bg.jpg) no-repeat;
