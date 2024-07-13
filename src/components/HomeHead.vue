@@ -8,7 +8,7 @@
   >
     <div class="logo">WildLand</div>
     <el-menu-item class="menuitem" index="1" @click="toHome">主页</el-menu-item>
-    <el-menu-item class="menuitem" index="2">营地</el-menu-item>
+    <el-menu-item class="menuitem" index="2" @click="toCamp">营地</el-menu-item>
     <el-menu-item class="menuitem" index="3" @click="toForum">论坛</el-menu-item>
     <el-menu-item class="menuitem" index="4" @click="toProduct">户外用品</el-menu-item>
     <el-menu-item class="menuitem" index="5">经验资讯</el-menu-item>
@@ -42,6 +42,12 @@ function toHome() {
 function toForum() {
     router.push({
         path: '/home/forum'
+    })
+}
+
+function toCamp() {
+    router.push({
+        path: '/home/campground'
     })
 }
 

@@ -1,8 +1,4 @@
 <template>
-    <div id="bg">
-       <img src="../assets/bg.jpg">
-    </div>
-    <HomeHead />
     <div class="container">
       <CampgroundAside @menu-select="handleMenuSelect"/>
       <main>
@@ -19,7 +15,6 @@
 
 
 <script>
-   import HomeHead from "../components/HomeHead.vue"
    import CampgroundAside from "../components/CampgroundAside.vue"
    import CampgroundDisplay from "../components/CampgroundDisplay.vue"
 
@@ -30,7 +25,6 @@
      },
    
      components: {
-       HomeHead,
        CampgroundAside,
        CampgroundDisplay
      },

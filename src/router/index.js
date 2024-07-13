@@ -23,6 +23,10 @@ const routes = [
             {
                 path: "forum",
                 component: () => import('../views/ForumView.vue')
+            },
+            {
+                path: "campground",
+                component: () => import('../views/CampgroundView.vue')
             }
         ]
     },
