@@ -36,7 +36,7 @@ export default {
         animation:fadeIn ease 3s;
         animation-iteration-count: 1;
         animation-fill-mode: forwards;
-        top: 30%;
+        top: 35%;
         left:10%;
     }
 

@@ -50,9 +50,9 @@ function toHomePage() {
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
-    height:100%;
+    height:100vh;
+    position:absolute;
     width:55%;
-    position: fixed;
 }
 
 .role{
