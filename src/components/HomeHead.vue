@@ -7,10 +7,10 @@
     @select="handleSelect"
   >
     <div class="logo">WildLand</div>
-    <el-menu-item class="menuitem" index="1">主页</el-menu-item>
+    <el-menu-item class="menuitem" index="1" @click="toHome">主页</el-menu-item>
     <el-menu-item class="menuitem" index="2">营地</el-menu-item>
     <el-menu-item class="menuitem" index="3">论坛</el-menu-item>
-    <el-menu-item class="menuitem" index="4">户外用品</el-menu-item>
+    <el-menu-item class="menuitem" index="4" @click="toProduct">户外用品</el-menu-item>
     <el-menu-item class="menuitem" index="5">经验资讯</el-menu-item>
     <div class="flex-grow" />
     <div class="searchbox">
@@ -24,12 +24,27 @@
     </div>
     <el-menu-item class="menuitem" index="6">个人空间</el-menu-item>
   </el-menu>
+
 </template>
 
 <script setup>
+import router from '../router'
 import { Search } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 const input = ref('')
+
+function toHome() {
+    router.push({
+        path: '/home'
+    })
+}
+
+function toProduct() {
+    router.push({
+        path: '/home/product'
+    })
+}
+
 </script>
 
 <style>
@@ -41,7 +56,8 @@ const input = ref('')
         position:fixed;
         width:100%;
         height:80px;
-        z-index:1;
+        position: relative;
+        z-index: 1;
     }
 
     .searchbox{

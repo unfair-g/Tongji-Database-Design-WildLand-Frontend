@@ -1,37 +1,17 @@
 <template>
- <div id="bg">
-    <img src="../assets/bg.jpg">
- </div>
- <el-container>
- <div class="head">
-   <HomeHead />
- </div>
-  <div class="main">
-    <MainContent />
-  </div>
-
-  <el-aside width="375px">
-    <AsideContent />
-  </el-aside>
-  </el-container>
-  
+     <div id="bg">
+      <img src="../assets/bg.jpg">
+     </div>
+      <HomeHead />
+      <router-view></router-view>
 </template>
 
 <script>
 import HomeHead from "../components/HomeHead.vue"
-import MainContent from "../components/Main.vue"
-import AsideContent from "../components/Sidebar.vue"
 
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  },
-
   components: {
-    HomeHead,
-    MainContent,
-    AsideContent
+    HomeHead
   }
 }
 
@@ -43,7 +23,7 @@ export default {
   top:0;
   width: 100%;
   height:100%;
-  position:fixed;
+  position:absolute;
 }
 
 #bg img {
@@ -55,9 +35,4 @@ export default {
   height: 100%;
   opacity:25%;
 }
-.main{
-  margin-top: 110px;
-  overflow: hidden;
-}
-
 </style>
