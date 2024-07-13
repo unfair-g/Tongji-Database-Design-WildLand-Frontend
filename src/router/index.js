@@ -44,18 +44,7 @@ const routes = [
             }
         ]
     }
-        component: () => import('../views/EnterView.vue')
-    },
-    {
-        path: '/',
-        name: 'ProductView',
-        component: ProductView
-      },
-      {
-        path: '/home/product/:id',
-        name: 'ProductDetail',
-        component: ProductDetail
-      }
+    
 ]
 
 const router = createRouter({

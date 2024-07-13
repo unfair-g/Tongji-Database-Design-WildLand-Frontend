@@ -69,8 +69,12 @@
     background-color: #ffffff; /* 设置容器的背景色为白色 */
     }
 
-    main {
-      flex: 1; /* main部分占据剩余空间 */
-      padding: 20px; /* 添加内边距 */
+    .main {
+      display: flex;
+      justify-content: center; /* 水平居中 */
+    }
+
+    .CampgroundAside {
+      margin: 0 auto 0 auto;
     }
 </style>
