@@ -14,8 +14,8 @@
         <div class="admin-info">邮箱: </div>
       </el-header>
       <el-container style="height: calc(100% - 190px)">
-        <el-aside width="200px" class="aside">
-          <el-scrollbar>
+        <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
+          <el-scrollbar v-show="!isCollapsed">
             <el-menu :default-openeds="['2','3']" @select="handleSelect" :unique-opened="true">
               <el-menu-item index="1">个人信息</el-menu-item>
               <el-sub-menu index="2">
@@ -36,6 +36,14 @@
               <el-menu-item index="4">经验资讯</el-menu-item>
             </el-menu>
           </el-scrollbar>
+          <el-button class="collapse-button" @click="toggleCollapse">
+            <el-icon>
+              <Fold v-if="!isCollapsed" style="font-size: 40px;" />
+              <Expand v-else style="font-size: 40px;" />
+            </el-icon>
+            <span v-if="!isCollapsed" class="collapse-text">收起</span>
+            <span v-else class="collapse-text">展开</span>
+          </el-button>
         </el-aside>
         <el-main>
           <el-table :data="tableData" style="width: 100%">
@@ -65,7 +73,7 @@
 </template>
 
 <script>
-import { CircleCheck, CircleClose, MoreFilled, UserFilled } from '@element-plus/icons-vue'
+import { CircleCheck, CircleClose, Fold, Expand, MoreFilled, UserFilled } from '@element-plus/icons-vue'
 
 export default {
   components: {
@@ -78,6 +86,8 @@ export default {
     return {
       activeIndex: '1',
       UserFilled,
+      Fold,
+      Expand,
       tableData: [
         {
           title: "123",
@@ -88,12 +98,22 @@ export default {
           CircleClose,
           MoreFilled
         }
-      ]
+      ],
+      isCollapsed: false
     };
   },
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
+<<<<<<< Updated upstream:L1KEAB0T/YourComponent.vue
+=======
+    },
+    handleAction(row, action) {
+      console.log(`Action: ${action} on row:`, row);
+    },
+    toggleCollapse() {
+      this.isCollapsed = !this.isCollapsed;
+>>>>>>> Stashed changes:src/pages/AdministratorPage.vue
     }
   }
 };
@@ -120,8 +140,10 @@ export default {
 }
 
 .logo {
-  font-size: 120px;
-  color: #333;
+  position:relative;
+  color:#1D5B5E;
+  font-size:60px;
+  font-family: 'LOGO',sans-serif !important;
 }
 
 .admin-details {
@@ -137,30 +159,53 @@ export default {
 
 .nickname {
   font-size: 24px;
-  margin-bottom: 10px; /* 可选: 调整间距 */
+  margin-bottom: 10px;
 }
 
 .user-id {
   font-size: 18px;
-  margin-bottom: 10px; /* 可选: 调整间距 */
+  margin-bottom: 10px;
 }
 
 .admin-info {
   font-size: 16px;
   text-align: right;
-  margin-left: 10px; /* 左边距 */
-  margin-right: 20px; /* 右边距 */
+  margin-left: 10px;
+  margin-right: 20px;
 }
 
 .aside {
+<<<<<<< Updated upstream:L1KEAB0T/YourComponent.vue
   width: 200px;
   background-color: rgba(255, 255, 255, 0.8);
   height: 100%; /* Ensure sidebar height is 100% */
+=======
+  height: 100%;
+  position: relative;
+  transition: width 0.3s;
+  background-color: white;
+}
+
+.collapse-button {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.collapse-text {
+  font-size: 16px;
+  margin-left: 5px;
+>>>>>>> Stashed changes:src/pages/AdministratorPage.vue
 }
 
 .el-main {
   background-color: rgba(255, 255, 255, 0.8);
   flex-grow: 1;
+<<<<<<< Updated upstream:L1KEAB0T/YourComponent.vue
   height: calc(100%); /* Ensure main content area height is calculated properly */
 }
 
@@ -180,5 +225,8 @@ export default {
 
 .el-menu-item.is-active {
   color: #1D5B5E;
+=======
+  height: calc(100%);
+>>>>>>> Stashed changes:src/pages/AdministratorPage.vue
 }
 </style>
