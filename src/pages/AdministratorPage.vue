@@ -39,15 +39,15 @@
         </el-aside>
         <el-main>
           <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="title" label="帖子标题" width="240" align="center" />
-            <el-table-column prop="author" label="帖子作者" width="240" align="center" />
-            <el-table-column prop="post_kind" label="帖子类型" width="240" align="center" />
-            <el-table-column prop="post_time" label="发表时间" width="240" align="center" />
-            <el-table-column label="操作台" width="240" align="center">
-              <template>
-                <el-button type="primary" :icon="CircleCheck"></el-button>
-                <el-button type="primary" :icon="CircleClose"></el-button>
-                <el-button type="primary" :icon="MoreFilled"></el-button>
+            <el-table-column prop="title" label="帖子标题" width="300" align="center" />
+            <el-table-column prop="author" label="帖子作者" width="300" align="center" />
+            <el-table-column prop="post_kind" label="帖子类型" width="300" align="center" />
+            <el-table-column prop="post_time" label="发表时间" width="300" align="center" />
+            <el-table-column label="操作台" width="300" align="center">
+              <template #default="scope">
+                <el-button type="primary" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
+                <el-button type="primary" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
+                <el-button type="primary" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -68,7 +68,6 @@
 import { CircleCheck, CircleClose, MoreFilled, UserFilled } from '@element-plus/icons-vue'
 
 export default {
- 
   data() {
     return {
       activeIndex: '1',
@@ -89,6 +88,10 @@ export default {
   methods: {
     handleSelect(key) {
       this.activeIndex = key;
+    },
+    handleAction(row, action) {
+      console.log(`Action: ${action} on row:`, row);
+      // 在这里处理操作逻辑
     }
   }
 };
@@ -96,18 +99,20 @@ export default {
 
 <style scoped>
 .common-layout {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   background: url('@/assets/bg.jpg') no-repeat center center fixed;
   background-size: cover;
-  opacity: 0.7; /* Ensure background opacity remains at 70% */
   display: flex;
   flex-direction: column;
 }
 
+.header, .aside, .el-main {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
 .header {
   height: 190px;
-  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -149,19 +154,17 @@ export default {
 
 .aside {
   width: 200px;
-  background-color: rgba(255, 255, 255, 0.8);
-  height: 100%; /* Ensure sidebar height is 100% */
+  height: 100%; /* 确保侧边栏高度为100% */
 }
 
 .el-main {
-  background-color: rgba(255, 255, 255, 0.8);
   flex-grow: 1;
-  height: calc(100%); /* Ensure main content area height is calculated properly */
+  height: calc(100%); /* 确保主内容区域高度正确计算 */
 }
 
 .el-menu-vertical-demo {
   border-right: none;
-  height: 100%; /* Ensure menu height is 100% */
+  height: 100%; /* 确保菜单高度为100% */
 }
 
 .el-menu-item,
