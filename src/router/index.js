@@ -8,6 +8,10 @@ const routes = [
         component: HelloWorld
     },
     {
+        path: '/administrator',
+        component: () => import('../pages/AdministratorPage.vue')
+    },
+    {
         path: '/home',
         name: 'home',
         component: () => import('../pages/HomePage.vue'),

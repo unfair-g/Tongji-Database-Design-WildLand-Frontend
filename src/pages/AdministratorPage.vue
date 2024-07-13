@@ -44,10 +44,10 @@
             <el-table-column prop="post_kind" label="帖子类型" width="240" align="center" />
             <el-table-column prop="post_time" label="发表时间" width="240" align="center" />
             <el-table-column label="操作台" width="240" align="center">
-              <template #default="scope">
-                <el-button type="primary" :icon="scope.row.CircleCheck"></el-button>
-                <el-button type="primary" :icon="scope.row.CircleClose"></el-button>
-                <el-button type="primary" :icon="scope.row.MoreFilled"></el-button>
+              <template>
+                <el-button type="primary" :icon="CircleCheck"></el-button>
+                <el-button type="primary" :icon="CircleClose"></el-button>
+                <el-button type="primary" :icon="MoreFilled"></el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -68,12 +68,7 @@
 import { CircleCheck, CircleClose, MoreFilled, UserFilled } from '@element-plus/icons-vue'
 
 export default {
-  components: {
-    CircleCheck,
-    CircleClose,
-    MoreFilled,
-    UserFilled
-  },
+ 
   data() {
     return {
       activeIndex: '1',
@@ -92,7 +87,7 @@ export default {
     };
   },
   methods: {
-    handleSelect(key, keyPath) {
+    handleSelect(key) {
       this.activeIndex = key;
     }
   }
