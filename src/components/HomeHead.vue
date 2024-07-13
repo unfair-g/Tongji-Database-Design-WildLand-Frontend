@@ -9,7 +9,7 @@
     <div class="logo">WildLand</div>
     <el-menu-item class="menuitem" index="1" @click="toHome">主页</el-menu-item>
     <el-menu-item class="menuitem" index="2">营地</el-menu-item>
-    <el-menu-item class="menuitem" index="3">论坛</el-menu-item>
+    <el-menu-item class="menuitem" index="3" @click="toForum">论坛</el-menu-item>
     <el-menu-item class="menuitem" index="4" @click="toProduct">户外用品</el-menu-item>
     <el-menu-item class="menuitem" index="5">经验资讯</el-menu-item>
     <div class="flex-grow" />
@@ -36,6 +36,12 @@ const input = ref('')
 function toHome() {
     router.push({
         path: '/home'
+    })
+}
+
+function toForum() {
+    router.push({
+        path: '/home/forum'
     })
 }
 

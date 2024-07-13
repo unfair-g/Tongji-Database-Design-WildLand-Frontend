@@ -1,5 +1,6 @@
 <template>
   <el-menu :default-active="activeIndex"
+  :ellipsis="false"
   class="el-menu-demo"
   mode="horizontal"
   active-text-color="#1D5B5E"
@@ -16,7 +17,7 @@
         -闲置贴-
       </el-menu-item>
 
-
+    <div class="flex-grow" />
     <div class="menu-search">
       <el-input
         v-model="input"
@@ -30,7 +31,8 @@
    
   </el-menu>
   
-  <el-main> <ArticleCard />
+  <el-main>
+    <ArticleCard />
     <ArticleCard />
     <ArticleCard />
     <ArticleCard />
@@ -67,6 +69,7 @@ const handleSelect = (key, keyPath) => {
 .menu-search {
   display: flex;
   align-items: right;
+  margin-right: 2%;
 
 }
 .el-menu-demo{
@@ -79,4 +82,7 @@ const handleSelect = (key, keyPath) => {
   width: 240px;
   margin-right: 10px;
 }
+.flex-grow {
+        flex-grow: 1;
+    }
 </style>

@@ -79,7 +79,7 @@ export default {
 <style scoped>
 .post-item {
   margin-bottom: 20px;
-  width: 1200px; /* 调整宽度，根据需要设置合适的值 */
+  width: 100%; /* 调整宽度，根据需要设置合适的值 */
 }
 .post-header {
   display: flex;
