@@ -18,8 +18,10 @@ export default {
 
 <style scoped>
   .homepage{
+    min-width:100%;
     background: url(../assets/bg.jpg) no-repeat;
     background-size:100% 100%;
     background-attachment:fixed;
+    min-height:100vh;
   }
 </style>

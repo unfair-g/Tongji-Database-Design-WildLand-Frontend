@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory} from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HelloWorld from '../pages/HelloWorld.vue'
 
 const routes = [
@@ -17,6 +17,10 @@ const routes = [
         component: () => import('../pages/HomePage.vue'),
         children: [
             {
+                path: "",
+                component: () => import('../views/HomeView.vue')
+            },
+            {
                 path: "product",
                 component: () => import('../views/ItemView.vue')
             },
@@ -27,6 +31,10 @@ const routes = [
             {
                 path: "campground",
                 component: () => import('../views/CampgroundView.vue')
+            },
+            {
+                path: "userspace",
+                component: () => import('../views/UserSpaceView.vue')
             }
         ]
     },
