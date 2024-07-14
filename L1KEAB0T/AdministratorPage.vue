@@ -4,14 +4,16 @@
       <el-header class="header">
         <div class="logo">WildLand</div>
         <div class="admin-details">
-          <el-avatar :icon="UserFilled" size="large"></el-avatar>
-          <div class="admin-info-wrapper">
-            <div class="nickname">昵称: </div>
-            <div class="user-id">个人ID: </div>
+          <div class="admin-avatar-info">
+            <el-avatar :icon="UserFilled" size="large"></el-avatar>
+            <div class="admin-info-wrapper">
+              <div class="nickname">昵称: </div>
+              <div class="user-id">个人ID: </div>
+            </div>
           </div>
+          <div class="admin-info phone-info">手机: </div>
+          <div class="admin-info email-info">邮箱: </div>
         </div>
-        <div class="admin-info">手机: </div>
-        <div class="admin-info">邮箱: </div>
       </el-header>
       <el-container style="height: calc(100% - 190px)">
         <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
@@ -135,13 +137,23 @@ export default {
 .logo {
   position:relative;
   color:#1D5B5E;
-  font-size:150px;
+  font-size:60px;
   font-family: 'LOGO',sans-serif !important;
 }
 
 .admin-details {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+}
+
+.admin-avatar-info {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 30%;
 }
 
 .admin-info-wrapper {
@@ -160,11 +172,18 @@ export default {
   margin-bottom: 10px;
 }
 
-.admin-info {
+.phone-info {
+  position: absolute;
+  left: 55%;
   font-size: 16px;
-  text-align: right;
-  margin-left: 10px;
-  margin-right: 20px;
+  text-align: left;
+}
+
+.email-info {
+  position: absolute;
+  left: 80%;
+  font-size: 16px;
+  text-align: left;
 }
 
 .aside {
@@ -192,5 +211,6 @@ export default {
 .el-main {
   flex-grow: 1;
   height: calc(100%);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 </style>
