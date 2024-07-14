@@ -15,7 +15,6 @@ export default {
 }
 
 </script>
-
 <style scoped>
   .homepage{
     min-width:100%;

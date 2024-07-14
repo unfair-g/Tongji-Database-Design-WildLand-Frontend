@@ -47,5 +47,4 @@ export default {
   color:#1D5B5E;
   font-weight: bold;
 }
-
 </style>
