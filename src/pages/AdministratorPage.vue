@@ -4,18 +4,20 @@
       <el-header class="header">
         <div class="logo">WildLand</div>
         <div class="admin-details">
-          <el-avatar :icon="UserFilled" size="large"></el-avatar>
-          <div class="admin-info-wrapper">
-            <div class="nickname">昵称: </div>
-            <div class="user-id">个人ID: </div>
+          <div class="admin-avatar-info">
+            <el-avatar :icon="UserFilled" size="large"></el-avatar>
+            <div class="admin-info-wrapper">
+              <div class="nickname">昵称: </div>
+              <div class="user-id">个人ID: </div>
+            </div>
           </div>
+          <div class="admin-info phone-info">手机: </div>
+          <div class="admin-info email-info">邮箱: </div>
         </div>
-        <div class="admin-info">手机: </div>
-        <div class="admin-info">邮箱: </div>
       </el-header>
       <el-container style="height: calc(100% - 190px)">
-        <el-aside width="200px" class="aside">
-          <el-scrollbar>
+        <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
+          <el-scrollbar v-show="!isCollapsed">
             <el-menu :default-openeds="['2','3']" @select="handleSelect" :unique-opened="true">
               <el-menu-item index="1">个人信息</el-menu-item>
               <el-sub-menu index="2">
@@ -36,6 +38,14 @@
               <el-menu-item index="4">经验资讯</el-menu-item>
             </el-menu>
           </el-scrollbar>
+          <el-button class="collapse-button" @click="toggleCollapse">
+            <el-icon>
+              <Fold v-if="!isCollapsed" style="font-size: 40px;" />
+              <Expand v-else style="font-size: 40px;" />
+            </el-icon>
+            <span v-if="!isCollapsed" class="collapse-text">收起</span>
+            <span v-else class="collapse-text">展开</span>
+          </el-button>
         </el-aside>
         <el-main>
           <el-table :data="tableData" style="width: 100%">
@@ -65,13 +75,15 @@
 </template>
 
 <script>
-import { CircleCheck, CircleClose, MoreFilled, UserFilled } from '@element-plus/icons-vue'
+import { CircleCheck, CircleClose, Fold, Expand, MoreFilled, UserFilled } from '@element-plus/icons-vue'
 
 export default {
   data() {
     return {
       activeIndex: '1',
       UserFilled,
+      Fold,
+      Expand,
       tableData: [
         {
           title: "123",
@@ -82,7 +94,8 @@ export default {
           CircleClose,
           MoreFilled
         }
-      ]
+      ],
+      isCollapsed: false
     };
   },
   methods: {
@@ -91,7 +104,9 @@ export default {
     },
     handleAction(row, action) {
       console.log(`Action: ${action} on row:`, row);
-      // 在这里处理操作逻辑
+    },
+    toggleCollapse() {
+      this.isCollapsed = !this.isCollapsed;
     }
   }
 };
@@ -120,13 +135,25 @@ export default {
 }
 
 .logo {
-  font-size: 120px;
-  color: #333;
+  position:relative;
+  color:#1D5B5E;
+  font-size:60px;
+  font-family: 'LOGO',sans-serif !important;
 }
 
 .admin-details {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+}
+
+.admin-avatar-info {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 30%;
 }
 
 .admin-info-wrapper {
@@ -137,46 +164,53 @@ export default {
 
 .nickname {
   font-size: 24px;
-  margin-bottom: 10px; /* 可选: 调整间距 */
+  margin-bottom: 10px;
 }
 
 .user-id {
   font-size: 18px;
-  margin-bottom: 10px; /* 可选: 调整间距 */
+  margin-bottom: 10px;
 }
 
-.admin-info {
+.phone-info {
+  position: absolute;
+  left: 55%;
   font-size: 16px;
-  text-align: right;
-  margin-left: 10px; /* 左边距 */
-  margin-right: 20px; /* 右边距 */
+  text-align: left;
+}
+
+.email-info {
+  position: absolute;
+  left: 80%;
+  font-size: 16px;
+  text-align: left;
 }
 
 .aside {
-  width: 200px;
-  height: 100%; /* 确保侧边栏高度为100% */
+  height: 100%;
+  position: relative;
+  transition: width 0.3s;
+  background-color: white;
+}
+
+.collapse-button {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.collapse-text {
+  font-size: 16px;
+  margin-left: 5px;
 }
 
 .el-main {
   flex-grow: 1;
-  height: calc(100%); /* 确保主内容区域高度正确计算 */
-}
-
-.el-menu-vertical-demo {
-  border-right: none;
-  height: 100%; /* 确保菜单高度为100% */
-}
-
-.el-menu-item,
-.el-submenu__title {
-  font-size: 20px;
-}
-
-.el-menu-item {
-  color: #333;
-}
-
-.el-menu-item.is-active {
-  color: #1D5B5E;
+  height: calc(100%);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 </style>
