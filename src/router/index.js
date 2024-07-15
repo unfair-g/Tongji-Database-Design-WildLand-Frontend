@@ -35,6 +35,10 @@ const routes = [
             {
                 path: "userspace",
                 component: () => import('../views/UserSpaceView.vue')
+            },
+            {
+                path: "flash",
+                component: () => import('../views/FlashView.vue')
             }
         ]
     },
