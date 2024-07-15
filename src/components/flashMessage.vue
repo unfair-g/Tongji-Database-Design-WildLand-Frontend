@@ -6,6 +6,7 @@
         <el-aside width="200px"></el-aside>
         <main>
           <el-container>
+<<<<<<< Updated upstream:src/components/flashMessage.vue
           <!-- 左侧推荐资讯 -->
               <div class="section">
                 <h2>推荐资讯</h2>
@@ -196,6 +197,13 @@
                   </li>
                   </ul>
                 </div>
+=======
+            <mainflash />
+              <!-- 右侧资讯面板 -->
+              <div class="right-panel">
+                <newflash />
+                <hotflash />
+>>>>>>> Stashed changes:src/views/FlashView.vue
               </div>
           </el-container>
         </main>
@@ -205,11 +213,26 @@
 </template>
 
 <script>
+<<<<<<< Updated upstream:src/components/flashMessage.vue
 import HomeHead from './HomeHead.vue'
 
 export default {
   components: {
     HomeHead
+=======
+import mainflash from '../components/RecommendFlash.vue';
+import hotflash from '../components/HotFlash.vue';
+import newflash from '../components/NewFlash.vue';
+
+export default {
+  name: 'R_Flash',
+  components: {
+    mainflash,
+    hotflash,
+    newflash
+  },
+  data() {
+>>>>>>> Stashed changes:src/views/FlashView.vue
   }
 }
 </script>
@@ -247,59 +270,16 @@ export default {
   width:1160px;
   margin: 10 auto;
 }
-.content{
-  li{
-    width:937px;
-    height:173px;
-    float:left;
-    box-sizing: border-box;
-    border: 1px solid #eee;
-    margin-bottom: 20px;
-  }
-  .img{
-    width:253px;
-    height:171px;
-  }
-  .info{
-    padding: 20px;
-    .desc{
-      color:#333;
-      margin-top: 1px;
-      margin-bottom: 14px;
-      height:48px;
-      font-size: 37px;
-      overflow:hidden;
-    }
-    .bottom{
-      margin-top: 16px;
-      height:24px;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: #636363;
-      span{
-        float:right;
-      }
-    }
-    .tag {
-      color:#333;
-      padding: 2px 5px;
-      margin-right: 10px;
-      background-color: #e0e0e0; /* 标签背景色，可选 */
-      border-radius: 3px; /* 圆角边框，可选 */
-    }
-  }
-}
 .left-panel, .right-panel {
   overflow-y: auto;
   padding: 20px;
 }
 .left-panel {
-  width:63%;
+  width:70%;
   background: #f0f0f0;
 }
 .right-panel {
-  width: 37%;
+  width: 30%;
   display: flex;
   flex-direction: column;
 }
@@ -341,28 +321,6 @@ export default {
       text-align: center;
       align-items: center;
       font-weight: bold;
-    }
-  }
-}
-
-.hot-news{
-  li{
-    margin-bottom: 20px;
-  }
-  .info{
-    display: flex; /* 使用Flexbox布局 */
-    align-items: center; /* 垂直居中 */
-    .desc{
-      color:#333;
-      margin-bottom: 5px;
-      font-size: 20px;
-      overflow:hidden;
-    }
-    .tag {
-      color:#333;
-      padding: 2px 5px;
-      margin-right: 10px;
-      font-size: 15px;
     }
   }
 }
