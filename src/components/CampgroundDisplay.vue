@@ -2,7 +2,7 @@
 <template>
   <div class="camp-list">
     
-      <el-col :span="21" v-for="camp in filteredCamps" :key="camp.id" style="margin-bottom:25px;">
+      <el-col :span="20" v-for="camp in filteredCamps" :key="camp.id" style="margin-bottom:25px;">
         <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp.id)">
           <img :src="camp.image" class="image" alt="camp image">
           <div style="padding: 14px;">
