@@ -60,6 +60,11 @@ import {
     min-height:92vh;
 }
 
+.el-menu-item:hover{
+  background-color:rgb(48, 133, 136, 40%);
+}
+
+
 .el-icon{
     font-size:50px;
 }
