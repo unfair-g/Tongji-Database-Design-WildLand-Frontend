@@ -71,7 +71,11 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    }
+    },
+    {
+        path: '/home/flash/:id',
+        component: () => import('../views/FlashDetail.vue'),
+    },
 
 ]
 

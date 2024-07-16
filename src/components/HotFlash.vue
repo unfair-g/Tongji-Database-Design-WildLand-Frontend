@@ -1,7 +1,7 @@
 <template>
   <el-card class="flash">
     <template #header>
-      <div class="flash-header">推荐资讯</div>
+      <div class="flash-header">热门资讯</div>
     </template>
     <div class="flash-list">
       <div class="flash-item" v-for="(flash) in flash" :key="flash.title">
@@ -60,6 +60,7 @@ export default {
   flex-direction: column;
 }
 .flash-title {
+  font-size: 25px;
   font-weight: bold;
 }
 .flash-meta {

@@ -66,6 +66,7 @@ export default {
 }
 .flash-title {
   font-weight: bold;
+  font-size: 25px;
 }
 .flash-tag {
   color:#333;

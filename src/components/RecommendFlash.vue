@@ -4,7 +4,7 @@
       <div class="flash-header">推荐资讯</div>
     </template>
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in flash" :key="flash.title">
+      <div class="flash-item" v-for="(flash) in flash" :key="flash.title" @click="goToDetail(flash)">
         <div class="img">
             <img src="../assets/flash-1.png" alt="">
         </div>
@@ -30,11 +30,17 @@ export default {
   data() {
     return {
       flash: [
-        { title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
-        { title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
-        { title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'}
+        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
+        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
+        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'}
       ]
     };
+  },
+  methods: {
+    goToDetail (flash) {
+      const flashId = flash.id
+      this.$router.push({ path: `/home/flash/${flashId}` })
+    }
   }
 }
 </script>
