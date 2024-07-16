@@ -1,8 +1,6 @@
 <template>
-  <div class="product-container">
-    <div class="tab">
         <!--标签栏-->
-        <el-button-group>
+        <el-button-group style="margin-left:30%">
             <el-tabs v-model="activeTab" style="margin: 20px;">
               <el-tab-pane label="全部" name="all">
               </el-tab-pane>
@@ -21,10 +19,8 @@
             </el-tabs>
         </el-button-group>
         <!--标签栏-->
-    </div>
       <!--商品栏-->
     <ProductView :activeTab="activeTab"/>
-  </div>
 </template>
 
 <script>
@@ -45,25 +41,10 @@ export default {
 </script>
 
 <style scoped>
-.tab{
-  display:flex;
-  justify-content: center;
-}
 
 ::v-deep .el-tabs__item {
   font-size: 18px;
   color:#1D5B5E;
   font-weight: bold;
-}
-
-.product-container {
-  height: 95vh;
-  overflow-y: auto; /* 允许垂直滚动 */
-  padding-left: 0px;
-  margin-left: 10px;
-}
-
-.product-container::-webkit-scrollbar {  
-    display: none;  
 }
 </style>

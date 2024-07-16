@@ -1,7 +1,5 @@
-import { createRouter, createWebHashHistory} from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HelloWorld from '../pages/HelloWorld.vue'
-import ProductView from '@/views/ProductView.vue'
-import ProductDetail from '@/views/ProductDetail.vue'
 
 const routes = [
     {
@@ -11,13 +9,29 @@ const routes = [
     },
     {
         path: '/administrator',
-        component: () => import('../pages/AdministratorPage.vue')
+        component: () => import('../pages/AdministratorPage.vue'),
+        children: [
+            {
+                path: 'postaudit',
+                name: 'PostAudit',
+                component: () => import('../views/PostAudit.vue')
+            },
+            {
+                path: 'postdetail',
+                name: 'PostDetail',
+                component: () => import('../views/PostDetail.vue')
+            }
+        ]
     },
     {
         path: '/home',
         name: 'home',
         component: () => import('../pages/HomePage.vue'),
         children: [
+            {
+                path: "",
+                component: () => import('../views/HomeView.vue')
+            },
             {
                 path: "product",
                 component: () => import('../views/ItemView.vue'),
@@ -29,14 +43,19 @@ const routes = [
             {
                 path: "campground",
                 component: () => import('../views/CampgroundView.vue')
+            },
+            {
+                path: "userspace",
+                component: () => import('../views/UserSpaceView.vue')
+            },
+            {
+                path: "flash",
+                component: () => import('../views/FlashView.vue')
             }
         ]
     },
     {
         path: '/enter',
-<<<<<<< Updated upstream
-        component: () => import('../views/EnterView.vue')
-=======
         component: () => import('../views/EnterView.vue'),
         children: [
             {
@@ -48,7 +67,6 @@ const routes = [
                 component: () => import('../components/UserEnroll.vue')
             }
         ]
->>>>>>> Stashed changes
     },
     {
         path: '/home/product/:id',
@@ -58,6 +76,14 @@ const routes = [
         path: '/home/product/:id/order',
         component: () => import('../components/OrderView.vue')
     }
+            },
+            {
+                path: 'findkey',
+                component: () => import('../components/FindKey.vue')
+            }
+        ]
+    }
+
 ]
 
 const router = createRouter({

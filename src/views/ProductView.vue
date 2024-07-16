@@ -80,7 +80,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-right: 40px;
 }
 
 .image {
