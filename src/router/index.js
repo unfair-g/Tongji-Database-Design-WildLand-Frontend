@@ -20,7 +20,7 @@ const routes = [
         children: [
             {
                 path: "product",
-                component: () => import('../views/ItemView.vue')
+                component: () => import('../views/ItemView.vue'),
             },
             {
                 path: "forum",
@@ -34,18 +34,30 @@ const routes = [
     },
     {
         path: '/enter',
+<<<<<<< Updated upstream
         component: () => import('../views/EnterView.vue')
+=======
+        component: () => import('../views/EnterView.vue'),
+        children: [
+            {
+                path: "login",
+                component: () => import('../components/LogIn.vue')
+            },
+            {
+                path: "enrollment",
+                component: () => import('../components/UserEnroll.vue')
+            }
+        ]
+>>>>>>> Stashed changes
     },
     {
-        path: '/',
-        name: 'ProductView',
-        component: ProductView
-      },
-      {
         path: '/home/product/:id',
-        name: 'ProductDetail',
-        component: ProductDetail
-      }
+        component: () => import('../views/ProductDetail.vue'),
+    },
+    {
+        path: '/home/product/:id/order',
+        component: () => import('../components/OrderView.vue')
+    }
 ]
 
 const router = createRouter({

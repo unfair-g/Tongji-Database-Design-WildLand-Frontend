@@ -16,6 +16,7 @@ export default {
 }
 
 </script>
+<<<<<<< Updated upstream
 
 <style>
 #bg{
@@ -35,4 +36,13 @@ export default {
   height: 100%;
   opacity:25%;
 }
+=======
+<style scoped>
+  .homepage{
+    background: url(../assets/bg.jpg) no-repeat;
+    background-size:100% 100%;
+    background-attachment:fixed;
+    min-height:100vh;
+  }
+>>>>>>> Stashed changes
 </style>
