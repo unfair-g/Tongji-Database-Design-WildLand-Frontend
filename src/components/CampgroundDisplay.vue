@@ -3,13 +3,13 @@
   <div class="camp-list">
     
       <el-col :span="20" v-for="camp in filteredCamps" :key="camp.id" style="margin-bottom:25px;">
-        <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp.id)">
+        <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp)">
           <img :src="camp.image" class="image" alt="camp image">
           <div style="padding: 14px;">
             <span class="name">{{ camp.name}}</span>
             <div class="bottom clearfix">
               <span class="introduction">{{ camp.introduction }}</span>
-              <el-button type="text" class="button" @click="goToCampDetail(camp.id)">查看详情</el-button>
+              <el-button type="text" class="button" @click="goToCampDetail(camp)">查看详情</el-button>
             </div>
           </div>
         </el-card>
@@ -27,7 +27,7 @@ export default {
   data () {
     return {
       camps: [
-        { id: 1, name: '小野（半岛）', image: require('@/assets/camp11.png'), introduction: '上海最美的日落营地，可体验浆板、帆船', tags: ['上海'] },
+        { id: 11, name: '小野（半岛）', image: require('@/assets/camp11.png'), introduction: '上海最美的日落营地，可体验浆板、帆船', tags: ['上海'] },
         { id: 21, name: '竹野公园', image: require('@/assets/camp21.png'), introduction: '竹林环绕的静谧之所', tags: ['绍兴'] },
         { id: 22, name: '诸暨红枫岭营地', image: require('@/assets/camp22.png'), introduction: '藏在五泄森林中的法式小清新', tags: ['绍兴'] },
         { id: 31, name: '小野（森谷）', image: require('@/assets/camp31.png'), introduction: '林间山野，溪流石苔', tags: ['桐庐'] },
@@ -46,8 +46,8 @@ export default {
     }
   },
   methods: {
-    goToCampDetail (productId) {
-      this.$router.push({ path: `/product/${productId}` })
+    goToCampDetail (camp) {
+      this.$router.push({ path: `/home/campdetail/${camp.id}` })
     }
   }
 }
