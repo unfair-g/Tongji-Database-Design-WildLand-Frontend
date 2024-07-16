@@ -53,6 +53,10 @@ const routes = [
             {
                 path: "enrollment",
                 component: () => import('../components/UserEnroll.vue')
+            },
+            {
+                path: 'findkey',
+                component: () => import('../components/FindKey.vue')
             }
         ]
     }
