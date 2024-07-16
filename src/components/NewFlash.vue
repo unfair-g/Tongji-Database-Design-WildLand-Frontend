@@ -5,9 +5,9 @@
       :key="index"  
       :timestamp="flash.timestamp"  
       placement="top"  
+      @click="goToDetail(flash)"
     >  
       <template #dot>  
-        <!-- 自定义时间点的样式，这里是默认的，你可以根据需要修改 -->  
         <i class="el-icon-info"></i>  
       </template>  
       <el-card class="flash-item">  
@@ -34,7 +34,13 @@ export default {
         { title: '野游营地 | 另一处推荐', tag: '新营地', timestamp: 7.12 }  
       ]  
     };  
-  }  
+  }  ,
+  methods: {
+    goToDetail (flash) {
+      const flashId = flash.id
+      this.$router.push({ path: `/home/flash/${flashId}` })
+    }
+  }
 }  
 </script>  
 
@@ -57,7 +63,6 @@ export default {
 .flash-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
 }
 .flash-info {
   flex: 1;
@@ -67,6 +72,7 @@ export default {
 .flash-title {
   font-weight: bold;
   font-size: 25px;
+  margin-bottom: 2%;
 }
 .flash-tag {
   color:#333;

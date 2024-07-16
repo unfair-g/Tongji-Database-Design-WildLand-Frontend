@@ -4,7 +4,7 @@
       <div class="flash-header">热门资讯</div>
     </template>
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in flash" :key="flash.title">
+      <div class="flash-item" v-for="(flash) in flash" :key="flash.title" @click="goToDetail(flash)">
         <div class="img">
             <img src="../assets/flash-1.png" alt="" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
         </div>
@@ -29,6 +29,12 @@ export default {
         { title: '野游营地 | 逃离燥热城市', meta: '作者: wsy'}
       ]
     };
+  },
+  methods: {
+    goToDetail (flash) {
+      const flashId = flash.id
+      this.$router.push({ path: `/home/flash/${flashId}` })
+    }
   }
 }
 </script>
@@ -52,7 +58,7 @@ export default {
 .flash-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin: 3%;
 }
 .flash-info {
   flex: 1;

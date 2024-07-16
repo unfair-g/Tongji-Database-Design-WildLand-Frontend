@@ -11,7 +11,9 @@
         <div class="flash-info">
             <span class="flash-title">{{ flash.title }}</span>
           <div>
-            <img src="../assets/head.png" alt="" width="22" height="22">
+            <el-avatar  
+            src="user.avatar" alt="用户头像" class="avatar" 
+                    />   
             <span class="flash-meta">{{ flash.meta }}</span>
             <span class="flash-like">{{ flash.like }}</span>
             <span class="flash-like">{{ flash.view }}</span>
@@ -80,7 +82,6 @@ export default {
       margin-bottom: 14px;
       height:48px;
       font-size: 37px;
-      overflow:hidden;
 }
 .flash-meta {
   color: #999;
