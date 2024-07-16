@@ -9,7 +9,19 @@ const routes = [
     },
     {
         path: '/administrator',
-        component: () => import('../pages/AdministratorPage.vue')
+        component: () => import('../pages/AdministratorPage.vue'),
+        children: [
+            {
+                path: 'postaudit',
+                name: 'PostAudit',
+                component: () => import('../views/PostAudit.vue')
+            },
+            {
+                path: 'postdetail',
+                name: 'PostDetail',
+                component: () => import('../views/PostDetail.vue')
+            }
+        ]
     },
     {
         path: '/home',
