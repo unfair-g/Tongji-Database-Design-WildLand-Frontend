@@ -1,33 +1,13 @@
 <template>
-  <div id="app">
-    <your-component />
-  </div>
+  <router-view></router-view>
 </template>
 
 <script>
-import YourComponent from './components/flashMessage.vue'
-
 export default {
-  name: 'App',
-  components: {
-    YourComponent
-  }
+  name: 'App'
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin: 0;
-  width: 1920px;
-  height: 1080px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 </style>

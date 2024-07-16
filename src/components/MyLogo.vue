@@ -3,26 +3,45 @@
         <div class="logo">WildLand</div>
         <div class="buttons">
         
-            <el-button class="loginbutton" type="primary" color="#1D5B5E" size="large">登录</el-button>
-            <el-button class="enrollbutton" type="primary" color="#308588" size="large">注册</el-button>
+            <el-button class="loginbutton" type="primary" color="#1D5B5E" size="large" @click="toLoginPage">登录</el-button>
+            <el-button class="enrollbutton" type="primary" color="#308588" size="large" @click="toEnrollmentPage">注册</el-button>
         </div>
     </div>
 </template>
 
 <script>
+
+export default {
+    
+    methods:
+    {
+        toLoginPage() {
+            this.$router.push({
+                path: '/enter/login'
+            })
+        },
+        toEnrollmentPage() {
+            this.$router.push({
+                path: '/enter/enrollment'
+            })
+        }
+    }
+}
+
 </script>
 
 <style scoped>
     .welcome{
-        position: absolute;
+        position:fixed;
         animation:fadeIn ease 3s;
         animation-iteration-count: 1;
         animation-fill-mode: forwards;
-        top: 30%;
+        top: 35%;
         left:10%;
     }
 
     .logo{
+        position:relative;
         color:#1D5B5E;
         font-size:150px;
         font-family: 'LOGO',sans-serif !important;
@@ -34,6 +53,7 @@
     }
     
     .loginbutton{
+        margin-top: auto;
         margin-left: auto;
         margin-right: auto;
         width:calc(280vw * 80 / 1920);
@@ -42,6 +62,7 @@
     }
 
     .enrollbutton{
+        margin-top: auto;
         margin-left: auto;
         margin-right: auto;
         width:calc(280vw * 80 / 1920);
