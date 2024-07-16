@@ -39,7 +39,12 @@ const routes = [
             {
                 path: "flash",
                 component: () => import('../views/FlashView.vue')
-            }
+            },
+            {
+                path: "campdetail/:campID",
+                component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
         ]
     },
     {
