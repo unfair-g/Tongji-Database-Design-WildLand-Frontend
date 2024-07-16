@@ -34,7 +34,7 @@ const routes = [
             },
             {
                 path: "product",
-                component: () => import('../views/ItemView.vue')
+                component: () => import('../views/ItemView.vue'),
             },
             {
                 path: "forum",
@@ -65,6 +65,17 @@ const routes = [
             {
                 path: "enrollment",
                 component: () => import('../components/UserEnroll.vue')
+            }
+        ]
+    },
+    {
+        path: '/home/product/:id',
+        component: () => import('../views/ProductDetail.vue'),
+    },
+    {
+        path: '/home/product/:id/order',
+        component: () => import('../components/OrderView.vue')
+    }
             },
             {
                 path: 'findkey',
