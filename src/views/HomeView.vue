@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import HotPost from "../components/HotPost.vue"
+import HotPost from "../components/HomeHotPost.vue"
 
 export default{
     components: {
@@ -56,7 +56,7 @@ export default{
 
 </script>
 
-<style>
+<style scoped>
 .group1{
     display:flex;
     min-width:100%;
