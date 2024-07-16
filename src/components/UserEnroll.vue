@@ -8,9 +8,7 @@
     :model="formLabelAlign"
     style="max-width: 600px; margin-top:5%; margin-bottom: 10%;"
     >
-    <div class="avater">
-     <el-avatar :size="90" :icon="UserFilled"/>
-    </div>
+   
     <el-form-item label="昵称">
       <el-input v-model="formLabelAlign.name" placeholder="请输入您的昵称"  :prefix-icon="User"/>
     </el-form-item>
@@ -38,7 +36,7 @@
 <script setup>
 import router from '../router'
 import { reactive } from 'vue'
-import { User, Key,UserFilled,Iphone } from '@element-plus/icons-vue'
+import { User, Key, Iphone } from '@element-plus/icons-vue'
 
 const formLabelAlign = reactive({
     name: '',
@@ -49,6 +47,7 @@ const formLabelAlign = reactive({
 function toHomePage() {
   router.push({path: '/administrator'})
 }
+
 </script>
 
 <style>
@@ -73,9 +72,27 @@ function toHomePage() {
     margin-top: 10%;
 }
 
-.avater{
-    margin-left: 42%;
-    margin-bottom: 5%;
+.avatar-uploader .el-upload{
+  margin-left: 35%;
+  margin-bottom: 5%;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #888888;
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
 }
 
 .cancelbutton{

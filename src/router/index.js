@@ -9,7 +9,19 @@ const routes = [
     },
     {
         path: '/administrator',
-        component: () => import('../pages/AdministratorPage.vue')
+        component: () => import('../pages/AdministratorPage.vue'),
+        children: [
+            {
+                path: 'postaudit',
+                name: 'PostAudit',
+                component: () => import('../views/PostAudit.vue')
+            },
+            {
+                path: 'postdetail',
+                name: 'PostDetail',
+                component: () => import('../views/PostDetail.vue')
+            }
+        ]
     },
     {
         path: '/home',
@@ -58,10 +70,21 @@ const routes = [
             {
                 path: "enrollment",
                 component: () => import('../components/UserEnroll.vue')
+            },
+            {
+                path: 'findkey',
+                component: () => import('../components/FindKey.vue')
             }
         ]
+    },
+    {
+        path: '/home/product/:id',
+        component: () => import('../views/ProductDetail.vue')
+    },
+    {
+        path: '/home/product/:id/order',
+        component: () => import('../components/OrderView.vue')
     }
-
 ]
 
 const router = createRouter({
