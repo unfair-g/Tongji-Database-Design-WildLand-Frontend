@@ -167,6 +167,11 @@ export default {
   background-color: white;
 }
 
+.el-menu-item,
+.el-sub-menu {
+  font-size: 20px; /*改这个值修改大小*/
+}
+
 .collapse-button {
   position: absolute;
   bottom: 10px;
@@ -188,3 +193,4 @@ export default {
   background-color: rgba(255, 255, 255, 0.7);
 }
 </style>
+
