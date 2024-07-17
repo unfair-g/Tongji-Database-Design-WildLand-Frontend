@@ -44,7 +44,7 @@
     </el-scrollbar>
 
     <el-footer>
-      <el-button class="booking-button" type="primary" @click="goToCampsiteChoices(camp)">下一步：填写订单</el-button>
+      <el-button class="booking-button" type="primary" @click="goToCampBooking(camp)">立即预约</el-button>
     </el-footer>
   </div>
 </template>
@@ -60,8 +60,8 @@ export default {
     }
   },
   methods: {
-    goToCampsiteChoices (camp) {
-      this.$router.push({ path: `/home/campsite/${camp.id}` })
+    goToCampBooking (camp) {
+      this.$router.push({ path: `/home/campbooking/${camp.id}` })
     },
 
     getInfrastructureImage (infrastructure) {
@@ -77,8 +77,8 @@ export default {
   }
 }
 
-
 </script>
+
 
 <style scoped>
 html, body {
