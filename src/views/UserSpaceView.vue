@@ -1,4 +1,5 @@
 <template>
+  <div class="usercenter">
     <el-col :span="3">
       <el-menu
         active-text-color="#1D5B5E"
@@ -39,9 +40,13 @@
         </el-menu-item>
       </el-menu>
     </el-col>
+    <PersonalCenter />
+  </div>
 </template>
 
 <script setup>
+import PersonalCenter from '@/components/PersonalCenter.vue';
+
 import {
     Menu as IconMenu,
     ShoppingCart,
@@ -53,6 +58,12 @@ import {
 </script>
 
 <style scoped>
+.usercenter{
+  display: flex;
+  min-width: 100%;
+  min-height: 100%;
+}
+
 .sidebar{
     --el-menu-item-height:80px;
     --el-sub-menu-item-height:80px;

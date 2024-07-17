@@ -8,7 +8,7 @@
     :model="formLabelAlign"
     style="max-width: 600px; margin-top:5%; margin-bottom: 10%;"
     >
-   
+    <Avatar />
     <el-form-item label="昵称">
       <el-input v-model="formLabelAlign.name" placeholder="请输入您的昵称"  :prefix-icon="User"/>
     </el-form-item>
@@ -37,6 +37,7 @@
 import router from '../router'
 import { reactive } from 'vue'
 import { User, Key, Iphone } from '@element-plus/icons-vue'
+import Avatar from '../components/AvatarPicker.vue'
 
 const formLabelAlign = reactive({
     name: '',
