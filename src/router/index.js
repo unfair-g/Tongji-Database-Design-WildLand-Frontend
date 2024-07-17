@@ -20,6 +20,11 @@ const routes = [
                 path: 'postdetail',
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
+            },
+            {
+                path: 'reportreview',
+                name: 'ReportReview',
+                component: () => import('../views/ReportReview.vue')
             }
         ]
     },
