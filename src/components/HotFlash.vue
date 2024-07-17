@@ -49,6 +49,8 @@ export default {
   display: flex;
   align-items: center;
   background: transparent;
+  font-size: 37px;
+  color:#1D5B5E;
 }
 .flash-list {
   display: flex;
