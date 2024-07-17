@@ -9,7 +9,24 @@ const routes = [
     },
     {
         path: '/administrator',
-        component: () => import('../pages/AdministratorPage.vue')
+        component: () => import('../pages/AdministratorPage.vue'),
+        children: [
+            {
+                path: 'postaudit',
+                name: 'PostAudit',
+                component: () => import('../views/PostAudit.vue')
+            },
+            {
+                path: 'postdetail',
+                name: 'PostDetail',
+                component: () => import('../views/PostDetail.vue')
+            },
+            {
+                path: 'reportreview',
+                name: 'ReportReview',
+                component: () => import('../views/ReportReview.vue')
+            }
+        ]
     },
     {
         path: '/home',
@@ -30,7 +47,18 @@ const routes = [
             },
             {
                 path: "campground",
-                component: () => import('../views/CampgroundView.vue')
+                
+                children: [
+                    {
+                        path: "",
+                        component: () => import('../views/CampgroundView.vue')
+                    },
+                    {
+                        path: "/:campID",
+                        component: () => import('../views/CampDetailView.vue'),
+                        props: true
+                    }
+                ]
             },
             {
                 path: "userspace",
@@ -39,6 +67,19 @@ const routes = [
             {
                 path: "flash",
                 component: () => import('../views/FlashView.vue')
+            },
+            {
+                path: "campdetail/:campID",
+                component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: "product/:id",
+                component: () => import('../views/ProductDetail.vue')
+            },
+            {
+                path: "flash/:id",
+                component: () => import('../views/FlashDetail.vue')
             }
         ]
     },
@@ -53,10 +94,17 @@ const routes = [
             {
                 path: "enrollment",
                 component: () => import('../components/UserEnroll.vue')
+            },
+            {
+                path: 'findkey',
+                component: () => import('../components/FindKey.vue')
             }
         ]
+    },
+    {
+        path: '/home/product/:id/order',
+        component: () => import('../components/OrderView.vue')
     }
-
 ]
 
 const router = createRouter({

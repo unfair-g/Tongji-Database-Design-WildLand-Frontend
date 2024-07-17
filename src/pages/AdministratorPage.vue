@@ -18,14 +18,14 @@
       <el-container style="height: calc(100% - 190px)">
         <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
           <el-scrollbar v-show="!isCollapsed">
-            <el-menu :default-openeds="['2','3']" @select="handleSelect" :unique-opened="true">
+            <el-menu :default-openeds="['2','3','4']" @select="handleSelect" :unique-opened="true">
               <el-menu-item index="1">个人信息</el-menu-item>
               <el-sub-menu index="2">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
                 </template>
-                <el-menu-item index="2-1">帖子审核</el-menu-item>
-                <el-menu-item index="2-2">举报审核</el-menu-item>
+                <el-menu-item index="2-1" @click="navigateTo('PostAudit')">帖子审核</el-menu-item>
+                <el-menu-item index="2-2" @click="navigateTo('ReportReview')">举报审核</el-menu-item>
                 <el-menu-item index="2-3">达人审核</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="3">
@@ -35,7 +35,13 @@
                 <el-menu-item index="3-1">营地</el-menu-item>
                 <el-menu-item index="3-2">户外用品</el-menu-item>
               </el-sub-menu>
-              <el-menu-item index="4">经验资讯</el-menu-item>
+              <el-sub-menu index="4">
+                <template #title>
+                  <el-icon><i class="el-icon-s-operation"></i></el-icon>经验资讯
+                </template>
+                <el-menu-item index="4-1">标签管理</el-menu-item>
+                <el-menu-item index="4-2">资讯管理</el-menu-item>
+              </el-sub-menu>
             </el-menu>
           </el-scrollbar>
           <el-button class="collapse-button" @click="toggleCollapse">
@@ -48,26 +54,7 @@
           </el-button>
         </el-aside>
         <el-main>
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="title" label="帖子标题" width="300" align="center" />
-            <el-table-column prop="author" label="帖子作者" width="300" align="center" />
-            <el-table-column prop="post_kind" label="帖子类型" width="300" align="center" />
-            <el-table-column prop="post_time" label="发表时间" width="300" align="center" />
-            <el-table-column label="操作台" width="300" align="center">
-              <template #default="scope">
-                <el-button type="primary" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
-                <el-button type="primary" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
-                <el-button type="primary" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <!-- Show message if tableData is empty -->
-          <el-alert
-            v-if="tableData.length === 0"
-            title="当前无需要审核的帖子"
-            type="info"
-            center
-          />
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -75,36 +62,29 @@
 </template>
 
 <script>
-import { CircleCheck, CircleClose, Fold, Expand, MoreFilled, UserFilled } from '@element-plus/icons-vue'
+import { Fold, Expand, UserFilled } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 
 export default {
+  setup() {
+    const router = useRouter()
+    const navigateTo = (routeName) => {
+      router.push({ name: routeName })
+    }
+
+    return {
+      navigateTo
+    }
+  },
   data() {
     return {
-      activeIndex: '1',
       UserFilled,
       Fold,
       Expand,
-      tableData: [
-        {
-          title: "123",
-          author: "1",
-          post_kind: "2",
-          post_time: "222",
-          CircleCheck,
-          CircleClose,
-          MoreFilled
-        }
-      ],
       isCollapsed: false
     };
   },
   methods: {
-    handleSelect(key) {
-      this.activeIndex = key;
-    },
-    handleAction(row, action) {
-      console.log(`Action: ${action} on row:`, row);
-    },
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
     }
@@ -135,10 +115,10 @@ export default {
 }
 
 .logo {
-  position:relative;
-  color:#1D5B5E;
-  font-size:60px;
-  font-family: 'LOGO',sans-serif !important;
+  position: relative;
+  color: #1D5B5E;
+  font-size: 60px;
+  font-family: 'LOGO', sans-serif !important;
 }
 
 .admin-details {
@@ -193,6 +173,11 @@ export default {
   background-color: white;
 }
 
+.el-menu-item,
+.el-sub-menu {
+  --el-menu-item-font-size: 20px;
+}
+
 .collapse-button {
   position: absolute;
   bottom: 10px;
@@ -214,3 +199,4 @@ export default {
   background-color: rgba(255, 255, 255, 0.7);
 }
 </style>
+

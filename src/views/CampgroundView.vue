@@ -43,7 +43,7 @@
    
  </script>
    
-<style>
+<style scoped>
    .container {
     max-width: 70%; /* 设置容器的最大宽度 */
     margin: 0 auto; /* 居中显示容器 */

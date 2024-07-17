@@ -15,12 +15,14 @@ export default {
 }
 
 </script>
+
 <style scoped>
   .homepage{
     min-width:100%;
+    min-height:100vh;
     background: url(../assets/bg.jpg) no-repeat;
     background-size:100% 100%;
     background-attachment:fixed;
-    min-height:100vh;
   }
+
 </style>
