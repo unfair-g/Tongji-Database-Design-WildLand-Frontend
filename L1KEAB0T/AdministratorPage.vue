@@ -18,14 +18,14 @@
       <el-container style="height: calc(100% - 190px)">
         <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
           <el-scrollbar v-show="!isCollapsed">
-            <el-menu :default-openeds="['2','3']" @select="handleSelect" :unique-opened="true">
+            <el-menu :default-openeds="['2','3','4']" @select="handleSelect" :unique-opened="true">
               <el-menu-item index="1">个人信息</el-menu-item>
               <el-sub-menu index="2">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
                 </template>
                 <el-menu-item index="2-1" @click="navigateTo('PostAudit')">帖子审核</el-menu-item>
-                <el-menu-item index="2-2">举报审核</el-menu-item>
+                <el-menu-item index="2-2" @click="navigateTo('ReportReview')">举报审核</el-menu-item>
                 <el-menu-item index="2-3">达人审核</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="3">
@@ -35,7 +35,13 @@
                 <el-menu-item index="3-1">营地</el-menu-item>
                 <el-menu-item index="3-2">户外用品</el-menu-item>
               </el-sub-menu>
-              <el-menu-item index="4">经验资讯</el-menu-item>
+              <el-sub-menu index="4">
+                <template #title>
+                  <el-icon><i class="el-icon-s-operation"></i></el-icon>经验资讯
+                </template>
+                <el-menu-item index="4-1">标签管理</el-menu-item>
+                <el-menu-item index="4-2">资讯管理</el-menu-item>
+              </el-sub-menu>
             </el-menu>
           </el-scrollbar>
           <el-button class="collapse-button" @click="toggleCollapse">
