@@ -1,16 +1,17 @@
 <template>
-  <HomePage/>
-  <div class="product-detail">
-    <div class="product-img">
+  <div class="bg">
+    <HomeHead/>
+    <div class="product-detail">
+      <div class="product-img">
         <img :src="product.product_image" class="image" alt="product image">
-    </div>
-    <div class="product-info">
-      <div class="right">
-        <div class="product-mess">
-         <h2>{{ product.product_name }}</h2>
-         <p>{{ product.description }}</p>
-         <div class="price">{{ product.price }}</div>
-        </div>
+      </div>
+      <div class="product-info">
+        <div class="right">
+          <div class="product-mess">
+           <h2>{{ product.product_name }}</h2>
+           <p>{{ product.description }}</p>
+           <div class="price">{{ product.price }}</div>
+          </div>
           <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
             <span>
               <el-button type="text" class="button">收藏</el-button>
@@ -19,8 +20,9 @@
           </el-tag>
           <div class="pay">
             <el-button class="pay" @click="openDialog">立即租赁</el-button>
-            <PayWindow v-model:dialogVisible="dialogVisible" />
+            <PayWindow v-model:dialogVisible="dialogVisible" :product="product" />
           </div>
+        </div>
       </div>
     </div>
   </div>
@@ -28,14 +30,14 @@
 
 <script>
 import { ref } from 'vue'
-import HomePage from '@/pages/HomePage.vue'
 import PayWindow from '@/components/PayWindow.vue'
+import HomeHead from '@/components/HomeHead.vue'
 
 export default {
   name: 'ProductDetail',
   components: {
-    HomePage,
-    PayWindow
+    PayWindow,
+    HomeHead
   },
   data () {
     return {
@@ -50,7 +52,7 @@ export default {
     const product = {
       product_id: productId,
       product_name: `商品${productId}`,
-      product_image: require(`@/assets/${productId}.png`),
+      product_image: require(`@/assets/product-${productId}.png`),
       description: '这是商品的详细描述。',
       price: `¥${productId * 100}`
     }
@@ -65,12 +67,19 @@ export default {
     openDialog() {
       console.log('Opening dialog');
       this.dialogVisible = true;
+      console.log('Dialog Visible:', this.dialogVisible);
     }
   }
 }
 </script>
 
 <style scoped>
+.bg {
+  height: 100vh;
+  background: url('@/assets/bg.jpg') no-repeat;
+  background-size:100% 100%;
+}
+
 .product-detail {
   display: flex;
   padding: 100px;

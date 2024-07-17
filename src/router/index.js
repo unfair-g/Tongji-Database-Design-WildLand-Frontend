@@ -51,7 +51,12 @@ const routes = [
             {
                 path: "flash",
                 component: () => import('../views/FlashView.vue')
-            }
+            },
+            {
+                path: "campdetail/:campID",
+                component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
         ]
     },
     {
@@ -76,7 +81,13 @@ const routes = [
         path: '/home/flash/:id',
         component: () => import('../views/FlashDetail.vue'),
     },
-
+        path: '/home/product/:id',
+        component: () => import('../views/ProductDetail.vue')
+    },
+    {
+        path: '/home/product/:id/order',
+        component: () => import('../components/OrderView.vue')
+    }
 ]
 
 const router = createRouter({

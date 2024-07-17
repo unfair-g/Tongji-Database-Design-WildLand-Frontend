@@ -19,13 +19,14 @@
           </div>
           <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postContent }}</span></div>
           <div class="post-publisher">发布者名称: <span class="post-content">{{ publisherName }}</span></div>
+          <div class="review-opinion">审核意见:</div>
           <div class="actions">
-            <div class="review-opinion">审核意见:</div>
             <el-button :class="{selected: !rejectSelected}" @click="approvePost">允许发布</el-button>
             <el-button :class="{selected: rejectSelected}" @click="selectReject">驳回修改</el-button>
           </div>
           <div v-if="rejectSelected" class="reject-reason">
-            驳回原因: <textarea v-model="rejectReason" placeholder="填写驳回原因"></textarea>
+            <div class="post-content">驳回原因:</div>
+            <textarea v-model="rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
           </div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
@@ -112,6 +113,8 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden; /* 防止内容溢出 */
+  box-sizing: border-box; /* 包括内边距和边框 */
 }
 
 .post-detail-header {
@@ -129,6 +132,7 @@ export default {
   align-items: flex-start;
   overflow-y: auto;
   padding-bottom: 20px;
+  box-sizing: border-box; /* 包括内边距和边框 */
 }
 
 .post-info {
@@ -136,6 +140,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  box-sizing: border-box; /* 包括内边距和边框 */
 }
 
 .post-title,
@@ -146,7 +151,8 @@ export default {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
-  padding-left: 20px; /* Add indentation */
+  padding-left: 40px; /* Add more indentation */
+  box-sizing: border-box; /* 包括内边距和边框 */
 }
 
 .post-content {
@@ -180,7 +186,7 @@ export default {
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
-  padding-left: 20px; /* Add indentation */
+  padding-left: 40px; /* Add more indentation */
 }
 
 .actions .el-button {
@@ -195,20 +201,23 @@ export default {
 
 .reject-reason {
   margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #1D5B5E;
-  border-radius: 5px;
   width: 100%;
-  padding-left: 20px; /* Add indentation */
+  padding-left: 40px; /* Add more indentation */
+  box-sizing: border-box; /* 包括内边距和边框 */
+}
+
+.reject-reason div {
+  margin-bottom: 10px;
 }
 
 .reject-reason textarea {
-  width: 100%;
-  height: 60px;
-  border: none;
-  resize: none;
-  padding: 10px;
+  width: 70%; /* Adjust width */
+  height: 80px; /* Adjust height */
+  border: 1px solid #1D5B5E;
   border-radius: 5px;
+  padding: 10px;
+  resize: none; /* Remove default scrollbar */
+  box-sizing: border-box; /* 包括内边距和边框 */
 }
 
 .confirm-button {
