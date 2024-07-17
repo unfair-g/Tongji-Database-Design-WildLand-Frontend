@@ -1,6 +1,4 @@
 <template>
-  <container>
-    <HomeHead/>
     <div class="container">
       <div class="left-panel">
         <div class="flash-item" v-for="(flash) in flash" :key="flash.title">
@@ -84,24 +82,19 @@
                     />   
             <span class="name">{{ user.name }}</span>  
           </div>  
-        </div>  
+        </div>
         <h2>浏览量</h2>
         <div class="flash-item" v-for="(flash) in flash" :key="flash.title">
           <span class="flash-view">{{ flash.view }}</span>
         </div>
       </div>
     </div>
-  </container>
 </template>
 
 <script>
-import HomeHead from '@/components/HomeHead.vue';
 
 export default {
 name: 'R_Flash',
-components: {
-  HomeHead
-},
   
 data() {
     return {
@@ -148,23 +141,7 @@ data() {
 }
 </script>
 
-<style>
-#app {
-display: flex;
-height: 100vh;
-}
-.container::before {
-content: "";
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background-image: url('../assets/background.jpg'); /* 设置背景图片 */
-background-size: cover; /* 覆盖整个页面，但图片可能会被裁剪 */
-opacity: 0.5; /* 设置背景图片的透明度为50% */
-z-index: -1; /* 确保背景图片位于内容之下 */
-}
+<style scoped>
 .container {
 display: flex;
 height: 100%;
@@ -251,6 +228,7 @@ padding: 20px;
 flex-direction:row;
 }
 .left-panel {
+  background-color: rgb(255,255,255,80%);
   margin-top: 1%;
   margin-left: 6%;
   margin-bottom: 1%;
@@ -261,7 +239,7 @@ flex: 30%;
 display: flex;
 flex-direction: column;
 }
-.like-list {  
+.like-list {
   display: flex;  
   flex-direction: column;  
   align-items: flex-start;  

@@ -42,7 +42,18 @@ const routes = [
             },
             {
                 path: "campground",
-                component: () => import('../views/CampgroundView.vue')
+                
+                children: [
+                    {
+                        path: "",
+                        component: () => import('../views/CampgroundView.vue')
+                    },
+                    {
+                        path: "/:campID",
+                        component: () => import('../views/CampDetailView.vue'),
+                        props: true
+                    }
+                ]
             },
             {
                 path: "userspace",
@@ -57,6 +68,14 @@ const routes = [
                 component: () => import('../views/CampDetailView.vue'),
                 props: true
             },
+            {
+                path: "product/:id",
+                component: () => import('../views/ProductDetail.vue')
+            },
+            {
+                path: "flash/:id",
+                component: () => import('../views/FlashDetail.vue')
+            }
         ]
     },
     {
@@ -76,13 +95,6 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    },
-    {
-        path: '/home/flash/:id',
-        component: () => import('../views/FlashDetail.vue'),
-    },
-        path: '/home/product/:id',
-        component: () => import('../views/ProductDetail.vue')
     },
     {
         path: '/home/product/:id/order',
