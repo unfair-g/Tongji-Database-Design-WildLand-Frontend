@@ -50,4 +50,12 @@ export default{
     display:flex;
 }
 
+.title {
+    color: #1D5B5E;
+    font-size: 60px;
+    font-family: 'FZYaoti';
+    font-style: italic;
+    font-weight: bold;
+}
+
 </style>

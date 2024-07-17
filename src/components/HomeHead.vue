@@ -71,7 +71,7 @@ function toFlash() {
 
 </script>
 
-<style>
+<style scoped>
     .head {
         --el-menu-hover-bg-color: rgb(48,133,136,40%);
         --el-menu-hover-text-color: #ffffff;

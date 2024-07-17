@@ -27,7 +27,7 @@
         </div>
         </template>
             <div class="container">
-                <img src="../assets/1.png" style="width:70%">
+                <img src="../assets/product-1.png" style="width:70%">
                 <div style="min-width:30%;max-width:30%;padding-top:10%;white-space:normal; word-break:break-all;overflow:hidden;">
                 <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">帐篷</p>
                 <p>牢固防水，坚不可摧11111111111111111111111111111111111111</p>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import HotPost from "../components/HotPost.vue"
+import HotPost from "../components/HomeHotPost.vue"
 
 export default{
     components: {
@@ -56,7 +56,7 @@ export default{
 
 </script>
 
-<style>
+<style scoped>
 .group1{
     display:flex;
     min-width:100%;
