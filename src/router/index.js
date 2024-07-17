@@ -78,6 +78,9 @@ const routes = [
         ]
     },
     {
+        path: '/home/flash/:id',
+        component: () => import('../views/FlashDetail.vue'),
+    },
         path: '/home/product/:id',
         component: () => import('../views/ProductDetail.vue')
     },
