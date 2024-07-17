@@ -13,6 +13,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
 
       },
       {
@@ -27,6 +28,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
       },
       {
         id: 22,
@@ -40,6 +42,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
       },
       {
         id: 31,
@@ -53,6 +56,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
       },
       {
         id: 41,
@@ -66,6 +70,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
       },
       {
         id: 51,
@@ -79,6 +84,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
       },
       {
         id: 52,
@@ -92,6 +98,7 @@ export default {
         availabilities: ['可供电', '可拎包入住', '可携带宠物', '可明火', '可自带帐篷', '可过夜', '草地', '沙地'],
         detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
         introduction_image: require('@/assets/camp/introduction/11.png'),
+        campsite_image: require('@/assets/camp/campsite/21.png'),
       },
       
     ]
