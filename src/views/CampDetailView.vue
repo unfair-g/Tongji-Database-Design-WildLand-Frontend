@@ -56,7 +56,7 @@ export default {
   computed: {
     camp() {
       const campId = this.campID;
-      return this.$store.state.camps.find(camp => camp.id === parseInt(campId));
+      return this.$store.state.camp.camps.find(camp => camp.id === parseInt(campId));
     }
   },
   methods: {
