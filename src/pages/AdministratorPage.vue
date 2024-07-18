@@ -175,6 +175,7 @@ export default {
 
 .el-menu-item,
 .el-sub-menu {
+  font-size: 20px; /*改这个值修改大小*/
   --el-menu-item-font-size: 20px;
 }
 
