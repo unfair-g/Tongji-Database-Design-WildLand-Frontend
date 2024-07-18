@@ -42,6 +42,7 @@ export default {
 
 <style scoped>
 
+
 ::v-deep .el-tabs__item {
   font-size: 18px;
   color:#1D5B5E;

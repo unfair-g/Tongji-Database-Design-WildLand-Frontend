@@ -1,6 +1,7 @@
 <template>
-  <div class="usercenter">
-    <el-col :span="3">
+  <el-container class="usercenter">
+    <el-aside>
+    <el-col :span="24">
       <el-menu
         active-text-color="#1D5B5E"
         background-color="#FFFFFF"
@@ -8,7 +9,7 @@
         default-active="2"
         text-color="#0C0C0C"
       >
-         <el-menu-item index="1">
+         <el-menu-item index="1" @click="toPersonalCenter">
           <el-icon><icon-menu /></el-icon>
           <span>个人中心</span>
         </el-menu-item>
@@ -40,12 +41,15 @@
         </el-menu-item>
       </el-menu>
     </el-col>
-    <PersonalCenter />
-  </div>
+  </el-aside>
+  <el-main style="padding:0"> 
+    <router-view></router-view>
+  </el-main>
+  </el-container>
 </template>
 
 <script setup>
-import PersonalCenter from '@/components/PersonalCenter.vue';
+import router from '../router'
 
 import {
     Menu as IconMenu,
@@ -54,12 +58,16 @@ import {
     Star
 } from '@element-plus/icons-vue';
 
+function toPersonalCenter() {
+  router.push({
+    path:'/home/userspace'
+  })
+}
 
 </script>
 
 <style scoped>
 .usercenter{
-  display: flex;
   min-width: 100%;
   min-height: 100%;
 }

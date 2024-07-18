@@ -62,7 +62,13 @@ const routes = [
             },
             {
                 path: "userspace",
-                component: () => import('../views/UserSpaceView.vue')
+                component: () => import('../views/UserSpaceView.vue'),
+                children: [
+                    {
+                        path: '',
+                        component: () => import('../views/PersonalCenterView.vue')
+                    }
+                ]
             },
             {
                 path: "flash",
