@@ -61,8 +61,8 @@ const options = ['游客','管理员']
 
 .custom-style .el-segmented {
     margin-top: 15%;
-    margin-left: 35%;
-    width:30%;
+    margin-left: 30%;
+    width:40%;
     font-size: 40px;
   --el-segmented-item-selected-color: #FFFFFF;
   --el-segmented-item-selected-bg-color:#1D5B5E;

@@ -1,6 +1,4 @@
 <template>
-  <div class="bg">
-    <HomeHead/>
     <div class="product-detail">
       <div class="product-img">
         <img :src="product.product_image" class="image" alt="product image">
@@ -29,19 +27,16 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 import { ref } from 'vue'
 import PayWindow from '@/components/PayWindow.vue'
-import HomeHead from '@/components/HomeHead.vue'
 
 export default {
   name: 'ProductDetail',
   components: {
-    PayWindow,
-    HomeHead
+    PayWindow
   },
   data () {
     return {
@@ -72,12 +67,6 @@ export default {
 </script>
 
 <style scoped>
-.bg {
-  height: 100vh;
-  background: url('@/assets/bg.jpg') no-repeat;
-  background-size:100% 100%;
-}
-
 .product-detail {
   display: flex;
   padding: 100px;

@@ -1,11 +1,7 @@
 <template>
-<<<<<<< Updated upstream
-    <el-col :span="3">
-=======
   <el-container class="usercenter">
     <el-aside>
     <el-col :span="24">
->>>>>>> Stashed changes
       <el-menu
         active-text-color="#1D5B5E"
         background-color="#FFFFFF"
@@ -45,11 +41,6 @@
         </el-menu-item>
       </el-menu>
     </el-col>
-<<<<<<< Updated upstream
-</template>
-
-<script setup>
-=======
   </el-aside>
   <el-main style="padding:0"> 
     <router-view></router-view>
@@ -60,7 +51,6 @@
 <script setup>
 import router from '../router'
 
->>>>>>> Stashed changes
 import {
     Menu as IconMenu,
     ShoppingCart,
@@ -83,20 +73,22 @@ function toOrder() {
 </script>
 
 <style scoped>
-<<<<<<< Updated upstream
-=======
 .usercenter{
   min-width: 100%;
   min-height: 100%;
 }
 
->>>>>>> Stashed changes
 .sidebar{
     --el-menu-item-height:80px;
     --el-sub-menu-item-height:80px;
     --el-menu-item-font-size: 20px;
     min-height:92vh;
 }
+
+.el-menu-item:hover{
+  background-color:rgb(48, 133, 136, 40%);
+}
+
 
 .el-icon{
     font-size:50px;

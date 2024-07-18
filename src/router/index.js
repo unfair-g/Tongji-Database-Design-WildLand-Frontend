@@ -20,6 +20,11 @@ const routes = [
                 path: 'postdetail',
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
+            },
+            {
+                path: 'reportreview',
+                name: 'ReportReview',
+                component: () => import('../views/ReportReview.vue')
             }
         ]
     },
@@ -35,10 +40,7 @@ const routes = [
             {
                 path: "product",
                 component: () => import('../views/ItemView.vue'),
-<<<<<<< Updated upstream
-=======
                 props: true
->>>>>>> Stashed changes
             },
             {
                 path: "forum",
@@ -46,7 +48,18 @@ const routes = [
             },
             {
                 path: "campground",
-                component: () => import('../views/CampgroundView.vue')
+                
+                children: [
+                    {
+                        path: "",
+                        component: () => import('../views/CampgroundView.vue')
+                    },
+                    {
+                        path: "/:campID",
+                        component: () => import('../views/CampDetailView.vue'),
+                        props: true
+                    }
+                ]
             },
             {
                 path: "userspace",
@@ -61,8 +74,6 @@ const routes = [
             {
                 path: "flash",
                 component: () => import('../views/FlashView.vue')
-<<<<<<< Updated upstream
-=======
             },
             {
                 path: "campdetail/:campID",
@@ -87,7 +98,6 @@ const routes = [
                 path:"userspace/order/:id",
                 component: () => import('../components/OrderView.vue'),
                 props: true
->>>>>>> Stashed changes
             }
         ]
     },
@@ -102,17 +112,6 @@ const routes = [
             {
                 path: "enrollment",
                 component: () => import('../components/UserEnroll.vue')
-            }
-        ]
-    },
-    {
-        path: '/home/product/:id',
-        component: () => import('../views/ProductDetail.vue'),
-    },
-    {
-        path: '/home/product/:id/order',
-        component: () => import('../components/OrderView.vue')
-    }
             },
             {
                 path: 'findkey',
@@ -120,7 +119,6 @@ const routes = [
             }
         ]
     }
-
 ]
 
 const router = createRouter({
