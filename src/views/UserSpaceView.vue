@@ -20,7 +20,7 @@
           </template>
           <el-menu-item-group>
             <el-menu-item index="2-1" style="height:80px">营地</el-menu-item>
-            <el-menu-item index="2-2" style="height:80px">户外用品</el-menu-item>
+            <el-menu-item index="2-2" style="height:80px" @click="toOrder">户外用品</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
         <el-sub-menu index="3">
@@ -61,6 +61,12 @@ import {
 function toPersonalCenter() {
   router.push({
     path:'/home/userspace'
+  })
+}
+
+function toOrder() {
+  router.push({
+    path:'/home/userspace/order'
   })
 }
 

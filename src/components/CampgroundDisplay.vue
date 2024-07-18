@@ -1,13 +1,14 @@
 <template>
   <div class="camp-list">
-    <el-col :span="20" v-for="camp in filteredCamps" :key="camp.campground_id" style="margin-bottom:25px;">
-      <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp)">
-        <img :src="camp.image" class="image" alt="camp image">
-        <div style="padding: 14px;">
-          <span class="name">{{ camp.campground_name }}</span>
-          <div class="bottom clearfix">
-            <span class="introduction">{{ camp.introduction }}</span>
-            <el-button type="text" class="button" @click="goToCampDetail(camp)">查看详情</el-button>
+      <el-col :span="20" v-for="camp in filteredCamps" :key="camp.id" style="margin-bottom:25px;">
+        <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp)">
+          <img :src="camp.image" class="image" alt="camp image">
+          <div style="padding: 14px;">
+            <span class="name">{{ camp.name}}</span>
+            <div class="bottom clearfix">
+              <span class="introduction">{{ camp.introduction }}</span>
+              <el-button type="text" class="button" @click="goToCampDetail(camp)">查看详情</el-button>
+            </div>
           </div>
         </div>
       </el-card>

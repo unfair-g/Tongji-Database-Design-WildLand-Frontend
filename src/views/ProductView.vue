@@ -12,7 +12,7 @@
               <div><span>品牌：{{ product.brand}}</span></div>
               <div><span>商品余量：{{ product.stock_quantity}}</span></div>
               <div class="bottom clearfix">
-                <span class="price">{{ product.price }}</span>
+                <span class="price">¥{{ product.price }}</span>
                 <el-button type="text" class="button" @click="goToProductDetail(product)">查看详情</el-button>
               </div>
             </div>
@@ -29,8 +29,9 @@ export default {
     activeTab: String
   },
   computed: {
-    products() {
-        return this.$store.state.product.products
+    products()
+    {
+      return this.$store.state.product.products
     },
     filteredProducts () {
       if (this.activeTab === 'all') {
