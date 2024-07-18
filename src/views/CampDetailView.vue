@@ -9,7 +9,7 @@
           </el-carousel-item>
         </el-carousel>
         
-        <h2>{{ camp.name }}</h2>
+        <h2>{{ camp.campground_name }}</h2>
         <p>{{ camp.introduction }}</p>
         <div class="divider"></div> <!-- Divider line -->
 
@@ -23,7 +23,7 @@
 <!-- -------------------------------------------------------------------------------- -->
         <p class="title">| 营地概览</p>
         <div class="short-divider"></div> 
-        <p>{{ camp.location }}</p>
+        <p>{{ camp.address }}</p>
         <p margin-left="20px">营位数量:{{ camp.campsite_number }}</p>
         <div class="availability-container">
           <div v-for="availability in camp.availabilities" :key="availability" class="availability-item">
@@ -44,7 +44,7 @@
     </el-scrollbar>
 
     <el-footer>
-      <el-button class="booking-button" type="primary" @click="goToCampsiteChoices(camp)">下一步：填写订单</el-button>
+      <el-button class="booking-button" type="primary" @click="goToCampBooking(camp)">立即预约</el-button>
     </el-footer>
   </div>
 </template>
@@ -56,12 +56,12 @@ export default {
   computed: {
     camp() {
       const campId = this.campID;
-      return this.$store.state.camps.find(camp => camp.id === parseInt(campId));
+      return this.$store.state.camp.camps.find(camp => camp.campground_id === parseInt(campId));
     }
   },
   methods: {
-    goToCampsiteChoices (camp) {
-      this.$router.push({ path: `/home/campsite/${camp.id}` })
+    goToCampBooking (camp) {
+      this.$router.push({ path: `/home/campbooking/${camp.campground_id}` })
     },
 
     getInfrastructureImage (infrastructure) {
@@ -76,7 +76,6 @@ export default {
     }
   }
 }
-
 
 </script>
 

@@ -13,6 +13,7 @@ node 10.x及以上
 npm install
 npm install --save element-plus
 npm install @element-plus/icons-vue
+npm install --save vuex
 npm install --save vue-router
 npm run serve
 ```

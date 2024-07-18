@@ -6,7 +6,7 @@
         <span class="title">热门营地</span>
         </div>
         </template>
-            <div class="container">
+            <div class="hot-container">
             <img src="../assets/camp11.png" style="width:75%">
             <div style="min-width:20%;max-width:20%;padding-top:10%;text-align: center;white-space:normal; word-break:break-all;overflow:hidden;">
                 <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">小野营地</p>
@@ -26,7 +26,7 @@
         <span class="title">热销爆款</span>
         </div>
         </template>
-            <div class="container">
+            <div class="hot-container">
                 <img src="../assets/product-1.png" style="width:70%">
                 <div style="min-width:30%;max-width:30%;padding-top:10%;white-space:normal; word-break:break-all;overflow:hidden;">
                 <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">帐篷</p>
@@ -85,7 +85,7 @@ export default{
     color:#1D5B5E;
 }
 
-.container{
+.hot-container{
     display: flex;
     max-width: 100%;
 }
