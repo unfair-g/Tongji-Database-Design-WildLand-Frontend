@@ -46,7 +46,6 @@ export default ({
 </script>
 
 <style scoped>
-
 .product-card {
   width: 100%; /* 固定宽度 */
   height:30%;
