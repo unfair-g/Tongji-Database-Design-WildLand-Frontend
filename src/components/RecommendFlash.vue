@@ -57,10 +57,12 @@ export default {
   background: transparent;
 }
 .flash-header {
+  font-size: 37px;
   font-weight: bold;
   display: flex;
   align-items: center;
   background: transparent;
+  color:#1D5B5E;
 }
 .flash-list {
   background: transparent;
