@@ -9,8 +9,12 @@
         <div class="right">
           <div class="product-mess">
            <h2>{{ product.product_name }}</h2>
-           <p>{{ product.description }}</p>
-           <div class="price">{{ product.price }}</div>
+           <p>尺寸: {{ product.size }}</p>
+           <p>材质: {{ product.material }}</p>
+           <p>品牌: {{ product.brand }}</p>
+           <p>适用人数: {{ product.suitable_users }}</p>
+           <p>商品余量: {{ product.stock_quantity }}</p>
+           <div class="price">￥{{ product.price }}</div>
           </div>
           <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
             <span>
@@ -42,21 +46,15 @@ export default {
   data () {
     return {
       isStarSolid: ref(true),
-      product: {},
       dialogVisible: false
     }
   },
-  created () {
-    const productId = this.$route.params.id
-    // 这里模拟获取商品详情，你可以从API获取
-    const product = {
-      product_id: productId,
-      product_name: `商品${productId}`,
-      product_image: require(`@/assets/product-${productId}.png`),
-      description: '这是商品的详细描述。',
-      price: `¥${productId * 100}`
+  props: ['productID'],
+  computed: {
+    product() {
+      const productId = this.productID;
+      return this.$store.state.product.products.find(product => product.product_id === parseInt(productId));
     }
-    this.product = product
   },
   methods: {
     toggleStarColor () {
@@ -163,7 +161,7 @@ export default {
   background-size: 60px;
   background-color: #3085887d;
   right: 5px;
-  bottom: -60px;
+  bottom: 10px;
   font-size:x-large;
   color: #0c0c0c;
 }

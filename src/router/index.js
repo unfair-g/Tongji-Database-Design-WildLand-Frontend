@@ -35,6 +35,10 @@ const routes = [
             {
                 path: "product",
                 component: () => import('../views/ItemView.vue'),
+<<<<<<< Updated upstream
+=======
+                props: true
+>>>>>>> Stashed changes
             },
             {
                 path: "forum",
@@ -46,11 +50,44 @@ const routes = [
             },
             {
                 path: "userspace",
-                component: () => import('../views/UserSpaceView.vue')
+                component: () => import('../views/UserSpaceView.vue'),
+                children: [
+                    {
+                        path: "order",
+                        component: () => import('../views/LeaseView.vue')
+                    }
+                ]
             },
             {
                 path: "flash",
                 component: () => import('../views/FlashView.vue')
+<<<<<<< Updated upstream
+=======
+            },
+            {
+                path: "campdetail/:campID",
+                component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: "product/:productID",
+                component: () => import('../views/ProductDetail.vue'),
+                props: true
+            },
+            {
+                path: "flash/:id",
+                component: () => import('../views/FlashDetail.vue')
+            },
+            {
+                path: 'product/:productID/order',
+                component: () => import('../components/OrderView.vue'),
+                props: true
+            },
+            {
+                path:"userspace/order/:id",
+                component: () => import('../components/OrderView.vue'),
+                props: true
+>>>>>>> Stashed changes
             }
         ]
     },
