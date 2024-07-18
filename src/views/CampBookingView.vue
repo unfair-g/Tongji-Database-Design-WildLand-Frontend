@@ -3,14 +3,15 @@
       <el-scrollbar max-height="100%">
         <el-main class="main">
         
-          <h2>{{ camp.name }}</h2>
+          <h2>{{ camp.campground_name }}</h2>
           <div class="divider"></div> <!-- Divider line -->
-
+<!-- -------------------------------------------------------------------------------- -->
         <span class="title">| 选择预定日期</span>
         <div class="short-divider"></div> 
         <div class="up-container">
           
           <div class="date-range-picker">
+            <span >请选择预定的日期</span>
             <el-date-picker
               v-model="dateRange"
               type="daterange"
@@ -20,43 +21,38 @@
               @change="handleDateChange"
             >
             </el-date-picker>
-            <div v-if="startDate && endDate" class="selected-dates">
-              <p>起始日期: {{ startDate }}</p>
-              <p>结束日期: {{ endDate }}</p>
-            </div>
           </div>
           
           <div class="introduction-image-container">
             <img :src="camp.campsite_image" alt="campsite image" class="campsite-image">
           </div> 
         </div>
-          
-
   
   <!-- -------------------------------------------------------------------------------- -->
           <span class="title">| 选择预定营位</span>
           <div class="short-divider"></div> 
-          <div class="infrastructure-container">
-                <img v-for="infrastructure in camp.infrastructures" :key="infrastructure" :src="getInfrastructureImage(infrastructure)" :alt="infrastructure" class="infrastructure-image">
-          </div>
-  
-  <!-- -------------------------------------------------------------------------------- -->
-          <span class="title">| 营地概览</span>
-          <div class="short-divider"></div> 
-          
-          <div class="availability-container">
-            <div v-for="availability in camp.availabilities" :key="availability" class="availability-item">
-              {{ availability }} <span class="check-mark">✔️</span>
+
+          <el-collapse v-model="activeSections">
+          <el-collapse-item
+            v-for="(ids, section) in groupedCampsiteIds"
+            :key="section"
+            :title="`${section}区`"
+            :name="section"
+          >
+            <div class="campsite-buttons">
+              <el-button
+                v-for="id in ids"
+                :key="id"
+                type="primary"
+                :class="{ selected: selectedCampsiteIds.includes(id) , 'campsite-button': true}"
+                @click="toggleSelection(id)"
+              >
+                {{ id }}
+              </el-button>
             </div>
-          </div>
+          </el-collapse-item>
+        </el-collapse>
   
-  <!-- -------------------------------------------------------------------------------- -->
-          <span class="title">| 营地特色</span>
-          <div class="short-divider"></div>
-          
-  
-         
-        
         </el-main>
       </el-scrollbar>
   
@@ -76,7 +72,14 @@ import { ElDatePicker } from 'element-plus';
     props: ['campID'],
     components: {
     ElDatePicker
+    },
+    data() {
+    return {
+      activeSections: [], // 控制折叠面板的展开和折叠
+      selectedCampsiteIds: [] // 选中的营位ID
+    };
   },
+  
   setup() {
     const dateRange = ref([null, null]);
     const startDate = ref('');
@@ -102,28 +105,43 @@ import { ElDatePicker } from 'element-plus';
     computed: {
       camp() {
         const campId = this.campID;
-        return this.$store.state.camps.find(camp => camp.id === parseInt(campId));
-      }
+        return this.$store.state.camp.camps.find(camp => camp.campground_id === parseInt(campId));
+      },
+      groupedCampsiteIds() {
+      if (!this.camp || !this.camp.campsite_id) return {};
+      return this.camp.campsite_id.reduce((groups, id) => {
+        const section = id.charAt(0).toUpperCase();
+        if (!groups[section]) {
+          groups[section] = [];
+        }
+        groups[section].push(id);
+        return groups;
+      }, {});
+      },
     },
     methods: {
       goToCampsiteChoices (camp) {
         this.$router.push({ path: `/home/campsite/${camp.id}` })
       },
-  
-      getInfrastructureImage (infrastructure) {
-        const images = {
-          '停车场': require('@/assets/infrastructures/parkinglot.png'),
-          '信号': require('@/assets/infrastructures/signal.png'),
-          '卫生间': require('@/assets/infrastructures/wc.png'),
-          '消防措施': require('@/assets/infrastructures/fire.png'),
-          '淋浴房': require('@/assets/infrastructures/shower.png'),
-        };
-        return images[infrastructure] || '';
+      
+      toggleSelection(id) {
+        //如果 id 尚未选中，则将其添加到 selectedCampsiteIds 数组中；如果 id 已经选中，则将其从数组中移除。
+      const index = this.selectedCampsiteIds.indexOf(id);
+      if (index === -1) {
+        this.selectedCampsiteIds.push(id);
+      } else {
+        this.selectedCampsiteIds.splice(index, 1);
       }
-    }
+    },
+    },
+    created() {
+    // 初始化所有折叠面板展开
+    this.activeSections = Object.keys(this.groupedCampsiteIds);
+  },
+
   }
   
-  </script>
+</script>
   
 
 <style scoped>
@@ -170,7 +188,6 @@ import { ElDatePicker } from 'element-plus';
     color: #fff; /* 更改为你希望的hover文字颜色 */
   }
   
-  
   .divider {
     height: 1px;
     background-color: #ddd; /* Divider color */
@@ -184,58 +201,53 @@ import { ElDatePicker } from 'element-plus';
     margin: 10px 10px; /* Adjust the margin as needed */
   }
 
-  .up-container {
+.up-container {
   display: flex;
   align-items: center;
 }
-  .date-range-picker {
+.date-range-picker {
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 20px;
+  gap:20px;
+  margin-bottom: 250px;
+}
+.date-range-picker span{
+  color:#1D5B5E;
+  font-size:15px;
 }
 
-.selected-dates {
-  margin-top: 20px;
-  
-}
 
-.selected-dates p {
-  margin: 0;
-  padding: 5px 0;
-}
+
 .campsite-image {
     width: 90%;  /* Adjust the width as needed */
     height: auto;
     margin-left:20px;
 }
 
+
+.campsite-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* 间隔 */
+}
+
+.campsite-button {
+  margin: 5px;
+  width:60px;
+  background-color: #8dc6c9;
+  border-width: 0px;
+  color: white;
   
-  .infrastructure-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px; /* 图片间距，可以根据需要调整 */
-    margin-bottom: 20px; /* 与上方内容的间隔 */
-  }
-  
-  .infrastructure-image {
-    width: 100px;  /* Adjust the width as needed */
-    height: auto;
-  }
-  
-  .availability-container {
-    display: inline-flex;
-    flex-wrap: wrap; /* 容不下时换行 */
-    gap: 10px; /* 每个元素之间的间隔 */
-    margin-top: 20px; /* 与上方内容的间隔 */
-    margin-bottom: 40px; /* 与上方内容的间隔 */
-  }
-  
-  .availability-item {
-    color:#1D5B5E;
-    display: flex;
-    margin-left: 80px; /* 每个元素之间的间隔 */
-  }
+}
+
+.campsite-button.selected {
+  background-color: #61a2a5;
+  border-color: #1D5B5E;
+  border-width: 3px;
+  color: #1D5B5E;
+  font-weight: bold;
+}
   
 
 </style>
