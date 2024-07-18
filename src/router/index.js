@@ -25,6 +25,21 @@ const routes = [
                 path: 'reportreview',
                 name: 'ReportReview',
                 component: () => import('../views/ReportReview.vue')
+            },
+            {
+                path: 'flashadd',
+                name: 'FlashAdd',
+                component: () => import('../views/FlashAdd.vue')
+            },
+            {
+                path: 'flashaudit',
+                name: 'FlashAudit',
+                component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit',
+                name: 'TagAudit',
+                component: () => import('../views/TagAudit.vue')
             }
         ]
     },

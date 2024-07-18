@@ -39,8 +39,8 @@
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>经验资讯
                 </template>
-                <el-menu-item index="4-1">标签管理</el-menu-item>
-                <el-menu-item index="4-2">资讯管理</el-menu-item>
+                <el-menu-item index="4-1" @click="navigateTo('TagAudit')">标签管理</el-menu-item>
+                <el-menu-item index="4-2" @click="navigateTo('FlashAudit')">资讯管理</el-menu-item>
               </el-sub-menu>
             </el-menu>
           </el-scrollbar>
