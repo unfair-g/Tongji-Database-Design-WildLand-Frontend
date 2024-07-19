@@ -83,7 +83,7 @@ const routes = [
                     {
                         path: "order",
                         component: () => import('../views/LeaseView.vue')
-                    }，
+                    },
                     {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
@@ -137,10 +137,6 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    },
-    {
-        path: '/home/product/:id/order',
-        component: () => import('../components/OrderView.vue')
     }
 ]
 
