@@ -1,77 +1,148 @@
 <template>
-  <div>
-    <el-upload
-      class="avatar-uploader"
-      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-      :show-file-list="false"
-      :on-success="handleAvatarSuccess"
-      :before-upload="beforeAvatarUpload"
-    >
-      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-      <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-    </el-upload>
+<div class="order">
+  <div class="product-info-header" style="display:flex;" shadow="hover">
+    <div class="product-img">
+      <img :src="product.product_image" alt="product image">
+    </div>
+    <div style="flex:2;">
+      <h2>{{ product.product_name }}</h2>
+      <p>尺寸: {{ product.size }}</p>
+      <p>材质: {{ product.material }}</p>
+      <p>品牌: {{ product.brand }}</p>
+      <p>适用人数: {{ product.suitable_users }}</p>
+      <div class="price-tag">￥{{ TotalPrice }}</div>
+      <!-- 数量输入框 -->
+       <el-input-number v-model="Lquantity" :min=Lquantity :max=Lquantity label="数量" style="position:absolute;right:250px;"></el-input-number>
+      </div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h2>取货时间</h2></div>
+      <div style="text-align:center;"><p>2024/08/24</p></div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h2>归还时间</h2></div>
+      <div style="text-align:center;"><p>2024/08/26</p></div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h2>配送需求</h2></div>
+      <div style="text-align:center;"><p>上海市嘉定区曹安公路4800号同济大学嘉定校区 fby XXXXXXXXXX</p></div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h2>物流详情</h2></div>
+      <div style="text-align:center;"><p>现处于上海市/嘉定区</p></div>
+    </div>
+    <div class="order_3">
+      <el-button class="pay">申请退款</el-button>
+    </div>
   </div>
-</template>
-
-<script>
-import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue' // 导入 Plus 图标
-
-export default {
-  name: 'OrderView',
-  components: {
-    Plus // 注册 Plus 图标组件
-  },
-  setup() {
-    const imageUrl = ref('')
-
-    const handleAvatarSuccess = (response, file) => {
-      imageUrl.value = URL.createObjectURL(file.raw);
-      ElMessage.success('Upload success');
-    }
-
-    const beforeAvatarUpload = (file) => {
-      const isJPG = file.type === 'image/jpeg';
-      const isPNG = file.type === 'image/png';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG && !isPNG) {
-        ElMessage.error('Avatar picture must be JPG or PNG format!');
-        return false;
+  </template>
+  
+  <script>
+  export default {
+    name: 'OrderView',
+    props: {
+      quantity: {
+        type: Number,
+        default: 1
       }
-
-      if (!isLt2M) {
-        ElMessage.error('Avatar picture size must be less than 2MB!');
-        return false;
+      },
+      data() {
+        return {
+          productId: null,
+          Lquantity:this.quantity
+        }
+      },
+    created() {  
+    // 在组件创建时，你可以从$route.query中获取查询参数  
+    this.productId = this.$route.query.productId;  
+    this.Lquantity = parseInt(this.$route.query.quantity) || this.quantity;  
+    },
+      computed: {
+        product() {
+          return this.$store.state.product.products.find(product => product.product_id === parseInt(this.productId));
+    },
+        TotalPrice(){
+          if (this.product && this.product.price && !isNaN(this.Lquantity)) {
+            // 确保 product.price 是一个数字
+            const price = parseFloat(this.product.price);
+            console.log(`Product Price: ${price}, Quantity: ${this.Lquantity}`);
+            return (price * this.Lquantity).toFixed(2);
+          }
+          return 0;
+        }
       }
-      return true;
     }
-
-    return {
-      imageUrl,
-      handleAvatarSuccess,
-      beforeAvatarUpload
-    }
+  </script>
+  
+  <style scoped>
+  .order {
+    width: 70%; /* 设置宽度 */
+    border: 1px solid #ddd; /* 设置边框 */
+    border-radius: 5px; /* 设置圆角 */
+    background-color: #fff; /* 设置背景颜色 */
+    margin: 0 auto; /* 水平居中 */
   }
-}
-</script>
 
-<style scoped>
-.avatar-uploader {
-  width: 200px;
-  height: 200px;
-  border: 1px dashed #d9d9d9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  .order_2 {
+    width: 100%; /* 设置宽度 */
+    border: 1px solid #ddd; /* 设置边框 */
+    border-radius: 5px; /* 设置圆角 */
+    background-color: #fff; /* 设置背景颜色 */
+    margin: 0 auto; /* 水平居中 */
+  }
+
+  .order_3 {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    width: 100%; /* 设置宽度 */
+    height:60px;
+    border: 1px solid #ddd; /* 设置边框 */
+    border-radius: 5px; /* 设置圆角 */
+    background-color: #fff; /* 设置背景颜色 */
+    margin: 0 auto; /* 水平居中 */
+  }
+
+  .product-info-header {
+    color: black;
+    padding: 10px;
+    padding-bottom:30px;
+    margin-bottom: 20px;
+  }
+  
+  .product-img {
+    flex: 1;
+    width: 200px;
+    height: 250px;
+    padding: 10px;
+    margin-right: 50px;
+    display: flex; /* 使用flex布局 */ 
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .product-img img {
+    max-width: 100%; /* 使图片宽度不超过容器宽度 */
+    max-height: 100%; /* 使图片高度不超过容器高度 */
+    object-fit: contain; /* 保持图片比例，并尽量填充容器 */ 
+    object-position: center; /* 图片居中显示 */
+  }
+  
+  .price-tag {
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  .pay {
+  background-size: 60px;
+  background-color: #3085887d;
+  font-size:x-large;
+  color: #0c0c0c;
 }
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-}
-.avatar {
-  width: 100%;
-  height: 100%;
-}
-</style>
+  </style>

@@ -54,7 +54,8 @@ const routes = [
             },
             {
                 path: "product",
-                component: () => import('../views/ItemView.vue')
+                component: () => import('../views/ItemView.vue'),
+                props: true
             },
             {
                 path: "forum",
@@ -77,7 +78,17 @@ const routes = [
             },
             {
                 path: "userspace",
-                component: () => import('../views/UserSpaceView.vue')
+                component: () => import('../views/UserSpaceView.vue'),
+                children: [
+                    {
+                        path: "order",
+                        component: () => import('../views/LeaseView.vue')
+                    }，
+                    {
+                        path: '',
+                        component: () => import('../views/PersonalCenterView.vue')
+                    }
+                ]
             },
             {
                 path: "flash",
@@ -89,12 +100,23 @@ const routes = [
                 props: true
             },
             {
-                path: "product/:id",
-                component: () => import('../views/ProductDetail.vue')
+                path: "product/:productID",
+                component: () => import('../views/ProductDetail.vue'),
+                props: true
             },
             {
                 path: "flash/:id",
                 component: () => import('../views/FlashDetail.vue')
+            },
+            {
+                path: 'product/:productID/order',
+                component: () => import('../components/OrderView.vue'),
+                props: true
+            },
+            {
+                path:"userspace/order/:id",
+                component: () => import('../components/OrderView.vue'),
+                props: true
             }
         ]
     },

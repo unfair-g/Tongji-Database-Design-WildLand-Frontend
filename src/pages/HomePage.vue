@@ -1,6 +1,8 @@
 <template>
     <div class="homepage">
+      <el-affix>
       <HomeHead />
+      </el-affix>
       <router-view></router-view>
     </div>
 </template>
