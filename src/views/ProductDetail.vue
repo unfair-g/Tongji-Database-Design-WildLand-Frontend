@@ -11,6 +11,7 @@
            <p>材质: {{ product.material }}</p>
            <p>品牌: {{ product.brand }}</p>
            <p>适用人数: {{ product.suitable_users }}</p>
+           <p>商品简介: {{ product.introduction }}</p>
            <p>商品余量: {{ product.stock_quantity }}</p>
            <div class="price">￥{{ product.price }}</div>
           </div>

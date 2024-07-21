@@ -91,12 +91,12 @@ const routes = [
             },
             {
                 path: 'product/:productID/order',
-                component: () => import('../components/OrderView.vue'),
+                component: () => import('../views/OrderView.vue'),
                 props: true
             },
             {
                 path:"userspace/order/:id",
-                component: () => import('../components/OrderView.vue'),
+                component: () => import('../views/OrderView.vue'),
                 props: true
             }
         ]

@@ -11,7 +11,8 @@ export default{
                 material: '无纺布',
                 suitable_users: 5,
                 brand: 'LV',
-                stock_quantity: 20
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用'
             },
             {
                 product_id: 2, 
@@ -23,7 +24,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用'
             },
             {
                 product_id: 3, 
@@ -35,7 +37,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用'
 
             },
             {
@@ -48,7 +51,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用'
 
             },
             { 
@@ -61,7 +65,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用'
             },
             { 
                 product_id: 6, 
@@ -73,7 +78,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 7, 
@@ -85,7 +91,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 8, 
@@ -97,7 +104,9 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 },
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
+            },
             { 
                 product_id: 9, 
                 product_name: '商品9', 
@@ -108,7 +117,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 10, 
@@ -120,7 +130,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 11, 
@@ -132,7 +143,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             {
                 product_id: 12, 
@@ -144,7 +156,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 13, 
@@ -156,7 +169,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 14, 
@@ -168,7 +182,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             },
             { 
                 product_id: 15, 
@@ -180,7 +195,8 @@ export default{
                 material: '无纺布', 
                 suitable_users: 5, 
                 brand: 'LV', 
-                stock_quantity: 20 
+                stock_quantity: 20,
+                introduction:'老少皆宜，非常好用' 
             }
     
         ]

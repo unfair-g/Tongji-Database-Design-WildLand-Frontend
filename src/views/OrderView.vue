@@ -1,6 +1,6 @@
 <template>
 <div class="order">
-  <div class="product-info-header" style="display:flex;" shadow="hover">
+  <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
     <div class="product-img">
       <img :src="product.product_image" alt="product image">
     </div>
@@ -76,6 +76,9 @@
   
   <style scoped>
   .order {
+    display: flex;  
+    flex-direction: column; /* 垂直布局 */  
+    min-height:100vh;
     width: 70%; /* 设置宽度 */
     border: 1px solid #ddd; /* 设置边框 */
     border-radius: 5px; /* 设置圆角 */
@@ -85,6 +88,7 @@
 
   .order_2 {
     width: 100%; /* 设置宽度 */
+    height:70%;
     border: 1px solid #ddd; /* 设置边框 */
     border-radius: 5px; /* 设置圆角 */
     background-color: #fff; /* 设置背景颜色 */
