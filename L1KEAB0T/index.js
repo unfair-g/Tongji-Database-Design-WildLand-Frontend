@@ -39,8 +39,7 @@ const routes = [
             },
             {
                 path: "product",
-                component: () => import('../views/ItemView.vue'),
-                props: true
+                component: () => import('../views/ItemView.vue')
             },
             {
                 path: "forum",
@@ -48,60 +47,15 @@ const routes = [
             },
             {
                 path: "campground",
-                
-                children: [
-                    {
-                        path: "",
-                        component: () => import('../views/CampgroundView.vue')
-                    },
-                    {
-                        path: "/:campID",
-                        component: () => import('../views/CampDetailView.vue'),
-                        props: true
-                    }
-                ]
+                component: () => import('../views/CampgroundView.vue')
             },
             {
                 path: "userspace",
-                component: () => import('../views/UserSpaceView.vue'),
-                children: [
-                    {
-                        path: "order",
-                        component: () => import('../views/LeaseView.vue')
-                    }，
-                    {
-                        path: '',
-                        component: () => import('../views/PersonalCenterView.vue')
-                    }
-                ]
+                component: () => import('../views/UserSpaceView.vue')
             },
             {
                 path: "flash",
                 component: () => import('../views/FlashView.vue')
-            },
-            {
-                path: "campdetail/:campID",
-                component: () => import('../views/CampDetailView.vue'),
-                props: true
-            },
-            {
-                path: "product/:productID",
-                component: () => import('../views/ProductDetail.vue'),
-                props: true
-            },
-            {
-                path: "flash/:id",
-                component: () => import('../views/FlashDetail.vue')
-            },
-            {
-                path: 'product/:productID/order',
-                component: () => import('../views/OrderView.vue'),
-                props: true
-            },
-            {
-                path:"userspace/order/:id",
-                component: () => import('../views/OrderView.vue'),
-                props: true
             }
         ]
     },
@@ -122,11 +76,8 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    },
-    {
-        path: '/home/product/:id/order',
-        component: () => import('../components/OrderView.vue')
     }
+
 ]
 
 const router = createRouter({
