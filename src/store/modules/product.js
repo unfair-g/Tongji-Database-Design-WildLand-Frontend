@@ -17,6 +17,7 @@ export default {
                 product_id: 2, 
                 product_name: '商品2', 
                 product_image: require('@/assets/product-2.png'),
+                introduction:"老少兼宜，非常好用",
                 price: 200, 
                 product_tag: ['all', '工具类'], 
                 size: '10*10', 
