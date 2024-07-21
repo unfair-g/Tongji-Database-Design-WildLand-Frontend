@@ -3,6 +3,8 @@ import user from './modules/user'
 import camp from './modules/camp'
 import product from './modules/product'
 import order from './modules/order'
+import tag from './modules/tag'
+import flash from './modules/flash'
 
 export default createStore({
   state: {
@@ -17,6 +19,8 @@ export default createStore({
     user,
     camp,
     product,
-    order
+    order,
+    tag,
+    flash
   }
 })
