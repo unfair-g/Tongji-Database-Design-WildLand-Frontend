@@ -23,9 +23,9 @@
         <el-table-column prop="reportTime" label="举报时间" width="200" align="center" class-name="single-line" />
         <el-table-column label="操作台" width="300" align="center">
           <template #default="scope">
-            <el-button type="primary" color="#1D5B5E" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
-            <el-button type="primary" color="#1D5B5E" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
-            <el-button type="primary" color="#1D5B5E" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
+            <el-button type="primary" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
+            <el-button type="primary" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
+            <el-button type="primary" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
           </template>
         </el-table-column>
       </el-table>
