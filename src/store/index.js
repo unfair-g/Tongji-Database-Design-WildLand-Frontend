@@ -41,6 +41,7 @@ export default createStore({
   modules: {
     user,
     camp,
+    order,
     product,
     tag,
     flash,
