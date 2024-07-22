@@ -1,112 +1,158 @@
 <template>
-  <div class="main">
-    <div class="report-options">
-      <span
-        :class="{ selected: selectedOption === 'posts' }"
-        @click="selectOption('posts')"
-      >
-        帖子举报
-      </span>
-      <span
-        :class="{ selected: selectedOption === 'comments' }"
-        @click="selectOption('comments')"
-      >
-        评论举报
-      </span>
+    <div class="product-detail">
+      <div class="product-img">
+        <img :src="product.product_image" class="image" alt="product image">
+      </div>
+      <div class="product-info">
+        <div class="right">
+          <div class="product-mess">
+           <h2>{{ product.product_name }}</h2>
+           <p>尺寸: {{ product.size }}</p>
+           <p>材质: {{ product.material }}</p>
+           <p>品牌: {{ product.brand }}</p>
+           <p>适用人数: {{ product.suitable_users }}</p>
+           <p>商品简介: {{ product.introduction }}</p>
+           <p>商品余量: {{ product.stock_quantity }}</p>
+           <div class="price">￥{{ product.price }}</div>
+          </div>
+          <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
+            <span>
+              <el-button type="text" class="button">收藏</el-button>
+              <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="isStarSolid ? 'Star' : 'StarFilled'"></component></el-icon>
+            </span>
+          </el-tag>
+          <div class="pay">
+            <el-button class="pay" @click="openDialog">立即租赁</el-button>
+            <PayWindow v-model:dialogVisible="dialogVisible" :product="product" />
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="table-wrapper">
-      <el-table :data="currentTableData" style="width: 100%">
-        <el-table-column prop="reportContent" label="举报内容" width="200" align="center" class-name="single-line" />
-        <el-table-column prop="reporter" label="举报人" width="300" align="center" class-name="single-line" />
-        <el-table-column prop="reportedUser" label="被举报人" width="200" align="center" class-name="single-line" />
-        <el-table-column prop="reason" label="举报原因" width="300" align="center" class-name="single-line" />
-        <el-table-column prop="reportTime" label="举报时间" width="200" align="center" class-name="single-line" />
-        <el-table-column label="操作台" width="300" align="center">
-          <template #default="scope">
-            <el-button type="primary" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
-            <el-button type="primary" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
-            <el-button type="primary" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 如果 currentTableData 为空，显示提示信息 -->
-      <el-alert
-        v-if="currentTableData.length === 0"
-        title="当前无需要审核的举报"
-        type="info"
-        center
-      />
-    </div>
-  </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { ref } from 'vue'
+import PayWindow from '@/components/PayWindow.vue'
 
 export default {
-  computed: {
-    ...mapState('admin', ['postsTableData', 'commentsTableData']),
-    currentTableData() {
-      return this.selectedOption === 'posts' ? this.postsTableData : this.commentsTableData;
+  name: 'ProductDetail',
+  components: {
+    PayWindow
+  },
+  data () {
+    return {
+      isStarSolid: ref(true),
+      dialogVisible: false
     }
   },
-  created() {
-    this.fetchPostsTableData();
-    this.fetchCommentsTableData();
+  props: ['productID'],
+  computed: {
+    product() {
+      const productId = this.productID;
+      return this.$store.state.product.products.find(product => product.product_id === parseInt(productId));
+    }
   },
   methods: {
-    ...mapActions('admin', ['fetchPostsTableData', 'fetchCommentsTableData']),
-    selectOption(option) {
-      this.selectedOption = option;
+    toggleStarColor () {
+      this.isStarSolid = !this.isStarSolid
+      // 如果需要，你可以在这里添加额外的逻辑来改变图标的颜色
+      // 但通常，我们会通过 CSS 来处理颜色的变化
     },
-    handleAction(row, action) {
-      console.log(`操作: ${action} 行:`, row);
-      if (action === 'more') {
-        this.$router.push({ name: 'PostDetail' });
-      }
-    }
-  },
-  data() {
-    return {
-      selectedOption: 'posts'
+    openDialog() {
+      console.log('Opening dialog');
+      this.dialogVisible = true;
+      console.log('Dialog Visible:', this.dialogVisible);
     }
   }
 }
 </script>
 
 <style scoped>
-.main {
+.product-detail {
+  display: flex;
+  padding: 100px;
+}
+
+.product-img {
+  flex: 1;
+  padding: 10px;
+  margin-right: 50px;
+  display: inline-block;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.product-info {
+  flex: 2;
+  padding: 10px;
+  display: inline-block;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.right {
+  display: flex;
+  position: relative;
+  padding: 10px;
+  min-height: 50px;
+}
+
+.product-mess {
+  flex: 1;
+}
+
+.love {
+  flex: 2;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: larger;
+  padding: 20px;
+  padding-left: 30px;
+  background-color: #3085887d;
+}
+
+.button {
+  font-size: larger;
+  color: #0c0c0c;
+}
+
+.star {
+  color: #ffed49;
+  margin-left: 8px;
+  font-size: 40px;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
+
+.image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.content {
   padding: 20px;
 }
 
-.report-options {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-  margin-left: 8%;
-}
-
-.report-options span {
+.price {
+  color: #ff4949;
   font-size: 24px;
-  cursor: pointer;
-  color: rgba(196, 196, 196, 0.5);
+  margin-bottom: 10px;
 }
 
-.report-options .selected {
-  color: #1D5B5E;
-  opacity: 1;
-}
-
-.table-wrapper {
-  width: 85%;
-  min-width: 1200px; /* 设置表格的最小宽度 */
-  margin: 0 auto;
-  overflow-x: auto; /* 添加水平滚动条 */
-}
-
-.single-line {
-  white-space: nowrap; /* 防止文本换行 */
-  overflow: hidden; /* 超出部分隐藏 */
-  text-overflow: ellipsis; /* 超出部分用省略号表示 */
+.pay {
+  position: absolute;
+  background-size: 60px;
+  background-color: #3085887d;
+  right: 5px;
+  bottom: 10px;
+  font-size:x-large;
+  color: #0c0c0c;
 }
 </style>
