@@ -21,18 +21,15 @@
 
 export default {
   name: 'HotPosts',
-  data() {
-    return {
-      flash: [
-        { title: '野游营地 | 逃离燥热城市', meta: '作者: wsy'},
-        { title: '野游营地 | 逃离燥热城市', meta: '作者: wsy'},
-        { title: '野游营地 | 逃离燥热城市', meta: '作者: wsy'}
-      ]
-    };
+  props: ['flashID'],
+  computed: {
+    flash() {
+      return this.$store.state.flash.flashes;
+    },
   },
   methods: {
     goToDetail (flash) {
-      const flashId = flash.id
+      const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
     }
   }

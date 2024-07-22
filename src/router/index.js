@@ -92,7 +92,8 @@ const routes = [
             },
             {
                 path: "flash",
-                component: () => import('../views/FlashView.vue')
+                component: () => import('../views/FlashView.vue'),
+                props: true
             },
             {
                 path: "campdetail/:campID",
@@ -105,8 +106,9 @@ const routes = [
                 props: true
             },
             {
-                path: "flash/:id",
-                component: () => import('../views/FlashDetail.vue')
+                path: "flash/:flashID",
+                component: () => import('../views/FlashDetail.vue'),
+                props: true
             },
             {
                 path: 'product/:productID/order',

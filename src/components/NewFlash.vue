@@ -1,7 +1,7 @@
 <template>  
   <el-timeline>  
     <el-timeline-item  
-      v-for="(flash, index) in flashList"  
+      v-for="(flash, index) in flash"  
       :key="index"  
       :timestamp="flash.timestamp"  
       placement="top"  
@@ -25,19 +25,15 @@
 <script>  
 export default {  
   name: 'HotPosts',  
-  data() {  
-    // 注意：这里我添加了timestamp字段来模拟时间戳，你可能需要根据实际情况来获取这些时间戳  
-    return {  
-      flashList: [  
-        { title: '野游营地 | 逃离燥热城市', tag: '营地推荐', timestamp: 7.12 },  
-        { title: '野游营地 | 逃离燥热城市（不同日期）', tag: '营地推荐', timestamp: 7.12 },  
-        { title: '野游营地 | 另一处推荐', tag: '新营地', timestamp: 7.12 }  
-      ]  
-    };  
-  }  ,
+  props: ['flashID'],
+  computed: {
+    flash() {
+      return this.$store.state.flash.flashes;
+    },
+  },
   methods: {
     goToDetail (flash) {
-      const flashId = flash.id
+      const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
     }
   }
