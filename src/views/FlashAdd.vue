@@ -29,7 +29,7 @@
             <el-input
               v-model="textarea"
               style="width: 1000px"
-              :rows="5"
+              :rows="2"
               type="textarea"
               placeholder="Please input"
             />

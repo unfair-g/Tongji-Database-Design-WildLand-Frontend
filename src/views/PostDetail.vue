@@ -10,15 +10,15 @@
       <hr />
       <div class="post-detail-content">
         <div class="post-info">
-          <div class="post-title">帖子标题: <span class="post-content">{{ postTitle }}</span></div>
+          <div class="post-title">帖子标题: <span class="post-content">{{ postDetail.postTitle }}</span></div>
           <div class="post-category">
             帖子类别: 
-            <span class="post-type" :class="{'active': postType === '分享贴'}">分享贴</span>
-            <span class="post-type" :class="{'active': postType === '招募贴'}">招募贴</span>
-            <span class="post-type" :class="{'active': postType === '闲置贴'}">闲置贴</span>
+            <span class="post-type" :class="{'active': postDetail.postType === '分享贴'}">分享贴</span>
+            <span class="post-type" :class="{'active': postDetail.postType === '招募贴'}">招募贴</span>
+            <span class="post-type" :class="{'active': postDetail.postType === '闲置贴'}">闲置贴</span>
           </div>
-          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postContent }}</span></div>
-          <div class="post-publisher">发布者名称: <span class="post-content">{{ publisherName }}</span></div>
+          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.postContent }}</span></div>
+          <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.publisherName }}</span></div>
           <div class="review-opinion">审核意见:</div>
           <div class="actions">
             <el-button :class="{selected: !rejectSelected}" @click="approvePost">允许发布</el-button>
@@ -26,7 +26,7 @@
           </div>
           <div v-if="rejectSelected" class="reject-reason">
             <div class="post-content">驳回原因:</div>
-            <textarea v-model="rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
+            <textarea v-model="postDetail.rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
           </div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { mapState, mapActions } from 'vuex'
 import { Close } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
@@ -47,45 +47,37 @@ export default {
       router.push({ name: 'PostAudit' })
     }
 
-    const postTitle = ref('示例标题')
-    const postType = ref('分享贴') // 帖子类型：分享贴，招募贴，闲置贴
-    const postContent = ref('这是帖子内容。如果内容过长，可以用滚动条拖动。')
-    const publisherName = ref('发布者名称')
-    const publisherId = ref('发布者ID')
-
-    const rejectSelected = ref(false)
-    const rejectReason = ref('')
-
-    const selectReject = () => {
-      rejectSelected.value = true
+    return {
+      closeDetail
     }
-
-    const approvePost = () => {
-      rejectSelected.value = false
-      // 执行允许发布的操作
-    }
-
-    const confirmAction = () => {
-      if (rejectSelected.value) {
-        console.log('驳回原因:', rejectReason.value)
+  },
+  computed: {
+    ...mapState('admin', ['postDetail'])
+  },
+  created() {
+    this.fetchPostDetail()
+  },
+  methods: {
+    ...mapActions('admin', ['fetchPostDetail', 'updateRejectReason']),
+    selectReject() {
+      this.rejectSelected = true
+    },
+    approvePost() {
+      this.rejectSelected = false
+    },
+    confirmAction() {
+      if (this.rejectSelected) {
+        console.log('驳回原因:', this.postDetail.rejectReason)
+        this.updateRejectReason(this.postDetail.rejectReason)
       } else {
         console.log('允许发布')
       }
-      router.push({ name: 'PostAudit' })
+      this.$router.push({ name: 'PostAudit' })
     }
-
+  },
+  data() {
     return {
-      closeDetail,
-      postTitle,
-      postType,
-      postContent,
-      publisherName,
-      publisherId,
-      rejectSelected,
-      rejectReason,
-      selectReject,
-      approvePost,
-      confirmAction
+      rejectSelected: false
     }
   },
   components: {
@@ -113,8 +105,8 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden; /* 防止内容溢出 */
-  box-sizing: border-box; /* 包括内边距和边框 */
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .post-detail-header {
@@ -132,7 +124,7 @@ export default {
   align-items: flex-start;
   overflow-y: auto;
   padding-bottom: 20px;
-  box-sizing: border-box; /* 包括内边距和边框 */
+  box-sizing: border-box;
 }
 
 .post-info {
@@ -140,7 +132,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  box-sizing: border-box; /* 包括内边距和边框 */
+  box-sizing: border-box;
 }
 
 .post-title,
@@ -151,8 +143,8 @@ export default {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
-  padding-left: 40px; /* Add more indentation */
-  box-sizing: border-box; /* 包括内边距和边框 */
+  padding-left: 40px;
+  box-sizing: border-box;
 }
 
 .post-content {
@@ -186,7 +178,7 @@ export default {
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
-  padding-left: 40px; /* Add more indentation */
+  padding-left: 40px;
 }
 
 .actions .el-button {
@@ -202,8 +194,8 @@ export default {
 .reject-reason {
   margin-top: 10px;
   width: 100%;
-  padding-left: 40px; /* Add more indentation */
-  box-sizing: border-box; /* 包括内边距和边框 */
+  padding-left: 40px;
+  box-sizing: border-box;
 }
 
 .reject-reason div {
@@ -211,13 +203,13 @@ export default {
 }
 
 .reject-reason textarea {
-  width: 70%; /* Adjust width */
-  height: 80px; /* Adjust height */
+  width: 70%;
+  height: 80px;
   border: 1px solid #1D5B5E;
   border-radius: 5px;
   padding: 10px;
-  resize: none; /* Remove default scrollbar */
-  box-sizing: border-box; /* 包括内边距和边框 */
+  resize: none;
+  box-sizing: border-box;
 }
 
 .confirm-button {
