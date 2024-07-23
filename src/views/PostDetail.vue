@@ -8,7 +8,7 @@
         </el-icon>
       </div>
       <hr />
-      <div class="post-detail-content">
+      <div v-if="postDetail" class="post-detail-content">
         <div class="post-info">
           <div class="post-title">帖子标题: <span class="post-content">{{ postDetail.postTitle }}</span></div>
           <div class="post-category">
