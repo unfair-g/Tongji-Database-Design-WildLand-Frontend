@@ -19,7 +19,7 @@
         <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
           <el-scrollbar v-show="!isCollapsed">
             <el-menu :default-openeds="['2','3','4']" @select="handleSelect" :unique-opened="true">
-              <el-menu-item index="1">个人信息</el-menu-item>
+              <el-menu-item index="1" @click="navigateTo('PersonalInformation')">个人信息</el-menu-item>
               <el-sub-menu index="2">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>审核

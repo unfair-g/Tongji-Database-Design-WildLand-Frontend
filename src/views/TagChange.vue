@@ -2,21 +2,15 @@
   <div class="post-detail-wrapper">
     <div class="post-detail-box">
       <div class="post-detail-header">
-        创建新资讯
+        标签更改
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
       </div>
       <hr />
-      <div class="post-detail-content">
-        <el-checkbox-group v-model="selectedTags" class="checkbox-group-with-images">  
-          <div v-for="tag in tag" :key="tag" class="checkbox-with-image">  
-            <img :src="getImageUrl(tag)" alt="" class="checkbox-image">  
-            <el-checkbox :label="tag">{{ tag.title }}</el-checkbox>  
-          </div>  
-        </el-checkbox-group>  
+      <div class="post-detail-content"> 
         <div class="post-info">
-          <div class="post-title">资讯标题: 
+          <div class="post-title">标签标题: 
             <el-input
               v-model="textarea1"
               style="width: 240px"
@@ -25,7 +19,7 @@
               placeholder="Please input"
             />
           </div>
-          <div class="post-body">资讯内容: 
+          <div class="post-body">标签内容: 
             <el-input
               v-model="textarea"
               style="width: 1000px"
@@ -34,6 +28,13 @@
               placeholder="Please input"
             />
           </div>
+          <div class="post-title">选择相似标签:</div>
+        <el-checkbox-group v-model="selectedTags" class="checkbox-group-with-images">  
+          <div v-for="tag in tag" :key="tag" class="checkbox-with-image">  
+            <img :src="getImageUrl(tag)" alt="" class="checkbox-image">  
+            <el-checkbox :label="tag">{{ tag.title }}</el-checkbox>  
+          </div>  
+        </el-checkbox-group>  
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
@@ -85,6 +86,7 @@ export default {
 
 <style scoped>
 .checkbox-group-with-images {  
+  margin-left: 5%;
   display: flex; /* 使用Flexbox布局 */  
   flex-wrap: wrap; /* 如果需要，允许换行（但在这个场景下可能不需要） */  
   /* 其他样式，如间距、对齐方式等 */  

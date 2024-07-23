@@ -4,14 +4,20 @@ export default{
             {
               title:'Tag1',
             image:require('@/assets/flash-1.png'),
+            ps:'营地位于上海',
+            similarTags:'营地推荐',
             },
             {
               title:'Tag1',
               image:require('@/assets/flash-1.png'),
+              ps:'营地位于上海',
+              similarTags:'推荐',
             },
             {
               title:'Tag1',
               image:require('@/assets/flash-1.png'),
+              ps:'营地位于上海',
+              similarTags:'推荐',
             }], // 假设的tags列表  
           selectedTags: [] // 存储选中的tags  
     },
