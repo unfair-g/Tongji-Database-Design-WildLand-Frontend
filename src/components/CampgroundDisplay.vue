@@ -10,7 +10,6 @@
               <el-button type="text" class="button" @click="goToCampDetail(camp)">查看详情</el-button>
             </div>
           </div>
-        </div>
       </el-card>
     </el-col>
   </div>

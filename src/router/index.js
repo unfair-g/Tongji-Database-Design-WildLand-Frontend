@@ -25,6 +25,21 @@ const routes = [
                 path: 'reportreview',
                 name: 'ReportReview',
                 component: () => import('../views/ReportReview.vue')
+            },
+            {
+                path: 'flashadd',
+                name: 'FlashAdd',
+                component: () => import('../views/FlashAdd.vue')
+            },
+            {
+                path: 'flashaudit',
+                name: 'FlashAudit',
+                component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit',
+                name: 'TagAudit',
+                component: () => import('../views/TagAudit.vue')
             }
         ]
     },
@@ -68,7 +83,7 @@ const routes = [
                     {
                         path: "order",
                         component: () => import('../views/LeaseView.vue')
-                    }，
+                    },
                     {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
@@ -77,7 +92,8 @@ const routes = [
             },
             {
                 path: "flash",
-                component: () => import('../views/FlashView.vue')
+                component: () => import('../views/FlashView.vue'),
+                props: true
             },
             {
                 path: "campdetail/:campID",
@@ -90,8 +106,9 @@ const routes = [
                 props: true
             },
             {
-                path: "flash/:id",
-                component: () => import('../views/FlashDetail.vue')
+                path: "flash/:flashID",
+                component: () => import('../views/FlashDetail.vue'),
+                props: true
             },
             {
                 path: 'product/:productID/order',
@@ -99,8 +116,13 @@ const routes = [
                 props: true
             },
             {
-                path:"userspace/order/:id",
+                path: "userspace/order/:id",
                 component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "forum/lease/:recruitmentpostID",
+                component: () => import('../components/LeaseForumDetail.vue'),
                 props: true
             }
         ]
@@ -122,10 +144,6 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    },
-    {
-        path: '/home/product/:id/order',
-        component: () => import('../components/OrderView.vue')
     }
 ]
 

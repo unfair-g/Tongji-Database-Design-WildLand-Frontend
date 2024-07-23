@@ -14,7 +14,7 @@
                 <el-col :span="4">{{ user.user_name }} </el-col>
                 <el-col :span="5">
                     <el-tag v-if="user.outdoor_master_title" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
-                    <el-tag v-else type="info" size="large" effect="dark" round>户外达人</el-tag>
+                    <el-tag v-else type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
                 </el-col>
             </el-row>
             <el-row style="min-width:100%;margin-top: 2%">
@@ -125,6 +125,33 @@
       </div>
     </template>
   </el-dialog>
+
+    <el-dialog
+        v-model="dialogVisible"
+        title="达人申请表"
+        width="500"
+    >
+        <el-form 
+        :model="form" 
+        label-width="auto" 
+        label-position="top"
+        style="max-width: 600px"
+        >
+        
+         <el-form-item label="擅长领域">
+            <el-input v-model="ept_field" placeholder="请输入您擅长的领域"/>
+        </el-form-item>
+        <el-form-item label="户外经历">
+            <el-input v-model="experience" type="textarea" placeholder="请输入您的户外经历" />
+        </el-form-item>
+        </el-form>
+        <template #footer>
+        <div class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="dialogVisible = false" color="#1D5B5E">确认</el-button>
+        </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script>
@@ -144,6 +171,9 @@ export default {
             avatarfemale:require('../assets/avatar-female.jpg'),
             avatarmale: require('../assets/avatar-male.jpg'),
             dialogFormVisible: false,
+            dialogVisible: false,
+            ept_field: "",
+            experience:"",
             citys: [
                 { value: '上海' },
                 { value: '北京' }, 

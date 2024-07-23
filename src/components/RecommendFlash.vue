@@ -28,19 +28,16 @@
 <script>
 
 export default {
-  name: 'HotPosts',
-  data() {
-    return {
-      flash: [
-        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
-        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
-        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'}
-      ]
-    };
+  name: 'RecommendFlash',
+  props: ['flashID'],
+  computed: {
+    flash() {
+      return this.$store.state.flash.flashes;
+    },
   },
   methods: {
     goToDetail (flash) {
-      const flashId = flash.id
+      const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
     }
   }
@@ -57,10 +54,12 @@ export default {
   background: transparent;
 }
 .flash-header {
+  font-size: 37px;
   font-weight: bold;
   display: flex;
   align-items: center;
   background: transparent;
+  color:#1D5B5E;
 }
 .flash-list {
   background: transparent;

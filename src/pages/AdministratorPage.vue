@@ -7,40 +7,39 @@
           <div class="admin-avatar-info">
             <el-avatar :icon="UserFilled" size="large"></el-avatar>
             <div class="admin-info-wrapper">
-              <div class="nickname">昵称: </div>
-              <div class="user-id">个人ID: </div>
+              <div class="nickname">昵称: {{ nickname }}</div>
+              <div class="user-id">个人ID: {{ userId }}</div>
             </div>
           </div>
-          <div class="admin-info phone-info">手机: </div>
-          <div class="admin-info email-info">邮箱: </div>
+          <div class="admin-info phone-info">手机: {{ phone }}</div>
+          <div class="admin-info email-info">邮箱: {{ email }}</div>
         </div>
       </el-header>
       <el-container style="height: calc(100% - 190px)">
         <el-aside :width="isCollapsed ? '50px' : '200px'" class="aside" :class="{ collapsed: isCollapsed }">
           <el-scrollbar v-show="!isCollapsed">
-            <el-menu :default-openeds="['2','3','4']" @select="handleSelect" :unique-opened="true">
-              <el-menu-item index="1">个人信息</el-menu-item>
-              <el-sub-menu index="2">
+            <el-menu :default-openeds="['1','2','3']" @select="handleSelect" :unique-opened="true">
+              <el-sub-menu index="1">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
                 </template>
-                <el-menu-item index="2-1" @click="navigateTo('PostAudit')">帖子审核</el-menu-item>
-                <el-menu-item index="2-2" @click="navigateTo('ReportReview')">举报审核</el-menu-item>
-                <el-menu-item index="2-3">达人审核</el-menu-item>
+                <el-menu-item index="1-1" @click="navigateTo('PostAudit')">帖子审核</el-menu-item>
+                <el-menu-item index="1-2" @click="navigateTo('ReportReview')">举报审核</el-menu-item>
+                <el-menu-item index="1-3">达人审核</el-menu-item>
               </el-sub-menu>
-              <el-sub-menu index="3">
+              <el-sub-menu index="2">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>内容管理
                 </template>
-                <el-menu-item index="3-1">营地</el-menu-item>
-                <el-menu-item index="3-2">户外用品</el-menu-item>
+                <el-menu-item index="2-1">营地</el-menu-item>
+                <el-menu-item index="2-2">户外用品</el-menu-item>
               </el-sub-menu>
-              <el-sub-menu index="4">
+              <el-sub-menu index="3">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>经验资讯
                 </template>
-                <el-menu-item index="4-1">标签管理</el-menu-item>
-                <el-menu-item index="4-2">资讯管理</el-menu-item>
+                <el-menu-item index="3-1" @click="navigateTo('TagAudit')">标签管理</el-menu-item>
+                <el-menu-item index="3-2" @click="navigateTo('FlashAudit')">资讯管理</el-menu-item>
               </el-sub-menu>
             </el-menu>
           </el-scrollbar>
@@ -62,34 +61,37 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { Fold, Expand, UserFilled } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { mapGetters } from 'vuex'
 
 export default {
+  computed: {
+    ...mapGetters('admin', ['nickname', 'userId', 'phone', 'email'])
+  },
   setup() {
+    const isCollapsed = ref(false)
     const router = useRouter()
+
     const navigateTo = (routeName) => {
       router.push({ name: routeName })
     }
 
-    return {
-      navigateTo
+    const toggleCollapse = () => {
+      isCollapsed.value = !isCollapsed.value
     }
-  },
-  data() {
+
     return {
+      navigateTo,
+      toggleCollapse,
+      isCollapsed,
       UserFilled,
       Fold,
-      Expand,
-      isCollapsed: false
-    };
-  },
-  methods: {
-    toggleCollapse() {
-      this.isCollapsed = !this.isCollapsed;
+      Expand
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -175,6 +177,7 @@ export default {
 
 .el-menu-item,
 .el-sub-menu {
+  font-size: 20px; /*改这个值修改大小*/
   --el-menu-item-font-size: 20px;
 }
 
@@ -199,4 +202,3 @@ export default {
   background-color: rgba(255, 255, 255, 0.7);
 }
 </style>
-
