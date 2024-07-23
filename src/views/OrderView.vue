@@ -80,10 +80,9 @@
   flex-direction: column;
   align-items: center; /* 水平居中 */
   justify-content: start; /* 根据需要调整 */
-  min-height: 100vh;
   width: 80%;
   max-width: 1200px; /* 最大宽度 */
-  margin: 0 auto; /* 水平居中 */
+  margin: 20px auto 20px auto; /* 水平居中 */
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #fff;

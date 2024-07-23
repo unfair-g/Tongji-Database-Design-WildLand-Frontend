@@ -6,6 +6,7 @@ import order from './modules/order'
 import tag from './modules/tag'
 import flash from './modules/flash'
 import admin from './modules/admin'
+import post from './modules/post'
 
 export default createStore({
   state: {
@@ -45,6 +46,7 @@ export default createStore({
     product,
     tag,
     flash,
-    admin
+    admin,
+    post
   }
 })
