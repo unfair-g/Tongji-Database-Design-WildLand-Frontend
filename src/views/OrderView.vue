@@ -1,10 +1,10 @@
 <template>
 <div class="order">
-  <div class="product-info-header" style="display:flex;" shadow="hover">
+  <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
     <div class="product-img">
       <img :src="product.product_image" alt="product image">
     </div>
-    <div style="flex:2;">
+    <div style="flex:2;position:relative;">
       <h2>{{ product.product_name }}</h2>
       <p>尺寸: {{ product.size }}</p>
       <p>材质: {{ product.material }}</p>
@@ -12,7 +12,7 @@
       <p>适用人数: {{ product.suitable_users }}</p>
       <div class="price-tag">￥{{ TotalPrice }}</div>
       <!-- 数量输入框 -->
-       <el-input-number v-model="Lquantity" :min=Lquantity :max=Lquantity label="数量" style="position:absolute;right:250px;"></el-input-number>
+       <el-input-number v-model="Lquantity" :min=Lquantity :max=Lquantity label="数量" style="position:absolute;bottom:-20px;right:0px;"></el-input-number>
       </div>
     </div>
     <div class="order_2">
@@ -76,15 +76,32 @@
   
   <style scoped>
   .order {
-    width: 70%; /* 设置宽度 */
-    border: 1px solid #ddd; /* 设置边框 */
-    border-radius: 5px; /* 设置圆角 */
-    background-color: #fff; /* 设置背景颜色 */
-    margin: 0 auto; /* 水平居中 */
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中 */
+  justify-content: start; /* 根据需要调整 */
+  width: 80%;
+  max-width: 1200px; /* 最大宽度 */
+  margin: 20px auto 20px auto; /* 水平居中 */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.product-info-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+  color: black;
+  padding: 10px;
+  padding-bottom:30px;
+  margin-bottom: 20px;
+}
 
   .order_2 {
     width: 100%; /* 设置宽度 */
+    height:70%;
     border: 1px solid #ddd; /* 设置边框 */
     border-radius: 5px; /* 设置圆角 */
     background-color: #fff; /* 设置背景颜色 */
@@ -101,13 +118,6 @@
     border-radius: 5px; /* 设置圆角 */
     background-color: #fff; /* 设置背景颜色 */
     margin: 0 auto; /* 水平居中 */
-  }
-
-  .product-info-header {
-    color: black;
-    padding: 10px;
-    padding-bottom:30px;
-    margin-bottom: 20px;
   }
   
   .product-img {
@@ -146,3 +156,4 @@
   color: #0c0c0c;
 }
   </style>
+  
