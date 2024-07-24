@@ -12,6 +12,11 @@ const routes = [
         component: () => import('../pages/AdministratorPage.vue'),
         children: [
             {
+                path: 'personalinformation',
+                name: 'PersonalInformation',
+                component: () => import('../views/PersonalInformation.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -45,6 +50,11 @@ const routes = [
                 path: 'flashaudit',
                 name: 'FlashAudit',
                 component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit/tagchange',
+                name: 'TagChange',
+                component: () => import('../views/TagChange.vue')
             },
             {
                 path: 'tagaudit',
@@ -102,7 +112,8 @@ const routes = [
             },
             {
                 path: "flash",
-                component: () => import('../views/FlashView.vue')
+                component: () => import('../views/FlashView.vue'),
+                props: true
             },
             {
                 path: "campdetail/:campID",
@@ -115,17 +126,23 @@ const routes = [
                 props: true
             },
             {
-                path: "flash/:id",
-                component: () => import('../views/FlashDetail.vue')
-            },
-            {
-                path: 'product/:productID/order',
-                component: () => import('../components/OrderView.vue'),
+                path: "flash/:flashID",
+                component: () => import('../views/FlashDetail.vue'),
                 props: true
             },
             {
-                path:"userspace/order/:id",
-                component: () => import('../components/OrderView.vue'),
+                path: 'product/:productID/order',
+                component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "userspace/order/:id",
+                component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "forum/lease/:recruitmentpostID",
+                component: () => import('../components/LeaseForumDetail.vue'),
                 props: true
             }
         ]

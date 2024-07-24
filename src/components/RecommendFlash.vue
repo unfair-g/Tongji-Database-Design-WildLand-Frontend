@@ -17,7 +17,6 @@
             <span class="flash-meta">{{ flash.meta }}</span>
             <span class="flash-like">{{ flash.like }}</span>
             <span class="flash-like">{{ flash.view }}</span>
-           <span class="flash-like">{{ flash.comment }}</span>
           </div>
         </div>
       </div>
@@ -28,19 +27,16 @@
 <script>
 
 export default {
-  name: 'HotPosts',
-  data() {
-    return {
-      flash: [
-        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
-        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'},
-        { id:1,title: '野游营地 | 逃离燥热城市', meta: ' wsy',like:'52900 喜爱',view:'370000浏览',comment:'260评论'}
-      ]
-    };
+  name: 'RecommendFlash',
+  props: ['flashID'],
+  computed: {
+    flash() {
+      return this.$store.state.flash.flashes;
+    },
   },
   methods: {
     goToDetail (flash) {
-      const flashId = flash.id
+      const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
     }
   }
