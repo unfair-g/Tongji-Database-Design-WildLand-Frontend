@@ -126,6 +126,16 @@ const routes = [
                 props: true
             },
             {
+                path: "campbooking/:campID",
+                component: () => import('../views/CampBookingView.vue'),
+                props: true
+            },
+            {
+                path: "camporder",
+                component: () => import('../views/CampOrderView.vue'),
+                props: true
+            },
+            {
                 path: "product/:productID",
                 component: () => import('../views/ProductDetail.vue'),
                 props: true

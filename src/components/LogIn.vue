@@ -1,7 +1,7 @@
 <template>
 <div class="bg">
     <div class="custom-style">
-    <el-segmented v-model="value" :options="options" :block="true"/>
+    <el-segmented v-model="role" :options="options" :block="true"/>
     </div>
     <div class="container">
     <el-form
@@ -17,7 +17,7 @@
       <el-input v-model="formLabelAlign.type" placeholder="请输入密码" :prefix-icon="Key"/>
     </el-form-item>
   </el-form>
-  <el-button class="loginbutton" type="primary" color="#1D5B5E" @click="toHomePage">登录</el-button>
+  <el-button class="loginbutton" type="primary" color="#1D5B5E" @click="toRolePage">登录</el-button>
   <div class="others">
       <router-link to="/enter/findkey" style="color:#888888;text-decoration: none">忘记密码</router-link>
       <router-link to="/enter/enrollment" style="margin-left:75%;color:black;text-decoration: none">注册账号</router-link>
@@ -30,6 +30,11 @@
 import router from '../router'
 import { reactive } from 'vue'
 import { User, Key } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+
+const role = ref('游客')
+
+const options = ['游客','管理员']
 
 const formLabelAlign = reactive({
     name: '',
@@ -37,16 +42,12 @@ const formLabelAlign = reactive({
     type: '',
 })
 
-function toHomePage() {
-  router.push({path: '/home'})
+function toRolePage() {
+  if (role.value == "游客")
+    router.push({ path: '/home' });
+  else
+    router.push({path: '/administrator'})
 }
-
-import { ref } from 'vue'
-
-const value = ref('游客')
-
-const options = ['游客','管理员']
-
 </script>
 
 <style>

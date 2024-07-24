@@ -57,7 +57,7 @@
       </el-scrollbar>
   
       <el-footer>
-        <el-button class="booking-button" type="primary" @click="goToCampsiteChoices(camp)">填写订单</el-button>
+        <el-button class="booking-button" type="primary" @click="goToCampOrder()">填写订单</el-button>
       </el-footer>
     </div>
   </template>
@@ -66,6 +66,7 @@
 <script>
 import { ref } from 'vue';
 import { ElDatePicker } from 'element-plus';
+import dayjs from 'dayjs';
 
   export default {
     name: 'CampBooking',
@@ -87,8 +88,8 @@ import { ElDatePicker } from 'element-plus';
 
     const handleDateChange = (value) => {
       if (value && value.length === 2) {
-        startDate.value = value[0];
-        endDate.value = value[1];
+        startDate.value = dayjs(value[0]).format('YYYY年MM月DD日');
+        endDate.value = dayjs(value[1]).format('YYYY年MM月DD日');
       } else {
         startDate.value = '';
         endDate.value = '';
@@ -108,20 +109,28 @@ import { ElDatePicker } from 'element-plus';
         return this.$store.state.camp.camps.find(camp => camp.campground_id === parseInt(campId));
       },
       groupedCampsiteIds() {
-      if (!this.camp || !this.camp.campsite_id) return {};
-      return this.camp.campsite_id.reduce((groups, id) => {
-        const section = id.charAt(0).toUpperCase();
+      if (!this.camp || !this.camp.campsites) return {};
+      return this.camp.campsites.reduce((groups, campsite) => {
+        const section = campsite.id.charAt(0).toUpperCase();
         if (!groups[section]) {
           groups[section] = [];
         }
-        groups[section].push(id);
+        groups[section].push(campsite.id);
         return groups;
       }, {});
-      },
+    },
     },
     methods: {
-      goToCampsiteChoices (camp) {
-        this.$router.push({ path: `/home/campsite/${camp.id}` })
+      goToCampOrder () {
+        this.$router.push({
+        path: '/home/camporder',
+        query: {
+          campID: this.campID,
+          startDate: this.startDate,
+          endDate: this.endDate,
+          selectedCampsiteIds: this.selectedCampsiteIds.join(',')
+        }
+      });
       },
       
       toggleSelection(id) {
