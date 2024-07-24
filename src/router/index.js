@@ -25,6 +25,21 @@ const routes = [
                 path: 'reportreview',
                 name: 'ReportReview',
                 component: () => import('../views/ReportReview.vue')
+            },
+            {
+                path: 'flashadd',
+                name: 'FlashAdd',
+                component: () => import('../views/FlashAdd.vue')
+            },
+            {
+                path: 'flashaudit',
+                name: 'FlashAudit',
+                component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit',
+                name: 'TagAudit',
+                component: () => import('../views/TagAudit.vue')
             }
         ]
     },
@@ -39,7 +54,8 @@ const routes = [
             },
             {
                 path: "product",
-                component: () => import('../views/ItemView.vue')
+                component: () => import('../views/ItemView.vue'),
+                props: true
             },
             {
                 path: "forum",
@@ -62,11 +78,22 @@ const routes = [
             },
             {
                 path: "userspace",
-                component: () => import('../views/UserSpaceView.vue')
+                component: () => import('../views/UserSpaceView.vue'),
+                children: [
+                    {
+                        path: "order",
+                        component: () => import('../views/LeaseView.vue')
+                    },
+                    {
+                        path: '',
+                        component: () => import('../views/PersonalCenterView.vue')
+                    }
+                ]
             },
             {
                 path: "flash",
-                component: () => import('../views/FlashView.vue')
+                component: () => import('../views/FlashView.vue'),
+                props: true
             },
             {
                 path: "campdetail/:campID",
@@ -74,12 +101,34 @@ const routes = [
                 props: true
             },
             {
-                path: "product/:id",
-                component: () => import('../views/ProductDetail.vue')
+                path: "campbooking/:campID",
+                component: () => import('../views/CampBookingView.vue'),
+                props: true
             },
             {
-                path: "flash/:id",
-                component: () => import('../views/FlashDetail.vue')
+                path: "camporder",
+                component: () => import('../views/CampOrderView.vue'),
+                props: true
+            },
+            {
+                path: "product/:productID",
+                component: () => import('../views/ProductDetail.vue'),
+                props: true
+            },
+            {
+                path: "flash/:flashID",
+                component: () => import('../views/FlashDetail.vue'),
+                props: true
+            },
+            {
+                path: 'product/:productID/order',
+                component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "userspace/order/:id",
+                component: () => import('../views/OrderView.vue'),
+                props: true
             }
         ]
     },
@@ -100,10 +149,6 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    },
-    {
-        path: '/home/product/:id/order',
-        component: () => import('../components/OrderView.vue')
     }
 ]
 

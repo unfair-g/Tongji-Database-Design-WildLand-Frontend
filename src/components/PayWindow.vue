@@ -2,7 +2,7 @@
   <el-dialog
     title="支付窗口"
     v-model="localDialogVisible"
-    width="60%"
+    width="45%"
     center="true"
     v-if="!PaySuccess"
     @close="handleClose">
@@ -12,15 +12,16 @@
       </div>
       <div style="flex:2;">
         <h2>{{ product.product_name }}</h2>
-        <p>尺寸: 100x200cm</p>
-        <p>材质: 棉</p>
-        <p>新旧程度: 全新</p>
-        <p>适用人数: 2人</p>
+        <p>尺寸: {{ product.size }}</p>
+        <p>材质: {{ product.material }}</p>
+        <p>品牌: {{ product.brand }}</p>
+        <p>适用人数: {{ product.suitable_users }}</p>
+        <p>商品余量: {{ product.stock_quantity }}</p>
         <!-- 数量输入框 -->  
-        <el-input-number v-model="quantity" :min="1" :max="10" label="数量" style="position:absolute;right:30px;"></el-input-number>
+        <el-input-number v-model="quantity" :min="1" :max=product.stock_quantity label="数量" style="position:absolute;right:30px;"></el-input-number>
       </div>
     </div>
-    <div class="price-tag">¥89.80</div>
+    <div class="price-tag">¥{{ TotalPrice }}</div>
     <div class="payment-options">
       <p>请选择支付方式:</p>
       <el-radio-group v-model="selectedPayment">
@@ -61,7 +62,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'PayWindow',
   props: {
@@ -79,7 +79,8 @@ export default {
       localDialogVisible: this.dialogVisible,
       selectedPayment: '支付宝支付',
       quantity: 1,
-      PaySuccess: false
+      PaySuccess: false,
+      Order: false
     }
   },
   watch: {
@@ -106,7 +107,26 @@ export default {
     GoToOrder(product)   //查看订单
     {
       const productId = product.product_id
-      this.$router.push({ path: `/home/product/${productId}/order` })
+      this.$router.push({ path: `/home/product/${productId}/order`,
+        query: {  
+        productId: this.product.product_id,  
+        quantity: this.quantity  
+      }})
+      this.PaySuccess = false
+      this.Order=true
+    }
+  },
+  computed: {
+    TotalPrice(){
+      if (this.product && this.product.price && !isNaN(this.quantity)) {
+         // 确保 product.price 是一个数字
+         const price = parseFloat(this.product.price);
+         console.log(`Product Price: ${price}, Quantity: ${this.quantity}`);
+         if (!isNaN(price) && price > 0) {
+          return (price * this.quantity).toFixed(2);
+        }
+      }
+      return 0;
     }
   }
 }
@@ -115,7 +135,8 @@ export default {
 <style scoped>
 .product-info-header {
   color: black;
-  padding: 20px;
+  padding: 10px;
+  padding-bottom:40px;
   margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;

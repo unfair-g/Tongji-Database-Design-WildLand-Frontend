@@ -5,7 +5,7 @@
         <span class="title">达人热帖</span>
         </div>
         </template>
-        <div class="container">
+        <div class="hot-post">
             <div style="width:15%">
                  <el-menu default-active="1">
                     <el-menu-item
@@ -46,7 +46,7 @@ export default{
 </script>
 
 <style scoped>
-.container{
+.hot-post{
     display:flex;
 }
 

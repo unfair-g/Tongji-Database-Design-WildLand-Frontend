@@ -6,16 +6,18 @@
         <span class="title">热门营地</span>
         </div>
         </template>
-            <div class="container">
-            <img src="../assets/camp11.png" style="width:75%">
-            <div style="min-width:20%;max-width:20%;padding-top:10%;text-align: center;white-space:normal; word-break:break-all;overflow:hidden;">
-                <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">小野营地</p>
-                给你家一般的感受
+            <div class="hot-container">
+            <img :src="hotcamps[this.currentcamp].image" style="width:75%">
+            <div style="min-width:25%;max-width:25%;padding-top:10%;text-align: center;white-space:normal; word-break:break-all;overflow:hidden;">
+                <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">{{ this.hotcamps[currentcamp].campground_name }}</p>
+                {{ hotcamps[currentcamp].introduction }}
             </div>
             </div>
         <template #footer>
             <div class="footer">
-            <el-pagination :size=large layout="prev, pager, next" :total="50" style="margin-top:0.5%;margin-left:auto;" />
+            <el-pagination :size=large :page-size=1 layout="prev, pager, next"
+            v-model:current-page="this.currentcamp"
+            :total="5" style="margin-top:0.5%;margin-left:auto;" />
             <el-icon class="icon"><Star /></el-icon>
             </div>
         </template>
@@ -26,17 +28,19 @@
         <span class="title">热销爆款</span>
         </div>
         </template>
-            <div class="container">
-                <img src="../assets/product-1.png" style="width:70%">
-                <div style="min-width:30%;max-width:30%;padding-top:10%;white-space:normal; word-break:break-all;overflow:hidden;">
-                <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">帐篷</p>
-                <p>牢固防水，坚不可摧11111111111111111111111111111111111111</p>
-                <p style="font-weight:bold;font-size: 20px;margin-top: 50%;">$255</p>
+            <div class="hot-container">
+                <img :src="hotproducts[currentproduct].product_image" style="width:70%">
+                <div style="min-width:30%;max-width:30%;white-space:normal; word-break:break-all;overflow:hidden;">
+                <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">{{ hotproducts[currentproduct].product_name }}</p>
+                <p>{{ hotproducts[currentproduct].introduction }}</p>
+                <p style="font-weight:bold;font-size: 20px;margin-top: 50%;">${{ hotproducts[currentproduct].price }}</p>
                 </div>
             </div>
         <template #footer>
             <div class="footer">
-            <el-pagination :size=large layout="prev, pager, next" :total="50" style="margin-top:0.5%;margin-left:auto;" />
+            <el-pagination :size=large :page-size=1 layout="prev, pager, next" 
+            v-model:current-page="this.currentproduct"
+            :total="5" style="margin-top:0.5%;margin-left:auto;" />
             <el-icon class="icon"><Star /></el-icon>
             </div>
         </template>
@@ -48,12 +52,25 @@
 <script>
 import HotPost from "../components/HomeHotPost.vue"
 
-export default{
+export default {
+    data() {
+        return {
+            currentcamp: 1,
+            currentproduct: 1
+        }
+    },
     components: {
         HotPost
+    },
+    computed: {
+        hotcamps() {
+            return this.$store.state.camp.camps
+        },
+        hotproducts() {
+            return this.$store.state.product.products
+        }
     }
 }
-
 </script>
 
 <style scoped>
@@ -85,7 +102,7 @@ export default{
     color:#1D5B5E;
 }
 
-.container{
+.hot-container{
     display: flex;
     max-width: 100%;
 }
