@@ -17,6 +17,11 @@ const routes = [
                 component: () => import('../views/PersonalInformation.vue')
             },
             {
+                path:'GeekAudit',
+                name:'GeekAudit',
+                component: () =>import('../views/GeekAudit.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')

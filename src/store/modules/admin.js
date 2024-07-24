@@ -6,7 +6,7 @@ const state = {
   postDetail: null,
   commentDetail: null,
   postReportDetail: null,
-  commentReportDetail: null, // 修正拼写
+  commentReportDetail: null,
   postAuditTableData: [
     {
       title: "123",
@@ -34,7 +34,8 @@ const state = {
       reason: "原因1",
       reportTime: "时间1"
     }
-  ]
+  ],
+  geekAuditTableData: [] // 添加达人审核表格数据
 }
 
 const getters = {
@@ -48,7 +49,8 @@ const getters = {
   commentReportDetail: state => state.commentReportDetail, // 修正拼写
   postAuditTableData: state => state.postAuditTableData,
   postsTableData: state => state.postsTableData,
-  commentsTableData: state => state.commentsTableData
+  commentsTableData: state => state.commentsTableData,
+  geekAuditTableData: state => state.geekAuditTableData // 添加getter
 }
 
 const mutations = {
@@ -73,7 +75,7 @@ const mutations = {
   setPostReportDetail(state, postReportDetail) {
     state.postReportDetail = postReportDetail
   },
-  setCommentReportDetail(state, commentReportDetail) { // 修正拼写
+  setCommentReportDetail(state, commentReportDetail) {
     state.commentReportDetail = commentReportDetail
   },
   setPostAuditTableData(state, postAuditTableData) {
@@ -84,6 +86,9 @@ const mutations = {
   },
   setCommentsTableData(state, commentsTableData) {
     state.commentsTableData = commentsTableData
+  },
+  setGeekAuditTableData(state, geekAuditTableData) { // 添加mutation
+    state.geekAuditTableData = geekAuditTableData
   }
 }
 
@@ -135,14 +140,14 @@ const actions = {
     commit('setPostReportDetail', postReportDetail)
   },
   fetchCommentReportDetail({ commit }, id) {
-    const commentReportDetail = { // 修正拼写
+    const commentReportDetail = {
       id: id,
-      commentContent: "示例评论内容", // 修改为符合要求的内容
-      commenterName: "评论者名称", // 修改为符合要求的内容
-      ReportReason: "这里是举报原因", // 修改为符合要求的内容
-      rejectReason: "" // 初始化为默认值
+      commentContent: "示例评论内容",
+      commenterName: "评论者名称",
+      ReportReason: "这里是举报原因",
+      rejectReason: ""
     }
-    commit('setCommentReportDetail', commentReportDetail) // 修正拼写
+    commit('setCommentReportDetail', commentReportDetail)
   },
   fetchPostAuditTableData({ commit }) {
     const postAuditTableData = [
@@ -180,6 +185,19 @@ const actions = {
       }
     ]
     commit('setCommentsTableData', commentsTableData)
+  },
+  fetchGeekAuditTableData({ commit }) { // 添加action
+    const geekAuditTableData = [
+      {
+        applicant: "申请人1",
+        expertise: "擅长领域1",
+        qualification: "资质证明1",
+        outdoorExperience: "户外经历1",
+        applicationTime: "申请时间1"
+      }
+      // Add more data as needed
+    ]
+    commit('setGeekAuditTableData', geekAuditTableData)
   }
 }
 
