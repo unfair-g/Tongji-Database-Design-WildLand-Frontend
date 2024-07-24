@@ -2,15 +2,15 @@
   <div class="post-detail-wrapper">
     <div class="post-detail-box">
       <div class="post-detail-header">
-        创建新资讯
+        标签更改
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
       </div>
       <hr />
       <div class="post-detail-content">
-        <el-checkbox-group v-model="selectedTags" class="checkbox-group-with-images">
-          <div v-for="tag in tag" :key="tag" class="checkbox-with-image">
+        <el-checkbox-group v-model="selectedTags" class="checkbox-group-with-images">  
+          <div v-for="tag in tags" :key="tag" class="checkbox-with-image">  
             <img :src="getImageUrl(tag)" alt="" class="checkbox-image">  
             <el-checkbox :label="tag">{{ tag.title }}</el-checkbox>  
           </div>  
@@ -29,7 +29,7 @@
             <el-input
               v-model="textarea"
               style="width: 1000px"
-              :rows="5"
+              :rows="2"
               type="textarea"
               placeholder="Please input"
             />
@@ -64,11 +64,8 @@ export default {
   computed: {  
     ...mapState([  
       'tags', // 将state中的tags映射到组件的computed属性  
-      'selectedTags' // 将state中的selectedTags映射到组件的v-model上
-    ])  ,
-    tag() {
-      return this.$store.state.tag.tags;
-    },
+      'selectedTags' // 将state中的selectedTags映射到组件的v-model上  
+    ])  
   },  
   methods: {  
     getImageUrl(tag) {  
