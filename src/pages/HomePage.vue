@@ -22,6 +22,7 @@ export default {
   .homepage{
     min-width:100%;
     min-height:100vh;
+    overflow: hidden;
     background: url(../assets/bg.jpg) no-repeat;
     background-size:100% 100%;
     background-attachment:fixed;
