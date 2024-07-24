@@ -7,6 +7,8 @@ import order from './modules/order'
 import tag from './modules/tag'
 import flash from './modules/flash'
 import admin from './modules/admin'
+import message from './modules/message'
+import post from './modules/post'
 
 export default createStore({
   state: {
@@ -44,9 +46,11 @@ export default createStore({
     camp,
     camp_order,
     order,
+    admin,
+    flash,
+    message,
     product,
     tag,
-    flash,
-    admin
+    post
   }
 })

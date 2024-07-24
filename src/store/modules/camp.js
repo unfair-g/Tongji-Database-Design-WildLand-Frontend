@@ -18,7 +18,6 @@ export default {
                   {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
                   {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
                    ]
-
     },
     {
       campground_id: 21,

@@ -12,6 +12,11 @@ const routes = [
         component: () => import('../pages/AdministratorPage.vue'),
         children: [
             {
+                path: 'personalinformation',
+                name: 'PersonalInformation',
+                component: () => import('../views/PersonalInformation.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -27,6 +32,16 @@ const routes = [
                 component: () => import('../views/ReportReview.vue')
             },
             {
+                path: 'post-report-detail/:id',
+                name: 'PostReportDetail',
+                component: () => import('../views/PostReportDetail.vue')
+            },
+            {
+                path: 'comment-report-detail/:id',
+                name: 'CommentReportDetail',
+                component: () => import('../views/CommentReportDetail.vue')
+            },
+            {
                 path: 'flashadd',
                 name: 'FlashAdd',
                 component: () => import('../views/FlashAdd.vue')
@@ -35,6 +50,11 @@ const routes = [
                 path: 'flashaudit',
                 name: 'FlashAudit',
                 component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit/tagchange',
+                name: 'TagChange',
+                component: () => import('../views/TagChange.vue')
             },
             {
                 path: 'tagaudit',
@@ -128,6 +148,11 @@ const routes = [
             {
                 path: "userspace/order/:id",
                 component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "forum/lease/:recruitmentpostID",
+                component: () => import('../components/LeaseForumDetail.vue'),
                 props: true
             }
         ]
