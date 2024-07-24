@@ -29,7 +29,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 如果 currentTableData 为空，显示提示信息 -->
       <el-alert
         v-if="currentTableData.length === 0"
         title="当前无需要审核的举报"
@@ -44,6 +43,11 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+  data() {
+    return {
+      selectedOption: 'posts'  // 默认选择“帖子举报”
+    }
+  },
   computed: {
     ...mapState('admin', ['postsTableData', 'commentsTableData']),
     currentTableData() {
@@ -51,6 +55,11 @@ export default {
     }
   },
   created() {
+    // 根据查询参数设置选项
+    const selectedOption = this.$route.query.selectedOption
+    if (selectedOption) {
+      this.selectedOption = selectedOption
+    }
     this.fetchPostsTableData();
     this.fetchCommentsTableData();
   },
@@ -62,13 +71,9 @@ export default {
     handleAction(row, action) {
       console.log(`操作: ${action} 行:`, row);
       if (action === 'more') {
-        this.$router.push({ name: 'PostDetail' });
+        const routeName = this.selectedOption === 'posts' ? 'PostReportDetail' : 'CommentReportDetail';
+        this.$router.push({ name: routeName, params: { id: row.id } });
       }
-    }
-  },
-  data() {
-    return {
-      selectedOption: 'posts'
     }
   }
 }

@@ -32,6 +32,16 @@ const routes = [
                 component: () => import('../views/ReportReview.vue')
             },
             {
+                path: 'post-report-detail/:id',
+                name: 'PostReportDetail',
+                component: () => import('../views/PostReportDetail.vue')
+            },
+            {
+                path: 'comment-report-detail/:id',
+                name: 'CommentReportDetail',
+                component: () => import('../views/CommentReportDetail.vue')
+            },
+            {
                 path: 'flashadd',
                 name: 'FlashAdd',
                 component: () => import('../views/FlashAdd.vue')
