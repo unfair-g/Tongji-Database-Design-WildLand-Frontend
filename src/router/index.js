@@ -12,6 +12,11 @@ const routes = [
         component: () => import('../pages/AdministratorPage.vue'),
         children: [
             {
+                path: 'personalinformation',
+                name: 'PersonalInformation',
+                component: () => import('../views/PersonalInformation.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -35,6 +40,11 @@ const routes = [
                 path: 'flashaudit',
                 name: 'FlashAudit',
                 component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit/tagchange',
+                name: 'TagChange',
+                component: () => import('../views/TagChange.vue')
             },
             {
                 path: 'tagaudit',

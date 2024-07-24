@@ -1,24 +1,42 @@
 <template>  
-  <el-card class="flash">  
-    <div class="tag-container">  
-      <el-tag color="#1D5B5E">Tag 1</el-tag>  
-    </div>  
-    <div class="detail">营地位于江浙沪地区</div>  
-    <h3 class="heading">相似标签</h3>  
-    <div class="tag-group">  
-      <el-tag type="info" class="tag-item">Tag 3</el-tag>  
-      <el-tag type="info" class="tag-item">Tag 3</el-tag>  
-      <el-tag type="info" class="tag-item">Tag 3</el-tag>  
-    </div>  
-    <div class="update-tag">  
-      <el-tag color="#1D5B5E">更新标签</el-tag>  
-    </div>  
-  </el-card>  
+  <div class="tag-group">  
+    <el-card  
+      v-for="(tag, index) in tag"  
+      :key="index"  
+    >  
+      <div class="tag-container">  
+        <el-tag :color="tag.color">{{ tag.title }}</el-tag>  
+      </div>  
+      <div class="detail">{{ tag.ps || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
+      <h3 class="heading">相似标签</h3>  
+      <div class="tag-group">  
+        <el-tag  
+          type="info"  
+          class="tag-item"  
+        >  
+          {{ tag.similarTags }}  
+        </el-tag>  
+      </div>  
+      <div class="update-tag">  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail()">更新标签</el-button>  
+      </div>  
+    </el-card>  
+  </div>  
 </template>  
   
 <script>  
 export default {  
   name: 'HotPosts',  
+  computed: {
+    tag() {
+      return this.$store.state.tag.tags;
+    },
+  },
+  methods: {
+    goToDetail () {
+      this.$router.push({ path: `/administrator/tagaudit/tagchange` })
+    }
+    }
 }  
 </script>  
   

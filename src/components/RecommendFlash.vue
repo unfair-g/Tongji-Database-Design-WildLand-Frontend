@@ -17,7 +17,6 @@
             <span class="flash-meta">{{ flash.meta }}</span>
             <span class="flash-like">{{ flash.like }}</span>
             <span class="flash-like">{{ flash.view }}</span>
-           <span class="flash-like">{{ flash.comment }}</span>
           </div>
         </div>
       </div>
