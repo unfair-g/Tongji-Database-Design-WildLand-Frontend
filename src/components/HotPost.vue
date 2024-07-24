@@ -5,7 +5,7 @@
         <span class="title">达人热帖</span>
         </div>
         </template>
-        <div class="hot-post">
+        <div class="container">
             <div style="width:15%">
                  <el-menu default-active="1">
                     <el-menu-item
@@ -46,16 +46,8 @@ export default{
 </script>
 
 <style scoped>
-.hot-post{
+.container{
     display:flex;
-}
-
-.title {
-    color: #1D5B5E;
-    font-size: 60px;
-    font-family: 'FZYaoti';
-    font-style: italic;
-    font-weight: bold;
 }
 
 </style>

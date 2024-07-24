@@ -12,6 +12,11 @@ const routes = [
         component: () => import('../pages/AdministratorPage.vue'),
         children: [
             {
+                path: 'personalinformation',
+                name: 'PersonalInformation',
+                component: () => import('../views/PersonalInformation.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -25,6 +30,36 @@ const routes = [
                 path: 'reportreview',
                 name: 'ReportReview',
                 component: () => import('../views/ReportReview.vue')
+            },
+            {
+                path: 'post-report-detail/:id',
+                name: 'PostReportDetail',
+                component: () => import('../views/PostReportDetail.vue')
+            },
+            {
+                path: 'comment-report-detail/:id',
+                name: 'CommentReportDetail',
+                component: () => import('../views/CommentReportDetail.vue')
+            },
+            {
+                path: 'flashadd',
+                name: 'FlashAdd',
+                component: () => import('../views/FlashAdd.vue')
+            },
+            {
+                path: 'flashaudit',
+                name: 'FlashAudit',
+                component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit/tagchange',
+                name: 'TagChange',
+                component: () => import('../views/TagChange.vue')
+            },
+            {
+                path: 'tagaudit',
+                name: 'TagAudit',
+                component: () => import('../views/TagAudit.vue')
             }
         ]
     },
@@ -39,7 +74,8 @@ const routes = [
             },
             {
                 path: "product",
-                component: () => import('../views/ItemView.vue')
+                component: () => import('../views/ItemView.vue'),
+                props: true
             },
             {
                 path: "forum",
@@ -62,11 +98,22 @@ const routes = [
             },
             {
                 path: "userspace",
-                component: () => import('../views/UserSpaceView.vue')
+                component: () => import('../views/UserSpaceView.vue'),
+                children: [
+                    {
+                        path: "order",
+                        component: () => import('../views/LeaseView.vue')
+                    },
+                    {
+                        path: '',
+                        component: () => import('../views/PersonalCenterView.vue')
+                    }
+                ]
             },
             {
                 path: "flash",
-                component: () => import('../views/FlashView.vue')
+                component: () => import('../views/FlashView.vue'),
+                props: true
             },
             {
                 path: "campdetail/:campID",
@@ -74,12 +121,29 @@ const routes = [
                 props: true
             },
             {
-                path: "product/:id",
-                component: () => import('../views/ProductDetail.vue')
+                path: "product/:productID",
+                component: () => import('../views/ProductDetail.vue'),
+                props: true
             },
             {
-                path: "flash/:id",
-                component: () => import('../views/FlashDetail.vue')
+                path: "flash/:flashID",
+                component: () => import('../views/FlashDetail.vue'),
+                props: true
+            },
+            {
+                path: 'product/:productID/order',
+                component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "userspace/order/:id",
+                component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "forum/lease/:recruitmentpostID",
+                component: () => import('../components/LeaseForumDetail.vue'),
+                props: true
             }
         ]
     },
@@ -100,10 +164,6 @@ const routes = [
                 component: () => import('../components/FindKey.vue')
             }
         ]
-    },
-    {
-        path: '/home/product/:id/order',
-        component: () => import('../components/OrderView.vue')
     }
 ]
 

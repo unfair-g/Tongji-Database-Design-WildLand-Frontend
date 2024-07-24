@@ -2,31 +2,32 @@
   <div class="post-detail-wrapper">
     <div class="post-detail-box">
       <div class="post-detail-header">
-        帖子审核
+        举报内容
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
       </div>
       <hr />
-      <div v-if="postDetail" class="post-detail-content">
+      <div v-if="postReportDetail" class="post-detail-content">
         <div class="post-info">
-          <div class="post-title">帖子标题: <span class="post-content">{{ postDetail.postTitle }}</span></div>
+          <div class="post-title">帖子标题: <span class="post-content">{{ postReportDetail.postTitle }}</span></div>
           <div class="post-category">
             帖子类别: 
-            <span class="post-type" :class="{'active': postDetail.postType === '分享贴'}">分享贴</span>
-            <span class="post-type" :class="{'active': postDetail.postType === '招募贴'}">招募贴</span>
-            <span class="post-type" :class="{'active': postDetail.postType === '闲置贴'}">闲置贴</span>
+            <span class="post-type" :class="{'active': postReportDetail.postType === '分享贴'}">分享贴</span>
+            <span class="post-type" :class="{'active': postReportDetail.postType === '招募贴'}">招募贴</span>
+            <span class="post-type" :class="{'active': postReportDetail.postType === '闲置贴'}">闲置贴</span>
           </div>
-          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.postContent }}</span></div>
-          <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.publisherName }}</span></div>
+          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postReportDetail.postContent }}</span></div>
+          <div class="post-publisher">发布者名称: <span class="post-content">{{ postReportDetail.publisherName }}</span></div>
+          <div class="post-body">举报原因: <span class="post-content post-body-content">{{ postReportDetail.ReportReason }}</span></div>
           <div class="review-opinion">审核意见:</div>
           <div class="actions">
-            <el-button :class="{selected: !rejectSelected}" @click="approvePost">允许发布</el-button>
-            <el-button :class="{selected: rejectSelected}" @click="selectReject">驳回修改</el-button>
+            <el-button :class="{selected: !rejectSelected}" @click="approvePost">举报成功</el-button>
+            <el-button :class="{selected: rejectSelected}" @click="selectReject">驳回举报</el-button>
           </div>
           <div v-if="rejectSelected" class="reject-reason">
-            <div class="post-content">驳回原因:</div>
-            <textarea v-model="postDetail.rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
+            <div class="post-content">举报驳回:</div>
+            <textarea v-model="postReportDetail.rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
           </div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
@@ -44,7 +45,7 @@ export default {
   setup() {
     const router = useRouter()
     const closeDetail = () => {
-      router.push({ name: 'PostAudit' })
+      router.push({ name: 'ReportReview' })
     }
 
     return {
@@ -52,13 +53,13 @@ export default {
     }
   },
   computed: {
-    ...mapState('admin', ['postDetail'])
+    ...mapState('admin', ['postReportDetail'])
   },
   created() {
-    this.fetchPostDetail()
+    this.fetchPostReportDetail(this.$route.params.id)
   },
   methods: {
-    ...mapActions('admin', ['fetchPostDetail', 'updateRejectReason']),
+    ...mapActions('admin', ['fetchPostReportDetail', 'updateRejectReason']),
     selectReject() {
       this.rejectSelected = true
     },
@@ -67,12 +68,12 @@ export default {
     },
     confirmAction() {
       if (this.rejectSelected) {
-        console.log('驳回原因:', this.postDetail.rejectReason)
-        this.updateRejectReason(this.postDetail.rejectReason)
+        console.log('驳回原因:', this.postReportDetail.rejectReason)
+        this.updateRejectReason(this.postReportDetail.rejectReason)
       } else {
-        console.log('允许发布')
+        console.log('举报成功')
       }
-      this.$router.push({ name: 'PostAudit' })
+      this.$router.push({ name: 'ReportReview' })
     }
   },
   data() {
@@ -113,8 +114,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 40px;
+  font-size: 40px; /* Updated font size */
   margin-bottom: 10px;
+}
+
+hr {
+  margin: 10px 0;
 }
 
 .post-detail-content {

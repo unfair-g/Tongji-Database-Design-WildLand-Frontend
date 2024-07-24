@@ -7,11 +7,13 @@ export default {
             email: '2814315943@qq.com',
             phone_number: 18247855400,
             gender: '女',
-            birthday: '2004-9-6',
+            birthday: '2004-09-06',
             personal_signature: 'lalalalalala',
             location: '上海',
             points: 50,
-            outdoor_master_title: true
+            follows: 10,
+            fans:10,
+            outdoor_master_title: false
         }
     }
 }
