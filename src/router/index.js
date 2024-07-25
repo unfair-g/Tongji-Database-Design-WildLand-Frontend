@@ -122,7 +122,11 @@ const routes = [
                     {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
-                    }
+                    },
+                    {
+                        path: "camporder",
+                        component: () => import('../views/UserCampOrderListView.vue')
+                    },
                 ]
             },
             {
@@ -166,6 +170,10 @@ const routes = [
                 props: true
             },
             {
+                path: "userspace/camporder/:id",
+                component: () => import('../views/CampOrderDetailView.vue'),
+                props: true
+            },
                 path: "forum/lease/:ldleitemspostID",
                 component: () => import('../components/LdleitemsPost.vue'),
                 props: true
