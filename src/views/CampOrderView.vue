@@ -40,16 +40,12 @@
             <p>总价: {{ totalPriceDetail }} = ¥{{ totalPrice }}</p>
       </div>
   
-      <CampPayWindow
-        v-model:visible="isPaymentDialogVisible"
-        :totalPrice="totalPrice"
-        @pay="go_to_pay"
-      />
+      <CampPayWindow v-model:dialogVisible="dialogVisible" :totalPrice="totalPrice" />
   
       </el-main>
       <el-footer>
         <span class="price-tag">¥{{ totalPrice }}</span>
-        <el-button class="go-to-pay-button" type="primary" @click="showPaymentDialog()">提交订单</el-button>
+        <el-button class="go-to-pay-button" type="primary" @click="go_to_pay()">提交订单</el-button>
       </el-footer>
     </div>
   </template>
@@ -58,6 +54,7 @@
   import { mapState } from 'vuex';
   import dayjs from 'dayjs';
   import CampPayWindow from '@/components/CampPayWindow.vue'
+  import { v4 as uuidv4 } from 'uuid'; // 导入uuid库
   
   export default {
     name: 'CampOrder',
@@ -71,8 +68,8 @@
           order_person_phone_number: '',
           order_person_id: '',
           remark: '',
-          isPaymentDialogVisible: false,
-        }
+        },
+        dialogVisible: false,
       };
     },
     computed: {
@@ -109,7 +106,9 @@
     methods: {
       go_to_pay() {
         const orderCreatedTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+        const orderId = uuidv4(); // 生成一个唯一的 order_id
         const campOrder = {
+          order_id: orderId,
           campground_id: this.camp.campground_id,
           startDate: this.startDate,
           endDate: this.endDate,
@@ -123,10 +122,8 @@
           order_created_time: orderCreatedTime,
   
         };
-        this.$store.dispatch('order/addCampOrder', campOrder);
-      },
-      showPaymentDialog() {
-        this.isPaymentDialogVisible = true;
+        this.$store.dispatch('order/addCampOrder', campOrder);// 添加订单到 Vuex store
+        this.dialogVisible = true;
       },
   
     }

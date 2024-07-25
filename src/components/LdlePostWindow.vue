@@ -2,7 +2,7 @@
     <el-dialog
     title="闲置帖"
     v-model="LisLdlePostDialogVisible"
-    width="45%"
+    width="55%"
     center="true"
     v-if="!PostSuccess"
     @close="handleClose">
@@ -178,18 +178,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height:100%;
 }
 
 .post-box {
   margin-top:10px;
   background-color: #ffffff; /* White background for the post box */
-  padding: 20px;
-  min-width: 600px; /* Width of the post box */
-  width:60%;
+  padding: 10px;
+  max-width: 600px; /* Width of the post box */
+  width:100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position:relative;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -295,6 +297,7 @@ h1 {
   float: center;
   color:#ddd;
 }
+
 
 </style>
 

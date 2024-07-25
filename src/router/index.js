@@ -22,14 +22,14 @@ const routes = [
                 component: () => import('../views/OutdoorGear.vue')
             },
             {
-                path:'AdminCamp',
-                name:'AdminCamp',
-                component: () =>import('../views/AdminCamp.vue')
+                path: 'AdminCamp',
+                name: 'AdminCamp',
+                component: () => import('../views/AdminCamp.vue')
             },
             {
-                path:'GeekAudit',
-                name:'GeekAudit',
-                component: () =>import('../views/GeekAudit.vue')
+                path: 'GeekAudit',
+                name: 'GeekAudit',
+                component: () => import('../views/GeekAudit.vue')
             },
             {
                 path: 'postaudit',
@@ -98,7 +98,7 @@ const routes = [
             },
             {
                 path: "campground",
-                
+
                 children: [
                     {
                         path: "",
@@ -122,7 +122,12 @@ const routes = [
                     {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
-                    }
+                    },
+                    {
+                        path: "camporder",
+                        component: () => import('../views/UserCampOrderListView.vue')
+                    },
+
                 ]
             },
             {
@@ -163,6 +168,11 @@ const routes = [
             {
                 path: "userspace/order/:id",
                 component: () => import('../views/OrderView.vue'),
+                props: true
+            },
+            {
+                path: "userspace/camporder/:id",
+                component: () => import('../views/CampOrderDetailView.vue'),
                 props: true
             },
             {
