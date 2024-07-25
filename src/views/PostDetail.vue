@@ -19,15 +19,6 @@
           </div>
           <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.postContent }}</span></div>
           <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.publisherName }}</span></div>
-          <div class="review-opinion">审核意见:</div>
-          <div class="actions">
-            <el-button :class="{selected: !rejectSelected}" @click="approvePost">允许发布</el-button>
-            <el-button :class="{selected: rejectSelected}" @click="selectReject">驳回修改</el-button>
-          </div>
-          <div v-if="rejectSelected" class="reject-reason">
-            <div class="post-content">驳回原因:</div>
-            <textarea v-model="postDetail.rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
-          </div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
@@ -38,46 +29,34 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { Close } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 export default {
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const closeDetail = () => {
       router.push({ name: 'PostAudit' })
     }
 
     return {
-      closeDetail
+      closeDetail,
+      route
     }
   },
   computed: {
     ...mapState('admin', ['postDetail'])
   },
   created() {
-    this.fetchPostDetail()
+    const id = this.route.params.id
+    this.fetchPostDetail(id)
   },
   methods: {
-    ...mapActions('admin', ['fetchPostDetail', 'updateRejectReason']),
-    selectReject() {
-      this.rejectSelected = true
-    },
-    approvePost() {
-      this.rejectSelected = false
-    },
+    ...mapActions('admin', ['fetchPostDetail']),
     confirmAction() {
-      if (this.rejectSelected) {
-        console.log('驳回原因:', this.postDetail.rejectReason)
-        this.updateRejectReason(this.postDetail.rejectReason)
-      } else {
-        console.log('允许发布')
-      }
+      console.log('确认操作')
+      // Optionally, you can add other actions here
       this.$router.push({ name: 'PostAudit' })
-    }
-  },
-  data() {
-    return {
-      rejectSelected: false
     }
   },
   components: {
@@ -138,8 +117,7 @@ export default {
 .post-title,
 .post-category,
 .post-body,
-.post-publisher,
-.review-opinion {
+.post-publisher {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -171,45 +149,6 @@ export default {
   padding: 10px;
   border: 1px solid #1D5B5E;
   border-radius: 5px;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding-left: 40px;
-}
-
-.actions .el-button {
-  background-color: #1D5B5E;
-  color: white;
-  opacity: 0.5;
-}
-
-.actions .el-button.selected {
-  opacity: 1;
-}
-
-.reject-reason {
-  margin-top: 10px;
-  width: 100%;
-  padding-left: 40px;
-  box-sizing: border-box;
-}
-
-.reject-reason div {
-  margin-bottom: 10px;
-}
-
-.reject-reason textarea {
-  width: 70%;
-  height: 80px;
-  border: 1px solid #1D5B5E;
-  border-radius: 5px;
-  padding: 10px;
-  resize: none;
-  box-sizing: border-box;
 }
 
 .confirm-button {
