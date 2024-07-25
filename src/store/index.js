@@ -18,9 +18,16 @@ export default createStore({
     order,
     admin,
     flash,
+<<<<<<< HEAD
     message,
     product,
     tag,
+=======
+    message，
+    product,
+    tag,
+    flash,
+>>>>>>> a7c12f2046547b92905608057ee339666e142b90
     post
   }
 })
