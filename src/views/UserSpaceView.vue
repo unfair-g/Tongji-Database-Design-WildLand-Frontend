@@ -19,7 +19,7 @@
             <span>订单</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="2-1" style="height:80px">营地</el-menu-item>
+            <el-menu-item index="2-1" style="height:80px" @click="toCampOrder">营地</el-menu-item>
             <el-menu-item index="2-2" style="height:80px" @click="toOrder">户外用品</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
@@ -67,6 +67,12 @@ function toPersonalCenter() {
 function toOrder() {
   router.push({
     path:'/home/userspace/order'
+  })
+}
+
+function toCampOrder() {
+  router.push({
+    path:'/home/userspace/camporder'
   })
 }
 
