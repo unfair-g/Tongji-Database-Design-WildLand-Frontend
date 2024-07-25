@@ -17,6 +17,21 @@ const routes = [
                 component: () => import('../views/PersonalInformation.vue')
             },
             {
+                path: 'OutdoorGear',
+                name: 'OutdoorGear',
+                component: () => import('../views/OutdoorGear.vue')
+            },
+            {
+                path:'AdminCamp',
+                name:'AdminCamp',
+                component: () =>import('../views/AdminCamp.vue')
+            },
+            {
+                path:'GeekAudit',
+                name:'GeekAudit',
+                component: () =>import('../views/GeekAudit.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -159,12 +174,10 @@ const routes = [
                 component: () => import('../views/CampOrderDetailView.vue'),
                 props: true
             },
-            
-            {
-                path: "forum/lease/:recruitmentpostID",
-                component: () => import('../components/LeaseForumDetail.vue'),
+                path: "forum/lease/:ldleitemspostID",
+                component: () => import('../components/LdleitemsPost.vue'),
                 props: true
-            }
+            },
         ]
     },
     {

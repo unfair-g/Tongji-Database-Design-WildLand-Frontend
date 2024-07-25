@@ -68,7 +68,6 @@ import { ref } from 'vue';
 import { ElDatePicker } from 'element-plus';
 import dayjs from 'dayjs';
 
-
   export default {
     name: 'CampBooking',
     props: ['campID'],

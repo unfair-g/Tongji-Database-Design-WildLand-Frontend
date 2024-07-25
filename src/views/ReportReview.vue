@@ -23,9 +23,29 @@
         <el-table-column prop="reportTime" label="举报时间" width="200" align="center" class-name="single-line" />
         <el-table-column label="操作台" width="300" align="center">
           <template #default="scope">
-            <el-button type="primary" color="#1D5B5E" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
-            <el-button type="primary" color="#1D5B5E" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
-            <el-button type="primary" color="#1D5B5E" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
+            <div :class="{'row-disabled': scope.row.isReviewed}">
+              <el-button 
+                type="primary" 
+                color="#1D5B5E" 
+                :disabled="scope.row.isReviewed"
+                @click="handleAction(scope.row, 'check')">
+                <CircleCheck />通过
+              </el-button>
+              <el-button 
+                type="primary" 
+                color="#1D5B5E" 
+                :disabled="scope.row.isReviewed"
+                @click="handleAction(scope.row, 'close')">
+                <CircleClose />拒绝
+              </el-button>
+              <el-button 
+                type="primary" 
+                color="#1D5B5E" 
+                :disabled="scope.row.isReviewed"
+                @click="handleAction(scope.row, 'more')">
+                <MoreFilled />更多
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -41,9 +61,15 @@
 </template>
 
 <script>
+import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue'
 import { mapState, mapActions } from 'vuex'
 
 export default {
+  components: {
+    CircleCheck,
+    CircleClose,
+    MoreFilled
+  },
   data() {
     return {
       selectedOption: 'posts'  // 默认选择“帖子举报”
@@ -56,7 +82,6 @@ export default {
     }
   },
   created() {
-    // 根据查询参数设置选项
     const selectedOption = this.$route.query.selectedOption
     if (selectedOption) {
       this.selectedOption = selectedOption
@@ -65,12 +90,16 @@ export default {
     this.fetchCommentsTableData();
   },
   methods: {
-    ...mapActions('admin', ['fetchPostsTableData', 'fetchCommentsTableData']),
+    ...mapActions('admin', ['fetchPostsTableData', 'fetchCommentsTableData', 'updatePostAuditStatus']),
     selectOption(option) {
       this.selectedOption = option;
     },
     handleAction(row, action) {
-      console.log(`操作: ${action} 行:`, row);
+      if (action === 'check' || action === 'close') {
+        // 更新审核状态
+        this.updatePostAuditStatus({ id: row.id, status: true });
+        row.isReviewed = true; // 将行标记为已审核
+      }
       if (action === 'more') {
         const routeName = this.selectedOption === 'posts' ? 'PostReportDetail' : 'CommentReportDetail';
         this.$router.push({ name: routeName, params: { id: row.id } });
@@ -105,14 +134,24 @@ export default {
 
 .table-wrapper {
   width: 85%;
-  min-width: 1200px; /* 设置表格的最小宽度 */
+  min-width: 1200px;
   margin: 0 auto;
-  overflow-x: auto; /* 添加水平滚动条 */
+  overflow-x: auto;
+}
+
+.row-disabled {
+  background-color: #f5f5f5;
+  color: #dcdcdc;
+}
+
+.el-button.disabled {
+  background-color: #dcdcdc;
+  border-color: #dcdcdc;
 }
 
 .single-line {
-  white-space: nowrap; /* 防止文本换行 */
-  overflow: hidden; /* 超出部分隐藏 */
-  text-overflow: ellipsis; /* 超出部分用省略号表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

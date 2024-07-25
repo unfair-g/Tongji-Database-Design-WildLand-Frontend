@@ -1,20 +1,20 @@
 <template>
-    <div class="product-detail" v-if="recruitmentpost">
+    <div class="product-detail" v-if="ldleitemspost">
       <!-- User Info and Post Stats -->
       <div>
-        <img :src="recruitmentpost.avatar" class="avatar" alt="recruitmentpost image">
+        <img :src="ldleitemspost.avatar" class="avatar" alt="ldleitemspost image">
         <div class="post-details">
           <div class="post-info">
-            <span class="username">{{ recruitmentpost.username }}</span>
-            <span class="time">{{ recruitmentpost.time }}</span>
+            <span class="username">{{ ldleitemspost.username }}</span>
+            <span class="time">{{ ldleitemspost.time }}</span>
           </div>
           <div class="post-stats">
-            <span class="stat-item"><el-icon><View /></el-icon>{{ recruitmentpost.views }}</span>
+            <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
             <span class="stat-item" @click="toggleLike">
               <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>
-              {{ recruitmentpost.likes }}
+              {{ ldleitemspost.likes }}
             </span>
-            <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ recruitmentpost.comments }}</span>
+            <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
             <span class="stat-item" @click="toggleStar">
               <el-icon v-if="!isStarred"><Star /></el-icon>
               <el-icon v-else><StarFilled /></el-icon>
@@ -26,11 +26,11 @@
       <!-- Product Info -->
       <div class="product-info">
         <div class="product-mess">
-          <h2>{{ recruitmentpost.item_name }}</h2>
-          <div><span>商品简介: {{ recruitmentpost.item_summary}}</span></div>
-          <div><span>商品新旧程度：{{ recruitmentpost.condition}}</span></div>
+          <h2>{{ ldleitemspost.item_name }}</h2>
+          <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
+          <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
           <div class="bottom clearfix">
-            <span class="price">¥{{ recruitmentpost.price }}</span>
+            <span class="price">¥{{ ldleitemspost.price }}</span>
           </div>
         </div>
         <div style="position:absolute;right:10px;top:120px;">
@@ -41,7 +41,7 @@
   
       <div style="display:flex;min-height:200px;">
         <div style="flex:1;padding-top:20px;"><el-icon><Location/></el-icon>上海市/嘉定区/同济大学</div>
-        <div style="flex:2;"><img :src="recruitmentpost.item_image" class="image" alt="recruitmentpost image"></div>
+        <div style="flex:2;"><img :src="ldleitemspost.item_image" class="image" alt="ldleitemspost image"></div>
       </div>
 
       <!-- Rent Button -->
@@ -57,7 +57,7 @@
        </div>
 
        <div style="position:relative;width:100%;">
-        <span><img :src="recruitmentpost.avatar" style="border-radius: 50%;height: 60px;width: 60px;position:absolute;left:10px;top:10px;" alt="recruitmentpost image"></span>
+        <span><img :src="ldleitemspost.avatar" style="border-radius: 50%;height: 60px;width: 60px;position:absolute;left:10px;top:10px;" alt="recruitmentpost image"></span>
         <div style="width:700px;height:200px;margin-top:10px;position:absolute;left:100px;"><el-input 
           class="custom-input" 
           v-model="defaultComment"  
@@ -147,8 +147,8 @@
   import { ref } from 'vue';
   
   export default {
-    name: 'LeaseForumDetail',
-    props: ['recruitmentpostID'],
+    name: 'LdleitemsPost',
+    props: ['ldleitemspostID'],
     data() {
       return {
         dialogVisible: false,
@@ -157,9 +157,9 @@
       };
     },
     computed: {
-      recruitmentpost() {
-        const recruitmentpostId = this.recruitmentpostID;
-        return this.$store.state.post.recruitmentposts.find(recruitmentpost => recruitmentpost.post_id === parseInt(recruitmentpostId));
+      ldleitemspost() {
+        const ldleitemspostId = this.ldleitemspostID;
+        return this.$store.state.post.ldleitemsposts.find(ldleitemspost => ldleitemspost.post_id === parseInt(ldleitemspostId));
       }
     },
     methods: {
@@ -178,7 +178,7 @@
   
       const toggleLike = () => {
         isLiked.value = !isLiked.value;
-        this.recruitmentpost.likes.value = isLiked.value ? this.recruitmentpost.likes.value + 1 : this.recruitmentpost.likes.value - 1;
+        this.ldleitemspost.likes.value = isLiked.value ? this.ldleitemspost.likes.value + 1 : this.ldleitemspost.likes.value - 1;
       };
   
       const toggleStar = () => {
@@ -203,7 +203,7 @@
     min-height: 100vh;
     width: 80%;
     max-width: 1000px;
-    margin: 20px auto;
+    margin:  auto;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
