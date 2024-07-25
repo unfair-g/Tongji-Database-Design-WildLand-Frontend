@@ -184,9 +184,6 @@
   margin-top:10px;
   background-color: #ffffff; /* White background for the post box */
   padding: 20px;
-  border-radius: 10px;
-  border: 2px solid #3085887d; /* 设置边框 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better appearance */
   min-width: 600px; /* Width of the post box */
   width:60%;
   display: flex;

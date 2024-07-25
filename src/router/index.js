@@ -166,10 +166,10 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:recruitmentpostID",
-                component: () => import('../components/LeaseForumDetail.vue'),
+                path: "forum/lease/:ldleitemspostID",
+                component: () => import('../components/LdleitemsPost.vue'),
                 props: true
-            }
+            },
         ]
     },
     {
