@@ -51,6 +51,23 @@ const state = {
       reviewStatus: null
     }
     // 添加更多数据
+  ],
+  outdoorGearTableData: [
+    {
+      id: 1,
+      name: "帐篷",
+      price: "300元",
+      stock: 50
+    }
+    // 添加更多数据
+  ],
+  campgroundTableData: [  // 新增营地数据
+    {
+      id: 1,
+      name: "营地1",
+      contact: "123-456-7890"
+    }
+    // 添加更多数据
   ]
 }
 
@@ -67,7 +84,9 @@ const getters = {
   postAuditTableData: state => state.postAuditTableData,
   postsTableData: state => state.postsTableData,
   commentsTableData: state => state.commentsTableData,
-  geekAuditTableData: state => state.geekAuditTableData
+  geekAuditTableData: state => state.geekAuditTableData,
+  outdoorGearTableData: state => state.outdoorGearTableData,
+  campgroundTableData: state => state.campgroundTableData  // 新增 getter
 }
 
 // Mutations
@@ -108,6 +127,12 @@ const mutations = {
   setGeekAuditTableData(state, geekAuditTableData) {
     state.geekAuditTableData = geekAuditTableData
   },
+  setOutdoorGearTableData(state, outdoorGearTableData) {
+    state.outdoorGearTableData = outdoorGearTableData
+  },
+  setCampgroundTableData(state, campgroundTableData) {  // 新增 mutation
+    state.campgroundTableData = campgroundTableData
+  },
   updatePostAuditStatus(state, { id, status }) {
     const post = state.postAuditTableData.find(post => post.id === id)
     if (post) {
@@ -131,6 +156,18 @@ const mutations = {
     if (applicant) {
       applicant.isReviewed = true
       applicant.reviewStatus = status
+    }
+  },
+  updateOutdoorGearTableData(state, { id, updatedData }) {
+    const gear = state.outdoorGearTableData.find(item => item.id === id)
+    if (gear) {
+      Object.assign(gear, updatedData)
+    }
+  },
+  updateCampgroundTableData(state, { id, updatedData }) {  // 新增 mutation
+    const campground = state.campgroundTableData.find(item => item.id === id)
+    if (campground) {
+      Object.assign(campground, updatedData)
     }
   }
 }
@@ -246,6 +283,29 @@ const actions = {
     ]
     commit('setGeekAuditTableData', geekAuditTableData)
   },
+  fetchOutdoorGearTableData({ commit }) {
+    const outdoorGearTableData = [
+      {
+        id: 1,
+        name: "帐篷",
+        price: "300元",
+        stock: 50
+      }
+      // 添加更多数据
+    ]
+    commit('setOutdoorGearTableData', outdoorGearTableData)
+  },
+  fetchCampgroundTableData({ commit }) {  // 新增 action
+    const campgroundTableData = [
+      {
+        id: 1,
+        name: "营地1",
+        contact: "123-456-7890"
+      }
+      // 添加更多数据
+    ]
+    commit('setCampgroundTableData', campgroundTableData)
+  },
   updatePostAuditStatus({ commit }, { id, status }) {
     commit('updatePostAuditStatus', { id, status })
   },
@@ -257,6 +317,12 @@ const actions = {
   },
   updateGeekAuditStatus({ commit }, { id, status }) {
     commit('updateGeekAuditStatus', { id, status })
+  },
+  updateOutdoorGearTableData({ commit }, { id, updatedData }) {
+    commit('updateOutdoorGearTableData', { id, updatedData })
+  },
+  updateCampgroundTableData({ commit }, { id, updatedData }) {  // 新增 action
+    commit('updateCampgroundTableData', { id, updatedData })
   }
 }
 
