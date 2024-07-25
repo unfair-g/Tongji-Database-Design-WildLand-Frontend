@@ -3,10 +3,11 @@ import user from './modules/user'
 import camp from './modules/camp'
 import product from './modules/product'
 import order from './modules/order'
-import admin from './modules/admin'
-import flash from './modules/flash'
 import tag from './modules/tag'
+import flash from './modules/flash'
+import admin from './modules/admin'
 import message from './modules/message'
+import post from './modules/post'
 
 export default createStore({
   actions: {
@@ -14,13 +15,12 @@ export default createStore({
   modules: {
     user,
     camp,
-    product,
     order,
     admin,
     flash,
-    message
+    message,
+    product,
     tag,
-    flash,
-    admin
+    post
   }
 })

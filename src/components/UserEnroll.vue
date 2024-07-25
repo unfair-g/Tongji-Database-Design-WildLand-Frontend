@@ -46,7 +46,7 @@ const formLabelAlign = reactive({
 })
 
 function toHomePage() {
-  router.push({path: '/administrator'})
+  router.push({path: '/home'})
 }
 
 </script>
