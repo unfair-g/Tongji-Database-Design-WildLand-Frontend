@@ -12,6 +12,26 @@ const routes = [
         component: () => import('../pages/AdministratorPage.vue'),
         children: [
             {
+                path: 'personalinformation',
+                name: 'PersonalInformation',
+                component: () => import('../views/PersonalInformation.vue')
+            },
+            {
+                path: 'OutdoorGear',
+                name: 'OutdoorGear',
+                component: () => import('../views/OutdoorGear.vue')
+            },
+            {
+                path:'AdminCamp',
+                name:'AdminCamp',
+                component: () =>import('../views/AdminCamp.vue')
+            },
+            {
+                path:'GeekAudit',
+                name:'GeekAudit',
+                component: () =>import('../views/GeekAudit.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -27,6 +47,16 @@ const routes = [
                 component: () => import('../views/ReportReview.vue')
             },
             {
+                path: 'post-report-detail/:id',
+                name: 'PostReportDetail',
+                component: () => import('../views/PostReportDetail.vue')
+            },
+            {
+                path: 'comment-report-detail/:id',
+                name: 'CommentReportDetail',
+                component: () => import('../views/CommentReportDetail.vue')
+            },
+            {
                 path: 'flashadd',
                 name: 'FlashAdd',
                 component: () => import('../views/FlashAdd.vue')
@@ -35,6 +65,11 @@ const routes = [
                 path: 'flashaudit',
                 name: 'FlashAudit',
                 component: () => import('../views/FlashAudit.vue')
+            },
+            {
+                path: 'tagaudit/tagchange',
+                name: 'TagChange',
+                component: () => import('../views/TagChange.vue')
             },
             {
                 path: 'tagaudit',
@@ -98,6 +133,16 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: "campbooking/:campID",
+                component: () => import('../views/CampBookingView.vue'),
+                props: true
+            },
+            {
+                path: "camporder",
+                component: () => import('../views/CampOrderView.vue'),
                 props: true
             },
             {

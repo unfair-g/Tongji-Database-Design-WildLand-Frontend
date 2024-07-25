@@ -2,23 +2,24 @@
   <div class="post-detail-wrapper">
     <div class="post-detail-box">
       <div class="post-detail-header">
-        帖子审核
+        举报内容
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
       </div>
       <hr />
-      <div v-if="postDetail" class="post-detail-content">
+      <div v-if="postReportDetail" class="post-detail-content">
         <div class="post-info">
-          <div class="post-title">帖子标题: <span class="post-content">{{ postDetail.postTitle }}</span></div>
+          <div class="post-title">帖子标题: <span class="post-content">{{ postReportDetail.postTitle }}</span></div>
           <div class="post-category">
             帖子类别: 
-            <span class="post-type" :class="{'active': postDetail.postType === '分享贴'}">分享贴</span>
-            <span class="post-type" :class="{'active': postDetail.postType === '招募贴'}">招募贴</span>
-            <span class="post-type" :class="{'active': postDetail.postType === '闲置贴'}">闲置贴</span>
+            <span class="post-type" :class="{'active': postReportDetail.postType === '分享贴'}">分享贴</span>
+            <span class="post-type" :class="{'active': postReportDetail.postType === '招募贴'}">招募贴</span>
+            <span class="post-type" :class="{'active': postReportDetail.postType === '闲置贴'}">闲置贴</span>
           </div>
-          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.postContent }}</span></div>
-          <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.publisherName }}</span></div>
+          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postReportDetail.postContent }}</span></div>
+          <div class="post-publisher">发布者名称: <span class="post-content">{{ postReportDetail.publisherName }}</span></div>
+          <div class="post-body">举报原因: <span class="post-content post-body-content">{{ postReportDetail.ReportReason }}</span></div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
@@ -29,34 +30,30 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { Close } from '@element-plus/icons-vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 export default {
   setup() {
     const router = useRouter()
-    const route = useRoute()
     const closeDetail = () => {
-      router.push({ name: 'PostAudit' })
+      router.push({ name: 'ReportReview' })
     }
 
     return {
-      closeDetail,
-      route
+      closeDetail
     }
   },
   computed: {
-    ...mapState('admin', ['postDetail'])
+    ...mapState('admin', ['postReportDetail'])
   },
   created() {
-    const id = this.route.params.id
-    this.fetchPostDetail(id)
+    this.fetchPostReportDetail(this.$route.params.id)
   },
   methods: {
-    ...mapActions('admin', ['fetchPostDetail']),
+    ...mapActions('admin', ['fetchPostReportDetail']),
     confirmAction() {
-      console.log('确认操作')
-      // Optionally, you can add other actions here
-      this.$router.push({ name: 'PostAudit' })
+      console.log('举报处理完成')
+      this.$router.push({ name: 'ReportReview' })
     }
   },
   components: {
@@ -92,8 +89,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 40px;
+  font-size: 40px; /* Updated font size */
   margin-bottom: 10px;
+}
+
+hr {
+  margin: 10px 0;
 }
 
 .post-detail-content {

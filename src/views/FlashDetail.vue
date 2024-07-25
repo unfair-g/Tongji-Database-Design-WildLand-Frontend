@@ -18,61 +18,6 @@
               <span class="flash-meta">{{ flash.meta }}</span>
             </div>
             <span class="flash-content">{{ flash.content }}</span>
-            <div>
-              <el-avatar  
-                src="flash.avatar" alt="用户头像" class="avatar" 
-                    />   
-              <el-input
-                v-model="textarea"
-                style="width: 90%"
-                :rows="3"
-                type="textarea"
-                placeholder="Please input"
-              />
-            </div>
-            <el-button 
-              color="#1D5B5E" :dark="isDark"
-              style="padding: 10px; margin: 10px;">发表评论</el-button>
-            <div class="flash-info">
-            </div>
-            <div>  
-              <span class='flash-comment'>{{ flash.comment }}</span>
-              <el-timeline>  
-                <div>  
-                  <el-timeline-item  
-                    v-for="(comment, index) in flash.comments"  
-                    :key="`${flash.flash_id}-${index}`"  
-                    :timestamp="comment.timestamp || index"  
-                    placement="top"  
-                  >  
-                    <div class="comment">  
-                      <el-avatar  
-                        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"  
-                        size="40"  
-                      />  
-                      <span>{{ comment.auther }}</span>  
-                      <div class="comment-content">  
-                        <p>{{ comment.text }}</p>  
-                      </div>  
-                      <div v-if="comment.replies && comment.replies.length > 0" class="replies">  
-                        <h3>回复：</h3>  
-                        <el-timeline :reverse="true" class="inner-timeline">  
-                          <el-timeline-item  
-                            v-for="(reply, replyIndex) in comment.replies"  
-                            :key="`${flash.flash_id}-${index}-${replyIndex}`"  
-                            :timestamp="reply.timestamp || replyIndex"  
-                            placement="bottom"  
-                            size="small"  
-                          >  
-                            <p>{{ reply.text }}</p>  
-                          </el-timeline-item>  
-                        </el-timeline>  
-                      </div>  
-                    </div>  
-                  </el-timeline-item>  
-                </div>  
-              </el-timeline>  
-            </div>  
         </div>
       </div>
       <div class="right-panel">  
@@ -182,6 +127,8 @@ height: 100%;
   display: flex;  
   flex-direction: column;  
   margin: 2%; /* 与头像保持一些间距 */  
+  font-size: 20px;
+  line-height: 1.6; 
 }  
   
 .replies {  
