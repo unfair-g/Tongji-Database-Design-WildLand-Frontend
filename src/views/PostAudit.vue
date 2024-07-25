@@ -7,9 +7,27 @@
       <el-table-column prop="post_time" label="发表时间" width="300" align="center" />
       <el-table-column label="操作台" width="300" align="center">
         <template #default="scope">
-          <el-button type="primary" color="#1D5B5E" icon="CircleCheck" @click="handleAction(scope.row, 'check')">通过</el-button>
-          <el-button type="primary" color="#1D5B5E" icon="CircleClose" @click="handleAction(scope.row, 'close')">拒绝</el-button>
-          <el-button type="primary" color="#1D5B5E" icon="MoreFilled" @click="handleAction(scope.row, 'more')">更多</el-button>
+          <el-button 
+            type="primary" 
+            color="#1D5B5E" 
+            :disabled="scope.row.isReviewed"
+            @click="handleAction(scope.row, 'check')">
+            <CircleCheck />通过
+          </el-button>
+          <el-button 
+            type="primary" 
+            color="#1D5B5E" 
+            :disabled="scope.row.isReviewed"
+            @click="handleAction(scope.row, 'close')">
+            <CircleClose />拒绝
+          </el-button>
+          <el-button 
+            type="primary" 
+            color="#1D5B5E" 
+            :disabled="scope.row.isReviewed"
+            @click="handleAction(scope.row, 'more')">
+            <MoreFilled />更多
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -28,12 +46,10 @@ import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue'
 import { mapState, mapActions } from 'vuex'
 
 export default {
-  data() {
-    return {
-      CircleCheck,
-      CircleClose,
-      MoreFilled
-    };
+  components: {
+    CircleCheck,
+    CircleClose,
+    MoreFilled
   },
   computed: {
     ...mapState('admin', ['postAuditTableData'])
@@ -41,16 +57,28 @@ export default {
   created() {
     this.fetchPostAuditTableData()
   },
+  watch: {
+    postAuditTableData: {
+      handler(newVal) {
+        console.log('postAuditTableData has changed:', newVal)
+        // 这里可以添加更多逻辑，例如保存变化，更新UI等
+      },
+      deep: true // 深度监听
+    }
+  },
   methods: {
-    ...mapActions('admin', ['fetchPostAuditTableData']),
+    ...mapActions('admin', ['fetchPostAuditTableData', 'updatePostAuditStatus']),
     handleAction(row, action) {
-      console.log(`Action: ${action} on row:`, row);
+      if (action === 'check' || action === 'close') {
+        // Update the status in the store
+        this.updatePostAuditStatus({ id: row.id, status: true })
+      }
       if (action === 'more') {
-        this.$router.push({ name: 'PostDetail' });
+        this.$router.push({ name: 'PostDetail', params: { id: row.id } })
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -59,5 +87,9 @@ export default {
   min-width: 1200px;
   margin: 0 auto;
   overflow-x: auto;
+}
+.el-button.disabled {
+  background-color: #dcdcdc;
+  border-color: #dcdcdc;
 }
 </style>

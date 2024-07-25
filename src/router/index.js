@@ -17,6 +17,16 @@ const routes = [
                 component: () => import('../views/PersonalInformation.vue')
             },
             {
+                path: 'OutdoorGear',
+                name: 'OutdoorGear',
+                component: () => import('../views/OutdoorGear.vue')
+            },
+            {
+                path:'AdminCamp',
+                name:'AdminCamp',
+                component: () =>import('../views/AdminCamp.vue')
+            },
+            {
                 path:'GeekAudit',
                 name:'GeekAudit',
                 component: () =>import('../views/GeekAudit.vue')
