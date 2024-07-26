@@ -132,6 +132,10 @@ const routes = [
                         path: "camporder",
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
+                    {
+                        path: 'star',
+                        component: () => import('../components/UserFavourites.vue')
+                    }
                 ]
             },
             {
