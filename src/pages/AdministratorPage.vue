@@ -31,8 +31,8 @@
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>内容管理
                 </template>
-                <el-menu-item index="2-1">营地</el-menu-item>
-                <el-menu-item index="2-2">户外用品</el-menu-item>
+                <el-menu-item index="2-1" @click="navigateTo('AdminCamp')">营地</el-menu-item>
+                <el-menu-item index="2-2" @click="navigateTo('OutdoorGear')">户外用品</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="3">
                 <template #title>

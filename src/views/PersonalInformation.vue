@@ -25,7 +25,18 @@ export default {
   name: 'App',  
   components: {  
     MessageList  
-  }  
+  }  ,
+  computed: {  
+    // 使用计算属性来根据selectedType过滤消息  
+    filteredMessages() {  
+      if (!this.selectedType) {  
+        // 如果没有选择类型，则返回所有消息  
+        return this.messages;  
+      }  
+      // 否则，返回匹配指定类型的消息  
+      return this.messages.filter(message => message.type === this.selectedType);  
+    }  
+  } 
 }  
 </script>  
   

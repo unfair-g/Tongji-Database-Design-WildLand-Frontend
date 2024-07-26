@@ -21,15 +21,6 @@
             举报原因:
             <textarea v-model="commentReportDetail.ReportReason" class="report-textarea" readonly></textarea>
           </div>
-          <div class="review-opinion">审核意见:</div>
-          <div class="actions">
-            <el-button :class="{ selected: !rejectSelected }" @click="approveReport">举报成功</el-button>
-            <el-button :class="{ selected: rejectSelected }" @click="selectReject">驳回举报</el-button>
-          </div>
-          <div v-if="rejectSelected" class="reject-reason">
-            <div class="reject-reason-label">举报驳回:</div>
-            <textarea v-model="commentReportDetail.rejectReason" placeholder="填写驳回原因" class="reject-reason-input"></textarea>
-          </div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
@@ -60,26 +51,10 @@ export default {
     this.fetchCommentReportDetail(this.$route.params.id)
   },
   methods: {
-    ...mapActions('admin', ['fetchCommentReportDetail', 'updateRejectReason']),
-    selectReject() {
-      this.rejectSelected = true
-    },
-    approveReport() {
-      this.rejectSelected = false
-    },
+    ...mapActions('admin', ['fetchCommentReportDetail']),
     confirmAction() {
-      if (this.rejectSelected) {
-        console.log('驳回原因:', this.commentReportDetail.rejectReason)
-        this.updateRejectReason(this.commentReportDetail.rejectReason)
-      } else {
-        console.log('举报成功')
-      }
+      console.log('举报处理完成')
       this.$router.push({ name: 'ReportReview', query: { selectedOption: 'comments' } })
-    }
-  },
-  data() {
-    return {
-      rejectSelected: false
     }
   },
   components: {
@@ -142,8 +117,7 @@ hr {
 }
 
 .report-comment-content,
-.report-reason,
-.review-opinion {
+.report-reason {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -176,47 +150,6 @@ hr {
   font-weight: bold;
   margin-bottom: 10px;
   padding-left: 40px;
-  box-sizing: border-box;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding-left: 40px;
-}
-
-.actions .el-button {
-  background-color: #1D5B5E;
-  color: white;
-  opacity: 0.5;
-}
-
-.actions .el-button.selected {
-  opacity: 1;
-}
-
-.reject-reason {
-  margin-top: 10px;
-  width: 100%;
-  padding-left: 40px;
-  box-sizing: border-box;
-}
-
-.reject-reason-label {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.reject-reason-input {
-  width: 70%;
-  height: 80px;
-  border: 1px solid #1D5B5E;
-  border-radius: 5px;
-  padding: 10px;
-  resize: none;
   box-sizing: border-box;
 }
 

@@ -17,7 +17,8 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
                   {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
                   {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-                   ]
+                   ],
+      deleted: false
     },
     {
       campground_id: 21,
@@ -35,7 +36,8 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
         {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
         {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-         ]
+         ],
+      deleted: false
     },
     {
       campground_id: 22,
@@ -53,7 +55,8 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
         {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
         {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-         ]
+         ],
+      deleted: false
     },
     {
       campground_id: 31,
@@ -71,7 +74,8 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
         {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
         {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-         ]
+         ],
+      deleted: false
     },
     {
       campground_id: 41,
@@ -89,7 +93,8 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
         {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
         {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-         ]
+         ],
+      deleted: false
     },
     {
       campground_id: 51,
@@ -107,7 +112,8 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
         {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
         {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-         ]
+         ],
+      deleted: false
     },
     {
       campground_id: 52,
@@ -125,9 +131,24 @@ export default {
       campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
         {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
         {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
-         ]
+         ],
+      deleted: false
     },
     
   ]
+  },
+  mutations: {
+    DELETE_CAMP(state, campground_id) {
+      const camp = state.camps.find(camp => camp.campground_id === campground_id);
+      if (camp) {
+        camp.deleted = true;
+      }
+    },
+    UPDATE_CAMP(state, updatedCamp) {
+      const index = state.camps.findIndex(camp => camp.campground_id === updatedCamp.campground_id);
+      if (index !== -1) {
+        state.camps.splice(index, 1, updatedCamp);
+      }
+    }
   }
 }

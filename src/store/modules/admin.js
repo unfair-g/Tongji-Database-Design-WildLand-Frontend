@@ -9,10 +9,12 @@ const state = {
   commentReportDetail: null,
   postAuditTableData: [
     {
+      id: 1,
       title: "123",
       author: "1",
       post_kind: "2",
-      post_time: "222"
+      post_time: "222",
+      isReviewed: false // 新增字段
     }
   ],
   postsTableData: [
@@ -22,7 +24,8 @@ const state = {
       reporter: "举报人1",
       reportedUser: "被举报人1",
       reason: "原因1",
-      reportTime: "时间1"
+      reportTime: "时间1",
+      isReviewed: false // 新增字段
     }
   ],
   commentsTableData: [
@@ -32,12 +35,43 @@ const state = {
       reporter: "举报人1",
       reportedUser: "被举报人1",
       reason: "原因1",
-      reportTime: "时间1"
+      reportTime: "时间1",
+      isReviewed: false // 新增字段
     }
   ],
-  geekAuditTableData: [] // 添加达人审核表格数据
+  geekAuditTableData: [
+    {
+      id: 1,
+      applicant: "申请人1",
+      expertise: "擅长领域1",
+      qualification: "资质证明1",
+      outdoorExperience: "户外经历1",
+      applicationTime: "申请时间1",
+      isReviewed: false,
+      reviewStatus: null
+    }
+    // 添加更多数据
+  ],
+  outdoorGearTableData: [
+    {
+      id: 1,
+      name: "帐篷",
+      price: "300元",
+      stock: 50
+    }
+    // 添加更多数据
+  ],
+  campgroundTableData: [  // 新增营地数据
+    {
+      id: 1,
+      name: "营地1",
+      contact: "123-456-7890"
+    }
+    // 添加更多数据
+  ]
 }
 
+// Getters
 const getters = {
   nickname: state => state.nickname,
   userId: state => state.userId,
@@ -46,13 +80,16 @@ const getters = {
   postDetail: state => state.postDetail,
   commentDetail: state => state.commentDetail,
   postReportDetail: state => state.postReportDetail,
-  commentReportDetail: state => state.commentReportDetail, // 修正拼写
+  commentReportDetail: state => state.commentReportDetail,
   postAuditTableData: state => state.postAuditTableData,
   postsTableData: state => state.postsTableData,
   commentsTableData: state => state.commentsTableData,
-  geekAuditTableData: state => state.geekAuditTableData // 添加getter
+  geekAuditTableData: state => state.geekAuditTableData,
+  outdoorGearTableData: state => state.outdoorGearTableData,
+  campgroundTableData: state => state.campgroundTableData  // 新增 getter
 }
 
+// Mutations
 const mutations = {
   setNickname(state, nickname) {
     state.nickname = nickname
@@ -87,11 +124,55 @@ const mutations = {
   setCommentsTableData(state, commentsTableData) {
     state.commentsTableData = commentsTableData
   },
-  setGeekAuditTableData(state, geekAuditTableData) { // 添加mutation
+  setGeekAuditTableData(state, geekAuditTableData) {
     state.geekAuditTableData = geekAuditTableData
+  },
+  setOutdoorGearTableData(state, outdoorGearTableData) {
+    state.outdoorGearTableData = outdoorGearTableData
+  },
+  setCampgroundTableData(state, campgroundTableData) {  // 新增 mutation
+    state.campgroundTableData = campgroundTableData
+  },
+  updatePostAuditStatus(state, { id, status }) {
+    const post = state.postAuditTableData.find(post => post.id === id)
+    if (post) {
+      post.isReviewed = status
+    }
+  },
+  updatePostTableDataStatus(state, { id, status }) {
+    const post = state.postsTableData.find(post => post.id === id)
+    if (post) {
+      post.isReviewed = status
+    }
+  },
+  updateCommentTableDataStatus(state, { id, status }) {
+    const comment = state.commentsTableData.find(comment => comment.id === id)
+    if (comment) {
+      comment.isReviewed = status
+    }
+  },
+  updateGeekAuditStatus(state, { id, status }) {
+    const applicant = state.geekAuditTableData.find(item => item.id === id)
+    if (applicant) {
+      applicant.isReviewed = true
+      applicant.reviewStatus = status
+    }
+  },
+  updateOutdoorGearTableData(state, { id, updatedData }) {
+    const gear = state.outdoorGearTableData.find(item => item.id === id)
+    if (gear) {
+      Object.assign(gear, updatedData)
+    }
+  },
+  updateCampgroundTableData(state, { id, updatedData }) {  // 新增 mutation
+    const campground = state.campgroundTableData.find(item => item.id === id)
+    if (campground) {
+      Object.assign(campground, updatedData)
+    }
   }
 }
 
+// Actions
 const actions = {
   fetchAdminDetails({ commit }) {
     const data = {
@@ -112,8 +193,7 @@ const actions = {
       postTitle: "示例帖子标题",
       postType: "分享贴",
       postContent: "这是帖子内容。",
-      publisherName: "发布者名称",
-      rejectReason: ""
+      publisherName: "发布者名称"
     }
     commit('setPostDetail', postDetail)
   },
@@ -122,8 +202,7 @@ const actions = {
       id: id,
       commentContent: "示例评论内容",
       commenterName: "评论者名称",
-      commentTime: "评论时间",
-      rejectReason: ""
+      commentTime: "评论时间"
     }
     commit('setCommentDetail', commentDetail)
   },
@@ -134,8 +213,7 @@ const actions = {
       postType: "分享贴",
       postContent: "这是帖子内容。",
       publisherName: "发布者名称",
-      ReportReason:"这里是举报原因",
-      rejectReason: ""
+      ReportReason: "这里是举报原因"
     }
     commit('setPostReportDetail', postReportDetail)
   },
@@ -144,18 +222,19 @@ const actions = {
       id: id,
       commentContent: "示例评论内容",
       commenterName: "评论者名称",
-      ReportReason: "这里是举报原因",
-      rejectReason: ""
+      ReportReason: "这里是举报原因"
     }
     commit('setCommentReportDetail', commentReportDetail)
   },
   fetchPostAuditTableData({ commit }) {
     const postAuditTableData = [
       {
+        id: 1,
         title: "123",
         author: "1",
         post_kind: "2",
-        post_time: "222"
+        post_time: "222",
+        isReviewed: false // 新增字段
       }
     ]
     commit('setPostAuditTableData', postAuditTableData)
@@ -168,7 +247,8 @@ const actions = {
         reporter: "举报人1",
         reportedUser: "被举报人1",
         reason: "原因1",
-        reportTime: "时间1"
+        reportTime: "时间1",
+        isReviewed: false // 新增字段
       }
     ]
     commit('setPostsTableData', postsTableData)
@@ -181,23 +261,68 @@ const actions = {
         reporter: "举报人1",
         reportedUser: "被举报人1",
         reason: "原因1",
-        reportTime: "时间1"
+        reportTime: "时间1",
+        isReviewed: false // 新增字段
       }
     ]
     commit('setCommentsTableData', commentsTableData)
   },
-  fetchGeekAuditTableData({ commit }) { // 添加action
+  fetchGeekAuditTableData({ commit }) {
     const geekAuditTableData = [
       {
+        id: 1,
         applicant: "申请人1",
         expertise: "擅长领域1",
         qualification: "资质证明1",
         outdoorExperience: "户外经历1",
-        applicationTime: "申请时间1"
+        applicationTime: "申请时间1",
+        isReviewed: false,
+        reviewStatus: null
       }
-      // Add more data as needed
+      // 添加更多数据
     ]
     commit('setGeekAuditTableData', geekAuditTableData)
+  },
+  fetchOutdoorGearTableData({ commit }) {
+    const outdoorGearTableData = [
+      {
+        id: 1,
+        name: "帐篷",
+        price: "300元",
+        stock: 50
+      }
+      // 添加更多数据
+    ]
+    commit('setOutdoorGearTableData', outdoorGearTableData)
+  },
+  fetchCampgroundTableData({ commit }) {  // 新增 action
+    const campgroundTableData = [
+      {
+        id: 1,
+        name: "营地1",
+        contact: "123-456-7890"
+      }
+      // 添加更多数据
+    ]
+    commit('setCampgroundTableData', campgroundTableData)
+  },
+  updatePostAuditStatus({ commit }, { id, status }) {
+    commit('updatePostAuditStatus', { id, status })
+  },
+  updatePostTableDataStatus({ commit }, { id, status }) {
+    commit('updatePostTableDataStatus', { id, status })
+  },
+  updateCommentTableDataStatus({ commit }, { id, status }) {
+    commit('updateCommentTableDataStatus', { id, status })
+  },
+  updateGeekAuditStatus({ commit }, { id, status }) {
+    commit('updateGeekAuditStatus', { id, status })
+  },
+  updateOutdoorGearTableData({ commit }, { id, updatedData }) {
+    commit('updateOutdoorGearTableData', { id, updatedData })
+  },
+  updateCampgroundTableData({ commit }, { id, updatedData }) {  // 新增 action
+    commit('updateCampgroundTableData', { id, updatedData })
   }
 }
 

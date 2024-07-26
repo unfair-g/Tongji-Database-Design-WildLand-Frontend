@@ -1,22 +1,22 @@
 <template>
   <div>
-      <div v-for="recruitmentpost in recruitmentposts" :key="recruitmentpost.post_id" justify="center" >
-        <el-card class="post-item">
+      <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
+        <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
           <template #header>
            <div class="post-header">
-             <img :src="recruitmentpost.avatar" alt="avatar" class="avatar">
+             <img :src="ldleitemspost.avatar" alt="avatar" class="avatar">
                <div class="post-details">
                  <div class="post-info">
-                   <span class="username">{{ recruitmentpost.username }}</span>
-                   <span class="time">{{ recruitmentpost.time }}</span>
+                   <span class="username">{{ ldleitemspost.username }}</span>
+                   <span class="time">{{ ldleitemspost.time }}</span>
                  </div>
                <div class="post-stats">
-               <span class="stat-item"><el-icon><View /></el-icon>{{ recruitmentpost.views }}</span>
+               <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
                <span class="stat-item" @click="toggleLike">
                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>
-                 {{ recruitmentpost.likes }}
+                 {{ ldleitemspost.likes }}
                </span>
-               <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ recruitmentpost.comments }}</span>
+               <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
                <span class="stat-item" @click="toggleStar">
                 <el-icon v-if="!isStarred"><Star /></el-icon>
                 <el-icon v-else><StarFilled /></el-icon>
@@ -27,14 +27,14 @@
     </template>
 
     <div class="post-content">
-      <img :src="recruitmentpost.item_image" class="image" alt="order image">
+      <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <span>{{ recruitmentpost.item_name}}</span>
-              <div><span>商品简介: {{ recruitmentpost.item_summary}}</span></div>
-              <div><span>商品新旧程度：{{ recruitmentpost.condition}}</span></div>
+            <span>{{ ldleitemspost.item_name}}</span>
+              <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
+              <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
               <div class="bottom clearfix">
-                <span class="price">¥{{ recruitmentpost.price }}</span>
-                <el-button type="text" class="button" @click="goToPostDetail(recruitmentpost)">查看详情</el-button>
+                <span class="price">¥{{ ldleitemspost.price }}</span>
+                <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
               </div>
           </div>
         </div>
@@ -49,14 +49,14 @@ import { ref } from 'vue';
     export default ({
       name: 'LeaseView',
       computed: {
-        recruitmentposts() {
-            return this.$store.state.post.recruitmentposts
+        ldleitemsposts() {
+            return this.$store.state.post.ldleitemsposts
         }
       },
       methods: {
-        goToPostDetail (recruitmentpost) {
-          const recruitmentpostId = recruitmentpost.post_id
-          this.$router.push({ path: `/home/forum/lease/${recruitmentpostId}`
+        goToPostDetail (ldleitemspost) {
+          const ldleitemspostId = ldleitemspost.post_id
+          this.$router.push({ path: `/home/forum/lease/${ldleitemspostId}`
         })
         }
       },
