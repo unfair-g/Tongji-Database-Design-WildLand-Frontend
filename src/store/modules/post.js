@@ -61,10 +61,8 @@ export default {
                 ]
             }
         ],
-        shareposts:[
-             {
-              
-            }
+        recruitmentposts: [
+
         ],
         ldleitemsposts: [
             {
