@@ -18,30 +18,50 @@
       />
     </el-popover>
     <div class="fixed-item post-status">
-      <el-button type="primary" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">点击发布帖子</el-button>
-    </div>
+      <el-dropdown @command="handleCommand">
+        <template v-slot:default>
+          <el-button type="primary" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">
+            点击发布帖子
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+        </template>
+        <template v-slot:dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="share" class="dropdown-item" style="font-size: 20px; ">分享贴</el-dropdown-item>
+            <el-dropdown-item command="rent" class="dropdown-item" style="font-size: 20px;">闲置贴</el-dropdown-item>
+            <el-dropdown-item command="recruit" class="dropdown-item" style="font-size: 20px;">招募贴</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+        </div>
     <div class="fixed-item hot-users">
       <HotUsers />
     </div>
     <div class="fixed-item hot-posts">
       <HotPosts />
     </div>
+    <!-- Add the LdlePost dialog component -->
+      <LdlePost v-model:isLdlePostDialogVisible="isLdlePostDialogVisible" />
   </div>
+  <!--this.$router.push('/home/forum/Ldleitems-post');-->
 </template>
 
 <script>
 import HotUsers from './HotUsers.vue';
 import HotPosts from './HotPosts.vue';
+import LdlePost from '@/components/LdlePostWindow.vue'
 
 export default {
   name: 'SidebarContent',
   components: {
     HotUsers,
-    HotPosts
+    HotPosts,
+    LdlePost
   },
   data() {
     return {
-      isAlertVisible: true
+      isAlertVisible: true,
+      isLdlePostDialogVisible:false
     };
   },
   methods: {
@@ -55,6 +75,20 @@ export default {
       // 每次隐藏 popover 时重置 alert 的显示状态
       this.isAlertVisible = true;
     },
+    handleCommand(command) {
+      if (command === 'share') {
+        this.$router.push('/share-post');
+      } else if (command === 'rent') {
+        this.openDialog();
+      } else if (command === 'recruit') {
+        this.$router.push('/recruit-post');
+      }
+    },
+    openDialog() {
+      console.log('Opening dialog');
+      this.isLdlePostDialogVisible = true;
+      console.log('Dialog Visible:', this.isLdlePostDialogVisible);
+    }
   },
 }
 </script>
@@ -112,6 +146,11 @@ const onClickOutside = () => {
 .post-status-button:active {
   background-color: #1e4040; /* 修改点击背景颜色 */
   color: #fff; /* 修改文字颜色 */
+}
+
+::v-deep.dropdown-item {
+  font-size: 28px;
+   font-weight: bold; /* 设置选项字体加粗 */
 }
 
 </style>

@@ -95,6 +95,7 @@ export default {
 .time {
   color: darkgrey;
 }
+
 i {
   font-size: 25px;
 }

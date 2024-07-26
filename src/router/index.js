@@ -93,6 +93,11 @@ const routes = [
                 props: true
             },
             {
+                path: '/home/product/edit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },            
+            {
                 path: "forum",
                 component: () => import('../views/ForumView.vue')
             },
@@ -122,6 +127,14 @@ const routes = [
                     {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
+                    },
+                    {
+                        path: "camporder",
+                        component: () => import('../views/UserCampOrderListView.vue')
+                    },
+                    {
+                        path: 'star',
+                        component: () => import('../components/UserFavourites.vue')
                     }
                 ]
             },
@@ -133,6 +146,11 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
                 props: true
             },
             {
@@ -166,13 +184,18 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:recruitmentpostID",
-                component: () => import('../components/LeaseForumDetail.vue'),
+                path: "forum/share/:sharepostID",
+                component: () => import('../views/postDetailView.vue'),
                 props: true
             },
             {
-                path: "forum/share/:sharepostID",
-                component: () => import('../views/postDetailView.vue'),
+                path: "userspace/camporder/:id",
+                component: () => import('../views/CampOrderDetailView.vue'),
+                props: true
+            },
+            {
+                path: "forum/lease/:ldleitemspostID",
+                component: () => import('../components/LdleitemsPost.vue'),
                 props: true
             }
         ]

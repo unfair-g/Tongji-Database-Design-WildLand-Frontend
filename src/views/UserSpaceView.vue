@@ -19,22 +19,14 @@
             <span>订单</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="2-1" style="height:80px">营地</el-menu-item>
+            <el-menu-item index="2-1" style="height:80px" @click="toCampOrder">营地</el-menu-item>
             <el-menu-item index="2-2" style="height:80px" @click="toOrder">户外用品</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
-        <el-sub-menu index="3">
-          <template #title>
+        <el-menu-item index="3" @click="toFavourites">
             <el-icon><Star /></el-icon>
-            <span>收藏</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1" style="height:80px">营地</el-menu-item>
-            <el-menu-item index="3-2" style="height:80px">户外用品</el-menu-item>
-            <el-menu-item index="3-3" style="height:80px">帖子</el-menu-item>
-            <el-menu-item index="3-4" style="height:80px">经验资讯</el-menu-item>
-          </el-menu-item-group>
-        </el-sub-menu>
+            <span>收藏夹</span>
+        </el-menu-item>
         <el-menu-item index="4">
           <el-icon><Bell /></el-icon>
           <span>消息中心</span>
@@ -70,6 +62,17 @@ function toOrder() {
   })
 }
 
+function toCampOrder() {
+  router.push({
+    path:'/home/userspace/camporder'
+  })
+}
+
+function toFavourites() {
+  router.push({
+    path:'/home/userspace/star'
+  })
+}
 </script>
 
 <style scoped>

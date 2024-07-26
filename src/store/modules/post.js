@@ -61,10 +61,12 @@ export default {
                 ]
             }
         ],
-        ldleitemsposts: [
-
+        shareposts:[
+             {
+              
+            }
         ],
-        recruitmentposts: [
+        ldleitemsposts: [
             {
                 avatar: require('@/assets/avatar.jpg'),
                 username: 'fby',
@@ -79,7 +81,6 @@ export default {
                 condition: "八成新",
                 item_image: require('@/assets/product-1.png')
             }
-
         ]
     }
 }
