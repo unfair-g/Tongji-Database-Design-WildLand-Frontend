@@ -1,8 +1,7 @@
 <template>
 <div class="bg">
-    <div class="role">
-         <el-button class="userbutton" type="primary" color="#1D5B5E" circle>游客</el-button>
-         <el-button class="adbutton" type="primary" color="#308588" circle>管理</el-button>
+    <div class="custom-style">
+    <el-segmented v-model="role" :options="options" :block="true"/>
     </div>
     <div class="container">
     <el-form
@@ -18,10 +17,10 @@
       <el-input v-model="formLabelAlign.type" placeholder="请输入密码" :prefix-icon="Key"/>
     </el-form-item>
   </el-form>
-  <el-button class="loginbutton" type="primary" color="#1D5B5E" @click="toHomePage">登录</el-button>
+  <el-button class="loginbutton" type="primary" color="#1D5B5E" @click="toRolePage">登录</el-button>
   <div class="others">
-      <el-link type="info">忘记密码</el-link>
-      <el-link type="info" style="margin-left:75%;color:black">注册账号</el-link>
+      <router-link to="/enter/findkey" style="color:#888888;text-decoration: none">忘记密码</router-link>
+      <router-link to="/enter/enrollment" style="margin-left:75%;color:black;text-decoration: none">注册账号</router-link>
   </div>
     </div>
 </div>
@@ -31,6 +30,11 @@
 import router from '../router'
 import { reactive } from 'vue'
 import { User, Key } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+
+const role = ref('游客')
+
+const options = ['游客','管理员']
 
 const formLabelAlign = reactive({
     name: '',
@@ -38,11 +42,12 @@ const formLabelAlign = reactive({
     type: '',
 })
 
-function toHomePage() {
-  router.push({path: '/home'})
+function toRolePage() {
+  if (role.value == "游客")
+    router.push({ path: '/home' });
+  else
+    router.push({path: '/administrator'})
 }
-
-
 </script>
 
 <style>
@@ -50,28 +55,19 @@ function toHomePage() {
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
-    height:100%;
+    height:100vh;
+    position:absolute;
     width:55%;
-    position: absolute;
 }
 
-.role{
+.custom-style .el-segmented {
     margin-top: 15%;
-}
-
-.userbutton{
-    min-width: 100px; /* 更改圆形按钮的宽度 */
-    height: 100px; /* 更改圆形按钮的高度 */
-    font-size:38px;
-    margin-left:30%;
-    margin-right: 20%;
-}
-
-.adbutton{
-    min-width: 100px; /* 更改圆形按钮的宽度 */
-    height: 100px; /* 更改圆形按钮的高度 */
-    font-size:38px;
-   
+    margin-left: 30%;
+    width:40%;
+    font-size: 40px;
+  --el-segmented-item-selected-color: #FFFFFF;
+  --el-segmented-item-selected-bg-color:#1D5B5E;
+  --el-border-radius-base: 30px;
 }
 
 .container{

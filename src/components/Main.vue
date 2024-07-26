@@ -1,22 +1,23 @@
 <template>
   <el-menu :default-active="activeIndex"
+  :ellipsis="false"
   class="el-menu-demo"
   mode="horizontal"
   active-text-color="#1D5B5E"
   @select="handleSelect"
   >
 
-      <el-menu-item index="1">
+      <el-menu-item index="1" @click="toShare">
         -分享贴-
       </el-menu-item>
-      <el-menu-item index="2">
+      <el-menu-item index="2" @click="toRecruit">
         -招募贴-
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item index="3" @click="toLease">
         -闲置贴-
       </el-menu-item>
 
-
+    <div class="flex-grow" />
     <div class="menu-search">
       <el-input
         v-model="input"
@@ -30,12 +31,29 @@
    
   </el-menu>
   
-  <el-main> <ArticleCard />
+  <el-main>
+    <div v-if="currentView === 'share'">
+      <ArticleCard />
     <ArticleCard />
     <ArticleCard />
     <ArticleCard />
     <ArticleCard />
     <ArticleCard />
+    </div>
+
+    <div v-if="currentView === 'recruit'">
+      <ArticleCard />
+    <ArticleCard />
+    <ArticleCard />
+    <ArticleCard />
+    <ArticleCard />
+    <ArticleCard />
+    </div>
+
+    <div v-if="currentView === 'lease'">
+      <LeaseForum />
+    </div>
+
   </el-main>
    
   
@@ -43,11 +61,29 @@
 
 <script>
 import ArticleCard from '../components/Article.vue'
+import LeaseForum from '../components/LeaseForum.vue'
 
 export default {
   name: 'MainContent',
   components: {
-    ArticleCard
+    ArticleCard,
+    LeaseForum
+  },
+  methods: {
+    toShare(){
+      this.currentView = 'share'
+    },
+    toRecruit(){
+      this.currentView = 'recruit'
+    },
+    toLease(){
+      this.currentView = 'lease'
+    }
+  },
+  data() {
+    return {
+      currentView: 'share' // 默认显示分享贴
+    }
   }
 }
 </script>
@@ -67,6 +103,7 @@ const handleSelect = (key, keyPath) => {
 .menu-search {
   display: flex;
   align-items: right;
+  margin-right: 2%;
 
 }
 .el-menu-demo{
@@ -79,4 +116,7 @@ const handleSelect = (key, keyPath) => {
   width: 240px;
   margin-right: 10px;
 }
+.flex-grow {
+        flex-grow: 1;
+    }
 </style>

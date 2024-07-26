@@ -1,9 +1,10 @@
 <template>
-     <div id="bg">
-      <img src="../assets/bg.jpg">
-     </div>
+    <div class="homepage">
+      <el-affix>
       <HomeHead />
+      </el-affix>
       <router-view></router-view>
+    </div>
 </template>
 
 <script>
@@ -17,22 +18,14 @@ export default {
 
 </script>
 
-<style>
-#bg{
-  z-index:-1;
-  top:0;
-  width: 100%;
-  height:100%;
-  position:absolute;
-}
+<style scoped>
+  .homepage{
+    min-width:100%;
+    min-height:100vh;
+    overflow: hidden;
+    background: url(../assets/bg.jpg) no-repeat;
+    background-size:100% 100%;
+    background-attachment:fixed;
+  }
 
-#bg img {
-  position:absolute;
-  right: 0;
-  bottom: 0;  
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  opacity:25%;
-}
 </style>

@@ -17,18 +17,12 @@ export default {
     {
         toLoginPage() {
             this.$router.push({
-                path: '/enter',
-                query: {
-                    component:'Login'
-                }
+                path: '/enter/login'
             })
         },
         toEnrollmentPage() {
             this.$router.push({
-                path: '/enter',
-                query: {
-                    component:'Enrollment'
-                }
+                path: '/enter/enrollment'
             })
         }
     }
@@ -38,15 +32,16 @@ export default {
 
 <style scoped>
     .welcome{
-        position: absolute;
+        position:fixed;
         animation:fadeIn ease 3s;
         animation-iteration-count: 1;
         animation-fill-mode: forwards;
-        top: 30%;
+        top: 35%;
         left:10%;
     }
 
     .logo{
+        position:relative;
         color:#1D5B5E;
         font-size:150px;
         font-family: 'LOGO',sans-serif !important;

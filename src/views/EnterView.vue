@@ -2,36 +2,20 @@
 <div id="bg">
     <img src="../assets/loginbg.png">
 </div>
-<component :is="currentComponent"></component>
+<router-view></router-view>
 </template>
 
 <script>
-import Login from '../components/LogIn.vue'
-import Enrollment from '../components/UserEnroll.vue'
 
-export default {
-  data() {
-    return {
-      currentComponent:Login
-    }
-  },
-  created() {
-    this.currentComponent = this.$route.query.component;
-  },
-  components: {
-      Login,
-      Enrollment
-    }
-}
 </script>
 
 <style scoped>
 #bg{
   z-index:-1;
   top:0;
-  width: 100%;
-  height:100%;
-  position:absolute;
+  width: 100vw;
+  height:100vh;
+  position:fixed;
 }
 
 #bg img {
