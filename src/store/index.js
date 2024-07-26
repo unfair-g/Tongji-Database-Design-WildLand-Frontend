@@ -24,11 +24,11 @@ export default createStore({
     camp,
     camp_order,
     order,
-    admin,
-    flash,
-    message,
     product,
     tag,
+    flash,
+    admin,
+    message,
     post
   }
 })

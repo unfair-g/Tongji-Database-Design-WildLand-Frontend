@@ -8,6 +8,7 @@
       <el-table-column label="操作台" width="300" align="center">
         <template #default="scope">
           <el-button 
+            :class="{ 'selected-action': scope.row.action === 'check' }"
             type="primary" 
             color="#1D5B5E" 
             :disabled="scope.row.isReviewed"
@@ -15,6 +16,7 @@
             <CircleCheck />通过
           </el-button>
           <el-button 
+            :class="{ 'selected-action': scope.row.action === 'close' }"
             type="primary" 
             color="#1D5B5E" 
             :disabled="scope.row.isReviewed"
@@ -22,6 +24,7 @@
             <CircleClose />拒绝
           </el-button>
           <el-button 
+            :class="{ 'selected-action': scope.row.action === 'more' }"
             type="primary" 
             color="#1D5B5E" 
             :disabled="scope.row.isReviewed"
@@ -72,6 +75,8 @@ export default {
       if (action === 'check' || action === 'close') {
         // Update the status in the store
         this.updatePostAuditStatus({ id: row.id, status: true })
+        row.isReviewed = true // 将行标记为已审核
+        row.action = action // 保存动作状态，用于改变按钮颜色
       }
       if (action === 'more') {
         this.$router.push({ name: 'PostDetail', params: { id: row.id } })
@@ -91,5 +96,11 @@ export default {
 .el-button.disabled {
   background-color: #dcdcdc;
   border-color: #dcdcdc;
+}
+.selected-action {
+  background-color: #1D5B5E;
+}
+.el-button.disabled.selected-action {
+  background-color: #1D5B5E;
 }
 </style>
