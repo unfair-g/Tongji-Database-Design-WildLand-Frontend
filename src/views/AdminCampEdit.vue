@@ -89,10 +89,10 @@
       ...mapMutations(['UPDATE_CAMP']),
       saveChanges() {
         this.UPDATE_CAMP(this.editedCamp);
-        this.$router.push('/home/admincamp');
+        this.$router.push('/administrator/admincamp');
       },
       cancel() {
-        this.$router.push('/home/admincamp');
+        this.$router.push('/administrator/admincamp');
       }
     }
   };

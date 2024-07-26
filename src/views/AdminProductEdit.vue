@@ -54,10 +54,10 @@
       saveProduct() {
         // 提交更新到 Vuex Store
         this.$store.commit('updateProduct', this.product);
-        this.$router.push({ path: '/home/outdoorGear' }); // 保存后跳转回 OutdoorGear 页面
+        this.$router.push({ path: '/administrator/outdoorGear' }); // 保存后跳转回 OutdoorGear 页面
       },
       cancelEdit() {
-        this.$router.push({ path: '/home/outdoorGear' }); // 取消编辑，跳转回 OutdoorGear 页面
+        this.$router.push({ path: '/administrator/outdoorGear' }); // 取消编辑，跳转回 OutdoorGear 页面
       }
     },
     beforeRouteEnter(to, from, next) {
