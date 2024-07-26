@@ -93,6 +93,11 @@ const routes = [
                 props: true
             },
             {
+                path: '/home/product/edit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },            
+            {
                 path: "forum",
                 component: () => import('../views/ForumView.vue')
             },
@@ -137,6 +142,11 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
                 props: true
             },
             {
