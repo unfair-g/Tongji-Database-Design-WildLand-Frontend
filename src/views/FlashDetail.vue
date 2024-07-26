@@ -62,6 +62,7 @@ methods: {
 .container {
 display: flex;
 height: 100%;
+margin-top: 5%;
 }
 .flash-info {
   margin: 3%;
