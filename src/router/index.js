@@ -184,6 +184,11 @@ const routes = [
                 props: true
             },
             {
+                path: "forum/share/:sharepostID",
+                component: () => import('../views/postDetailView.vue'),
+                props: true
+            },
+            {
                 path: "userspace/camporder/:id",
                 component: () => import('../views/CampOrderDetailView.vue'),
                 props: true
@@ -192,7 +197,7 @@ const routes = [
                 path: "forum/lease/:ldleitemspostID",
                 component: () => import('../components/LdleitemsPost.vue'),
                 props: true
-            },
+            }
         ]
     },
     {

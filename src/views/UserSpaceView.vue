@@ -73,7 +73,6 @@ function toFavourites() {
     path:'/home/userspace/star'
   })
 }
-
 </script>
 
 <style scoped>
