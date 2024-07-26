@@ -52,6 +52,7 @@
           </template>
         </el-table-column>
       </el-table>
+
       <el-alert
         v-if="currentTableData.length === 0"
         title="当前无需要审核的举报"
