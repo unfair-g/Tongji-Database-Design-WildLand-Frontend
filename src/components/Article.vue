@@ -1,4 +1,5 @@
 <template>
+ <div v-if="view==='share'">
   <div v-for="sharepost in shareposts" :key="sharepost.post_id" justify="center">
     <el-card class="post-item">
       <template #header>
@@ -29,7 +30,7 @@
         </div>
       </el-card>
     </div>  
-  </div><!-- end of v-if="view=='share'" -->
+</div><!-- end of v-if="view=='share'" -->
   <div v-else-if="view==='recruit'">
     <div v-for="recruitpost in recruitposts" :key="recruitpost.post_id" justify="center">
       <el-card class="post-item">
