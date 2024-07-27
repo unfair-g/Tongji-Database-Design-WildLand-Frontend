@@ -52,7 +52,7 @@ export default {
   setup() {
     const router = useRouter()
     const closeDetail = () => {
-      router.push({ name: 'PostAudit' })
+      router.push({ name: 'TagAudit' })
     }
 
     return {

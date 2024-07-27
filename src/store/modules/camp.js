@@ -14,10 +14,11 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-                   'B1','B2','B3','B5',
-                   'C1','C2','C3']
-
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+                  {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+                  {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+                   ],
+      deleted: false
     },
     {
       campground_id: 21,
@@ -32,9 +33,11 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-        'B1','B2','B3','B5',
-        'C1','C2','C3']
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+        {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+        {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+         ],
+      deleted: false
     },
     {
       campground_id: 22,
@@ -49,9 +52,11 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-        'B1','B2','B3','B5',
-        'C1','C2','C3']
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+        {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+        {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+         ],
+      deleted: false
     },
     {
       campground_id: 31,
@@ -66,9 +71,11 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-        'B1','B2','B3','B5',
-        'C1','C2','C3']
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+        {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+        {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+         ],
+      deleted: false
     },
     {
       campground_id: 41,
@@ -83,9 +90,11 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-        'B1','B2','B3','B5',
-        'C1','C2','C3']
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+        {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+        {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+         ],
+      deleted: false
     },
     {
       campground_id: 51,
@@ -100,9 +109,11 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-        'B1','B2','B3','B5',
-        'C1','C2','C3']
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+        {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+        {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+         ],
+      deleted: false
     },
     {
       campground_id: 52,
@@ -117,11 +128,27 @@ export default {
       detail_images: [require('@/assets/camp/detail/11-1.png'), require('@/assets/camp/detail/11-2.png'), require('@/assets/camp/detail/11-3.png'),],
       introduction_image: require('@/assets/camp/introduction/11.png'),
       campsite_image: require('@/assets/camp/campsite/21.png'),
-      campsite_id:['A1','A2','A3','A4','A5','A6','A7',
-        'B1','B2','B3','B5',
-        'C1','C2','C3']
+      campsites:[ {id:'A1',price:100},{id:'A2',price:100},{id:'A3',price:100},{id:'A4',price:100},{id:'A5',price:100},{id:'A6',price:100},{id:'A7',price:100},
+        {id:'B1',price:100},{id:'B2',price:100},{id:'B3',price:100},{id:'B5',price:100},
+        {id:'C1',price:100},{id:'C2',price:100},{id:'C3',price:100},
+         ],
+      deleted: false
     },
     
   ]
+  },
+  mutations: {
+    DELETE_CAMP(state, campground_id) {
+      const camp = state.camps.find(camp => camp.campground_id === campground_id);
+      if (camp) {
+        camp.deleted = true;
+      }
+    },
+    UPDATE_CAMP(state, updatedCamp) {
+      const index = state.camps.findIndex(camp => camp.campground_id === updatedCamp.campground_id);
+      if (index !== -1) {
+        state.camps.splice(index, 1, updatedCamp);
+      }
+    }
   }
 }

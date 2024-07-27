@@ -1,4 +1,4 @@
-<template>  
+<template>
   <div class="tag-group">  
     <el-card  
       v-for="(tag, index) in tag"  
@@ -21,12 +21,12 @@
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail()">更新标签</el-button>  
       </div>  
     </el-card>  
-  </div>  
+  </div>
 </template>  
   
 <script>  
 export default {  
-  name: 'HotPosts',  
+  name: 'HotPosts',
   computed: {
     tag() {
       return this.$store.state.tag.tags;
