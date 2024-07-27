@@ -2,6 +2,7 @@ export default {
     state: {
         shareposts: [
             {
+                post_id: 6,
                 avatar: require('@/assets/avatar.jpg'),
                 username: 'fby',
                 time: '19分钟前',
@@ -11,6 +12,7 @@ export default {
                 comments: 5,
                 comments_details: [
                     {
+                        comment_id: 456,
                         avatar: require('@/assets/avatar.jpg'),
                         username: 'fby',
                         user_id: 360,
@@ -21,6 +23,7 @@ export default {
                         comments: 1,
                         replies: [
                             {
+                                comment_id: 564,
                                 avatar: require('@/assets/avatar-female.jpg'),
                                 username: 'zyj',
                                 user_id: 225,
@@ -34,7 +37,6 @@ export default {
 
                     }
                 ],
-                post_id: 1,
                 location: '上海市·同济大学嘉定校区',
                 content: [
                     '夏天当然要玩水啦，小朋友的快乐就这么简单~',
@@ -61,10 +63,8 @@ export default {
                 ]
             }
         ],
-        shareposts:[
-             {
-              
-            }
+        recruitmentposts: [
+
         ],
         ldleitemsposts: [
             {
