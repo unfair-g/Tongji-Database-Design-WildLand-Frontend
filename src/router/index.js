@@ -193,7 +193,6 @@ const routes = [
                 component: () => import('../views/PublishAPost.vue'),
                 props: route => ({ command: route.query.command }) // 通过query传递参数
             },
-
             {
                 path: "userspace/camporder/:id",
                 component: () => import('../views/CampOrderDetailView.vue'),

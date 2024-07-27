@@ -37,6 +37,7 @@ export default {
 
                     }
                 ],
+                post_id: 1,
                 location: '上海市·同济大学嘉定校区',
                 content: [
                     '夏天当然要玩水啦，小朋友的快乐就这么简单~',
@@ -127,6 +128,9 @@ export default {
                 ]
             }
 
+
+        ],
+        recruitmentposts: [
 
         ],
         ldleitemsposts: [

@@ -347,7 +347,6 @@ export default {
   margin-right: auto;
 }
 
-
 .post-stats {
   margin-top:20px ;
   display: flex;
@@ -400,8 +399,8 @@ export default {
 .delete-comment-button {
   color: red;
 }
+
 .comments-section{
   margin-top: 20px;
 }
-
 </style>

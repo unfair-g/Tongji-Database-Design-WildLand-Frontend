@@ -1,14 +1,13 @@
 <template>
-  <div v-if="view==='share'">
-    <div v-for="sharepost in shareposts" :key="sharepost.post_id" justify="center">
-      <el-card class="post-item">
-        <template #header>
-          <div class="post-header">
-            <img :src="sharepost.avatar" alt="avatar" class="avatar">
+  <div v-for="sharepost in shareposts" :key="sharepost.post_id" justify="center">
+    <el-card class="post-item">
+      <template #header>
+        <div class="post-header">
+          <img :src="sharepost.avatar" alt="avatar" class="avatar">
           <div class="post-details">
             <div class="post-info">
-                <span class="username">{{ sharepost.username }}</span>
-                <span class="time">{{ sharepost.time }}</span>
+              <span class="username">{{ sharepost.username }}</span>
+              <span class="time">{{ sharepost.time }}</span>
             </div>
             <div class="post-stats">
               <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
