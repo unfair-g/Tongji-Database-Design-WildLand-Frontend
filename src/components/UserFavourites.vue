@@ -1,20 +1,36 @@
 <template>
 <div style="display: flex;padding-left:2%;padding-top:1% ">
     <h3 style="font-size:55px">我的收藏夹</h3>
-    <el-tabs v-model="activeTab"  class="favourites" stretch="true">
-        <el-tab-pane label="营地" name="营地" width="10px">
+    <el-tabs v-model="componentTag"  class="favourites" stretch="true">
+        <el-tab-pane label="营地" name="camp" width="10px">
         </el-tab-pane>
-        <el-tab-pane label="户外用品" name="户外用品">
+        <el-tab-pane label="户外用品" name="product">
         </el-tab-pane>
-        <el-tab-pane label="帖子" name="帖子">
+        <el-tab-pane label="帖子" name="post">
         </el-tab-pane>
-        <el-tab-pane label="经验资讯" name="经验资讯">
+        <el-tab-pane label="经验资讯" name="flash">
         </el-tab-pane>
     </el-tabs>
+</div>
+<div style="margin:2%;">
+<component :is="componentTag"></component>
 </div>
 </template>
 
 <script>
+import camp from './StarCamp.vue'
+
+export default {
+    components: {
+        camp
+    },
+    data() {
+        return {
+            activeTab: '营地',
+            componentTag:'camp'  
+        }
+    }
+}
 
 </script>
 
