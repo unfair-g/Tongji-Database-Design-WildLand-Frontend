@@ -20,37 +20,82 @@
                 <el-icon v-else><StarFilled /></el-icon>
               </span>
             </div>
+            </div>
           </div>
+        </template>
+        <div class="post-content" @click="goToPostDetail(sharepost)">
+          <div><h4>{{sharepost.title }}</h4></div>
+          <div><p> {{sharepost.shortContent }}</p></div>
         </div>
-      </template>
-      <div class="post-content" @click="goToPostDetail(sharepost)">
-        <div><h4>{{sharepost.title }}</h4></div>
-        <div><p> {{sharepost.shortContent }}</p></div>
+      </el-card>
+    </div>  
+  </div><!-- end of v-if="view=='share'" -->
+  <div v-else-if="view==='recruit'">
+    <div v-for="recruitpost in recruitposts" :key="recruitpost.post_id" justify="center">
+      <el-card class="post-item">
+        <template #header>
+          <div class="post-header">
+            <img :src="recruitpost.avatar" alt="avatar" class="avatar">
+          <div class="post-details">
+            <div class="post-info">
+                <span class="username">{{ recruitpost.username }}</span>
+                <span class="time">{{ recruitpost.time }}</span>
+            </div>
+            <div class="post-stats">
+              <span class="stat-item"><el-icon><View /></el-icon>{{ recruitpost.views }}</span>
+              <span class="stat-item" @click="toggleLike(recruitpost)">
+                <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !recruitpost.isLiked, 'icon-dianzanxuanzhong': recruitpost.isLiked}"></i>{{ recruitpost.likes }}
+              </span>
+              <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ recruitpost.comments }}</span>
+              <span class="stat-item" @click="toggleStar(recruitpost)">
+                <el-icon v-if="!recruitpost.isStarred"><Star /></el-icon>
+                <el-icon v-else><StarFilled /></el-icon>
+              </span>
+            </div>
+            </div>
+          </div>
+        </template><!-- end of post-header -->
+        
+        <div class="post-content" @click="goToPostDetail(recruitpost)">
+          <div><h4>{{recruitpost.title }}</h4></div>
+          <div><p> {{recruitpost.shortContent }}</p></div>
+        </div>
+
+      </el-card>
     </div>
-    </el-card>
   </div>
+
 </template>
 
 <script>
 
 export default {
   name: 'ArticleCard',
+  props: {
+    view: {
+      type: String,
+      required:true
+    }
+  },
   computed: {
     shareposts() {
       return this.$store.state.post.shareposts;
+    },
+    recruitposts() {
+      return this.$store.state.post.recruitmentposts; 
     }
   },
   methods: {
-    goToPostDetail(sharepost) {
-      const sharepostID = sharepost.post_id;
-      this.$router.push({ path: `/home/forum/share/${sharepostID}` });
+    goToPostDetail(post) {
+      const postID = post.post_id;
+      this.$router.push({ path: `/home/forum/${this.view}/${postID}` });
     },
-    toggleLike(sharepost) {
-      sharepost.isLiked = !sharepost.isLiked;
-      sharepost.likes = sharepost.isLiked ? sharepost.likes + 1 : sharepost.likes - 1;
+    toggleLike(post) {
+      post.isLiked = !post.isLiked;
+      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
     },
-    toggleStar(sharepost) {
-      sharepost.isStarred = !sharepost.isStarred;
+    toggleStar(post) {
+      post.isStarred = !post.isStarred;
     }
   }
 };

@@ -16,10 +16,10 @@
               style="width: 240px"
             >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="option in options"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
               />
             </el-select>
           </div>
@@ -47,7 +47,6 @@
           v-model="dialogVisible"
           width="80%"
           :show-close="true"
-          
         >
          <div class="image-dialog">
            <el-button @click="prevImage" class="prev-button" ><el-icon><ArrowLeftBold /></el-icon></el-button>
@@ -92,60 +91,21 @@
       </div>
 
       <div class="comments-section">
-        <div class="my-comment">
-          <img :src="sharepost.avatar" alt="avatar" class="avatar">
-          <textarea v-model="comment" placeholder="发表你的评论"></textarea>
-          <el-button type="primary" @click="submitComment" :disabled="!comment">点击提交</el-button>
-        </div>
+        <CommentInput
+          :avatar="sharepost.avatar"
+          v-model:commentContent="comment"
+          @submit-comment="addComment"
+        />
 
-        <div v-for="comment in sharepost.comments_details" :key="comment.user_id" class="comment-item">
-          <img :src="comment.avatar" alt="avatar" class="avatar">
-          <div class="comment-details">
-            <div class="one-comment">
-              <div class="comment-info">
-                <div class="comment-header">
-                  <span class="comment-username">{{ comment.username }}</span>
-                </div>
-                <div class="comment-content">{{ comment.content }}</div>
-                <div class="comment-footer">
-                  <span class="timestamp">{{ comment.timestamp }}</span>
-                  <span class="location">IP: {{ comment.location }}</span>
-                  <span type="text" class="delete-comment-button" @click="openDeleteDialog('comment', comment)">删除</span>
-                </div>
-              </div>
-              <div class="comment-stats">
-                <span class="stat-item" @click="toggleLike(comment)">
-                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !comment.isLiked, 'icon-dianzanxuanzhong': comment.isLiked}"></i>{{ comment.likes }}
-                </span>
-                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ comment.comments }}</span>
-              </div>
-            </div>
-          
-            <div class="replies-section">
-              <div v-for="reply in comment.replies" :key="reply.user_id" class="reply-item">
-                <img :src="reply.avatar" alt="avatar" class="avatar">
-                <div class="reply-details">
-                  <div class="reply-header">
-                    <span class="comment-username">{{ reply.username }}</span>               
-                  </div>
-                  <div class="reply-content">{{ reply.content }}</div>
-                  <div class="reply-footer">
-                    <span class="timestamp">{{ reply.timestamp }}</span>
-                    <span class="location">IP: {{ reply.location }}</span>
-                    <span type="text" class="delete-comment-button" @click="openDeleteDialog('reply', reply, comment)">删除</span>
-                  </div>
-                </div>
-                <div class="comment-stats">
-                  <span class="stat-item" @click="toggleLike(reply)">
-                    <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !reply.isLiked, 'icon-dianzanxuanzhong': reply.isLiked}"></i>{{ reply.likes }}
-                  </span>
-                  <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ reply.comments }}</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <CommentItem
+          v-for="comment in sharepost.comments_details"
+          :key="comment.comment_id"
+          :comment="comment"
+          @delete-comment="openDeleteDialog('comment', $event)"
+          @delete-reply="openDeleteDialog('reply', $event, comment)"
+          @toggle-like="toggleLike"
+          @add-reply="addReply"
+        />
       </div>
 
     </div>
@@ -154,8 +114,15 @@
 </template>
 
 <script>
+import CommentInput from '@/components/CommentInput.vue';
+import CommentItem from '@/components/CommentItem.vue';
+
 export default {
   name: 'ShareForumDetail',
+  components: {
+    CommentInput,
+    CommentItem
+  },
   props: ['sharepostID'],
   data() {
     return {
@@ -170,7 +137,11 @@ export default {
       deleteType: '', // 删除类型（帖子或评论）
       deleteComment: null, // 要删除的评论
       deleteReply: null, // 要删除的回复
-      parentComment: null // 回复的父评论
+      parentComment: null, // 回复的父评论
+      options: [
+      { label: '仅自己可见', value: '仅自己可见' },
+      { label: '所有人可见', value: '所有人可见' }
+    ]
     };
   },
   computed: {
@@ -264,22 +235,14 @@ export default {
     cancelDelete() {
       this.deleteDialogVisible = false;
     },
-    submitComment() {
-      if (this.comment.trim() !== '') {
-        const newComment = {
-          avatar: this.sharepost.avatar,
-          username: 'fby', // 假设当前用户的用户名
-          user_id: 56, // 随便起了一个ID
-          timestamp: new Date().toLocaleString(),
-          location: '上海', // 假设当前用户的位置
-          content: this.comment,
-          likes: 0,
-          comments: 0,
-          replies: []
-        };
-        this.sharepost.comments_details.push(newComment);
-        this.comments += 1;
-        this.comment = ''; // 清空输入框
+    addComment(newComment) {
+      this.sharepost.comments_details.push(newComment);
+      this.sharepost.comments += 1;
+    },
+    addReply({ parentComment, reply }) {
+      const comment = this.sharepost.comments_details.find(c => c.comment_id === parentComment.comment_id);
+      if (comment) {
+        comment.replies.push(reply);
       }
     }
   }
@@ -383,12 +346,7 @@ export default {
   flex-direction: column;
   margin-right: auto;
 }
-.comment-stats{
-  display: flex;
-  gap:30px;
-  justify-content: flex-end;
-  cursor: pointer;
-}
+
 .post-stats {
   margin-top:20px ;
   display: flex;
@@ -430,57 +388,11 @@ export default {
 .delete-button:hover {
   text-decoration: underline;
 }
-.comment-username{
-  color:red;
-  font-size:17px;
-  margin-bottom:5px ;
-}
 
-.comments-section {
-  margin-top: 20px;
-}
-
-.comment-item,
-.reply-item {
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.comment-details,
-.reply-details {
-  flex: 1;
-  margin-left: 10px;
-}
-.one-comment{
-  display: flex;
-  justify-content: space-between;
-}
-.comment-header,
-.reply-header {
-  display: flex;
-  flex-direction: column;
-}
-.location,
-.timestamp{
+.location{
   margin-right:20px;
   color:grey;
   font-size:14px;
-}
-.comment-content,
-.reply-content {
-  margin-top: 5px;
-}
-
-.comment-footer,
-.reply-footer {
-  margin-top: 10px;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: flex-start;
-  gap:30px;
-  color:grey;
-  font-size: 14px;
-
 }
 
 
@@ -488,32 +400,7 @@ export default {
   color: red;
 }
 
-.my-comment{
-  display: flex;
-  justify-content: flex-end; /* 将子元素水平对齐到右边 */
-  align-items: flex-start; /* 将子元素垂直对齐到底部 */
+.comments-section{
   margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.my-comment textarea{
-  flex: 1;
-  height: 80px;
-  margin-right: 20px;
-  padding: 10px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  resize: none;
-}
-.my-comment el-button{
-  height: 40px;
-  background-color: #409eff;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  align-self: flex-end; /* 将按钮垂直对齐到容器底部 */
-}
-.my-comment el-button:hover{
-  background-color: #66b1ff;
 }
 </style>

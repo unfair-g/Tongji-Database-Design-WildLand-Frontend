@@ -32,26 +32,13 @@
   </el-menu>
   
   <el-main>
-    <div v-if="currentView === 'share'">
-      <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    </div>
-
-    <div v-if="currentView === 'recruit'">
-      <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    </div>
 
     <div v-if="currentView === 'lease'">
       <LeaseForum />
+    </div>
+
+    <div v-else>
+      <ArticleCard :view="currentView"/>
     </div>
 
   </el-main>
@@ -117,6 +104,6 @@ const handleSelect = (key, keyPath) => {
   margin-right: 10px;
 }
 .flex-grow {
-        flex-grow: 1;
-    }
+  flex-grow: 1;
+}
 </style>
