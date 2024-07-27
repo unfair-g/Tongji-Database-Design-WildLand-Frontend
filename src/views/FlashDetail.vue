@@ -7,21 +7,15 @@
               <el-icon v-if="!flash.isSolid"><Star /></el-icon>
               <el-icon v-else><StarFilled /></el-icon>
             </div>  
-            <div class="flash-like">
-              <span>{{ flash.favorite }}</span>
-            </div>
             <span class="flash-title">{{ flash.title }}</span>
             <div>
-              <el-avatar  
-                src="flash.avatar" alt="用户头像" class="avatar" 
-                    />   
-              <span class="flash-meta">{{ flash.meta }}</span>
+              <span class="flash-meta">作者：{{ flash.meta }}</span>
             </div>
             <span class="flash-content">{{ flash.content }}</span>
         </div>
       </div>
       <div class="right-panel">  
-        <h2>点赞</h2>  
+        <h2>收藏</h2>  
         <div>  
           <h3> {{ flash.like }}</h3> <!-- 可选，用于显示Flash ID -->  
           <div class="like-item" v-for="(user, userIndex) in flash.like_users" :key="`${flash.flash_id}-${userIndex}`">  
