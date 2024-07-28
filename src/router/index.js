@@ -184,9 +184,9 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/share/:sharepostID",
+                path: "forum/post/:type/:postID",
                 component: () => import('../views/postDetailView.vue'),
-                props: true
+                props: route => ({ type: route.params.type, postID: route.params.postID })
             },
             {
                 path: "forum/publish",

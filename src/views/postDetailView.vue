@@ -1,12 +1,12 @@
 <template>
   <el-card class="post-container">
-    <div v-if="sharepost">
+    <div v-if="post">
       <div class="post-header">
-        <img :src="sharepost.avatar" alt="avatar" class="avatar">
+        <img :src="post.avatar" alt="avatar" class="avatar">
         <div class="post-details">
           <div class="post-info">
-            <span class="username">{{ sharepost.username }}</span>
-            <span class="time">发布时间：{{ sharepost.time }}</span>
+            <span class="username">{{ post.username }}</span>
+            <span class="time">发布时间：{{ post.time }}</span>
           </div>
           <div class="post-visible-states">
             <el-select
@@ -30,33 +30,34 @@
       </div>
 
       <div class="post-content">
-        <h3 class="post-title">{{ sharepost.title }}</h3>
-        <p v-for="line in sharepost.content" :key="line" class="post-text">{{ line }}</p>
-        <div class="image-gallery">
-          <div v-for="(imageRow, rowIndex) in imageRows" :key="rowIndex" class="image-row">
-            <img v-for="(image, index) in imageRow" 
-            :key="index" 
-            :src="image" 
-            :alt="'Image ' + (rowIndex * 3 + index + 1)" 
-            :class="imageClass"
-            @click="showImage(image)"
-          >
-          </div>
-        </div>
-        <el-dialog
-          v-model="dialogVisible"
-          width="80%"
-          :show-close="true"
-        >
-         <div class="image-dialog">
-           <el-button @click="prevImage" class="prev-button" ><el-icon><ArrowLeftBold /></el-icon></el-button>
-            <img :src="currentImage" alt="Enlarged image" style="width: 100%;">
-          <el-button @click="nextImage" class="next-button"><el-icon><ArrowRightBold /></el-icon></el-button>
-         </div>
-        </el-dialog>
-
-        <div class="post-location">
-          <el-icon><Location /></el-icon> {{ sharepost.location }}
+        <div v-if="type === 'share'">
+          <div class="post-content">
+            <h3 class="post-title">{{ post.title }}</h3>
+            <p v-for="line in post.content" :key="line" class="post-text">{{ line }}</p>
+            <div class="image-gallery">
+              <div v-for="(imageRow, rowIndex) in imageRows" :key="rowIndex" class="image-row">
+                <img v-for="(image, index) in imageRow" 
+                :key="index" 
+                :src="image" 
+                :alt="'Image ' + (rowIndex * 3 + index + 1)" 
+                :class="imageClass"
+                @click="showImage(image)"
+              >
+              </div>
+            </div>
+            <el-dialog
+              v-model="dialogVisible"
+              width="80%"
+              :show-close="true"
+            >
+            <div class="image-dialog">
+              <el-button @click="prevImage" class="prev-button" ><el-icon><ArrowLeftBold /></el-icon></el-button>
+                <img :src="currentImage" alt="Enlarged image" style="width: 100%;">
+              <el-button @click="nextImage" class="next-button"><el-icon><ArrowRightBold /></el-icon></el-button>
+            </div>
+            </el-dialog>
+            <div class="post-location">
+          <el-icon><Location /></el-icon> {{ post.location }}
           <span class="delete-button" @click="openDeleteDialog('post')">删除</span>
         </div>
         <el-dialog
@@ -70,60 +71,136 @@
             <el-button type="primary" @click="confirmDelete">是</el-button>
           </template>
         </el-dialog>
-      </div>
-      <div class="post-stats">
-        <el-button class="stat-item" @click="toggleLike(sharepost)">
-          <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !sharepost.isLiked, 'icon-dianzanxuanzhong': sharepost.isLiked}"></i>
-          <span>点赞</span>
-          <span>{{ sharepost.likes }}</span>
+            
+          </div>
+          <div class="post-stats">
+            <el-button class="stat-item" @click="toggleLike(post)">
+              <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !post.isLiked, 'icon-dianzanxuanzhong': post.isLiked}"></i>
+              <span>点赞</span>
+              <span>{{ post.likes }}</span>
+              
+            </el-button>
+            <el-button class="stat-item" @click="toggleStar(post)">
+              <el-icon v-if="!post.isStarred"><Star /></el-icon>
+              <el-icon v-else><StarFilled /></el-icon>
+              收藏
+            </el-button>
+            <el-button class="stat-item">
+              <el-icon><ChatLineSquare /></el-icon> 评论{{ post.comments }}</el-button>
+            <el-button class="stat-item">
+              <el-icon><Bell/></el-icon>举报
+            </el-button>
+          </div>
+
+          <div class="comments-section">
+            <CommentInput
+              :avatar="post.avatar"
+              v-model:commentContent="comment"
+              @submit-comment="addComment"
+            />
+
+            <CommentItem
+              v-for="comment in post.comments_details"
+              :key="comment.comment_id"
+              :comment="comment"
+              @delete-comment="openDeleteDialog('comment', $event)"
+              @delete-reply="openDeleteDialog('reply', $event, comment)"
+              @toggle-like="toggleLike"
+              @add-reply="addReply"
+            />
+          </div>
+        </div>
+
+        <div v-if="type === 'recruit'">
+          <h3 class="post-title">{{ post.title }}</h3>
+          <h4 >
+            <div class="recruit-number recruit-info">
+              <p>招募人数：{{ post.total_recruit }} </p>
+              <p>已招募到人数：{{ post.recruited_number }} </p>
+              <p>已报名人数：{{ post.signedup_number }} </p>
+            </div>
+            <p class="recruit-info">活动时间：{{ post.activity_time }}</p>
+            <p class="recruit-info">活动地点：{{ post.activity_address}}</p>
+            <p class="recruit-info">活动要求：{{ post.requirements}}</p>
+          </h4>
+          <div class="post-location">
+          <el-icon><Location /></el-icon> {{ post.location }}
+          <span class="delete-button" @click="openDeleteDialog('post')">删除</span>
+        </div>
+        <el-dialog
+          v-model="deleteDialogVisible"
+          title="确认删除"
+          width="30%"
+        >
+          <span>{{deleteMessage}}</span>
+          <template v-slot:footer>
+            <el-button @click="cancelDelete">否</el-button>
+            <el-button type="primary" @click="confirmDelete">是</el-button>
+          </template>
+        </el-dialog>
+        <div class="post-stats">
+          <el-button class="stat-item" @click="toggleLike(post)">
+            <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !post.isLiked, 'icon-dianzanxuanzhong': post.isLiked}"></i>
+            <span>点赞</span>
+            <span>{{ post.likes }}</span>
+          </el-button>
+          <el-button class="sign-up">
+             参与报名</el-button>
+          <el-button class="stat-item">
+            <el-icon><Bell/></el-icon>举报
+          </el-button>
+        </div>
+        <div class="comments-section">
+          <SignUpInput
+            :avatar="post.avatar"
+            v-model:signupContent="signup"
+            @submit-signup="addSignUp"
+          />
+          <SignUpItem
+            v-for="signup in post.signups_details"
+            :key="signup.signup_id"
+            :signup="signup"
+            @delete-signup="openDeleteDialog('signup', $event)"
           
-        </el-button>
-        <el-button class="stat-item" @click="toggleStar(sharepost)">
-          <el-icon v-if="!sharepost.isStarred"><Star /></el-icon>
-          <el-icon v-else><StarFilled /></el-icon>
-          收藏
-        </el-button>
-        <el-button class="stat-item">
-          <el-icon><ChatLineSquare /></el-icon> 评论{{ sharepost.comments }}</el-button>
-        <el-button class="stat-item">
-          <el-icon><Bell/></el-icon>举报
-        </el-button>
+          />
+          <!-- <CommentItem
+            v-for="comment in post.comments_details"              
+            :key="comment.comment_id"
+            :comment="comment"
+            @delete-comment="openDeleteDialog('comment', $event)"
+            @delete-reply="openDeleteDialog('reply', $event, comment)"
+            @toggle-like="toggleLike"
+            @add-reply="addReply"
+          /> -->
+        </div>
+        </div>
+        
       </div>
-
-      <div class="comments-section">
-        <CommentInput
-          :avatar="sharepost.avatar"
-          v-model:commentContent="comment"
-          @submit-comment="addComment"
-        />
-
-        <CommentItem
-          v-for="comment in sharepost.comments_details"
-          :key="comment.comment_id"
-          :comment="comment"
-          @delete-comment="openDeleteDialog('comment', $event)"
-          @delete-reply="openDeleteDialog('reply', $event, comment)"
-          @toggle-like="toggleLike"
-          @add-reply="addReply"
-        />
-      </div>
+      
 
     </div>
-    <div v-else>加载中......</div>
+    
+    <div v-else>
+      jiazaizhong……
+    </div>
   </el-card>
 </template>
 
 <script>
 import CommentInput from '@/components/CommentInput.vue';
 import CommentItem from '@/components/CommentItem.vue';
+import SignUpInput from '@/components/SignUpInput.vue';
+import SignUpItem from '@/components/SignUpItem.vue';
 
 export default {
   name: 'ShareForumDetail',
   components: {
     CommentInput,
-    CommentItem
+    CommentItem,
+    SignUpInput,
+    SignUpItem
   },
-  props: ['sharepostID'],
+  props: ['type','postID'],
   data() {
     return {
       dialogVisible: false,
@@ -133,10 +210,12 @@ export default {
       isStarSolid: true,
       value: '',
       comment: '',
+      signup:'',
       deleteMessage: '', // 删除确认消息
-      deleteType: '', // 删除类型（帖子或评论）
+      deleteType: '', // 删除类型（帖子或评论或报名）
       deleteComment: null, // 要删除的评论
       deleteReply: null, // 要删除的回复
+      deleteSignup:null, // 要删除的报名
       parentComment: null, // 回复的父评论
       options: [
       { label: '仅自己可见', value: '仅自己可见' },
@@ -145,24 +224,29 @@ export default {
     };
   },
   computed: {
-    sharepost() {
-      const sharePostID = this.sharepostID;
-      return this.$store.state.post.shareposts.find(sharepost => sharepost.post_id === parseInt(sharePostID));
+    post() {
+      const postID = parseInt(this.postID);
+      if (this.type === 'share') {
+        return this.$store.state.post.shareposts.find(post => post.post_id === postID);
+      } else if (this.type === 'recruit') {
+        return this.$store.state.post.recruitmentposts.find(post => post.post_id === postID);
+      }
+      return null;
     },
     imageRows() {
-      if (!this.sharepost || !this.sharepost.post_images) return [];
+      if (!this.post || !this.post.post_images) return [];
       let rows = [];
-      for (let i = 0; i < this.sharepost.post_images.length; i += 3) {
-        rows.push(this.sharepost.post_images.slice(i, i + 3));
+      for (let i = 0; i < this.post.post_images.length; i += 3) {
+        rows.push(this.post.post_images.slice(i, i + 3));
       }
       return rows;
     },
     imageClass() {
-      if (!this.sharepost || !this.sharepost.post_images) return '';
+      if (!this.post || !this.post.post_images) return '';
       let className = '';
-      if (this.sharepost.post_images.length === 1) {
+      if (this.post.post_images.length === 1) {
         className = 'image-one';
-      } else if (this.sharepost.post_images.length === 2) {
+      } else if (this.post.post_images.length === 2) {
         className = 'image-two';
       } else {
         className = 'image-multiple';
@@ -170,7 +254,7 @@ export default {
       return className;
     },
     allImages() {
-      return this.sharepost ? this.sharepost.post_images : [];
+      return this.post ? this.post.post_images : [];
     }
   },
   methods: {
@@ -195,12 +279,12 @@ export default {
       }
       this.currentImage = this.allImages[this.currentIndex];
     },
-    toggleLike(sharepost) {
-      sharepost.isLiked = !sharepost.isLiked;
-      sharepost.likes = sharepost.isLiked ? sharepost.likes + 1 : sharepost.likes - 1;
+    toggleLike(post) {
+      post.isLiked = !post.isLiked;
+      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
     },
-    toggleStar(sharepost) {
-      sharepost.isStarred = !sharepost.isStarred;
+    toggleStar(post) {
+      post.isStarred = !post.isStarred;
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
@@ -210,24 +294,36 @@ export default {
       if (type === 'reply') {
         this.deleteReply = item;
         this.parentComment = parentComment;
-      } else {
+        this.deleteMessage = '您是否确认删除这条评论';
+      } else if(type==='comment') {
         this.deleteComment = item;
+        this.deleteMessage = '您是否确认删除这条评论';
+      } else if (type === 'post') {
+        this.deleteMessage = '您是否确认删除这条帖子'; 
+      } else {
+        this.deleteSignup = item;
+        this.deleteMessage = '您是否确认删除这条报名信息';
+        
       }
-      this.deleteMessage = type === 'post' ? '您是否确认删除这条帖子？' : (type === 'comment' ? '您是否确认删除这条评论？' : '您是否确认删除这条回复？');
       this.deleteDialogVisible = true;
     },
     confirmDelete() {
       if (this.deleteType === 'post') {
         // 这里处理帖子删除操作
       } else if (this.deleteType === 'comment' && this.deleteComment) {
-        const index = this.sharepost.comments_details.indexOf(this.deleteComment);
+        const index = this.post.comments_details.indexOf(this.deleteComment);
         if (index !== -1) {
-          this.sharepost.comments_details.splice(index, 1);
+          this.post.comments_details.splice(index, 1);
         }
       } else if (this.deleteType === 'reply' && this.deleteReply && this.parentComment) {
         const index = this.parentComment.replies.indexOf(this.deleteReply);
         if (index !== -1) {
           this.parentComment.replies.splice(index, 1);
+        }
+      } else if (this.deleteType === 'signup' && this.deleteSignup) {
+        const index = this.post.signups_details.indexOf(this.deleteSignup);
+        if (index !== -1) {
+          this.post.signups_details.splice(index, 1);
         }
       }
       this.deleteDialogVisible = false;
@@ -236,15 +332,19 @@ export default {
       this.deleteDialogVisible = false;
     },
     addComment(newComment) {
-      this.sharepost.comments_details.push(newComment);
-      this.sharepost.comments += 1;
+      this.post.comments_details.push(newComment);
+      this.post.comments += 1;
     },
     addReply({ parentComment, reply }) {
-      const comment = this.sharepost.comments_details.find(c => c.comment_id === parentComment.comment_id);
+      const comment = this.post.comments_details.find(c => c.comment_id === parentComment.comment_id);
       if (comment) {
         comment.replies.push(reply);
       }
-    }
+    },
+    addSignUp(newSignUp) {
+      this.post.register_reason.push(newSignUp);
+      this.post.comments += 1;
+    },
   }
 };
 </script>
@@ -269,9 +369,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: left;
+  margin-bottom: 10px;
 }
 .post-title {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   margin-top: 10px;
 }
 .post-text {
@@ -403,4 +504,24 @@ export default {
 .comments-section{
   margin-top: 20px;
 }
+
+.recruit-info{
+  margin-top:5px;
+  margin-right: 25px;
+  margin-bottom: 5px;
+}
+.sign-up{
+  margin-left: 200px;
+  margin-right: 200px;
+  background-color: #1D5B5E ; 
+  color: #fff ;
+  border-color: #fff ; 
+  font-size:18px;
+}
+.recruit-number{
+  display:flex;
+  flex-direction: flex-start;
+  gap:300px;
+}
+
 </style>
