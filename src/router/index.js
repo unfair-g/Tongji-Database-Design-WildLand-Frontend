@@ -96,10 +96,10 @@ const routes = [
                 path: '/home/product/edit/:productId',
                 component: () => import('../views/AdminProductEdit.vue'),
                 props: true
-            },            
+            },
             {
                 path: "forum",
-                component: () => import('../views/ForumView.vue')
+                component: () => import('../views/ForumView.vue'),
             },
             {
                 path: "campground",
@@ -187,6 +187,11 @@ const routes = [
                 path: "forum/share/:sharepostID",
                 component: () => import('../views/postDetailView.vue'),
                 props: true
+            },
+            {
+                path: "forum/publish",
+                component: () => import('../views/PublishAPost.vue'),
+                props: route => ({ command: route.query.command }) // 通过query传递参数
             },
             {
                 path: "userspace/camporder/:id",

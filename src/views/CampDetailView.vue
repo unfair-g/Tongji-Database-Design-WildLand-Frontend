@@ -9,8 +9,18 @@
           </el-carousel-item>
         </el-carousel>
         
+        <div class="up-container">
         <h2>{{ camp.campground_name }}</h2>
         <p>{{ camp.introduction }}</p>
+
+        <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
+            <span>
+              <el-button type="text" class="like-button">收藏</el-button>
+              <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="isStarSolid ? 'Star' : 'StarFilled'"></component></el-icon>
+            </span>
+        </el-tag>
+     
+        </div>
         <div class="divider"></div> <!-- Divider line -->
 
 <!-- -------------------------------------------------------------------------------- -->
@@ -50,9 +60,15 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
   name: 'CampDetail',
   props: ['campID'],
+  data () {
+    return {
+      isStarSolid: ref(true),
+    }
+  },
   computed: {
     camp() {
       const campId = this.campID;
@@ -73,7 +89,12 @@ export default {
         '淋浴房': require('@/assets/infrastructures/shower.png'),
       };
       return images[infrastructure] || '';
-    }
+    },
+    toggleStarColor () {
+      this.isStarSolid = !this.isStarSolid
+      // 如果需要，你可以在这里添加额外的逻辑来改变图标的颜色
+      // 但通常，我们会通过 CSS 来处理颜色的变化
+    },
   }
 }
 
@@ -181,5 +202,36 @@ html, body {
 .introduction-image {
   width: 80%;  /* Adjust the width as needed */
   height: auto;
+}
+
+.up-container {
+  margin-bottom: 10px; /* 与上方内容的间隔 */
+  position: relative;
+}
+
+.love {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  padding: 20px;
+  padding-left: 30px;
+  background-color: #3085887d;
+}
+
+.like-button {
+  font-size: 17px;
+  color: #ffffff;
+}
+.like-button :hover{
+  color: #1D5B5E;
+}
+
+
+.star {
+  color: #ffed49;
+  margin-left: 8px;
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
 }
 </style>

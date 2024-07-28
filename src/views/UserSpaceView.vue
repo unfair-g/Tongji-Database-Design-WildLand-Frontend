@@ -1,7 +1,7 @@
 <template>
   <el-container class="usercenter">
     <el-aside>
-    <el-col :span="24">
+    <el-col :span="24" style="height:100%">
       <el-menu
         active-text-color="#1D5B5E"
         background-color="#FFFFFF"
@@ -86,6 +86,7 @@ function toFavourites() {
     --el-sub-menu-item-height:80px;
     --el-menu-item-font-size: 20px;
     min-height:92vh;
+    height:100%;
 }
 
 .el-menu-item:hover{
