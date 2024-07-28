@@ -3,10 +3,8 @@
           <div v-for="camporder in camporders" :key="camporder.order_id" justify="center" >
               <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camporder-card" @click="goToCampOrderDetail(camporder)">
                 <div class="content">
-                  <img src="@/assets/camp11.png" class="image" alt="order image">
                 <div style="padding: 14px;flex:1;">
-                  <div><h3>{{ camporder.campground_name }}</h3></div>
-                  <div><span>预约时间：{{ camporder.startDate}}至{{ camporder.endDate}}</span></div>
+                  
                   <div><span>订单创建时间：{{ camporder.order_created_time}}</span></div>
                   <div class="bottom clearfix">
                     <span class="price">总价：¥{{ camporder.total_price }}</span>
@@ -45,7 +43,6 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding:10px;
     }
     
     .content {
@@ -55,8 +52,8 @@
     }
     
     .image {
-      width: 300px; /* 固定图片宽度 */
-      height: 160px; /* 固定图片高度 */
+      width: 200px; /* 固定图片宽度 */
+      height: 200px; /* 固定图片高度 */
       object-fit: cover;
       margin-right: 60px;
     }
