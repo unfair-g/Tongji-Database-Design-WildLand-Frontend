@@ -3,12 +3,12 @@
     <div class="custom-style">
     <el-segmented v-model="role" :options="options" :block="true"/>
     </div>
-    <div class="container">
+    <div class="login-container">
     <el-form
     label-position="top"
     label-width="auto"
     :model="formLabelAlign"
-    style="max-width: 600px"
+    style="max-width: 600px;padding-right:5%"
     >
     <el-form-item label="账号">
       <el-input v-model="formLabelAlign.name" placeholder="请输入您的账号"  :prefix-icon="User"/>
@@ -70,7 +70,7 @@ function toRolePage() {
   --el-border-radius-base: 30px;
 }
 
-.container{
+.login-container{
     background-color: #FFFFFF;
     box-shadow: 0 0 5px 1px #888888;
     padding-left:4%;

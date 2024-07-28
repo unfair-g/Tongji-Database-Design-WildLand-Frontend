@@ -173,11 +173,8 @@
             @add-reply="addReply"
           /> -->
         </div>
-        </div>
-        
+        </div>        
       </div>
-      
-
     </div>
     
     <div v-else>
