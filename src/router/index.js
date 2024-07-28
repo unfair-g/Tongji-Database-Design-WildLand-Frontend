@@ -22,14 +22,14 @@ const routes = [
                 component: () => import('../views/OutdoorGear.vue')
             },
             {
-                path:'AdminCamp',
-                name:'AdminCamp',
-                component: () =>import('../views/AdminCamp.vue')
+                path: 'AdminCamp',
+                name: 'AdminCamp',
+                component: () => import('../views/AdminCamp.vue')
             },
             {
-                path:'GeekAudit',
-                name:'GeekAudit',
-                component: () =>import('../views/GeekAudit.vue')
+                path: 'GeekAudit',
+                name: 'GeekAudit',
+                component: () => import('../views/GeekAudit.vue')
             },
             {
                 path: 'postaudit',
@@ -93,12 +93,17 @@ const routes = [
                 props: true
             },
             {
+                path: '/home/product/edit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
+            {
                 path: "forum",
-                component: () => import('../views/ForumView.vue')
+                component: () => import('../views/ForumView.vue'),
             },
             {
                 path: "campground",
-                
+
                 children: [
                     {
                         path: "",
@@ -122,6 +127,14 @@ const routes = [
                     {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
+                    },
+                    {
+                        path: "camporder",
+                        component: () => import('../views/UserCampOrderListView.vue')
+                    },
+                    {
+                        path: 'star',
+                        component: () => import('../components/UserFavourites.vue')
                     }
                 ]
             },
@@ -133,6 +146,11 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
                 props: true
             },
             {
@@ -166,8 +184,23 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:recruitmentpostID",
-                component: () => import('../components/LeaseForumDetail.vue'),
+                path: "forum/share/:sharepostID",
+                component: () => import('../views/postDetailView.vue'),
+                props: true
+            },
+            {
+                path: "forum/publish",
+                component: () => import('../views/PublishAPost.vue'),
+                props: route => ({ command: route.query.command }) ,// 通过query传递参数
+            },
+            {
+                path: "userspace/camporder/:id",
+                component: () => import('../views/CampOrderDetailView.vue'),
+                props: true
+            },
+            {
+                path: "forum/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
                 props: true
             }
         ]
