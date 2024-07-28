@@ -38,9 +38,6 @@ export default {
                     }
                 ],
                 location: '上海市·同济大学嘉定校区',
-                views: 350,
-                likes: 101,
-                comments: 5,
                 content: [
                     '夏天当然要玩水啦，小朋友的快乐就这么简单~',
                     '地址: 泉州市洛江区罗溪镇八峰露营基地',
@@ -64,7 +61,7 @@ export default {
                     // require('@/assets/post/post1_6.jpg')
 
                 ]
-            },
+            }
             // 目前只有一个帖子
         ],
         recruitmentposts: [
@@ -96,9 +93,7 @@ export default {
 
                     }
                 ]           //报名理由
-            }
-
-
+            },
 
             {
                 post_id: 6,
