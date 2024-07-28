@@ -37,16 +37,6 @@ export default {
 
                     }
                 ],
-                post_images: [
-                    require('@/assets/post/post1_1.jpg'),
-                    require('@/assets/post/post1_2.jpg'),
-                    require('@/assets/post/post1_5.jpg'),
-                    require('@/assets/post/post1_6.jpg')
-                ]
-            },
-            {
-                post_id: 1,
-                avatar: require('@/assets/avatar.jpg'),
                 location: '上海市·同济大学嘉定校区',
                 views: 350,
                 likes: 101,
@@ -74,9 +64,41 @@ export default {
                     // require('@/assets/post/post1_6.jpg')
 
                 ]
-            }
+            },
+            // 目前只有一个帖子
         ],
         recruitmentposts: [
+            {
+                post_id: 8,
+                avatar: require('@/assets/avatar-female.jpg'),
+                username: 'zyj',
+                time: '19分钟前',
+                title: '上海滴水湖组队——露营爱好者来！',
+                views: 350,
+                likes: 101,
+                comments: 5,
+                activity_time: '9月18日晚',         //活动时间
+                activity_address: '滴水湖西岸',     //活动地点
+                total_recruit: 3,            //计划招募人数
+                signedup_number: 0,               //已报名人数
+                recruited_number: 0,                 //已招募到人数
+                requirements: '会驾车，有一定的露营经验，不毁约，可私聊详情。',
+                location: '滴水湖',
+                signups_details: [
+                    {
+                        signup_id: 100,
+                        avatar: require('@/assets/avatar-male.jpg'),
+                        username: 'kkkk',
+                        content: '有露营经验，喜欢湖边露营赏景',
+                        timestamp: '2024/03/18/18:32',
+                        loaction: '浙江',
+
+
+                    }
+                ]           //报名理由
+            }
+
+
 
             {
                 post_id: 6,
