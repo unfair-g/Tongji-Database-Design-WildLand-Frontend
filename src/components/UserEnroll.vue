@@ -6,7 +6,7 @@
     label-position="top"
     label-width="auto"
     :model="formLabelAlign"
-    style="max-width: 600px; margin-top:5%; margin-bottom: 10%;"
+    style="max-width: 600px; margin-top:5%; margin-bottom: 10%;padding-right:5%"
     >
     <Avatar />
     <el-form-item label="昵称">
@@ -26,7 +26,7 @@
     </el-form-item>
   </el-form>
   <div>
-    <el-button class="cancelbutton">取消</el-button>
+    <el-button class="cancelbutton" @click="toWelcomePage">取消</el-button>
     <el-button class="checkbutton" tyype="primary" color="#1D5B5E" @click="toHomePage">登录</el-button>
     </div>
     </div>
@@ -47,6 +47,10 @@ const formLabelAlign = reactive({
 
 function toHomePage() {
   router.push({path: '/home'})
+}
+
+function toWelcomePage() {
+  router.push({path: '/'})
 }
 
 </script>
