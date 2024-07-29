@@ -33,11 +33,9 @@
   
   <el-main>
 
-    <div v-if="currentView === 'lease'">
-      <LeaseForum />
-    </div>
+    
 
-    <div v-else>
+    <div>
       <ArticleCard :view="currentView"/>
     </div>
 
@@ -48,13 +46,11 @@
 
 <script>
 import ArticleCard from '../components/Article.vue'
-import LeaseForum from '../components/LeaseForum.vue'
 
 export default {
   name: 'MainContent',
   components: {
-    ArticleCard,
-    LeaseForum
+    ArticleCard
   },
   methods: {
     toShare(){
