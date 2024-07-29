@@ -204,8 +204,8 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:ldleitemspostID",
-                component: () => import('../components/LdleitemsPost.vue'),
+                path: "forum/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
                 props: true
             }
         ]

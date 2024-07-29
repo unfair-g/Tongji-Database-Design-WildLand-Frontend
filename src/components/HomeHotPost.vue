@@ -1,5 +1,5 @@
 <template>
- <el-card style="width: 85vw;margin-left:6vw;">
+ <el-card style="width: 85vw;margin-left:6vw;margin-bottom: 6vh;">
         <template #header>
         <div class="card-header">
         <span class="title">达人热帖</span>
@@ -7,23 +7,46 @@
         </template>
         <div class="hot-post">
             <div style="width:15%">
-                 <el-menu default-active="1">
+                 <el-menu 
+                 default-active="1"
+                 class="userlist"
+                 @select="handleSelect"
+                 >
                     <el-menu-item
                     v-for="user in users"
                     :key="user.id"
+                    :index="user.id"
                     >
-                <el-avatar :src="user.avatar" />
-                <span>{{ user.name }}</span>
-                </el-menu-item>
+                    <el-avatar :src="user.avatar" />
+                    <span style="margin-left: 5%">{{ user.name }}</span>
+                    </el-menu-item>
                 </el-menu>
             </div>
-            <div style="width:85%">
-                <el-card v-if="user" style="min-height:100%">
+            <div style="width:85%;">
+                <el-card v-if="user" style="min-height: fit-content;" @click="toPostDetail">
                 <template #header>
-                    <el-avatar :src="user.avatar"></el-avatar>
-                    <p>{{ user.name }}</p>
+                    <h2>{{ post[0].title }}</h2>
                 </template>
-                <p>{{ user.profile }}</p>
+                <div style="display: flex;">
+                    <div style="width:50%">
+                    <el-carousel height="55vh" autoplay>
+                        <el-carousel-item v-for="img in post[0].post_images" :key="img" 
+                        style="height:fit-content;display: flex;justify-content: center;">
+                            <img :src="img" style="height:55vh;width:auto"/>
+                        </el-carousel-item>
+                    </el-carousel>
+                    </div>
+                    <div style="width:50%">
+                    <p v-for="line in post[0].content" :key="line" style="margin-top:3%">{{ line }}</p>
+                    </div>
+                 </div>
+                 <template #footer>
+                    <div style="display: flex; align-items:center;">
+                    <el-avatar :src="user.avatar"></el-avatar>
+                    <p style="height:100%;margin-left: 1%;">{{ user.name }}</p>
+                    <p style="margin-left: 25px;">{{ post[0].time }}</p>
+                    </div>
+                </template>
                 </el-card>
             </div>
         </div>
@@ -41,6 +64,19 @@ export default{
             ],
             user: { id: 1, name: 'Alice', avatar: require('../assets/avatar.jpg'), profile: 'Alice的个人简介' }
         }
+    },
+    computed: {
+        post() {
+             return this.$store.state.post.shareposts
+        }
+    },
+    methods: {
+        handleSelect(index){
+            this.user = this.users[index-1];
+        },
+        toPostDetail() {
+            this.$router.push({ path: `/home/forum/post/share/${this.post[0].post_id}` });
+        }
     }
 }
 </script>
@@ -56,6 +92,16 @@ export default{
     font-family: 'FZYaoti';
     font-style: italic;
     font-weight: bold;
+}
+
+.userlist{
+    --el-menu-hover-bg-color: rgb(48,133,136,40%);
+    --el-menu-active-color: #C65E2D;
+    font-weight: bold;
+}
+
+.userlist .el-menu-item{
+    height:8vh;
 }
 
 </style>

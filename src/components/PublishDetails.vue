@@ -21,8 +21,12 @@ import RecruitPublish from "../components/RecruitPostPublish.vue";
 export default {
     name: 'PublishMain',
     props: {
-        currentMenu:String
+        currentMenu:String,
     },
+    compomnents: {
+        LdlePostWindow
+    },
+
     components: {
         LdlePostWindow,
         SharePublish,

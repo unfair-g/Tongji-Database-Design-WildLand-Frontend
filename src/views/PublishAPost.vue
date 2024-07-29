@@ -7,7 +7,7 @@
       <!-- 根据左侧导航栏的选项显示不同的内容 -->
       <!-- <router-view></router-view> -->
       <!-- 根据选项显示不同内容 -->
-      <PublishMain :currentMenu="currentMenu" />
+      <component :is="currentComponent" :currentMenu="currentMenu" />
     </el-main>
   </div>
 </template>
@@ -15,6 +15,7 @@
 <script>
 import PublishAside from "../components/PublishPostAside.vue";
 import PublishMain from "../components/PublishDetails.vue";
+import LdlePostWindow from '../components/LdlePostPublish.vue'
 
 export default {
   name: 'PublishView',
@@ -26,12 +27,22 @@ export default {
   },
   components: {
     PublishAside,
-    PublishMain
+    PublishMain,
+    LdlePostWindow
   },
   data() {
     return {
-      currentMenu: 'share' // 默认值
+      currentMenu: 'share', // 默认值
+      componentsMap: {
+        share: PublishMain,
+        rent: LdlePostWindow
+      }
     };
+  },
+  computed: {
+    currentComponent() {
+      return this.componentsMap[this.currentMenu] || PublishMain;
+    }
   },
   created() {
     this.currentMenu = this.command; // 将command的值赋给currentMenu
@@ -66,7 +77,7 @@ export default {
   border: 3px solid #1D5B5E;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 20px;
+  padding: 10px;
 }
 
 .PublishAside {
