@@ -196,7 +196,7 @@ const routes = [
             {
                 path: "forum/publish",
                 component: () => import('../views/PublishAPost.vue'),
-                props: route => ({ command: route.query.command }) // 通过query传递参数
+                props: route => ({ command: route.query.command }) ,// 通过query传递参数
             },
             {
                 path: "userspace/camporder/:id",
@@ -204,8 +204,8 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:ldleitemspostID",
-                component: () => import('../components/LdleitemsPost.vue'),
+                path: "forum/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
                 props: true
             }
         ]

@@ -149,9 +149,11 @@ i {
   flex-direction: column;
   align-items: left;
 }
+
 .post-title{
   margin-bottom: 10px;
 }
+
 .post-title:hover,
 .post-text:hover {
   text-decoration: underline; /* 添加下划线 */

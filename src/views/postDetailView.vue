@@ -1,12 +1,12 @@
 <template>
   <el-card class="post-container">
-    <div v-if="post">
+    <div v-if="sharepost">
       <div class="post-header">
-        <img :src="post.avatar" alt="avatar" class="avatar">
+        <img :src="sharepost.avatar" alt="avatar" class="avatar">
         <div class="post-details">
           <div class="post-info">
-            <span class="username">{{ post.username }}</span>
-            <span class="time">发布时间：{{ post.time }}</span>
+            <span class="username">{{ sharepost.username }}</span>
+            <span class="time">发布时间：{{ sharepost.time }}</span>
           </div>
           <div class="post-visible-states">
             <el-select
@@ -198,6 +198,7 @@ export default {
     SignUpItem
   },
   props: ['type','postID'],
+
   data() {
     return {
       dialogVisible: false,
