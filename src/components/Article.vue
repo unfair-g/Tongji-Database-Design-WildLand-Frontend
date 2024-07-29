@@ -61,6 +61,7 @@
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
           <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动要求：{{ recruitpost.requirements }}</p></div>
         </div>
+
       </el-card>
     </div>
   </div>
@@ -149,11 +150,9 @@ i {
   flex-direction: column;
   align-items: left;
 }
-
 .post-title{
   margin-bottom: 10px;
 }
-
 .post-title:hover,
 .post-text:hover {
   text-decoration: underline; /* 添加下划线 */

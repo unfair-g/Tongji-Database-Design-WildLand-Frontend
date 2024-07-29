@@ -1,12 +1,12 @@
 <template>
   <el-card class="post-container">
-    <div v-if="sharepost">
+    <div v-if="post">
       <div class="post-header">
-        <img :src="sharepost.avatar" alt="avatar" class="avatar">
+        <img :src="post.avatar" alt="avatar" class="avatar">
         <div class="post-details">
           <div class="post-info">
-            <span class="username">{{ sharepost.username }}</span>
-            <span class="time">发布时间：{{ sharepost.time }}</span>
+            <span class="username">{{ post.username }}</span>
+            <span class="time">发布时间：{{ post.time }}</span>
           </div>
           <div class="post-visible-states">
             <el-select
@@ -173,8 +173,11 @@
             @add-reply="addReply"
           /> -->
         </div>
-        </div>        
+        </div>
+        
       </div>
+      
+
     </div>
     
     <div v-else>
@@ -198,7 +201,6 @@ export default {
     SignUpItem
   },
   props: ['type','postID'],
-
   data() {
     return {
       dialogVisible: false,
