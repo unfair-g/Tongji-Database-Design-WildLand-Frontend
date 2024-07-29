@@ -20,15 +20,6 @@
           <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postReportDetail.postContent }}</span></div>
           <div class="post-publisher">发布者名称: <span class="post-content">{{ postReportDetail.publisherName }}</span></div>
           <div class="post-body">举报原因: <span class="post-content post-body-content">{{ postReportDetail.ReportReason }}</span></div>
-          <div class="review-opinion">审核意见:</div>
-          <div class="actions">
-            <el-button :class="{selected: !rejectSelected}" @click="approvePost">举报成功</el-button>
-            <el-button :class="{selected: rejectSelected}" @click="selectReject">驳回举报</el-button>
-          </div>
-          <div v-if="rejectSelected" class="reject-reason">
-            <div class="post-content">举报驳回:</div>
-            <textarea v-model="postReportDetail.rejectReason" placeholder="填写驳回原因" class="post-content"></textarea>
-          </div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
@@ -59,26 +50,10 @@ export default {
     this.fetchPostReportDetail(this.$route.params.id)
   },
   methods: {
-    ...mapActions('admin', ['fetchPostReportDetail', 'updateRejectReason']),
-    selectReject() {
-      this.rejectSelected = true
-    },
-    approvePost() {
-      this.rejectSelected = false
-    },
+    ...mapActions('admin', ['fetchPostReportDetail']),
     confirmAction() {
-      if (this.rejectSelected) {
-        console.log('驳回原因:', this.postReportDetail.rejectReason)
-        this.updateRejectReason(this.postReportDetail.rejectReason)
-      } else {
-        console.log('举报成功')
-      }
+      console.log('举报处理完成')
       this.$router.push({ name: 'ReportReview' })
-    }
-  },
-  data() {
-    return {
-      rejectSelected: false
     }
   },
   components: {
@@ -143,8 +118,7 @@ hr {
 .post-title,
 .post-category,
 .post-body,
-.post-publisher,
-.review-opinion {
+.post-publisher {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -176,45 +150,6 @@ hr {
   padding: 10px;
   border: 1px solid #1D5B5E;
   border-radius: 5px;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding-left: 40px;
-}
-
-.actions .el-button {
-  background-color: #1D5B5E;
-  color: white;
-  opacity: 0.5;
-}
-
-.actions .el-button.selected {
-  opacity: 1;
-}
-
-.reject-reason {
-  margin-top: 10px;
-  width: 100%;
-  padding-left: 40px;
-  box-sizing: border-box;
-}
-
-.reject-reason div {
-  margin-bottom: 10px;
-}
-
-.reject-reason textarea {
-  width: 70%;
-  height: 80px;
-  border: 1px solid #1D5B5E;
-  border-radius: 5px;
-  padding: 10px;
-  resize: none;
-  box-sizing: border-box;
 }
 
 .confirm-button {

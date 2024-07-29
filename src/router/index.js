@@ -17,6 +17,21 @@ const routes = [
                 component: () => import('../views/PersonalInformation.vue')
             },
             {
+                path: 'OutdoorGear',
+                name: 'OutdoorGear',
+                component: () => import('../views/OutdoorGear.vue')
+            },
+            {
+                path:'AdminCamp',
+                name:'AdminCamp',
+                component: () =>import('../views/AdminCamp.vue')
+            },
+            {
+                path:'GeekAudit',
+                name:'GeekAudit',
+                component: () =>import('../views/GeekAudit.vue')
+            },
+            {
                 path: 'postaudit',
                 name: 'PostAudit',
                 component: () => import('../views/PostAudit.vue')
@@ -118,6 +133,16 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
+                props: true
+            },
+            {
+                path: "campbooking/:campID",
+                component: () => import('../views/CampBookingView.vue'),
+                props: true
+            },
+            {
+                path: "camporder",
+                component: () => import('../views/CampOrderView.vue'),
                 props: true
             },
             {
