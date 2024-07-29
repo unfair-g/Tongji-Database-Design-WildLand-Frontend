@@ -94,9 +94,6 @@ export default {
                     }
                 ]           //报名理由
             }
-
-
-
         ],
         ldleitemsposts: [
             {
