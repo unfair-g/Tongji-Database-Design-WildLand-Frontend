@@ -179,6 +179,11 @@ const routes = [
                 props: true
             },
             {
+                path: `forum/rent/:ldleitemsPostId/order`,
+                component: () => import('../views/PostOrderView.vue'),
+                props: true
+            },
+            {
                 path: "userspace/order/:id",
                 component: () => import('../views/OrderView.vue'),
                 props: true

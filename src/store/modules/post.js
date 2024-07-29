@@ -156,6 +156,11 @@ export default {
                 price: 100,
                 condition: "八成新",
                 item_image: require('@/assets/product-1.png'),
+                recipient_name: "zyj",
+                recipient_address: "上海市·同济大学嘉定校区",
+                recipient_phone: "12345678900",
+                order_status: "待支付",
+                order_date: "2023-04-23",
                 item_images: [
                     require('@/assets/product-1.png'),
                     require('@/assets/product-1.png'),
@@ -163,33 +168,6 @@ export default {
                     require('@/assets/product-1.png'),
                 ],
                 location: '上海市·同济大学嘉定校区',
-                comments_details: [
-                    {
-                        comment_id: 456,
-                        avatar: require('@/assets/avatar.jpg'),
-                        username: 'fby',
-                        user_id: 360,
-                        timestamp: '昨天',
-                        location: '上海',
-                        content: '太好了！！！',
-                        likes: 5,
-                        comments: 1,
-                        replies: [
-                            {
-                                comment_id: 564,
-                                avatar: require('@/assets/avatar-female.jpg'),
-                                username: 'zyj',
-                                user_id: 225,
-                                timestamp: '18:25',
-                                location: '上海',
-                                content: '支持！',
-                                likes: 1,
-                                comments: 0
-                            }
-                        ]
-
-                    }
-                ],
             }
         ]
     }
