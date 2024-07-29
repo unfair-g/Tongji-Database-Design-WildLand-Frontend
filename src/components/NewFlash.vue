@@ -24,7 +24,6 @@
   
 <script>  
 export default {  
-  name: 'HotPosts',  
   props: ['flashID'],
   computed: {
     flash() {

@@ -35,11 +35,11 @@ export default{
     data() {
         return {
             users: [
-                { id: 1, name: 'Alice', avatar: '../assets/avatar.jpg', profile: 'Alice的个人简介' },
-                { id: 2, name: 'Bob', avatar: '../assets/avatar.jpg', profile: 'Bob的个人简介' },
-                { id: 3, name: 'Charlie', avatar: '../assets/avatar.jpg', profile: 'Charlie的个人简介' }
+                { id: 1, name: 'Alice', avatar: require('../assets/avatar.jpg'), profile: 'Alice的个人简介' },
+                { id: 2, name: 'Bob', avatar: require('../assets/avatar.jpg'), profile: 'Bob的个人简介' },
+                { id: 3, name: 'Charlie', avatar: require('../assets/avatar.jpg'), profile: 'Charlie的个人简介' }
             ],
-            user: { id: 1, name: 'Alice', avatar: '../assets/avatar.jpg', profile: 'Alice的个人简介' }
+            user: { id: 1, name: 'Alice', avatar: require('../assets/avatar.jpg'), profile: 'Alice的个人简介' }
         }
     }
 }

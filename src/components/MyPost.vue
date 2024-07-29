@@ -2,16 +2,14 @@
     <div class="mypost">
         <h2>我的帖子</h2>
         <el-tabs v-model="activeTab"  style="margin-top:1%">
-            <el-tab-pane label="全部" name="all">
+            <el-tab-pane label="分享贴" name="share">
             </el-tab-pane>
-            <el-tab-pane label="分享贴" name="分享贴">
+            <el-tab-pane label="闲置贴" name="lease">
             </el-tab-pane>
-            <el-tab-pane label="闲置贴" name="闲置贴">
-            </el-tab-pane>
-            <el-tab-pane label="活动招募贴" name="活动招募贴">
+            <el-tab-pane label="活动招募贴" name="recruit">
             </el-tab-pane>
         </el-tabs>
-        <Post />
+        <Post :view="activeTab"/>
     </div>
 </template>
 
@@ -25,7 +23,7 @@ export default {
 
     data() {
         return {
-            activeTab:'all'
+            activeTab:'share'
         }
     }
 }

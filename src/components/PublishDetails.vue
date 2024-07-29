@@ -8,6 +8,7 @@
 </template>
 
 <script>
+
 import LdlePostWindow from '@/components/LdlePostWindow.vue'
 
 export default {

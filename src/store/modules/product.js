@@ -12,7 +12,8 @@ export default{
                 suitable_users: 5,
                 brand: 'LV',
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用'
+                introduction:'老少皆宜，非常好用',
+                isDeleted: false
             },
             {
                 product_id: 2, 
@@ -25,7 +26,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用'
+                introduction:'老少皆宜，非常好用',
+                isDeleted: false
             },
             {
                 product_id: 3, 
@@ -38,7 +40,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用'
+                introduction:'老少皆宜，非常好用',
+                isDeleted: false
 
             },
             {
@@ -52,7 +55,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用'
+                introduction:'老少皆宜，非常好用',
+                isDeleted: false
 
             },
             { 
@@ -66,7 +70,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用'
+                introduction:'老少皆宜，非常好用',
+                isDeleted: false
             },
             { 
                 product_id: 6, 
@@ -79,7 +84,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 7, 
@@ -92,7 +98,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 8, 
@@ -105,7 +112,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 9, 
@@ -118,7 +126,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 10, 
@@ -131,7 +140,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 11, 
@@ -144,7 +154,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             {
                 product_id: 12, 
@@ -157,7 +168,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 13, 
@@ -170,7 +182,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 14, 
@@ -183,7 +196,8 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             },
             { 
                 product_id: 15, 
@@ -196,14 +210,15 @@ export default{
                 suitable_users: 5, 
                 brand: 'LV', 
                 stock_quantity: 20,
-                introduction:'老少皆宜，非常好用' 
+                introduction:'老少皆宜，非常好用' ,
+                isDeleted: false
             }
     
         ]
     },
   getters: {
-    getProduct(productId){
-      return this.products.find(product => product.product_id === parseInt(productId)); 
-    }
+    getProduct: (state) => (productId) => {
+        return state.products.find(product => product.product_id === parseInt(productId));
+      }
   }
 }

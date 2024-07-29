@@ -13,18 +13,18 @@
             icon="CircleCheck"
             :disabled="scope.row.isReviewed"
             @click="handleAction(scope.row, 'approve')"
-            :class="{ 'reviewed': scope.row.isReviewed }"
+            :class="{ 'reviewed': scope.row.isReviewed && scope.row.action === 'approve' }"
           >
-            通过
+            <circle-check />通过
           </el-button>
           <el-button
             type="danger"
             icon="CircleClose"
             :disabled="scope.row.isReviewed"
             @click="handleAction(scope.row, 'reject')"
-            :class="{ 'reviewed': scope.row.isReviewed }"
+            :class="{ 'reviewed': scope.row.isReviewed && scope.row.action === 'reject' }"
           >
-            拒绝
+            <circle-close />拒绝
           </el-button>
         </template>
       </el-table-column>
@@ -43,11 +43,9 @@ import { CircleCheck, CircleClose } from '@element-plus/icons-vue'
 import { mapState, mapActions } from 'vuex'
 
 export default {
-  data() {
-    return {
-      CircleCheck,
-      CircleClose
-    }
+  components: {
+    CircleCheck,
+    CircleClose
   },
   computed: {
     ...mapState('admin', ['geekAuditTableData'])
@@ -62,7 +60,8 @@ export default {
       if (action === 'approve' || action === 'reject') {
         // 更新审核状态为已审核
         this.updateGeekAuditStatus({ id: row.id, status: true })
-        // 也可以在这里做更多的操作，比如发出 API 请求等
+        row.isReviewed = true // 将行标记为已审核
+        row.action = action // 保存动作状态，用于改变按钮颜色
       }
     }
   }
@@ -78,6 +77,11 @@ export default {
 }
 
 .reviewed {
-  color: gray !important;
+  color: inherit !important;
+}
+
+.el-button.disabled {
+  background-color: #dcdcdc;
+  border-color: #dcdcdc;
 }
 </style>

@@ -15,6 +15,8 @@ npm install --save element-plus
 npm install @element-plus/icons-vue
 npm install --save vuex
 npm install --save vue-router
+npm install dayjs
+npm install uuid
 npm run serve
 ```
 
