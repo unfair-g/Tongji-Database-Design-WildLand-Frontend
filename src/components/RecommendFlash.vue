@@ -6,17 +6,14 @@
     <div class="flash-list">
       <div class="flash-item" v-for="(flash) in flash" :key="flash.title" @click="goToDetail(flash)">
         <div class="img">
-            <img src="../assets/flash-1.png" alt="">
+            <img :src="flash.image" />
         </div>
         <div class="flash-info">
             <span class="flash-title">{{ flash.title }}</span>
           <div>
-            <el-avatar  
-            src="user.avatar" alt="用户头像" class="avatar" 
-                    />   
-            <span class="flash-meta">{{ flash.meta }}</span>
-            <span class="flash-like">{{ flash.like }}</span>
-            <span class="flash-like">{{ flash.view }}</span>
+            <span class="flash-meta">作者： {{ flash.meta }}</span>
+            <span class="flash-like">{{ flash.like }}收藏</span>
+            <span class="flash-like">{{ flash.view }}浏览</span>
           </div>
         </div>
       </div>

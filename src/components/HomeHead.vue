@@ -4,7 +4,6 @@
     :ellipsis="false"
     class="head"
     mode="horizontal"
-    @select="handleSelect"
   >
     <div class="logo">WildLand</div>
     <el-menu-item class="menuitem" index="1" @click="toHome">主页</el-menu-item>

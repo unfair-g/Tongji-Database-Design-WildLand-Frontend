@@ -1,26 +1,22 @@
 <template>
-    <el-dialog
-    title="闲置帖"
-    v-model="LisLdlePostDialogVisible"
-    width="55%"
-    center="true"
-    v-if="!PostSuccess"
-    @close="handleClose">
     <div class="container">
       <div class="post-box">
         <el-form :model="postForm" ref="postForm" @submit.prevent="submitForm">
-          <el-form-item label="闲置物品名称:" prop="itemName" style="font-weight: bold;">
+          <el-form-item label="闲置物品名称:" prop="itemName" style="font-weight: bold;" class="form-item">
             <el-input v-model="postForm.itemName" placeholder="请输入物品名称" />
           </el-form-item>
-          <el-form-item label="物品简介:" prop="itemDescription" style="font-weight: bold;">
+
+          <el-form-item label="物品简介:" prop="itemDescription" style="font-weight: bold;" class="form-item">
             <el-input type="textarea" v-model="postForm.itemDescription" rows="5" placeholder="请输入物品简介" />
           </el-form-item>
-          <el-form-item label="物品价格:" prop="itemPrice" style="font-weight: bold;">
+
+          <el-form-item label="物品价格:" prop="itemPrice" style="font-weight: bold;" class="form-item">
             <el-input v-model="postForm.itemPrice" placeholder="请输入物品参考价格"/>
           </el-form-item>
+          
           <div class="form-row">
             <div class="left-side">
-              <el-form-item label="物品位置:" prop="itemLocation" style="font-weight: bold;">
+              <el-form-item label="物品位置:" prop="itemLocation" style="font-weight: bold;" class="form-item">
                 <el-button type="primary" @click="addLocation">添加定位</el-button>
               </el-form-item>
               <div class="map-container"></div>
@@ -49,7 +45,6 @@
         </el-form>
       </div>
     </div>
-</el-dialog>
 
 <!--发布成功-->
 <el-dialog 
@@ -65,7 +60,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">发布成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="Pbutton" @click="GoToOrder(product)">查看帖子</el-button>
+            <el-button type="text" class="Pbutton" @click="GoToPost(post)">查看帖子</el-button>
           </div>
         </div>
       </div>
@@ -179,6 +174,7 @@
   justify-content: center;
   align-items: center;
   height:100%;
+  width:100%;
 }
 
 .post-box {
@@ -197,6 +193,10 @@
 h1 {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.form-item {
+  margin-bottom: 20px; /* 增大每个 form-item 的外边距 */
 }
 
 .form-row {
@@ -229,8 +229,8 @@ h1 {
   display: flex;
   justify-content: flex-end;
   position:absolute;
-  right:15px;
-  bottom:5px;
+  right:10px;
+  bottom:-10px;
 }
 
 .buttons > .el-button:first-child {

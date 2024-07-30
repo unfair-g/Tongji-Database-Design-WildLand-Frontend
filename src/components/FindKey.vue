@@ -6,7 +6,7 @@
         label-position="top"
         label-width="auto"
         :model="formLabelAlign"
-        style="max-width: 600px;margin-top: 5%;"
+        style="max-width: 600px;margin-top: 5%;padding-right:5%"
         >
             <el-form-item label="用户名">
             <el-input v-model="formLabelAlign.name" placeholder="请输入您的用户名"  :prefix-icon="User"/>
