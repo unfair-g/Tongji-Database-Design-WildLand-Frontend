@@ -7,17 +7,21 @@
               <el-icon v-if="!flash.isSolid"><Star /></el-icon>
               <el-icon v-else><StarFilled /></el-icon>
             </div>  
+            <div class="flash-like">
+              <span>{{ flash.favorite }}</span>
+            </div>
             <span class="flash-title">{{ flash.title }}</span>
             <div>
-              <span class="flash-meta">作者：{{ flash.meta }}</span>
+              <span class="flash-meta">{{ flash.meta }}</span>
             </div>
             <span class="flash-content">{{ flash.content }}</span>
+            <img :src="flash.image" width="730" style="border-radius: 10px; margin-right: 10px;">
         </div>
       </div>
       <div class="right-panel">  
-        <h2>收藏</h2>  
+        <h2>收藏量</h2>  
         <div>  
-          <h3> {{ flash.like }}</h3> <!-- 可选，用于显示Flash ID -->  
+          <span class="flash-view"> {{ flash.like || '未知' }}</span>  
           <div class="like-item" v-for="(user, userIndex) in flash.like_users" :key="`${flash.flash_id}-${userIndex}`">  
             <el-avatar :src="user.avatar" alt="用户头像" class="avatar" />  
             <span class="name">{{ user.name }}</span>  
@@ -56,7 +60,7 @@ methods: {
 .container {
 display: flex;
 height: 100%;
-margin-top: 5%;
+margin-top: 2%;
 }
 .flash-info {
   margin: 3%;
@@ -77,7 +81,7 @@ margin-top: 5%;
   padding: 3%;
   margin:3%;
   color: #636363;
-  font-size: 20px;
+  font-size: 25px;
 }
 .flash-like {
   padding: 1%;
@@ -88,16 +92,6 @@ margin-top: 5%;
       white-space: nowrap;
       color: #636363;
       float:right;
-}
-.flash-comment {
-  padding: 2%;
-  margin: 1%;
-  font-size: 26px;
-      height:24px;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: #636363;
 }
 .comment-container {  
   margin-bottom: 20px;  
