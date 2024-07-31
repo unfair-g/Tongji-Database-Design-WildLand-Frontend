@@ -1,72 +1,37 @@
 <template>
 <el-menu
-    :default-active="activeIndex"
+    :default-active="this.$route.path"
     :ellipsis="false"
     class="head"
     mode="horizontal"
+    v-model="activeIndex"
+    router
   >
     <div class="logo">WildLand</div>
-    <el-menu-item class="menuitem" index="1" @click="toHome">主页</el-menu-item>
-    <el-menu-item class="menuitem" index="2" @click="toCamp">营地</el-menu-item>
-    <el-menu-item class="menuitem" index="3" @click="toForum">论坛</el-menu-item>
-    <el-menu-item class="menuitem" index="4" @click="toProduct">户外用品</el-menu-item>
-    <el-menu-item class="menuitem" index="5" @click="toFlash">经验资讯</el-menu-item>
+    <el-menu-item class="menuitem" index="/home">主页</el-menu-item>
+    <el-menu-item class="menuitem" index="/home/campground">营地</el-menu-item>
+    <el-menu-item class="menuitem" index="/home/forum">论坛</el-menu-item>
+    <el-menu-item class="menuitem" index="/home/product">户外用品</el-menu-item>
+    <el-menu-item class="menuitem" index="/home/flash">经验资讯</el-menu-item>
     <div class="flex-grow" />
     <div class="searchbox">
       <el-input
-    v-model="input"
+        v-model="input"
         style="width: 240px;height:50px"
         placeholder="Please input"
         clearable
     />
     <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px">搜索</el-button>
     </div>
-    <el-menu-item class="menuitem" index="6" @click="toUserspace">个人空间</el-menu-item>
+    <el-menu-item class="menuitem" index="/home/userspace">个人空间</el-menu-item>
   </el-menu>
 
 </template>
 
 <script setup>
-import router from '../router'
 import { Search } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 const input = ref('')
-
-function toHome() {
-    router.push({
-        path: '/home'
-    })
-}
-
-function toForum() {
-    router.push({
-        path: '/home/forum'
-    })
-}
-
-function toCamp() {
-    router.push({
-        path: '/home/campground'
-    })
-}
-
-function toUserspace() {
-    router.push({
-        path: '/home/userspace'
-    })
-} 
-
-function toProduct() {
-    router.push({
-        path: '/home/product'
-    })
-}
-
-function toFlash() {
-    router.push({
-        path: '/home/flash'
-    })
-}
 
 </script>
 
