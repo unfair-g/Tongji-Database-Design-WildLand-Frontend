@@ -135,6 +135,10 @@ const routes = [
                     {
                         path: 'star',
                         component: () => import('../components/UserFavourites.vue')
+                    },
+                    {
+                        path: 'information',
+                        component: () => import('../views/PersonalInformation.vue')
                     }
                 ]
             },
