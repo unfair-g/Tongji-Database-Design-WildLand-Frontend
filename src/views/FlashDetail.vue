@@ -85,6 +85,7 @@ margin-top: 2%;
 }
 .flash-like {
   padding: 1%;
+  font-size: 25px;
   margin-top: 16px;
       height:24px;
       overflow:hidden;

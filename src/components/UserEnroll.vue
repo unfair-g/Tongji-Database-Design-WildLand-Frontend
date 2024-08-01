@@ -6,24 +6,44 @@
     label-position="top"
     label-width="auto"
     :model="formLabelAlign"
-    style="max-width: 600px; margin-top:5%; margin-bottom: 10%;padding-right:5%"
+    style="max-width: 600px; margin-top:5%; margin-bottom: 8%;padding-right:5%"
     >
     <Avatar />
     <el-form-item label="昵称">
-      <el-input v-model="formLabelAlign.name" placeholder="请输入您的昵称"  :prefix-icon="User"/>
-    </el-form-item>
-    <el-form-item label="手机号码">
-      <el-input v-model="formLabelAlign.type" placeholder="请输入您的手机号码" :prefix-icon="Iphone"/>
+      <el-input v-model="newuser.name" placeholder="请输入您的昵称"  :prefix-icon="User"/>
     </el-form-item>
     <el-form-item label="密码">
-      <el-input v-model="formLabelAlign.type" placeholder="请输入密码" :prefix-icon="Key"/>
+      <el-input v-model="newuser.password" placeholder="请输入密码" :prefix-icon="Key"/>
     </el-form-item>
-    <el-form-item label="姓名">
-      <el-input v-model="formLabelAlign.type" placeholder="请输入您的真实姓名" />
+    <el-form-item label="手机号码">
+      <el-input v-model="newuser.phone_number" placeholder="请输入您的手机号码" :prefix-icon="Iphone"/>
     </el-form-item>
-    <el-form-item label="身份证号">
-      <el-input v-model="formLabelAlign.type" placeholder="请输入您的身份证号" />
+     <el-form-item label="邮箱">
+      <el-input v-model="newuser.email" placeholder="请输入您的邮箱" :prefix-icon="Iphone"/>
     </el-form-item>
+    <div style="display: flex;">  
+    <el-form-item label="生日">
+      <el-date-picker
+        v-model="newuser.birthday"
+        type="date"
+        placeholder="请选择您的生日"
+        :size="size"
+      />
+    </el-form-item>
+    <el-form-item label="IP" style="margin-left: auto;width:40%;">
+       <el-select
+          v-model="newuser.location"
+          placeholder="请选择您所在的城市"
+          size="large"
+        >
+         <el-option
+            v-for="city in citys"
+            :key="city"
+            :value="city"
+          />
+      </el-select>
+    </el-form-item>
+    </div>
   </el-form>
   <div>
     <el-button class="cancelbutton" @click="toWelcomePage">取消</el-button>
@@ -34,15 +54,22 @@
 </template>
 
 <script setup>
+import store from '../store/index'
 import router from '../router'
-import { reactive } from 'vue'
+import { computed, ref } from 'vue'
 import { User, Key, Iphone } from '@element-plus/icons-vue'
 import Avatar from '../components/AvatarPicker.vue'
 
-const formLabelAlign = reactive({
-    name: '',
-    region: '',
-    type: '',
+const citys = ref([
+    '上海',
+    '北京' , 
+    '安徽' ,
+    '内蒙古',
+    '浙江' 
+])
+
+const newuser=computed(() => {
+    return store.state.user.users[1];
 })
 
 function toHomePage() {
