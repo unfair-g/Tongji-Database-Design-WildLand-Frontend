@@ -19,67 +19,89 @@
       />
     </el-popover>
     <div class="fixed-item post-status">
-      <el-dropdown @command="handleCommand">
+       <el-dropdown @command="handleCommand">
         <template v-slot:default>
-          <el-button type="primary" class="post-status-button" ref="buttonRef" @click="handleButtonClick" v-click-outside="onClickOutside">
+          <el-button type="primary" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">
             点击发布帖子
             <i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
         </template>
-        <template v-slot:dropdown v-if="!BeSilenced">
+        <template v-slot:dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="share" class="dropdown-item" style="font-size: 20px;">分享贴</el-dropdown-item>
+            <el-dropdown-item command="share" class="dropdown-item" style="font-size: 20px; ">分享贴</el-dropdown-item>
             <el-dropdown-item command="rent" class="dropdown-item" style="font-size: 20px;">闲置贴</el-dropdown-item>
             <el-dropdown-item command="recruit" class="dropdown-item" style="font-size: 20px;">招募贴</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-    </div>
-    <div class="fixed-item hot-users">
+        </div>
+        <div class="fixed-item hot-users">
       <HotUsers />
     </div>
     <div class="fixed-item hot-posts">
       <HotPosts />
     </div>
-    <LdlePost v-model:isLdlePostDialogVisible="isLdlePostDialogVisible" />
+
+     <!-- Add the LdlePost dialog component -->
+      <LdlePost v-model:isLdlePostDialogVisible="isLdlePostDialogVisible" />
+      <SharePublish v-model:isSharePostDialogVisible="isSharePostDialogVisible"/>
+      <RecruitPublish v-model:isRecruitPostDialogVisible="isRecruitPostDialogVisible"/>
   </div>
+  <!--this.$router.push('/home/forum/Ldleitems-post');-->
 </template>
 
 <script>
 import HotUsers from './HotUsers.vue';
 import HotPosts from './HotPosts.vue';
-import LdlePost from '@/components/LdlePostWindow.vue';
+import LdlePost from '@/components/LdlePostWindow.vue'
+import SharePublish from '@/components/SharepostPublish.vue'
+import RecruitPublish from '@/components/RecruitPostPublish.vue'
 
 export default {
   name: 'SidebarContent',
   components: {
     HotUsers,
     HotPosts,
-    LdlePost
+    LdlePost,
+    SharePublish,
+    RecruitPublish
   },
   data() {
     return {
       isAlertVisible: false,
       isLdlePostDialogVisible: false,
+      isSharePostDialogVisible: false,
+      isRecruitPostDialogVisible:false,
       BeSilenced: false // 默认为 false
     };
   },
   methods: {
     onAlertClose() {
       this.isAlertVisible = false;
-      if (this.$refs.popoverRef && this.$refs.popoverRef.popperRef) {
-        this.$refs.popoverRef.popperRef.hide();
+      if (this.popoverRef && this.popoverRef.popperRef) {
+        this.popoverRef.popperRef.hide();
       }
     },
     onPopoverHide() {
+      // 每次隐藏 popover 时重置 alert 的显示状态
       this.isAlertVisible = true;
     },
     handleCommand(command) {
-        this.$router.push({ path: '/home/forum/publish', query: { command } });
+      console.log('Opening dialog');
+      if (command === 'rent') {
+        this.isLdlePostDialogVisible = true;
+        console.log('Dialog Visible:', this.isLdlePostDialogVisible);
+      }
+      else if (command === 'share') {
+        this.isSharePostDialogVisible = true;
+        console.log('Dialog Visible:', this.isSharePostDialogVisible);
+      }
+      else  {
+        this.isRecruitPostDialogVisible = true;
+        console.log('Dialog Visible:', this.isRecruitPostDialogVisible);
+      }
     },
-    openDialog() {
-      this.isLdlePostDialogVisible = true;
-    },
+
     handleButtonClick() {
       if (this.BeSilenced) {
         this.isAlertVisible = true;
@@ -93,35 +115,36 @@ export default {
         this.$refs.popoverRef.popperRef.delayHide?.();
       }
     }
-  }
+  },
 }
 </script>
 
 <script setup>
-import { ref } from 'vue';
-import { ClickOutside as vClickOutside } from 'element-plus';
+import { ref } from 'vue'
+import { ClickOutside as vClickOutside } from 'element-plus'
 
-const buttonRef = ref(null);
-const popoverRef = ref(null);
+const buttonRef = ref(null)
+const popoverRef = ref(null)
+
 </script>
 
 <style scoped>
 .sidebar {
   padding: 20px;
-  position: relative;
+  position: relative; /* 确保 fixed 子元素相对于它定位 */
 }
 .fixed-item {
   position: fixed;
-  width: 300px;
+  width: 300px; /* 设置固定宽度 */
 }
 .post-status {
   top: 110px;
 }
 .hot-users {
-  top: 160px;
+  top: 160px; /* 调整距离顶部的距离，根据需要设置 */
 }
 .hot-posts {
-  top: 550px;
+  top: 550px; /* 调整距离顶部的距离，根据需要设置 */
 }
 .post-status,
 .hot-users,
@@ -130,24 +153,26 @@ const popoverRef = ref(null);
 }
 .post-status-button {
   width: 100%;
-  background-color: #fff;
-  color: #1D5B5E;
-  border-radius: 10px;
-  font-size: 16px;
-  padding: 10px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  background-color: #fff; /* 修改背景颜色 */
+  color: #1D5B5e; /* 修改文字颜色 */
+  border-radius: 10px; /* 修改边框圆角 */
+  font-size: 16px; /* 修改字体大小 */
+  padding: 10px 20px; /* 修改内边距 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* 添加文字阴影 */
 }
 .post-status-button:hover {
-  background-color: #2e5e5e;
-  color: #fff;
+  background-color: #2e5e5e; /* 修改悬停背景颜色 */
+  color: #fff; /* 修改文字颜色 */
 }
 .post-status-button:active {
-  background-color: #1e4040;
-  color: #fff;
+  background-color: #1e4040; /* 修改点击背景颜色 */
+  color: #fff; /* 修改文字颜色 */
 }
+
 ::v-deep.dropdown-item {
   font-size: 28px;
-  font-weight: bold;
+   font-weight: bold; /* 设置选项字体加粗 */
 }
+
 </style>

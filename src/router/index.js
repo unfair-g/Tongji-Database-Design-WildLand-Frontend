@@ -193,23 +193,8 @@ const routes = [
                 props: route => ({ type: route.params.type, postID: route.params.postID })
             },
             {
-                path: "forum/publish",
-                component: () => import('../views/PublishAPost.vue'),
-                props: route => ({ command: route.query.command }) // 通过query传递参数
-            },
-            {
-                path: "forum/publish",
-                component: () => import('../views/PublishAPost.vue'),
-                props: route => ({ command: route.query.command }) // 通过query传递参数
-            },
-            {
                 path: "userspace/camporder/:id",
                 component: () => import('../views/CampOrderDetailView.vue'),
-                props: true
-            },
-            {
-                path: "forum/lease/:ldleitemsPostID",
-                component: () => import('../components/LdleitemsPostDetail.vue'),
                 props: true
             }
         ]
