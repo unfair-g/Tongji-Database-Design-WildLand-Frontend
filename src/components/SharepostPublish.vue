@@ -1,156 +1,166 @@
 <template>
-  <div class="publish-container">
-    <div class="publish-header">
-      <div class="publish-title">发布帖子</div>
-    
-      <el-button @click="openShutDialog" style="width: 20px">
-        <el-icon><Close /></el-icon>
-      </el-button>
-      
-      <el-dialog
-        v-model="shutDialogVisible"
-        title="确认删除"
-        width="30%"
-      >
-        <span>您是否确认取消发布贴子？</span>
-        <template #footer>
-          <el-button @click="cancelShut">否</el-button>
-          <el-button type="primary" @click="confirmShut">是</el-button>
-        </template>
-      </el-dialog>
+  <el-dialog
+    title="分享贴发布"
+    v-model="localIsSharePostDialogVisible"
+    width="55%"
+    center
+    @close="handleClose"
+  >
+    <div class="publish-container">
+      <el-divider></el-divider>
+      <div class="publish-info-form">
+        <el-form :model="postForm" ref="postForm" @submit.prevent="submitForm" label-width="100px">
+          <el-form-item label="帖子标题：" prop="myTitle" style="font-weight: bold;">
+            <el-input v-model="postForm.myTitle" placeholder="请输入帖子标题" />
+          </el-form-item>
+          <el-form-item label="帖子类别：" style="font-weight: bold;">
+            <el-button class="share-kind">分享贴</el-button>
+            <el-button class="recruit-kind">招募贴</el-button>
+            <el-button class="rent-kind">闲置贴</el-button>
+          </el-form-item>
+          <el-form-item label="帖子内容：" prop="content" style="font-weight: bold;">
+            <el-input 
+              type="textarea" 
+              v-model="postForm.content"
+              placeholder="请输入帖子内容"
+              rows="5"
+            />
+          </el-form-item>
+          
+          <div class="form-row">
+            <div class="left-side">
+              <el-form-item label="帖子位置：" prop="location" style="font-weight: bold;">
+                <el-button type="primary" @click="addLocation">点击添加定位</el-button>
+              </el-form-item>
+              <div class="map-container"></div>
+            </div>
+
+            <div class="right-side">
+              <el-form-item label="帖子图片：" prop="previewImage" style="font-weight: bold;">
+                <el-button type="primary" @click="triggerUpload">点击添加图片</el-button>
+              </el-form-item>
+              <el-upload
+                class="upload-demo"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                list-type="picture-card"
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
+                :file-list="fileList"
+                :auto-upload="false"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+            </div>
+          </div>
+          <el-form-item class="buttons">
+            <el-button type="default" @click="handleClose">取消</el-button>
+            <el-button type="primary" native-type="submit" @click="confirmDialog()">立即发布</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
-    <el-divider></el-divider>
-    <div class="publish-info-form">
-      <el-form :model="form" label-width="100px">
-        <el-form-item label="帖子标题：" class="form-element">
-          <el-input v-model="form.title" placeholder="请输入帖子标题" />
-        </el-form-item>
-        <el-form-item label="帖子类别：">
-          <el-button class="share-kind">分享贴</el-button>
-          <el-button class="recruit-kind">招募贴</el-button>
-          <el-button class="rent-kind">闲置贴</el-button>
-        </el-form-item>
-        <el-form-item label="帖子内容：">
-          <el-input 
-            type="textarea" 
-            v-model="form.content"
-            placeholder="请输入帖子内容"
-            rows="5"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="openImageUpload">点击添加图片</el-button>
-          <el-dialog
-            title="上传图片"
-            v-model="imageUploadVisible"
-            width="50%"
-          >
-            <el-upload
-              class="upload-demo"
-              drag
-              action="https://jsonplaceholder.typicode.com/posts/"
-              multiple
-              :limit="3"
-              :on-exceed="handleExceed"
-              :file-list="fileList"
-              list-type="picture-card"
-              :on-success="handleUploadSuccess"
-              :on-remove="handleRemove"
-              :on-preview="handlePreview"
-            >
-              <i class="el-icon-upload"></i>
-              <template #tip>
-                <div class="el-upload__tip">
-                  只能上传jpg/png文件，且不超过500kb
-                </div>
-              </template>
-            </el-upload>
-            <el-dialog v-model="previewVisible">
-              <img width="100%" :src="previewImage" alt="Preview Image"/>
-            </el-dialog>
-            <template #footer>
-              <el-button @click="cancelUpload">取消</el-button>
-              <el-button type="primary" @click="confirmUpload">确定</el-button>
-            </template>
-          </el-dialog>
-        </el-form-item>
-      </el-form>
-    </div>
-  </div>
+  </el-dialog>
 </template>
 
+
 <script>
-import { reactive } from 'vue';
+import { ref } from 'vue';
 
 export default {
   name: 'SharePublish',
+  props: {
+    isSharePostDialogVisible: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  watch: {
+    isSharePostDialogVisible(newVal) {
+      this.localIsSharePostDialogVisible = newVal;
+    },
+    localIsSharePostDialogVisible(newVal) {
+      this.$emit('update:isSharePostDialogVisible', newVal);
+    }
+  },
+  setup() {
+    const postForm = ref({
+      myTitle: '',
+      content: '',
+      previewImage: [], // 预览的图片 URL
+      location: ''
+    });
+
+    const fileList = ref([]); // 已上传的文件列表
+
+    const submitForm = () => {
+      console.log('Form submitted:', postForm.value);
+    };
+
+    const resetForm = () => {
+      postForm.value = {
+        myTitle: '',
+        content: '',
+        previewImage: [], // 预览的图片 URL
+        location: ''
+      };
+      fileList.value = [];
+    };
+
+    const addLocation = () => {
+      console.log('Add location');
+    };
+
+    const triggerUpload = () => {
+      document.querySelector('.upload-demo input[type=file]').click();
+    };
+
+    const handleRemove = (file, fileList) => {
+      console.log(file, fileList);
+    };
+
+    const handlePictureCardPreview = (file) => {
+      console.log(file);
+    };
+
+    return {
+      postForm,
+      fileList,
+      submitForm,
+      resetForm,
+      addLocation,
+      triggerUpload,
+      handleRemove,
+      handlePictureCardPreview
+    };
+  },
   data() {
     return {
-      shutDialogVisible: false, // 控制关闭弹窗显示
-      imageUploadVisible: false, // 控制图片上传弹窗显示
-      previewVisible: false, // 控制图片预览弹窗显示
-      previewImage: '', // 预览的图片 URL
-      form: reactive({
-        title: '',
-        content: '',
-      }),
-      fileList: [], // 已上传的文件列表
+      localIsSharePostDialogVisible: this.isSharePostDialogVisible,
+      PostSuccess: false
     };
   },
   methods: {
-    openShutDialog() {
-      this.shutDialogVisible = true;
+    handleClose() {
+      this.closeDialog();
+      this.resetForm();
     },
-    confirmShut() {
-      this.$router.push({ path: `/home/forum` });
+    closeDialog() {
+      this.localIsSharePostDialogVisible = false;
     },
-    cancelShut() {
-      this.shutDialogVisible = false;
-    },
-    openImageUpload() {
-      this.imageUploadVisible = true;
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-    },
-    handleUploadSuccess(response, file, fileList) {
-      file.url = URL.createObjectURL(file.raw);
-      this.fileList = fileList;
-      this.$message.success(`上传成功：${file.name}`);
-    },
-    handleRemove(file, fileList) {
-      this.$message.info(`删除成功：${file.name}`);
-      this.fileList = fileList;
-    },
-    handlePreview(file) {
-      this.previewImage = file.url || file.raw;
-      this.previewVisible = true;
-    },
-    cancelUpload() {
-      this.imageUploadVisible = false;
-    },
-    confirmUpload() {
-      this.$message.success('图片上传成功');
-      this.imageUploadVisible = false;
+    confirmDialog() {
+      this.localIsSharePostDialogVisible = false
+      this.PostSuccess = true
+      //添加发布成功逻辑
+
     },
   }
-}
+};
 </script>
-
 <style scoped>
 .publish-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-}
-.publish-header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between; /* 标题和按钮分别位于两侧 */
-}
-.publish-title {
-  font-size: 25px;
 }
 .divider {
   height: 1px;
@@ -160,9 +170,6 @@ export default {
 }
 .publish-info-form {
   margin-top: 2px;
-}
-.form-element {
-  font-size: 18px;
 }
 .recruit-kind,
 .rent-kind {
@@ -176,5 +183,13 @@ export default {
 }
 .upload-demo {
   width: 100%;
+}
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left-side, .right-side {
+  width: 48%;
 }
 </style>
