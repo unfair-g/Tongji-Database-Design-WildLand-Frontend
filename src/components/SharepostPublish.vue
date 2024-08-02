@@ -25,14 +25,14 @@
           <div class="form-row">
             <div class="left-side">
               <el-form-item label="帖子位置：" prop="location" style="font-weight: bold;">
-                <el-button type="primary" @click="addLocation">点击添加定位</el-button>
+                <el-button type="primary" color="#1D5B5E" @click="addLocation">点击添加定位</el-button>
               </el-form-item>
               <div class="map-container"></div>
             </div>
 
             <div class="right-side">
               <el-form-item label="帖子图片：" prop="previewImage" style="font-weight: bold;">
-                <el-button type="primary" @click="triggerUpload">点击添加图片</el-button>
+                <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
               </el-form-item>
               <el-upload
                 class="upload-demo"
@@ -49,7 +49,7 @@
           </div>
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
-            <el-button type="primary" native-type="submit" @click="confirmDialog()">立即发布</el-button>
+            <el-button type="primary" color="#1D5B5E" native-type="submit" @click="confirmDialog()">立即发布</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -178,19 +178,5 @@ export default {
 .left-side, .right-side {
   width: 48%;
 }
-.el-button{
-  background-color: #fff; /* 修改背景颜色 */
-  color: #1D5B5e; /* 修改文字颜色 */
-  font-weight: bold;
-}
-.el-button:hover{
-  background-color: #2e5e5e; /* 修改悬停背景颜色 */
-  color: #fff; /* 修改文字颜色 */
-  font-weight: bold;
-}
-.el-button:active{
-  background-color: #1e4040; /* 修改点击背景颜色 */
-  color: #fff; /* 修改文字颜色 */
-  font-weight: bold;
-}
+
 </style>
