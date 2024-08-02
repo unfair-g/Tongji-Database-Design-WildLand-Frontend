@@ -163,7 +163,7 @@ export default {
     },
     computed: {
         user() {
-            return this.$store.state.user;
+            return this.$store.state.user.users[0];
         }
     },
     data() {

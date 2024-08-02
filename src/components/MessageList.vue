@@ -1,7 +1,7 @@
 <template>  
     <div>  
       <div class="messages">  
-        <div v-for="(message, index) in message" :key="index" class="message">  
+        <div v-for="message in filteredMessages" :key="message.id" class="message"> 
           <!-- 头像 -->  
           <div class="message-avatar">  
             <img :src="message.avatarUrl" alt="头像" class="avatar">  
@@ -27,11 +27,17 @@
   <script>  
   export default {
   name: 'personal_message',
-  props: ['messageID'],
+  props: {
+    activeTab: String
+  },
   computed: {
-    message() {
-      return this.$store.state.message.messages;
-    },
+    filteredMessages () {
+      if (this.activeTab === 'all') {
+        return this.$store.state.message.messages
+      } else {
+        return this.$store.state.message.messages.filter(message => message.type.includes(this.activeTab))
+      }
+    }
   },
 } 
   </script>  

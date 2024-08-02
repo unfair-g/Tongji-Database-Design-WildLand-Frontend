@@ -298,6 +298,20 @@ h1 {
   color:#ddd;
 }
 
-
+.el-button{
+  background-color: #fff; /* 修改背景颜色 */
+  color: #1D5B5e; /* 修改文字颜色 */
+  font-weight: bold;
+}
+.el-button:hover{
+  background-color: #2e5e5e; /* 修改悬停背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
+}
+.el-button:active{
+  background-color: #1e4040; /* 修改点击背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
+}
 </style>
 

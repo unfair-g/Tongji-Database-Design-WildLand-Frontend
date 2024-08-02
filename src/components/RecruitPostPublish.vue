@@ -1,95 +1,118 @@
 <template>
-    <div class="publish-container">
-      <div class="publish-header">
-        <div class="publish-title">发布帖子</div>
-        
-        <el-button @click="openShutDialog" style="width: 20px">
-            <el-icon><Close /></el-icon>
-        </el-button>
-        
-        <el-dialog
-            v-model="shutDialogVisible"
-            title="确认删除"
-            width="30%"
-        >
-            <span>您是否确认取消发布贴子？</span>
-            <template #footer>
-            <el-button @click="cancelShut">否</el-button>
-            <el-button type="primary" @click="confirmShut">是</el-button>
-            </template>
-        </el-dialog>
-      </div>
+  <el-dialog
+    title="招募贴发布"
+    v-model="localIsRecruitPostDialogVisible"
+    width="55%"
+    center
+    @close="handleClose"
+  >
 
+    <div class="publish-container">
       <el-divider></el-divider>
 
       <div class="publish-info-form">
-        <el-form :model="form" label-width="100px">
-          <el-form-item label="帖子标题：" class="form-element">
-            <el-input v-model="form.title" placeholder="请输入帖子标题" />
+        <el-form :model="postForm" ref="postForm" @submit.prevent="submitForm" label-width="100px">
+          <el-form-item label="帖子标题：" prop="myTitle" style="font-weight: bold;">
+            <el-input v-model="postForm.myTitle" placeholder="请输入帖子标题" />
           </el-form-item>
-          <el-form-item label="帖子类别：">
-            <el-button class="share-kind">分享贴</el-button>
-            <el-button class="recruit-kind">招募贴</el-button>
-            <el-button class="rent-kind">闲置贴</el-button>
+          <el-form-item label="活动时间：" prop="time" style="font-weight: bold;">
+            <el-input v-model="postForm.time" placeholder="请输入你的活动时间" />
           </el-form-item>
-          <el-form-item label="活动时间：">
-            <el-input v-model="form.time" placeholder="请输入你的活动时间" />
+          <el-form-item label="活动地点：" prop="location" style="font-weight: bold;">
+            <el-input v-model="postForm.location" placeholder="请输入你的活动地点" />
           </el-form-item>
-          <el-form-item label="活动地点：">
-            <el-input v-model="form.location" placeholder="请输入你的活动地点" />
+          <el-form-item label="招募人数：" prop="memberNum" style="font-weight: bold;">
+            <el-input v-model="postForm.memberNum" placeholder="请输入你的计划招募人数" />
           </el-form-item>
-          <el-form-item label="招募人数：">
-            <el-input v-model="form.memberNum" placeholder="请输入你的计划招募人数" />
-          </el-form-item>
-          <el-form-item label="相关要求：">
+          <el-form-item label="相关要求：" prop="requirements" style="font-weight: bold;">
             <el-input 
               type="textarea"
-              v-model="form.requirements" 
+              v-model="postForm.requirements" 
               placeholder="请输入你对报名者的要求" 
               rows="5"
             />
           </el-form-item>
-
+          <el-form-item class="buttons">
+            <el-button type="default" @click="handleClose">取消</el-button>
+            <el-button type="primary" native-type="submit" @click="confirmDialog()">立即发布</el-button>
+          </el-form-item>
         </el-form>
       </div>
     </div>
+
+  </el-dialog>
 </template>
 
 <script>
-import { reactive } from 'vue';
-
+import { ref, watch } from 'vue';
 
 export default {
-    name: 'RecruitPublish',
-    data() {
-        return {
-            shutDialogVisible: false, // 控制关闭弹窗显示
-            form: reactive({
-                title: '',
-                time: '',
-                location: '',
-                memberNum: '',
-                requirements:'',
-            }),
-            
-
-        };
+  name: 'RecruitPublish',
+  props: {
+    isRecruitPostDialogVisible: {
+      type: Boolean,
+      default: false,
     },
-    methods: {
-        openShutDialog() {
-        this.shutDialogVisible = true;
-        },
-        confirmShut() {
-        this.$router.push({ path: `/home/forum` });
-        },
-        cancelShut() {
-        this.shutDialogVisible = false;
-        },
+  },
+  setup(props, { emit }) {
+    const postForm = ref({
+      myTitle: '',
+      time: '',
+      location: '',
+      memberNum: '',
+      requirements: ''
+    });
 
+    const localIsRecruitPostDialogVisible = ref(props.isRecruitPostDialogVisible);
+
+    watch(() => props.isRecruitPostDialogVisible, (newVal) => {
+      localIsRecruitPostDialogVisible.value = newVal;
+    });
+
+    watch(localIsRecruitPostDialogVisible, (newVal) => {
+      emit('update:isRecruitPostDialogVisible', newVal);
+    });
+
+    const submitForm = () => {
+      console.log('Form submitted:', postForm.value);
+    };
+
+    const resetForm = () => {
+      postForm.value = {
+        myTitle: '',
+        time: '',
+        location: '',
+        memberNum: '',
+        requirements: '',
+      };
+    };
+
+    const handleClose = () => {
+      closeDialog();
+      resetForm();
+    };
+
+    const closeDialog = () => {
+      localIsRecruitPostDialogVisible.value = false;
+    };
+
+    return {
+      postForm,
+      localIsRecruitPostDialogVisible,
+      submitForm,
+      resetForm,
+      handleClose,
+      closeDialog
+    };
+  },
+  methods: {
+    confirmDialog() {
+      this.localIsRecruitPostDialogVisible = false
+      this.PostSuccess = true
+      //添加发布成功逻辑
     }
-    
-}
-
+  }
+};
 </script>
 
 <style scoped>
@@ -97,15 +120,6 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-}
-.publish-header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between; /* 标题和按钮分别位于两侧 */
-}
-.publish-title {
-  font-size: 25px;
 }
 .divider {
   height: 1px;
@@ -117,17 +131,20 @@ export default {
   margin-top: 2px;
   width:75%;
 }
-.form-element {
-  font-size: 18px;
+
+.el-button{
+  background-color: #fff; /* 修改背景颜色 */
+  color: #1D5B5e; /* 修改文字颜色 */
+  font-weight: bold;
 }
-.share-kind,
-.rent-kind {
-  background-color: white;
-  color: black;
-  border-color: #1D5B5E;
+.el-button:hover{
+  background-color: #2e5e5e; /* 修改悬停背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
 }
-.recruit-kind {
-  background-color: #1D5B5E;
-  color: white;
+.el-button:active{
+  background-color: #1e4040; /* 修改点击背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
 }
 </style>
