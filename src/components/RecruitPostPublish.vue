@@ -15,11 +15,6 @@
           <el-form-item label="帖子标题：" prop="myTitle" style="font-weight: bold;">
             <el-input v-model="postForm.myTitle" placeholder="请输入帖子标题" />
           </el-form-item>
-          <el-form-item label="帖子类别：" style="font-weight: bold;">
-            <el-button class="share-kind">分享贴</el-button>
-            <el-button class="recruit-kind">招募贴</el-button>
-            <el-button class="rent-kind">闲置贴</el-button>
-          </el-form-item>
           <el-form-item label="活动时间：" prop="time" style="font-weight: bold;">
             <el-input v-model="postForm.time" placeholder="请输入你的活动时间" />
           </el-form-item>
@@ -136,14 +131,20 @@ export default {
   margin-top: 2px;
   width:75%;
 }
-.share-kind,
-.rent-kind {
-  background-color: white;
-  color: black;
-  border-color: #1D5B5E;
+
+.el-button{
+  background-color: #fff; /* 修改背景颜色 */
+  color: #1D5B5e; /* 修改文字颜色 */
+  font-weight: bold;
 }
-.recruit-kind {
-  background-color: #1D5B5E;
-  color: white;
+.el-button:hover{
+  background-color: #2e5e5e; /* 修改悬停背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
+}
+.el-button:active{
+  background-color: #1e4040; /* 修改点击背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
 }
 </style>
