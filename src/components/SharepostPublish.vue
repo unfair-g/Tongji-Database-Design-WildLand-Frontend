@@ -13,11 +13,6 @@
           <el-form-item label="帖子标题：" prop="myTitle" style="font-weight: bold;">
             <el-input v-model="postForm.myTitle" placeholder="请输入帖子标题" />
           </el-form-item>
-          <el-form-item label="帖子类别：" style="font-weight: bold;">
-            <el-button class="share-kind">分享贴</el-button>
-            <el-button class="recruit-kind">招募贴</el-button>
-            <el-button class="rent-kind">闲置贴</el-button>
-          </el-form-item>
           <el-form-item label="帖子内容：" prop="content" style="font-weight: bold;">
             <el-input 
               type="textarea" 
@@ -171,16 +166,7 @@ export default {
 .publish-info-form {
   margin-top: 2px;
 }
-.recruit-kind,
-.rent-kind {
-  background-color: white;
-  color: black;
-  border-color: #1D5B5E;
-}
-.share-kind {
-  background-color: #1D5B5E;
-  color: white;
-}
+
 .upload-demo {
   width: 100%;
 }
@@ -191,5 +177,20 @@ export default {
 
 .left-side, .right-side {
   width: 48%;
+}
+.el-button{
+  background-color: #fff; /* 修改背景颜色 */
+  color: #1D5B5e; /* 修改文字颜色 */
+  font-weight: bold;
+}
+.el-button:hover{
+  background-color: #2e5e5e; /* 修改悬停背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
+}
+.el-button:active{
+  background-color: #1e4040; /* 修改点击背景颜色 */
+  color: #fff; /* 修改文字颜色 */
+  font-weight: bold;
 }
 </style>
