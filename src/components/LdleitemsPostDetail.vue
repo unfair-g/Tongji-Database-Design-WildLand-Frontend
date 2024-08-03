@@ -75,7 +75,7 @@
           <el-icon v-else><StarFilled /></el-icon>
           收藏
         </el-button>
-        <el-button class="stat-item">
+        <el-button class="stat-item" @click="goToReportPostWindow">
           <el-icon><Bell/></el-icon>举报
         </el-button>
       </div>
@@ -97,7 +97,13 @@
           </el-form-item>
         </el-form>
       </div>
-      
+      <ReportPost
+        v-model:isReportDialogVisible="isReportPostWindowVisible"
+        :isDetailShow="false"
+        :PostSuccess="false"
+        :post="ldleitemsPost"
+        @closeDialog="isReportPostWindowVisible=false"
+        />  
       <div class="action-buttons">
         <el-button class="pay" @click="Rent_Success()">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" />
@@ -111,12 +117,14 @@
 
 <script>
 import PostPayWindow from '@/components/PostPayWindow.vue'
+import ReportPost from '@/components/ReportPostWindow.vue'
 
 export default {
   name: 'ldleitemsPost',
   props: ['ldleitemsPostID'],
   components: {
-    PostPayWindow
+    PostPayWindow,
+    ReportPost
   },
   data() {
     return {
@@ -132,6 +140,7 @@ export default {
       deleteComment: null,
       deleteReply: null,
       parentComment: null,
+      isReportPostWindowVisible:false,//举报弹窗显示
       options: [
         { label: '仅自己可见', value: '仅自己可见' },
         { label: '所有人可见', value: '所有人可见' }
@@ -204,7 +213,11 @@ export default {
     },
     Rent_Success(){
       this.RentdialogVisible= true;
-    }
+    },
+    goToReportPostWindow() {
+      this.isReportPostWindowVisible = true;
+      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
+    },
   }
 };
 </script>
