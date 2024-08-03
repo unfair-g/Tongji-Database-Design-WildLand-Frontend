@@ -8,7 +8,7 @@
             <span class="username">{{ post.username }}</span>
             <span class="time">发布时间：{{ post.time }}</span>
           </div>
-          <div class="post-visible-states">
+          <div v-if="isPostOwner" class="post-visible-states">
             <el-select
               v-model="value"
               placeholder="修改帖子可见状态"
@@ -58,7 +58,7 @@
             </el-dialog>
             <div class="post-location">
           <el-icon><Location /></el-icon> {{ post.location }}
-          <span class="delete-button" @click="openDeleteDialog('post')">删除</span>
+          <span  v-if="isPostOwner" class="delete-button" @click="openDeleteDialog('post')">删除</span>
         </div>
         <el-dialog
           v-model="deleteDialogVisible"
@@ -94,12 +94,14 @@
 
           <div class="comments-section">
             <CommentInput
+              :isCommentOwner="isCommentOwner"
               :avatar="post.avatar"
               v-model:commentContent="comment"
               @submit-comment="addComment"
             />
 
-            <CommentItem
+            <div >
+              <CommentItem
               v-for="comment in post.comments_details"
               :key="comment.comment_id"
               :comment="comment"
@@ -108,6 +110,7 @@
               @toggle-like="toggleLike"
               @add-reply="addReply"
             />
+            </div>
           </div>
         </div>
 
@@ -144,20 +147,28 @@
             <span>点赞</span>
             <span>{{ post.likes }}</span>
           </el-button>
-          <el-button class="sign-up">
+          <el-button v-if="!isPostOwner" class="sign-up"  @click="toggleSignUpInput" ref="buttonRef" >
              参与报名</el-button>
+
+          <el-button v-if="isPostOwner" class="sign-up">
+             结束招募
+          </el-button>
           <el-button class="stat-item" @click="goToReportPostWindow">
             <el-icon><Bell/></el-icon>举报
           </el-button>
         </div>
         <div class="comments-section">
-          <SignUpInput
+          <div v-if="showSignUpInput">
+            <SignUpInput
             :avatar="post.avatar"
             v-model:signupContent="signup"
             @submit-signup="addSignUp"
           />
+          </div>
           <SignUpItem
             v-for="signup in post.signups_details"
+            :isSignupOwner="isSignupOwner"
+            :isPostOwner="isPostOwner"
             :key="signup.signup_id"
             :signup="signup"
             @delete-signup="openDeleteDialog('signup', $event)"
@@ -213,7 +224,7 @@ export default {
     SignUpItem,
     ReportPost,
   },
-  props: ['type','postID'],
+  props: ['type','postID','isPostOwner','isCommentOwner','isSignupOwner'],
   data() {
     return {
       dialogVisible: false,
@@ -231,11 +242,22 @@ export default {
       deleteSignup:null, // 要删除的报名
       parentComment: null, // 回复的父评论
       isReportPostWindowVisible:false,//举报弹窗显示
+      showSignUpInput: false, // 控制SignUpInput显示
       options: [
       { label: '仅自己可见', value: '仅自己可见' },
       { label: '所有人可见', value: '所有人可见' }
     ]
     };
+  },
+  watch: {
+    $route(to, from) {
+      if (to.params.postID !== from.params.postID || 
+          to.query.isPostOwner !== from.query.isPostOwner ||
+          to.query.isCommentOwner !== from.query.isCommentOwner ||
+          to.query.isSignupOwner !== from.query.isSignupOwner) {
+        this.fetchData();
+      }
+    }
   },
   computed: {
     post() {
@@ -363,7 +385,9 @@ export default {
       this.isReportPostWindowVisible = true;
       console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
     },
-
+    toggleSignUpInput() {
+      this.showSignUpInput = !this.showSignUpInput;
+    }
   }
 };
 </script>
@@ -473,7 +497,7 @@ export default {
   align-items:center;
   gap:150px;
   justify-content: space-between;
-  width: 300px;
+  width: 100%;
 }
 .stat-item {
   display: flex;
