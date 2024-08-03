@@ -176,12 +176,10 @@
         </div>
         
       </div>
-      
-
     </div>
     
     <div v-else>
-      jiazaizhong……
+      
     </div>
   </el-card>
 </template>
