@@ -187,6 +187,7 @@ const routes = [
                 component: () => import('../views/OrderView.vue'),
                 props: true
             },
+
             {
                 path: "forum/post/:type/:postID",
                 component: () => import('../views/postDetailView.vue'),

@@ -7,7 +7,7 @@
             <img :src="message.avatarUrl" alt="头像" class="avatar">  
           </div>  
           <!-- 用户名和消息内容 -->  
-          <div class="message-info">  
+          <div class="message-info" @click="handleClick">  
             <div class="message-header">  
               <span class="username">{{ message.username }}</span>  
             </div>  
@@ -37,8 +37,15 @@
       } else {
         return this.$store.state.message.messages.filter(message => message.type.includes(this.activeTab))
       }
+    },
+    },
+  methods: {
+    handleClick(){
+      if (this.activeTab === 'tip-off') {
+        //  this.$router.push({ name: 'myPostReport', params: { id: 1 } });
+      }
     }
-  },
+  }
 } 
   </script>  
     
