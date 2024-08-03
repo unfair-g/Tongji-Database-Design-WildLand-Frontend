@@ -21,6 +21,10 @@
           <el-menu-item-group>
             <el-menu-item index="2-1" style="height:80px" @click="toCampOrder">营地</el-menu-item>
             <el-menu-item index="2-2" style="height:80px" @click="toOrder">户外用品</el-menu-item>
+<<<<<<< Updated upstream
+=======
+            <el-menu-item index="2-3" style="height:80px" @click="toPostOrder">闲置物品</el-menu-item>
+>>>>>>> Stashed changes
           </el-menu-item-group>
         </el-sub-menu>
         <el-menu-item index="3" @click="toFavourites">
@@ -59,6 +63,12 @@ function toPersonalCenter() {
 function toOrder() {
   router.push({
     path:'/home/userspace/order'
+  })
+}
+
+function toPostOrder() {
+  router.push({
+    path:'/home/userspace/post/order'
   })
 }
 

@@ -125,6 +125,10 @@ const routes = [
                         component: () => import('../views/LeaseView.vue')
                     },
                     {
+                        path:"post/order",
+                        component: () => import('../components/LeaseForum.vue')
+                    },
+                    {
                         path: '',
                         component: () => import('../views/PersonalCenterView.vue')
                     },
@@ -194,9 +198,20 @@ const routes = [
                 props: true
             },
             {
+<<<<<<< Updated upstream
                 path: "forum/publish",
                 component: () => import('../views/PublishAPost.vue'),
                 props: route => ({ command: route.query.command }) ,// 通过query传递参数
+=======
+                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                component: () => import('../views/PostOrderView.vue'),
+                props: true
+            },
+            {
+                path: "forum/post/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
+                props: true
+>>>>>>> Stashed changes
             },
             {
                 path: "userspace/camporder/:id",

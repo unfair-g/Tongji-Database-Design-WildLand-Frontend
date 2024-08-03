@@ -21,6 +21,31 @@
         <el-input-number v-model="quantity" :min="1" :max=product.stock_quantity label="数量" style="position:absolute;right:30px;"></el-input-number>
       </div>
     </div>
+
+    <span class="title">| 选择预定日期</span>
+        <div class="short-divider"></div> 
+        <div class="up-container">
+          
+          <div class="date-range-picker">
+            <span >请选择租赁的日期</span>
+            <el-date-picker
+              v-model="dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="取货日期"
+              end-placeholder="归还日期"
+              @change="handleDateChange"
+            >
+            </el-date-picker>
+          </div>
+        </div>
+
+        <div class="delivery-requirements">
+         <span class="title">| 配送需求:</span>
+         <div class="short-divider"></div> 
+         <el-input v-model="command" placeholder="请输入配送需求" style="margin-top:15px;"></el-input>
+        </div>
+
     <div class="price-tag">¥{{ TotalPrice }}</div>
     <div class="payment-options">
       <p>请选择支付方式:</p>
@@ -62,6 +87,9 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import dayjs from 'dayjs';
+
 export default {
   name: 'PayWindow',
   props: {
@@ -80,7 +108,8 @@ export default {
       selectedPayment: '支付宝支付',
       quantity: 1,
       PaySuccess: false,
-      Order: false
+      Order: false,
+      command:""
     }
   },
   watch: {
@@ -110,7 +139,10 @@ export default {
       this.$router.push({ path: `/home/product/${productId}/order`,
         query: {  
         productId: this.product.product_id,  
-        quantity: this.quantity  
+        quantity: this.quantity,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        command:this.command
       }})
       this.PaySuccess = false
       this.Order=true
@@ -128,7 +160,30 @@ export default {
       }
       return 0;
     }
-  }
+  },
+
+  setup() {
+    const dateRange = ref([null, null]);
+    const startDate = ref('');
+    const endDate = ref('');
+
+    const handleDateChange = (value) => {
+      if (value && value.length === 2) {
+        startDate.value = dayjs(value[0]).format('YYYY年MM月DD日');
+        endDate.value = dayjs(value[1]).format('YYYY年MM月DD日');
+      } else {
+        startDate.value = '';
+        endDate.value = '';
+      }
+    };
+
+    return {
+      dateRange,
+      startDate,
+      endDate,
+      handleDateChange
+    };
+  },
 }
 </script>
 
@@ -224,5 +279,33 @@ export default {
 .button {
   float: center;
   color:#ddd;
+}
+
+.short-divider {
+    height: 1px;
+    width: 70px;
+    background-color: #1D5B5E; /* Divider color */
+    margin: 10px 10px; /* Adjust the margin as needed */
+  }
+
+.up-container {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+}
+.date-range-picker {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap:20px;
+  margin-bottom: 80px;
+}
+.date-range-picker span{
+  color:#1D5B5E;
+  font-size:15px;
+}
+
+.delivery-requirements{
+  margin-bottom:20px;
 }
 </style>

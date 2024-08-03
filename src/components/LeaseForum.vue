@@ -2,6 +2,7 @@
   <div>
       <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
         <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
+<<<<<<< Updated upstream
           <template #header>
            <div class="post-header">
              <img :src="ldleitemspost.avatar" alt="avatar" class="avatar">
@@ -25,6 +26,8 @@
         </div>
       </div>
     </template>
+=======
+>>>>>>> Stashed changes
 
     <div class="post-content">
       <img :src="ldleitemspost.item_image" class="image" alt="order image">
@@ -55,9 +58,17 @@ import { ref } from 'vue';
       },
       methods: {
         goToPostDetail (ldleitemspost) {
+<<<<<<< Updated upstream
           const ldleitemspostId = ldleitemspost.post_id
           this.$router.push({ path: `/home/forum/lease/${ldleitemspostId}`
         })
+=======
+          const ldleitemsPostId = ldleitemspost.post_id
+          this.$router.push({ path: `/home/forum/rent/${ldleitemsPostId}/order`,
+          query: {  
+            ldleitemsPostId: ldleitemsPostId
+        }})
+>>>>>>> Stashed changes
         }
       },
       setup() {

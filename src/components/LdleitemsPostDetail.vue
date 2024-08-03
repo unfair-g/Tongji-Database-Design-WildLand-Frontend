@@ -341,10 +341,10 @@ export default {
 }
 
 .carousel-image {
-  width: 100%;
-  height: auto;
+  width: 100%; /* 宽度设置为100%以适应容器宽度 */
+  height: 550px; /* 调整高度，适应你需要的大小 */
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: cover; /* 保持图片比例，裁剪超出部分 */
 }
 
 .dashed-line {
