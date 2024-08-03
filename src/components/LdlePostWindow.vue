@@ -21,13 +21,13 @@
           <div class="form-row">
             <div class="left-side">
               <el-form-item label="物品位置:" prop="itemLocation" style="font-weight: bold;">
-                <el-button type="primary" color="#1D5B5E" @click="addLocation">添加定位</el-button>
+                <el-button color="#1D5B5E" type="primary" @click="addLocation">添加定位</el-button>
               </el-form-item>
               <div class="map-container"></div>
             </div>
             <div class="right-side">
               <el-form-item label="物品图片:" prop="itemImages" style="font-weight: bold;">
-                  <el-button type="primary" color="#1D5B5E" @click="triggerUpload">添加图片</el-button>
+                  <el-button color="#1D5B5E" type="primary" @click="triggerUpload">添加图片</el-button>
                 </el-form-item>
                 <el-upload
                   class="upload-demo"
@@ -297,5 +297,7 @@ h1 {
   float: center;
   color:#ddd;
 }
+
+
 </style>
 
