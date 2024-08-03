@@ -21,7 +21,7 @@
     <div class="fixed-item post-status">
        <el-dropdown @command="handleCommand">
         <template v-slot:default>
-          <el-button type="primary" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">
+          <el-button type="primary" color="#1D5B5E" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">
             点击发布帖子
             <i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
@@ -152,22 +152,12 @@ const popoverRef = ref(null)
   margin-bottom: 20px;
 }
 .post-status-button {
-  width: 100%;
-  background-color: #fff; /* 修改背景颜色 */
-  color: #1D5B5e; /* 修改文字颜色 */
+  width: 300px;
   border-radius: 10px; /* 修改边框圆角 */
   font-size: 16px; /* 修改字体大小 */
   padding: 10px 20px; /* 修改内边距 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 添加阴影 */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* 添加文字阴影 */
-}
-.post-status-button:hover {
-  background-color: #2e5e5e; /* 修改悬停背景颜色 */
-  color: #fff; /* 修改文字颜色 */
-}
-.post-status-button:active {
-  background-color: #1e4040; /* 修改点击背景颜色 */
-  color: #fff; /* 修改文字颜色 */
 }
 
 ::v-deep.dropdown-item {

@@ -16,6 +16,7 @@
           <h1 class="item-name">{{ ldleitemsPost.item_name }}</h1>
           <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
           <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
+          <span class="item-price">￥{{ ldleitemsPost.price }}</span>
         </div>
 
         <div class="post-visible-states">
@@ -56,8 +57,12 @@
       </div>
 
       <div class="image-gallery">
-        <img v-for="(image, index) in ldleitemsPost.item_images" :key="index" :src="image" class="gallery-image">
-      </div>  
+        <el-carousel indicator-position="outside">
+          <el-carousel-item v-for="(image, index) in ldleitemsPost.item_images" :key="index">
+            <img :src="image" class="carousel-image">
+          </el-carousel-item>
+        </el-carousel>
+      </div> 
 
       <div class="post-stats">
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
@@ -71,50 +76,48 @@
           收藏
         </el-button>
         <el-button class="stat-item">
-          <el-icon><ChatLineSquare /></el-icon> 评论{{ ldleitemsPost.comments }}
-        </el-button>
-        <el-button class="stat-item">
           <el-icon><Bell/></el-icon>举报
         </el-button>
       </div>
 
 
       <div class="dashed-line"></div>
+
+      <!-- 新增的表单区域 -->
+      <div class="recipient-form">
+        <el-form :model="recipientInfo">
+          <el-form-item label="收件人姓名">
+            <el-input v-model="recipientInfo.name" placeholder="请输入收件人姓名"></el-input>
+          </el-form-item>
+          <el-form-item label="收件人地址">
+            <el-input v-model="recipientInfo.address" placeholder="请输入收件地址"></el-input>
+          </el-form-item>
+          <el-form-item label="收件人电话">
+            <el-input v-model="recipientInfo.phone" placeholder="请输入收件人姓电话"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      
       <div class="action-buttons">
         <el-button class="pay" @click="Rent_Success()">立即租赁</el-button>
+        <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" />
       </div>
 
     </div>
     <div v-else>加载中......</div>
   </el-card>
 
-  <!--发布成功-->
-<el-dialog 
-  v-model="RentSuccess"
-  width="40%"
-  height="40%"
-  v-if="RentSuccess">
-    <div class="bg">
-      <div class="bg-container">
-        <div class="success-container">
-          <div class="borrow">
-            <el-icon color="green" size="160"><SuccessFilled/></el-icon>
-            <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">租赁成功</div>
-          </div>
-          <div class="success">
-            <el-button type="text" class="Pbutton" @click="GoToOrder(product)">查看订单</el-button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </el-dialog>
 </template>
 
 <script>
+import PostPayWindow from '@/components/PostPayWindow.vue'
 
 export default {
   name: 'ldleitemsPost',
   props: ['ldleitemsPostID'],
+  components: {
+    PostPayWindow
+  },
   data() {
     return {
       dialogVisible: false,
@@ -133,7 +136,13 @@ export default {
         { label: '仅自己可见', value: '仅自己可见' },
         { label: '所有人可见', value: '所有人可见' }
       ],
-      RentSuccess:false
+      RentSuccess:false,
+      recipientInfo: {
+        name: '',
+        address: '',
+        phone: ''
+      },
+      RentdialogVisible: false
     };
   },
   computed: {
@@ -194,7 +203,7 @@ export default {
       }
     },
     Rent_Success(){
-      this.RentSuccess=true;
+      this.RentdialogVisible= true;
     }
   }
 };
@@ -288,6 +297,12 @@ export default {
   margin-top: 5px;
 }
 
+.item-price{
+  color:red;
+  font-weight:bold;
+  font-size:larger;
+}
+
 .post-visible-states {
   display: flex;
   justify-content: flex-end;
@@ -303,7 +318,7 @@ export default {
   margin-top: 20px;
   display: flex;
   align-items: center;
-  gap: 30px; /* 增加按钮之间的间隔 */
+  gap: 120px; /* 增加按钮之间的间隔 */
   justify-content: flex-start;
   width: 100%; /* 调整宽度以适应新的间隔 */
 }
@@ -317,24 +332,19 @@ export default {
   background-color: #fff !important;
   color: #1D5B5E !important;
   border-color: #1D5B5E !important;
-  margin-left:80px;
+  margin-left:100px;
 }
 
 .image-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 10px 0;
-  margin-left:50px;
+  margin-top:20px;
+  border: 1px solid #1D5B5E;
 }
 
-.gallery-image {
-  width: 30%; /* 每张图片占据父容器的30%宽度 */
-  max-width: 250px; /* 设置最大宽度，防止图片过大 */
+.carousel-image {
+  width: 100%;
   height: auto;
   border-radius: 8px;
-  margin: 10px;
   object-fit: cover;
-  border:1px solid #1D5B5E;
 }
 
 .dashed-line {
@@ -342,11 +352,15 @@ export default {
   margin: 30px 0; /* 上下增加一些间距 */
 }
 
+/* 新增的表单区域样式 */
+.recipient-form {
+  margin-top: 20px;
+}
+
 .action-buttons {
   display: flex;
   margin-top: 20px; /* 增加与上面按钮的间距 */
   justify-content: flex-start;
-  gap: 280px; /* 增加按钮之间的间隔 */
   justify-content: center;
 }
 
@@ -368,51 +382,5 @@ export default {
   margin-top: 20px;
 }
 
-.bg-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.success-container {
-  background-color: white;
-  padding: 40px;
-  margin:0px;
-  border-radius: 10px;
-  text-align: center;
-  max-width: 600px;
-  max-height: 400px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position:relative;
-}
-
-.borrow {
-  flex: 1;
-  margin-top:30px;
-}
-
-.success {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  display: inline-block;
-  background-color: #1D5B5E;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  margin-bottom:20px;
-}
-
-.Pbutton {
-  float: center;
-  color:#ddd;
-}
 
 </style>

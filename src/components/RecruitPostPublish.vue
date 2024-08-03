@@ -34,7 +34,7 @@
           </el-form-item>
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
-            <el-button type="primary" native-type="submit" @click="confirmDialog()">立即发布</el-button>
+            <el-button type="primary" color="#1D5B5E" native-type="submit" @click="confirmDialog()">立即发布</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -53,6 +53,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    // PostSuccess: {
+    //   type: Boolean,
+    //   default:false,
+    // },
   },
   setup(props, { emit }) {
     const postForm = ref({
@@ -121,7 +125,7 @@ export default {
   flex-direction: column;
   width: 100%;
 }
-.divider {
+.el-divider {
   height: 1px;
   background-color: grey; /* 分界线颜色 */
   margin: 20px 0; /* 上下间距 */
@@ -130,21 +134,5 @@ export default {
 .publish-info-form {
   margin-top: 2px;
   width:75%;
-}
-
-.el-button{
-  background-color: #fff; /* 修改背景颜色 */
-  color: #1D5B5e; /* 修改文字颜色 */
-  font-weight: bold;
-}
-.el-button:hover{
-  background-color: #2e5e5e; /* 修改悬停背景颜色 */
-  color: #fff; /* 修改文字颜色 */
-  font-weight: bold;
-}
-.el-button:active{
-  background-color: #1e4040; /* 修改点击背景颜色 */
-  color: #fff; /* 修改文字颜色 */
-  font-weight: bold;
 }
 </style>

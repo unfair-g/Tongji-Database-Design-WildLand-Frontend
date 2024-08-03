@@ -87,7 +87,7 @@
             </el-button>
             <el-button class="stat-item">
               <el-icon><ChatLineSquare /></el-icon> 评论{{ post.comments }}</el-button>
-            <el-button class="stat-item">
+            <el-button class="stat-item"  @click="goToReportSharePostWindow">
               <el-icon><Bell/></el-icon>举报
             </el-button>
           </div>
@@ -146,7 +146,7 @@
           </el-button>
           <el-button class="sign-up">
              参与报名</el-button>
-          <el-button class="stat-item">
+          <el-button class="stat-item" @click="goToReportRecruitPostWindow">
             <el-icon><Bell/></el-icon>举报
           </el-button>
         </div>
@@ -174,15 +174,30 @@
           /> -->
         </div>
         </div>
-        
+        <!-- :Ptitle="post.title"
+          :Pcontent="post.content"
+          :Pusername="post.username"
+          :PuserID="post.user_id" -->
+        <ReportSharePost
+          v-model:isShareReportDialogVisible="isReportSharePostWindowVisible"
+          :PostSuccess="false"
+          :post="post"
+          @closeDialog="isReportSharePostWindowVisible=false"
+        />  
+        <ReportRecruitPost
+          v-model:isRecruitReportDialogVisible="isReportRecruitPostWindowVisible"
+          :PostSuccess="false"
+          :post="post"
+          @closeDialog="isReportRecruitPostWindowVisible=false"
+        /> 
       </div>
       
-
     </div>
     
     <div v-else>
-      jiazaizhong……
+      
     </div>
+    
   </el-card>
 </template>
 
@@ -191,6 +206,8 @@ import CommentInput from '@/components/CommentInput.vue';
 import CommentItem from '@/components/CommentItem.vue';
 import SignUpInput from '@/components/SignUpInput.vue';
 import SignUpItem from '@/components/SignUpItem.vue';
+import ReportSharePost from '@/components/ReportSharePostWindow.vue'
+import ReportRecruitPost from '@/components/ReportRecruitPostWindow.vue'
 
 export default {
   name: 'ShareForumDetail',
@@ -198,7 +215,9 @@ export default {
     CommentInput,
     CommentItem,
     SignUpInput,
-    SignUpItem
+    SignUpItem,
+    ReportSharePost,
+    ReportRecruitPost
   },
   props: ['type','postID'],
   data() {
@@ -217,6 +236,8 @@ export default {
       deleteReply: null, // 要删除的回复
       deleteSignup:null, // 要删除的报名
       parentComment: null, // 回复的父评论
+      isReportSharePostWindowVisible:false,//举报弹窗显示
+      isReportRecruitPostWindowVisible:false,//举报弹窗显示
       options: [
       { label: '仅自己可见', value: '仅自己可见' },
       { label: '所有人可见', value: '所有人可见' }
@@ -342,9 +363,17 @@ export default {
       }
     },
     addSignUp(newSignUp) {
-      this.post.register_reason.push(newSignUp);
+      this.post.signups_details.push(newSignUp);
       this.post.comments += 1;
     },
+    goToReportSharePostWindow() {
+      this.isReportSharePostWindowVisible = true;
+      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
+    },
+    goToReportRecruitPostWindow() {
+      this.isReportRecruitPostWindowVisible = true;
+      console.log('Dialog Visible:', this.isReportRecruitPostWindowVisible);
+    }
   }
 };
 </script>

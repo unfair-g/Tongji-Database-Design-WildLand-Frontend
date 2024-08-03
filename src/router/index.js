@@ -193,6 +193,11 @@ const routes = [
                 props: route => ({ type: route.params.type, postID: route.params.postID })
             },
             {
+                path: "forum/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
+                props: true
+            },
+            {
                 path: "userspace/camporder/:id",
                 component: () => import('../views/CampOrderDetailView.vue'),
                 props: true
