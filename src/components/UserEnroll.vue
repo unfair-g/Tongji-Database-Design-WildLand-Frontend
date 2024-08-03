@@ -146,7 +146,7 @@ const onSubmit = () => {
             toHomePage()
             console.log('User registered:', response.data);
           } catch (error) {
-            ElMessage.error('用户名！');
+            ElMessage.error(error.response.data.message);
             console.error('Error registering user:', error);
           }
         } else {
