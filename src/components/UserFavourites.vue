@@ -49,6 +49,7 @@
   <div v-else>
     <Post view="share" />
     <Post view="recruit" />
+    <Post view="lease" />
   </div>
 </div>
 </template>

@@ -1,14 +1,22 @@
 <template>
-    <div class="container">
-        我是好人
-        <div v-if="LocalcurrentMenu==='rent'">
-          <LdlePostWindow/>
+    <div class="whole-container">
+        <div  v-if=" localCurrentMenu==='share'" >
+            <SharePublish/>
+        </div>
+        <div v-else-if="localCurrentMenu==='recruit'">
+            <RecruitPublish/>
+        </div>
+        <div v-else-if="localCurrentMenu==='rent'">
+            <LdlePostWindow />
         </div>
     </div>
 </template>
 
 <script>
-import LdlePostWindow from '@/components/LdlePostWindow.vue'
+import LdlePostWindow from "../components/LdlePostWindow.vue";
+import SharePublish from "../components/SharepostPublish.vue";
+import RecruitPublish from "../components/RecruitPostPublish.vue";
+
 
 export default {
     name: 'PublishMain',
@@ -18,15 +26,24 @@ export default {
     compomnents: {
         LdlePostWindow
     },
-    data() {
-        return {
-            LocalcurrentMenu:this.currentMenu
+
+    components: {
+        LdlePostWindow,
+        SharePublish,
+        RecruitPublish
+    },
+    data(){
+        return{
+            localCurrentMenu: this.currentMenu
         }
     }
 
 }
 </script>
 
-<style>
-
+<style scoped>
+.whole-container{
+    width:100%;
+    
+}
 </style>
