@@ -89,7 +89,15 @@ export default {
   methods: {
     goToPostDetail(post) {
       const postID = post.post_id;
+<<<<<<< Updated upstream
       this.$router.push({ path: `/home/forum/${this.view}/${postID}` });
+=======
+      if (this.view === 'lease') {
+        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
+      } else {
+        this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
+      }      
+>>>>>>> Stashed changes
     },
     toggleLike(post) {
       post.isLiked = !post.isLiked;
