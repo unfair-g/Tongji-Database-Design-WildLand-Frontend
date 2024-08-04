@@ -109,13 +109,18 @@ export default {
                 price: 100,
                 condition: "八成新",
                 item_image: require('@/assets/product-1.png'),
+                recipient_name: "zyj",
+                recipient_address: "上海市·同济大学嘉定校区",
+                recipient_phone: "12345678900",
+                order_status: "待支付",
+                order_date: "2023-04-23",
                 item_images: [
                     require('@/assets/product-1.png'),
                     require('@/assets/product-1.png'),
                     require('@/assets/product-1.png'),
                     require('@/assets/product-1.png'),
                 ],
-                location: '上海市·同济大学嘉定校区'
+                location: '上海市·同济大学嘉定校区',
             }
         ]
     }

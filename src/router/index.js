@@ -133,6 +133,10 @@ const routes = [
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
                     {
+                        path: "post/order",
+                        component: () => import('../components/LeaseForum.vue')
+                    },
+                    {
                         path: 'star',
                         component: () => import('../components/UserFavourites.vue')
                     },
@@ -190,17 +194,19 @@ const routes = [
             {
                 path: "forum/post/:type/:postID",
                 component: () => import('../views/postDetailView.vue'),
-                props: route => ({ type: route.params.type, postID: route.params.postID })
+                props: route => ({
+                    type: route.params.type,
+                    postID: route.params.postID,
+                    isPostOwner: route.query.isPostOwner === 'true', // 传递布尔类型的参数
+                    isCommentOwner: route.query.isCommentOwner === 'true', // 传递布尔类型的参数
+                    isSignupOwner: route.query.isSignupOwner === 'true' // 传递布尔类型的参数
+                })
+
             },
             {
-                path: "forum/publish",
-                component: () => import('../views/PublishAPost.vue'),
-                props: route => ({ command: route.query.command }) // 通过query传递参数
-            },
-            {
-                path: "forum/publish",
-                component: () => import('../views/PublishAPost.vue'),
-                props: route => ({ command: route.query.command }) // 通过query传递参数
+                path: "forum/post/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
+                props: true
             },
             {
                 path: "userspace/camporder/:id",
@@ -208,8 +214,8 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:ldleitemsPostID",
-                component: () => import('../components/LdleitemsPostDetail.vue'),
+                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                component: () => import('../views/PostOrderView.vue'),
                 props: true
             }
         ]

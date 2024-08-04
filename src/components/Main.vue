@@ -32,9 +32,6 @@
   </el-menu>
   
   <el-main>
-
-    
-
     <div>
       <ArticleCard :view="currentView"/>
     </div>

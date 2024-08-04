@@ -91,7 +91,7 @@
           </div>
         </template>
 
-        <div class="post-content">
+        <div style="display: flex;">
           <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
             <span>{{ ldleitemspost.item_name}}</span>
@@ -134,10 +134,10 @@ export default {
 
   },
   methods: {
-    goToPostDetail(post) {
+   goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      

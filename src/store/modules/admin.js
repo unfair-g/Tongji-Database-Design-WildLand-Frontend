@@ -181,7 +181,7 @@ const actions = {
       phone: '123-456-7890',
       email: 'admin@example.com'
     }
-    
+
     commit('setNickname', data.nickname)
     commit('setUserId', data.userId)
     commit('setPhone', data.phone)
@@ -193,7 +193,7 @@ const actions = {
       postTitle: "示例帖子标题",
       postType: "分享贴",
       postContent: "这是帖子内容。",
-      publisherName: "发布者名称"
+      publisherName: "发布者名称",
     }
     commit('setPostDetail', postDetail)
   },
@@ -213,7 +213,9 @@ const actions = {
       postType: "分享贴",
       postContent: "这是帖子内容。",
       publisherName: "发布者名称",
-      ReportReason: "这里是举报原因"
+      ReportReason: "这里是举报原因",
+      audits: "pass",
+
     }
     commit('setPostReportDetail', postReportDetail)
   },

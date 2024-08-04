@@ -1,0 +1,216 @@
+<template>
+    <el-dialog
+      title="支付窗口"
+      v-model="localDialogVisible"
+      width="45%"
+      center="true"
+      v-if="!RentSuccess"
+      @close="handleClose">
+      <div class="product-info-header" style="display:flex;" shadow="hover">
+        <div class="product-img">
+          <img :src="ldleitemsPost.item_image" alt="product image"> 
+        </div>
+        <div style="flex:2;">
+          <h2>{{ ldleitemsPost.item_name }}</h2>
+          <p>商品提供者: {{ ldleitemsPost.username }}</p>
+          <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
+          <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
+          <p>收件人姓名: {{ ldleitemsPost.recipient_name }}</p>
+          <p>收件人地址: {{ ldleitemsPost.recipient_address }}</p>
+          <p>收件人电话: {{ ldleitemsPost.recipient_phone }}</p>
+          <!-- 数量输入框 -->  
+        </div>
+      </div>
+      <div class="price-tag">¥{{ ldleitemsPost.price }}</div>
+      <div class="payment-options">
+        <p>请选择支付方式:</p>
+        <el-radio-group v-model="selectedPayment">
+          <el-radio-button label="支付宝支付"><el-icon><Coin /></el-icon> 支付宝</el-radio-button>
+          <el-radio-button label="微信支付"><el-icon><ChatRound /></el-icon> 微信</el-radio-button>
+          <el-radio-button label="银行卡支付"><el-icon><Money /></el-icon> 银行卡</el-radio-button>
+          <el-radio-button label="银联卡支付"><el-icon><CreditCard /></el-icon> 银联卡</el-radio-button>
+        </el-radio-group>
+      </div>
+      <template v-slot:footer>
+        <span class="dialog-footer">
+          <el-button @click="closeDialog">取消</el-button>
+          <el-button type="primary" @click="confirmDialog()">立即支付</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  
+    <!--发布成功-->
+<el-dialog 
+  v-model="RentSuccess"
+  width="40%"
+  height="40%"
+  v-if="RentSuccess">
+    <div class="bg">
+      <div class="bg-container">
+        <div class="success-container">
+          <div class="borrow">
+            <el-icon color="green" size="160"><SuccessFilled/></el-icon>
+            <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">租赁成功</div>
+          </div>
+          <div class="success">
+            <el-button type="text" class="Pbutton" @click="GoToOrder(ldleitemsPost)">查看订单</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </el-dialog>
+  </template>
+  
+  <script>
+  export default {
+    name: 'PostPayWindow',
+    props: {
+      RentdialogVisible: {
+        type: Boolean,
+        default: false
+      },
+      ldleitemsPost: {
+        type: Object,
+        required: true
+      }
+    },
+    data() {
+      return {
+        localDialogVisible: this.RentdialogVisible,
+        selectedPayment: '支付宝支付',
+        quantity: 1,
+        RentSuccess: false,
+        Order: false
+      }
+    },
+    watch: {
+      RentdialogVisible(newVal) {
+        this.localDialogVisible = newVal;
+      },
+      localDialogVisible(newVal) {
+        this.$emit('update:RentdialogVisible', newVal);
+      }
+    },
+    methods: {
+      handleClose() {
+        this.closeDialog();
+      },
+      closeDialog() {
+        this.localDialogVisible = false;
+      },
+      confirmDialog() {
+        this.localDialogVisible = false
+        this.RentSuccess = true
+        //添加支付成功逻辑
+        // 切换支付成功弹窗
+      },
+      GoToOrder(ldleitemsPost)   //查看订单
+      {
+        const ldleitemsPostId = ldleitemsPost.post_id
+        this.$router.push({ path: `/home/forum/rent/${ldleitemsPostId}/order`,
+          query: {  
+            ldleitemsPostId: this.ldleitemsPost.post_id
+        }})
+        this.PentSuccess = false
+        this.Order=true
+      }
+    }
+  }
+  </script>
+  
+  <style scoped>
+  .product-info-header {
+    color: black;
+    padding: 10px;
+    padding-bottom:40px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .product-img {
+    flex: 1;
+    width: 200px;
+    height: 200px;
+    padding: 10px;
+    margin-right: 50px;
+    display: flex; /* 使用flex布局 */  
+    justify-content: center; /* 水平居中 */  
+    align-items: center; /* 垂直居中 */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .product-img img {  
+    max-width: 100%; /* 使图片宽度不超过容器宽度 */  
+    max-height: 100%; /* 使图片高度不超过容器高度 */  
+    object-fit: contain; /* 保持图片比例，并尽量填充容器 */  
+    object-position: center; /* 图片居中显示 */  
+  }
+  
+  .price-tag {
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .payment-options {
+    margin-bottom: 20px;
+  }
+  
+  .dialog-footer {
+    text-align: right;
+  }
+  
+  .bg-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-container {
+  background-color: white;
+  padding: 40px;
+  margin:0px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 600px;
+  max-height: 400px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position:relative;
+}
+
+.borrow {
+  flex: 1;
+  margin-top:30px;
+}
+
+.success {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  display: inline-block;
+  background-color: #1D5B5E;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  margin-bottom:20px;
+}
+
+.Pbutton {
+  float: center;
+  color:#ddd;
+}
+
+  </style>
+  
