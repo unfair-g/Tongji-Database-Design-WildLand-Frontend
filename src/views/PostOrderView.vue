@@ -19,19 +19,19 @@
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单创建时间</h2></div>
-          <div style="text-align:center;"><p>2023-04-23</p></div>
+          <div style="text-align:center;"><p>{{ leaseOrder.order_date }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人姓名</h2></div>
-          <div style="text-align:center;"><p>zyj</p></div>
+          <div style="text-align:center;"><p>{{ leaseOrder.recipient_name }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人地址</h2></div>
-          <div style="text-align:center;"><p>上海市嘉定区曹安公路4800号同济大学嘉定校区 fby XXXXXXXXXX</p></div>
+          <div style="text-align:center;"><p>{{ leaseOrder.recipient_address }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人电话</h2></div>
-          <div style="text-align:center;"><p>12345678900</p></div>
+          <div style="text-align:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>物流详情</h2></div>
@@ -53,12 +53,15 @@
           },
         created() {  
         // 在组件创建时，你可以从$route.query中获取查询参数  
-        this.ldleitemsPostId = this.$route.query.ldleitemsPostId;  
+        this.ldleitemsPostId = this.$route.query.ldleitemsPostId;
         },
           computed: {
             ldleitemsPost() {
               return this.$store.state.post.ldleitemsposts.find(ldleitemsPost => ldleitemsPost.post_id === parseInt(this.ldleitemsPostId));
         },
+            leaseOrder() {
+              return this.$store.state.lease.lease_orders.find(leaseOrder => leaseOrder.post_id === parseInt(this.ldleitemsPostId))
+            }
           }
         }
       </script>

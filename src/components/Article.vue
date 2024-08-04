@@ -137,7 +137,7 @@ export default {
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      

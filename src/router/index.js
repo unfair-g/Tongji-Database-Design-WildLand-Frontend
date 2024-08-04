@@ -133,6 +133,10 @@ const routes = [
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
                     {
+                        path: "post/order",
+                        component: () => import('../components/LeaseForum.vue')
+                    },
+                    {
                         path: 'star',
                         component: () => import('../components/UserFavourites.vue')
                     },
@@ -193,13 +197,18 @@ const routes = [
                 props: route => ({ type: route.params.type, postID: route.params.postID })
             },
             {
-                path: "forum/lease/:ldleitemsPostID",
+                path: "forum/post/lease/:ldleitemsPostID",
                 component: () => import('../components/LdleitemsPostDetail.vue'),
                 props: true
             },
             {
                 path: "userspace/camporder/:id",
                 component: () => import('../views/CampOrderDetailView.vue'),
+                props: true
+            },
+            {
+                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                component: () => import('../views/PostOrderView.vue'),
                 props: true
             }
         ]
