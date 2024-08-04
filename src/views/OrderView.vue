@@ -17,19 +17,19 @@
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;"><p>{{ startTime }}</p></div>
+      <div style="text-align:center;justify-content:center;"><p>{{ startTime }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;"><p>{{ endTime }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ endTime }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
-      <div style="text-align:center;"><p>{{ Command }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ Command }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>物流详情</h2></div>
-      <div style="text-align:center;"><p>现处于上海市/嘉定区</p></div>
+      <div style="text-align:center;justify-content: center; "><p>现处于上海市/嘉定区</p></div>
     </div>
     <div class="order_3">
       <el-button class="pay">申请退款</el-button>

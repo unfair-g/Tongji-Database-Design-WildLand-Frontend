@@ -107,7 +107,7 @@
       GoToOrder(ldleitemsPost)   //查看订单
       {
         const ldleitemsPostId = ldleitemsPost.post_id
-        this.$router.push({ path: `/home/forum/rent/${ldleitemsPostId}/order`,
+        this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPostId}`,
           query: {  
             ldleitemsPostId: this.ldleitemsPost.post_id
         }})

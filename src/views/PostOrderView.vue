@@ -15,27 +15,27 @@
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单状态</h2></div>
-          <div style="text-align:center;"><p>已支付</p></div>
+          <div style="text-align:center;justify-content:center;"><p>已支付</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单创建时间</h2></div>
-          <div style="text-align:center;"><p>{{ leaseOrder.order_date }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.order_date }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人姓名</h2></div>
-          <div style="text-align:center;"><p>{{ leaseOrder.recipient_name }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_name }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人地址</h2></div>
-          <div style="text-align:center;"><p>{{ leaseOrder.recipient_address }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_address }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人电话</h2></div>
-          <div style="text-align:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>物流详情</h2></div>
-          <div style="text-align:center;"><p>现处于上海市/嘉定区</p></div>
+          <div style="text-align:center;justify-content:center;"><p>现处于上海市/嘉定区</p></div>
         </div>
         <div class="order_3">
           <el-button class="pay">申请退款</el-button>
