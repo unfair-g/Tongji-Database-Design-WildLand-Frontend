@@ -193,7 +193,7 @@ const actions = {
       postTitle: "示例帖子标题",
       postType: "分享贴",
       postContent: "这是帖子内容。",
-      publisherName: "发布者名称"
+      publisherName: "发布者名称",
     }
     commit('setPostDetail', postDetail)
   },
@@ -213,7 +213,8 @@ const actions = {
       postType: "分享贴",
       postContent: "这是帖子内容。",
       publisherName: "发布者名称",
-      ReportReason: "这里是举报原因"
+      ReportReason: "这里是举报原因",
+      state: '待审核'
     }
     commit('setPostReportDetail', postReportDetail)
   },
@@ -222,7 +223,8 @@ const actions = {
       id: id,
       commentContent: "示例评论内容",
       commenterName: "评论者名称",
-      ReportReason: "这里是举报原因"
+      ReportReason: "这里是举报原因",
+      state: '待审核'
     }
     commit('setCommentReportDetail', commentReportDetail)
   },

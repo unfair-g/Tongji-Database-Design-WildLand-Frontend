@@ -133,8 +133,16 @@ const routes = [
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
                     {
+                        path: "post/order",
+                        component: () => import('../components/LeaseForum.vue')
+                    },
+                    {
                         path: 'star',
                         component: () => import('../components/UserFavourites.vue')
+                    },
+                    {
+                        path: 'information',
+                        component: () => import('../views/PersonalInformation.vue')
                     }
                 ]
             },
@@ -184,14 +192,14 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/share/:sharepostID",
+                path: "forum/post/:type/:postID",
                 component: () => import('../views/postDetailView.vue'),
-                props: true
+                props: route => ({ type: route.params.type, postID: route.params.postID })
             },
             {
-                path: "forum/publish",
-                component: () => import('../views/PublishAPost.vue'),
-                props: route => ({ command: route.query.command }) // 通过query传递参数
+                path: "forum/post/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
+                props: true
             },
             {
                 path: "userspace/camporder/:id",
@@ -199,8 +207,8 @@ const routes = [
                 props: true
             },
             {
-                path: "forum/lease/:ldleitemspostID",
-                component: () => import('../components/LdleitemsPost.vue'),
+                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                component: () => import('../views/PostOrderView.vue'),
                 props: true
             }
         ]

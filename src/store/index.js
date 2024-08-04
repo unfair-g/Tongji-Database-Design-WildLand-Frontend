@@ -9,6 +9,7 @@ import flash from './modules/flash'
 import admin from './modules/admin'
 import message from './modules/message'
 import post from './modules/post'
+import lease from './modules/lease'
 
 export default createStore({
   state: {
@@ -29,6 +30,7 @@ export default createStore({
     flash,
     admin,
     message,
-    post
+    post,
+    lease
   }
 })

@@ -7,26 +7,46 @@
       >
         <img src="@/assets/camp.png" alt="Camp Logo" class="logo" />
         <div class="divider"></div> <!-- Divider line -->
-        <el-menu-item class="menuitem" index="上海">上海</el-menu-item>
-        <el-menu-item class="menuitem" index="绍兴">绍兴</el-menu-item>
-        <el-menu-item class="menuitem" index="桐庐">桐庐</el-menu-item>
-        <el-menu-item class="menuitem" index="杭州">杭州</el-menu-item>
-        <el-menu-item class="menuitem" index="湖州">湖州</el-menu-item>
+       <el-menu-item
+        v-for="(city, index) in cityNames"
+        :key="index"
+        :index="city"
+        class="menuitem"
+      >
+        {{ city }}
+      </el-menu-item>
       </el-menu>
     </el-aside>
   </template>
   
-  
-
-
   <script>
+  import axios from 'axios';
+
   export default {
     name: 'SideBarMenu',
+    data() {
+    return {
+      cityNames: [],
+      activeIndex: '上海'
+    };
+  },
     methods: {
       handleMenuSelect(index) {
         this.$emit('menu-select', index); // 触发父组件的事件，并传递选项的索引
-      }
+      },
+      fetchCityNames() {
+      axios.get('https://localhost:7218/api/Campgrounds/GetCity')
+        .then(response => {
+          this.cityNames = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
     }
+    },
+  created() {
+    this.fetchCityNames();
+  }
   }
   </script>
 

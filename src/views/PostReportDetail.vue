@@ -20,6 +20,7 @@
           <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postReportDetail.postContent }}</span></div>
           <div class="post-publisher">发布者名称: <span class="post-content">{{ postReportDetail.publisherName }}</span></div>
           <div class="post-body">举报原因: <span class="post-content post-body-content">{{ postReportDetail.ReportReason }}</span></div>
+          <div class="post-body">举报状态: <span class="post-content post-body-content">{{ postReportDetail.state }}</span></div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>

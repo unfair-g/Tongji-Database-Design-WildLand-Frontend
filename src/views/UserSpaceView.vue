@@ -21,13 +21,14 @@
           <el-menu-item-group>
             <el-menu-item index="2-1" style="height:80px" @click="toCampOrder">营地</el-menu-item>
             <el-menu-item index="2-2" style="height:80px" @click="toOrder">户外用品</el-menu-item>
+            <el-menu-item index="2-3" style="height:80px" @click="toPostOrder">闲置物品</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
         <el-menu-item index="3" @click="toFavourites">
             <el-icon><Star /></el-icon>
             <span>收藏夹</span>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="4" @click="toInformation">
           <el-icon><Bell /></el-icon>
           <span>消息中心</span>
         </el-menu-item>
@@ -62,6 +63,12 @@ function toOrder() {
   })
 }
 
+function toPostOrder() {
+  router.push({
+    path:'/home/userspace/post/order'
+  })
+}
+
 function toCampOrder() {
   router.push({
     path:'/home/userspace/camporder'
@@ -71,6 +78,12 @@ function toCampOrder() {
 function toFavourites() {
   router.push({
     path:'/home/userspace/star'
+  })
+}
+
+function toInformation() {
+  router.push({
+    path:'/home/userspace/information'
   })
 }
 </script>

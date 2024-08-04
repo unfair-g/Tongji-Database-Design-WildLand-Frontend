@@ -11,21 +11,21 @@
         </el-col>
         <el-col :span="10">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="4">{{ user.user_name }} </el-col>
+                <el-col :span="4">{{ userInfo.user_name }} </el-col>
                 <el-col :span="5">
-                    <el-tag v-if="user.outdoor_master_title" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
+                    <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
                     <el-tag v-else type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
                 </el-col>
             </el-row>
             <el-row style="min-width:100%;margin-top: 2%">
-            <el-col :span="7">ID:{{ user.user_id }}</el-col>
+            <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
             <el-col :span="3">{{ user.fans }} 粉丝</el-col>
             <el-col :span="3">{{ user.follows }} 关注</el-col>
             </el-row>
         </el-col>
         <el-col :span="12">
             <div style="font-weight:bold;margin-top:1%">个性签名</div>
-            <div style="margin-top:2%">{{ user.personal_signature }}</div>
+            <div style="margin-top:2%">{{ userInfo.personal_signature }}</div>
         </el-col>
         </el-row>
         <el-divider />
@@ -35,23 +35,23 @@
         >
             <el-descriptions-item width="20%">
                 <template #label><div class="item-label">手机</div></template>
-                {{ user.phone_number }}
+                {{ userInfo.phone_number }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                 <template #label><div class="item-label">邮箱</div></template>
-                {{ user.email }}
+                {{ userInfo.email }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                  <template #label><div class="item-label">生日</div></template>
-                {{ user.birthday }}
+                {{ userInfo.birthday }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                  <template #label><div class="item-label">IP</div></template>
-                {{ user.location }}
+                {{ userInfo.location }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                  <template #label><div class="item-label">积分</div></template>
-                {{ user.points }}
+                {{ userInfo.points }}
             </el-descriptions-item>
         </el-descriptions>
     </div>
@@ -156,6 +156,7 @@
 
 <script>
 import AvatarPicker from './AvatarPicker.vue';
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -163,7 +164,15 @@ export default {
     },
     computed: {
         user() {
-            return this.$store.state.user;
+            return this.$store.state.user.users[0];
+        },
+        ...mapGetters(['getUserId']),
+        userId() {
+            return this.getUserId;
+        },
+        ...mapGetters(['getUserInfo']),
+        userInfo() {
+            return this.getUserInfo;
         }
     },
     data() {
@@ -173,7 +182,7 @@ export default {
             dialogFormVisible: false,
             dialogVisible: false,
             ept_field: "",
-            experience:"",
+            experience: "",
             citys: [
                 { value: '上海' },
                 { value: '北京' }, 
