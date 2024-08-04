@@ -1,5 +1,5 @@
 <template>
-<div class="bg">
+<div class="white-bg">
     <div class="custom-style">
     <el-segmented v-model="role" :options="options" :block="true"/>
     </div>
@@ -107,7 +107,7 @@ const Login = () => {
 </script>
 
 <style>
-.bg{
+.white-bg{
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
