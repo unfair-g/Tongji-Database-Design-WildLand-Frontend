@@ -12,7 +12,15 @@
             <div class="signup-footer">
               <span class="timestamp">{{ signup.timestamp }}</span>
               <span class="location">IP: {{ signup.location }}</span>
-              <span type="text" class="delete-signup-button" @click="emitDeleteSignup(signup)">删除</span>
+              <span v-if="isSignupOwner" type="text" class="delete-signup-button" @click="emitDeleteSignup(signup)">删除</span>
+            </div>
+            <div v-if="isPostOwner" class="ownerChoice">
+              <el-button color="rgb(232, 225, 225)">
+                点击私聊
+              </el-button>
+              <el-button color="#1D5B5E">
+                招募通过
+              </el-button>
             </div>
           </div>
         </div>
@@ -31,7 +39,15 @@ export default {
     signup: {
       type: Object,
       required: true
-    }
+    },
+    isPostOwner: {
+      type: Boolean,
+      required:true
+    },
+    isSignupOwner: {
+      type: Boolean,
+      required:true
+    },
   },
   methods: {
     emitDeleteSignup(signup) {
@@ -84,7 +100,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   gap: 30px;
-  color: grey;
+  color: rgb(232, 225, 225);
   font-size: 14px;
 }
 .delete-signup-button {
