@@ -6,204 +6,11 @@
         <el-aside width="200px"></el-aside>
         <main>
           <el-container>
-<<<<<<< Updated upstream:src/components/flashMessage.vue
-          <!-- 左侧推荐资讯 -->
-              <div class="section">
-                <h2>推荐资讯</h2>
-                <ul class="content">
-                  <li>
-                    <a href="##">
-                      <div class="img">
-                        <img src="../assets/1.png" alt="">
-                      </div>
-                    </a>
-                    <div class="info">
-                      <a href="##">
-                        <div class="desc">野游营地 | 去露营吧，从山林到荒野</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                        <div class="bottom">
-                          <img src="../assets/head.png" alt="" width="22" height="22">
-                          <strong>   wsy</strong>
-                          <span>52900 viewers    3700 likes    73 comments</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                    <a href="##">
-                      <div class="img">
-                        <img src="../assets/1.png" alt="">
-                      </div>
-                    </a>
-                    <div class="info">
-                      <a href="##">
-                        <div class="desc">野游营地 | 去露营吧，从山林到荒野</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                        <div class="bottom">
-                          <img src="../assets/head.png" alt="" width="22" height="22">
-                          <strong>   wsy</strong>
-                          <span>52900 viewers    3700 likes    73 comments</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                    <a href="##">
-                      <div class="img">
-                        <img src="../assets/1.png" alt="">
-                      </div>
-                    </a>
-                    <div class="info">
-                      <a href="##">
-                        <div class="desc">野游营地 | 去露营吧，从山林到荒野</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                        <div class="bottom">
-                          <img src="../assets/head.png" alt="" width="22" height="22">
-                          <strong>   wsy</strong>
-                          <span>52900 viewers    3700 likes    73 comments</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                    <a href="##">
-                      <div class="img">
-                        <img src="../assets/1.png" alt="">
-                      </div>
-                    </a>
-                    <div class="info">
-                      <a href="##">
-                        <div class="desc">野游营地 | 去露营吧，从山林到荒野</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                        <div class="bottom">
-                          <img src="../assets/head.png" alt="" width="22" height="22">
-                          <strong>   wsy</strong>
-                          <span>52900 viewers    3700 likes    73 comments</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <!-- 右侧资讯面板 -->
-              <div class="right-panel">
-                <div class="top-news">
-                  <h2>最新资讯</h2>
-                  <ul>
-                    <li>
-                    <div class="info">
-                      <div class="date"> THU 4</div>
-                      <a href="##">
-                        <div class="desc">野游营地 | 逃离燥热城市</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="info">
-                      <div class="date"> THU 4</div>
-                      <a href="##">
-                        <div class="desc">野游营地 | 逃离燥热城市</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="info">
-                      <div class="date"> THU 4</div>
-                      <a href="##">
-                        <div class="desc">野游营地 | 逃离燥热城市</div>
-                        <div class="tags">
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                          <span class="tag">营地推荐</span>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  </ul>
-                </div>
-                <div class="hot-news">
-                  <h2>热门资讯</h2>
-                  <ul>
-                    <li>
-                      <a href="##">
-                      <div class="img" style="float: left;">
-                        <img src="../assets/1.png" alt="" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
-                      </div>
-                    </a>
-                    <div class="info">
-                        <a href="##">
-                        <div class="desc">
-                          <strong style="margin-right: 20px;">野游营地 | 逃离燥热城市</strong> <!-- 添加右边距 -->
-                          <div style="margin-top: 5px;">by wsy</div>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                      <a href="##">
-                      <div class="img" style="float: left;">
-                        <img src="../assets/1.png" alt="" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
-                      </div>
-                    </a>
-                    <div class="info">
-                        <a href="##">
-                        <div class="desc">
-                          <strong style="margin-right: 20px;">野游营地 | 逃离燥热城市</strong> <!-- 添加右边距 -->
-                          <div style="margin-top: 5px;">by wsy</div>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  <li>
-                      <a href="##">
-                      <div class="img" style="float: left;">
-                        <img src="../assets/1.png" alt="" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
-                      </div>
-                    </a>
-                    <div class="info">
-                        <a href="##">
-                        <div class="desc">
-                          <strong style="margin-right: 20px;">野游营地 | 逃离燥热城市</strong> <!-- 添加右边距 -->
-                          <div style="margin-top: 5px;">by wsy</div>
-                        </div>
-                      </a>
-                    </div>
-                  </li>
-                  </ul>
-                </div>
-=======
             <mainflash />
               <!-- 右侧资讯面板 -->
               <div class="right-panel">
                 <newflash />
                 <hotflash />
->>>>>>> Stashed changes:src/views/FlashView.vue
               </div>
           </el-container>
         </main>
@@ -213,13 +20,6 @@
 </template>
 
 <script>
-<<<<<<< Updated upstream:src/components/flashMessage.vue
-import HomeHead from './HomeHead.vue'
-
-export default {
-  components: {
-    HomeHead
-=======
 import mainflash from '../components/RecommendFlash.vue';
 import hotflash from '../components/HotFlash.vue';
 import newflash from '../components/NewFlash.vue';
@@ -232,7 +32,6 @@ export default {
     newflash
   },
   data() {
->>>>>>> Stashed changes:src/views/FlashView.vue
   }
 }
 </script>

@@ -1,6 +1,9 @@
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
+
 export default {
-    state:{
-        users:[
+    state: {
+        users: [
             {
                 user_id: 2004090642,
                 user_name: 'unfair',
@@ -13,7 +16,7 @@ export default {
                 location: '上海',
                 points: 50,
                 follows: 10,
-                fans:10,
+                fans: 10,
                 outdoor_master_title: false
             },
             {
@@ -30,7 +33,33 @@ export default {
                 follows: 0,
                 fans: 0,
                 outdoor_master_title: false
+            },
+        ],
+        userInfo: null
+    },
+    mutations: {
+        setUserInfo(state, userInfo) {
+            state.userInfo = userInfo;
+        },
+    },
+    actions: {
+        async fetchUserInfo({ commit }, token) {
+            try {
+                const response = await axios.get(`https://localhost:7218/api/Users/getUserInfo`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                commit('setUserInfo', response.data.data);
+            } catch (error) {
+                ElMessage.error('error');
+                console.error('Fetching user info failed:', error);
             }
-        ]
+        }
+    },
+    getters: {
+        getUserInfo(state) {
+            return state.userInfo;
+        }
     }
 }

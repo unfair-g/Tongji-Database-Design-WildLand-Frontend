@@ -35,6 +35,7 @@ import { reactive } from 'vue'
 import { User, Key } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useStore } from 'vuex';
 
 const role = ref('游客')
 
@@ -58,6 +59,8 @@ const rules = ref({
   ]
 })
 
+const store = useStore();
+
 const Login = () => {
   loginDisabled.value = true
   userRef.value.validate(async (valid) => {
@@ -70,10 +73,12 @@ const Login = () => {
           });
           router.push({ path: '/home' });
           ElMessage.success('登录成功！');
+          await store.dispatch('fetchUserInfo',response.data.data.token);
           console.log('登录成功', response)
         } catch (error) {
           ElMessage.error('用户名或密码错误！')
           console.error('登录失败', error)
+          loginDisabled.value = false
         }
       }
       else {
@@ -87,16 +92,16 @@ const Login = () => {
           console.log('登录成功', response)
         } catch (error) {
           ElMessage.error('用户名或密码错误！');
-          console.error('登录失败', error)
+           console.error('登录失败', error);
+           loginDisabled.value = false;
         }
       }
     }
     else {
       ElMessage.error('请完善登录信息！');
+      loginDisabled.value = false
     }
   })
-  loginDisabled.value = false
-
 }
 
 </script>
