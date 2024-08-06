@@ -13,6 +13,9 @@ const app = createApp(App)
 app.use(ElementPlus)
 app.use(router)
 app.use(store)
+
+store.dispatch('admin/initializeStore');
+
 app.mount('#app')
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

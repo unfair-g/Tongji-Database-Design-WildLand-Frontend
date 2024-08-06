@@ -5,20 +5,20 @@
         <div class="logo">WildLand</div>
         <div class="admin-details">
           <div class="admin-avatar-info">
-            <el-avatar :icon="UserFilled" size="large"></el-avatar>
+            <el-avatar :src="avatarSrc ? avatarSrc : undefined" :icon="!avatarSrc ? UserFilled : undefined" size="large"></el-avatar>
             <div class="admin-info-wrapper">
               <div class="nickname">昵称: {{ nickname }}</div>
-              <div class="user-id">个人ID: {{ userId }}</div>
+              <div class="user-id">个人ID: {{ admin_id }}</div>
             </div>
           </div>
           <div class="admin-info phone-info">手机: {{ phone }}</div>
-          <div class="admin-info email-info">邮箱: {{ email }}</div>
+          <div class="admin-info email-info">邮箱: {{ Email }}</div>
         </div>
       </el-header>
       <el-container style="height: calc(100% - 190px)">
         <el-aside class="aside">
           <el-scrollbar>
-            <el-menu :default-openeds="['1','2','3']" @select="handleSelect" :unique-opened="true">
+            <el-menu :default-openeds="['1', '2', '3']" @select="handleSelect" :unique-opened="true">
               <el-sub-menu index="1">
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
@@ -55,22 +55,54 @@
 <script>
 import { UserFilled } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { mapGetters } from 'vuex'
+import axios from 'axios'
+import { ref, onMounted } from 'vue'
 
 export default {
-  computed: {
-    ...mapGetters('admin', ['nickname', 'userId', 'phone', 'email'])
-  },
   setup() {
     const router = useRouter()
+    const admin_id = ref(null)
+    const nickname = ref('')
+    const phone = ref('')
+    const Email = ref('')
+    const avatarSrc = ref('') // 用于存储头像 URL
+
+    // 从 sessionStorage 获取 admin_id
+    const storedAdminId = sessionStorage.getItem('admin_id')
+
+    const fetchAdminDetails = async (id) => {
+      try {
+        const response = await axios.get(`https://localhost:7218/api/Administrators/${id}`)
+        const { admin_name, phone_number, email, portrait } = response.data.data
+        nickname.value = admin_name
+        phone.value = phone_number
+        Email.value = email
+        avatarSrc.value = portrait // 设置头像 URL
+      } catch (error) {
+        console.error('获取管理员信息失败', error)
+      }
+    }
 
     const navigateTo = (routeName) => {
       router.push({ name: routeName })
     }
 
+    // 在组件挂载时获取管理员详细信息
+    onMounted(() => {
+      if (storedAdminId) {
+        admin_id.value = storedAdminId
+        fetchAdminDetails(storedAdminId)
+      }
+    })
+
     return {
       navigateTo,
-      UserFilled
+      UserFilled,
+      admin_id,
+      nickname,
+      phone,
+      Email,
+      avatarSrc
     }
   }
 }
