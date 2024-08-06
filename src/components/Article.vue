@@ -91,7 +91,7 @@
           </div>
         </template>
 
-        <div class="post-content">
+        <div style="display: flex;">
           <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
             <span>{{ ldleitemspost.item_name}}</span>

@@ -12,7 +12,7 @@
             <div class="comment-footer">
               <span class="timestamp">{{ comment.timestamp }}</span>
               <span class="location">IP: {{ comment.location }}</span>
-              <span type="text" class="delete-comment-button" @click="emitDeleteComment(comment)">删除</span>
+              <span v-if="isCommentOwner" type="text" class="delete-comment-button" @click="emitDeleteComment(comment)">删除</span>
             </div>
           </div>
           <div class="comment-stats">
@@ -55,6 +55,10 @@ export default {
     CommentInput
   },
   props: {
+    isCommentOwner: {
+      type: Boolean,
+      required:true
+    },
     comment: {
       type: Object,
       required: true

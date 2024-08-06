@@ -76,7 +76,10 @@ const Login = () => {
           await store.dispatch('fetchUserInfo',response.data.data.token);
           console.log('登录成功', response)
         } catch (error) {
-          ElMessage.error('用户名或密码错误！')
+          if(error.response)
+            ElMessage.error(error.response.data.message)
+          else
+            ElMessage.error(error.message)
           console.error('登录失败', error)
           loginDisabled.value = false
         }

@@ -194,7 +194,14 @@ const routes = [
             {
                 path: "forum/post/:type/:postID",
                 component: () => import('../views/postDetailView.vue'),
-                props: route => ({ type: route.params.type, postID: route.params.postID })
+                props: route => ({
+                    type: route.params.type,
+                    postID: route.params.postID,
+                    isPostOwner: route.query.isPostOwner === 'true', // 传递布尔类型的参数
+                    isCommentOwner: route.query.isCommentOwner === 'true', // 传递布尔类型的参数
+                    isSignupOwner: route.query.isSignupOwner === 'true' // 传递布尔类型的参数
+                })
+
             },
             {
                 path: "forum/post/lease/:ldleitemsPostID",
