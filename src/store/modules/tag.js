@@ -2,19 +2,21 @@ export default{
     state: {
         tags: [
             {
-              title:'Tag1',
+              id:2,
+              title:'推荐',
             image:require('@/assets/flash-1.png'),
             ps:'营地位于上海',
             similarTags:'营地推荐',
             },
             {
-              title:'Tag1',
+              id:1,
+              title:'营地推荐',
               image:require('@/assets/flash-1.png'),
               ps:'营地位于上海',
               similarTags:'推荐',
             },
-            {
-              title:'Tag1',
+            {id:3,
+              title:'营地推荐',
               image:require('@/assets/flash-1.png'),
               ps:'营地位于上海',
               similarTags:'推荐',
