@@ -22,14 +22,14 @@ const routes = [
                 component: () => import('../views/OutdoorGear.vue')
             },
             {
-                path:'AdminCamp',
-                name:'AdminCamp',
-                component: () =>import('../views/AdminCamp.vue')
+                path: 'AdminCamp',
+                name: 'AdminCamp',
+                component: () => import('../views/AdminCamp.vue')
             },
             {
-                path:'GeekAudit',
-                name:'GeekAudit',
-                component: () =>import('../views/GeekAudit.vue')
+                path: 'GeekAudit',
+                name: 'GeekAudit',
+                component: () => import('../views/GeekAudit.vue')
             },
             {
                 path: 'postaudit',
@@ -96,14 +96,14 @@ const routes = [
                 path: '/home/product/edit/:productId',
                 component: () => import('../views/AdminProductEdit.vue'),
                 props: true
-            },            
+            },
             {
                 path: "forum",
-                component: () => import('../views/ForumView.vue')
+                component: () => import('../views/ForumView.vue'),
             },
             {
                 path: "campground",
-                
+
                 children: [
                     {
                         path: "",
@@ -132,6 +132,18 @@ const routes = [
                         path: "camporder",
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
+                    {
+                        path: "post/order",
+                        component: () => import('../components/LeaseForum.vue')
+                    },
+                    {
+                        path: 'star',
+                        component: () => import('../components/UserFavourites.vue')
+                    },
+                    {
+                        path: 'information',
+                        component: () => import('../views/PersonalInformation.vue')
+                    }
                 ]
             },
             {
@@ -180,14 +192,32 @@ const routes = [
                 props: true
             },
             {
+                path: "forum/post/:type/:postID",
+                component: () => import('../views/postDetailView.vue'),
+                props: route => ({
+                    type: route.params.type,
+                    postID: route.params.postID,
+                    isPostOwner: route.query.isPostOwner === 'true', // 传递布尔类型的参数
+                    isCommentOwner: route.query.isCommentOwner === 'true', // 传递布尔类型的参数
+                    isSignupOwner: route.query.isSignupOwner === 'true' // 传递布尔类型的参数
+                })
+
+            },
+            {
+                path: "forum/post/lease/:ldleitemsPostID",
+                component: () => import('../components/LdleitemsPostDetail.vue'),
+                props: true
+            },
+            {
                 path: "userspace/camporder/:id",
                 component: () => import('../views/CampOrderDetailView.vue'),
                 props: true
             },
-                path: "forum/lease/:ldleitemspostID",
-                component: () => import('../components/LdleitemsPost.vue'),
+            {
+                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                component: () => import('../views/PostOrderView.vue'),
                 props: true
-            },
+            }
         ]
     },
     {

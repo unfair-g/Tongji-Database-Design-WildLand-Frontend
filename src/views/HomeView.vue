@@ -6,7 +6,7 @@
         <span class="title">热门营地</span>
         </div>
         </template>
-            <div class="hot-container">
+            <div class="hot-container" @click="ToHotCamp">
             <img :src="hotcamps[this.currentcamp].image" style="width:75%">
             <div style="min-width:25%;max-width:25%;padding-top:10%;text-align: center;white-space:normal; word-break:break-all;overflow:hidden;">
                 <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">{{ this.hotcamps[currentcamp].campground_name }}</p>
@@ -17,19 +17,19 @@
             <div class="footer">
             <el-pagination :size=large :page-size=1 layout="prev, pager, next"
             v-model:current-page="this.currentcamp"
-            :total="5" style="margin-top:0.5%;margin-left:auto;" />
-            <el-icon class="icon"><Star /></el-icon>
+            :total="5" style="margin:auto;" />
             </div>
         </template>
         </el-card>
+
         <el-card style="max-width: 25vw;min-width:25vw;margin-left:8vw;margin-right:2vw">
         <template #header>
         <div class="card-header">
         <span class="title">热销爆款</span>
         </div>
         </template>
-            <div class="hot-container">
-                <img :src="hotproducts[currentproduct].product_image" style="width:70%">
+            <div class="hot-container" @click="ToHotProduct">
+                <img :src="hotproducts[currentproduct].product_image" style="width:70%;height:300px">
                 <div style="min-width:30%;max-width:30%;white-space:normal; word-break:break-all;overflow:hidden;">
                 <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">{{ hotproducts[currentproduct].product_name }}</p>
                 <p>{{ hotproducts[currentproduct].introduction }}</p>
@@ -37,11 +37,10 @@
                 </div>
             </div>
         <template #footer>
-            <div class="footer">
+            <div class="footer" >
             <el-pagination :size=large :page-size=1 layout="prev, pager, next" 
             v-model:current-page="this.currentproduct"
-            :total="5" style="margin-top:0.5%;margin-left:auto;" />
-            <el-icon class="icon"><Star /></el-icon>
+            :total="5" style="margin:auto;" />
             </div>
         </template>
         </el-card>
@@ -56,7 +55,7 @@ export default {
     data() {
         return {
             currentcamp: 1,
-            currentproduct: 1
+            currentproduct: 1,
         }
     },
     components: {
@@ -68,6 +67,14 @@ export default {
         },
         hotproducts() {
             return this.$store.state.product.products
+        }
+    },
+    methods: {
+        ToHotCamp() {
+            this.$router.push({ path: `/home/campdetail/${this.hotcamps[this.currentcamp].campground_id}` });
+        },
+        ToHotProduct() {
+            this.$router.push({ path: `/home/product/${this.hotproducts[this.currentproduct].product_id}` })
         }
     }
 }
@@ -91,8 +98,9 @@ export default {
 }
 
 .footer{
-    display:flex;
     width:100%;
+    justify-content: center;
+    display:flex;
 }
 
 .icon{

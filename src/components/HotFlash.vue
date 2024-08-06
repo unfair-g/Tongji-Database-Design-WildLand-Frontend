@@ -6,11 +6,11 @@
     <div class="flash-list">
       <div class="flash-item" v-for="(flash) in flash" :key="flash.title" @click="goToDetail(flash)">
         <div class="img">
-            <img src="../assets/flash-1.png" alt="" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
+            <img :src="flash.image" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
         </div>
         <div class="flash-info">
           <span class="flash-title">{{ flash.title }}</span>
-          <span class="flash-meta">{{ flash.meta }}</span>
+          <span class="flash-meta">作者：{{ flash.meta }}</span>
         </div>
       </div>
     </div>

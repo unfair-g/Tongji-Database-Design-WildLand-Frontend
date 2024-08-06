@@ -2,29 +2,6 @@
   <div>
       <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
         <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
-          <template #header>
-           <div class="post-header">
-             <img :src="ldleitemspost.avatar" alt="avatar" class="avatar">
-               <div class="post-details">
-                 <div class="post-info">
-                   <span class="username">{{ ldleitemspost.username }}</span>
-                   <span class="time">{{ ldleitemspost.time }}</span>
-                 </div>
-               <div class="post-stats">
-               <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
-               <span class="stat-item" @click="toggleLike">
-                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>
-                 {{ ldleitemspost.likes }}
-               </span>
-               <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
-               <span class="stat-item" @click="toggleStar">
-                <el-icon v-if="!isStarred"><Star /></el-icon>
-                <el-icon v-else><StarFilled /></el-icon>
-               </span>
-           </div>
-        </div>
-      </div>
-    </template>
 
     <div class="post-content">
       <img :src="ldleitemspost.item_image" class="image" alt="order image">
@@ -55,9 +32,11 @@ import { ref } from 'vue';
       },
       methods: {
         goToPostDetail (ldleitemspost) {
-          const ldleitemspostId = ldleitemspost.post_id
-          this.$router.push({ path: `/home/forum/lease/${ldleitemspostId}`
-        })
+          const ldleitemsPostId = ldleitemspost.post_id
+          this.$router.push({ path: `/home/forum/rent/${ldleitemsPostId}/order`,
+          query: {  
+            ldleitemsPostId: ldleitemsPostId
+        }})
         }
       },
       setup() {

@@ -2,7 +2,7 @@
     <el-dialog
     title="闲置帖"
     v-model="LisLdlePostDialogVisible"
-    width="45%"
+    width="55%"
     center="true"
     v-if="!PostSuccess"
     @close="handleClose">
@@ -21,13 +21,13 @@
           <div class="form-row">
             <div class="left-side">
               <el-form-item label="物品位置:" prop="itemLocation" style="font-weight: bold;">
-                <el-button type="primary" @click="addLocation">添加定位</el-button>
+                <el-button color="#1D5B5E" type="primary" @click="addLocation">添加定位</el-button>
               </el-form-item>
               <div class="map-container"></div>
             </div>
             <div class="right-side">
               <el-form-item label="物品图片:" prop="itemImages" style="font-weight: bold;">
-                  <el-button type="primary" @click="triggerUpload">添加图片</el-button>
+                  <el-button color="#1D5B5E" type="primary" @click="triggerUpload">添加图片</el-button>
                 </el-form-item>
                 <el-upload
                   class="upload-demo"
@@ -44,7 +44,7 @@
           </div>
           <el-form-item class="buttons">
             <el-button type="default" @click="resetForm">取消</el-button>
-            <el-button type="primary" native-type="submit" @click="confirmDialog()">立即发布</el-button>
+            <el-button type="primary" color="#1D5B5E" native-type="submit" @click="confirmDialog()">立即发布</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -178,18 +178,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height:100%;
 }
 
 .post-box {
   margin-top:10px;
   background-color: #ffffff; /* White background for the post box */
-  padding: 20px;
-  min-width: 600px; /* Width of the post box */
-  width:60%;
+  padding: 10px;
+  max-width: 600px; /* Width of the post box */
+  width:100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position:relative;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -295,6 +297,7 @@ h1 {
   float: center;
   color:#ddd;
 }
+
 
 </style>
 

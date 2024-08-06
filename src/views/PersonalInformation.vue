@@ -1,5 +1,5 @@
 <template>  
-  <div>  
+  <div style="margin:1%">  
     <h2>消息通知</h2>
     <el-button
       text
@@ -8,13 +8,13 @@
       全部已读
     </el-button>
     <div class=""></div>
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-    <el-tab-pane label="全部" name="first"></el-tab-pane>
-    <el-tab-pane label="关注" name="second"></el-tab-pane>
-    <el-tab-pane label="活动" name="third"></el-tab-pane>
-    <el-tab-pane label="举报" name="fourth"></el-tab-pane>
+    <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
+    <el-tab-pane label="全部" name="all"></el-tab-pane>
+    <el-tab-pane label="关注" name="follow"></el-tab-pane>
+    <el-tab-pane label="活动" name="activity"></el-tab-pane>
+    <el-tab-pane label="举报" name="report"></el-tab-pane>
     </el-tabs>
-    <MessageList />  
+    <MessageList :activeTab="activeTab"/>  
   </div>  
 </template>  
   
@@ -23,9 +23,14 @@ import MessageList from '../components/MessageList.vue';
   
 export default {  
   name: 'App',  
+  data () {
+    return {
+      activeTab: 'all'
+    }
+  },
   components: {  
     MessageList  
-  }  
+  }  ,
 }  
 </script>  
   

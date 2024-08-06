@@ -32,26 +32,8 @@
   </el-menu>
   
   <el-main>
-    <div v-if="currentView === 'share'">
-      <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    </div>
-
-    <div v-if="currentView === 'recruit'">
-      <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    <ArticleCard />
-    </div>
-
-    <div v-if="currentView === 'lease'">
-      <LeaseForum />
+    <div>
+      <ArticleCard :view="currentView"/>
     </div>
 
   </el-main>
@@ -61,13 +43,11 @@
 
 <script>
 import ArticleCard from '../components/Article.vue'
-import LeaseForum from '../components/LeaseForum.vue'
 
 export default {
   name: 'MainContent',
   components: {
-    ArticleCard,
-    LeaseForum
+    ArticleCard
   },
   methods: {
     toShare(){
@@ -117,6 +97,6 @@ const handleSelect = (key, keyPath) => {
   margin-right: 10px;
 }
 .flex-grow {
-        flex-grow: 1;
-    }
+  flex-grow: 1;
+}
 </style>
