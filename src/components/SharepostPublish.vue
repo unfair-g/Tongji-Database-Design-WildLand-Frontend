@@ -28,8 +28,12 @@
             <div class="left-side">
               <el-form-item label="帖子位置：" prop="location" style="font-weight: bold;">
                 <el-button type="primary" color="#1D5B5E" @click="addLocation">点击添加定位</el-button>
+                <div v-if="postForm.location" class="location-info">
+                您的IP获取成功，IP所在地：{{ postForm.location }}
+              </div>
               </el-form-item>
               <div class="map-container"></div>
+              
             </div>
 
             <div class="right-side">
@@ -44,6 +48,7 @@
                 :on-remove="handleRemove"
                 :file-list="fileList"
                 :auto-upload="false"
+                ref="uploadRef"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
@@ -104,8 +109,35 @@ export default {
 
     const fileList = reactive([]); // 已上传的文件列表
 
+    // const handleUpload = () => {
+    //   const uploadRef = ref('uploadRef');
+    //   const files = uploadRef.value.uploadFiles;
+
+    //   const promises = files.map(file => {
+    //     const formData = new FormData();
+    //     formData.append('file', file.raw);
+
+    //     return axios.post('/api/Posts/uploadpost_pics', formData)
+    //       .then(response => response.data.url);
+    //   });
+
+    //   return Promise.all(promises);
+    // };
+
+    // const uploadAllImages = async () => {
+      // try {
+        // const urls = await handleUpload();
+        // postForm.previewImage = urls;
+        // return true;
+      // } catch (error) {
+        // console.error('Error uploading images:', error);
+        // ElMessage.error('图片上传失败');
+        // return false;
+      // }
+    // };
+
     const submitForm = () => {
-      postFormRef.value.validate((valid) => {
+      postFormRef.value.validate(async (valid) => {
         if (valid) {
           console.log('Form submitted:', postForm.value);
         } else {
@@ -116,13 +148,11 @@ export default {
   };
 
     const resetForm = () => {
-      postForm.values = {
-        myTitle: '',
-        content: '',
-        previewImage: [], // 预览的图片 URL
-        location: ''
-      };
-      fileList.values = [];
+      postForm.myTitle = '';
+      postForm.content = '';
+      postForm.previewImage = []; // 预览的图片 URL
+      postForm.location = '';
+      fileList.length = 0;
     };
 
     const addLocation = async () => {
@@ -137,7 +167,6 @@ export default {
         // 使用映射表将英文省份名称翻译为中文
         const chineseProvince = provinceMap[province] || province; // 如果找不到对应的中文名称，就使用英文名称
         postForm.location = chineseProvince;
-    
         
         console.log('Province:', chineseProvince);
       } catch (error) {
@@ -170,6 +199,8 @@ export default {
       triggerUpload,
       handleRemove,
       handlePictureCardPreview,
+      // handleUpload,
+      // uploadAllImages,
       
     };
   },
@@ -256,4 +287,9 @@ export default {
   width: 48%;
 }
 
+.location-info {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #1D5B5E;
+}
 </style>

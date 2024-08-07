@@ -6,26 +6,26 @@
         </el-row>
         <el-row style="margin-top:1%">
         <el-col :span="2">
-            <el-avatar v-if="user.gender=='女'" :src="avatarfemale" style="width:100px;height:100px"/>
+            <el-avatar v-if="userInfo.gender=='f'" :src="avatarfemale" style="width:100px;height:100px"/>
             <el-avatar v-else :src="avatarmale" style="width:100px;height:100px"/>
         </el-col>
         <el-col :span="10">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="4">{{ user.user_name }} </el-col>
+                <el-col :span="4">{{ userInfo.user_name }} </el-col>
                 <el-col :span="5">
-                    <el-tag v-if="user.outdoor_master_title" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
+                    <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
                     <el-tag v-else type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
                 </el-col>
             </el-row>
             <el-row style="min-width:100%;margin-top: 2%">
-            <el-col :span="7">ID:{{ user.user_id }}</el-col>
+            <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
             <el-col :span="3">{{ user.fans }} 粉丝</el-col>
             <el-col :span="3">{{ user.follows }} 关注</el-col>
             </el-row>
         </el-col>
         <el-col :span="12">
             <div style="font-weight:bold;margin-top:1%">个性签名</div>
-            <div style="margin-top:2%">{{ user.personal_signature }}</div>
+            <div style="margin-top:2%">{{ userInfo.personal_signature }}</div>
         </el-col>
         </el-row>
         <el-divider />
@@ -35,23 +35,23 @@
         >
             <el-descriptions-item width="20%">
                 <template #label><div class="item-label">手机</div></template>
-                {{ user.phone_number }}
+                {{ userInfo.phone_number }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                 <template #label><div class="item-label">邮箱</div></template>
-                {{ user.email }}
+                {{ userInfo.email }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                  <template #label><div class="item-label">生日</div></template>
-                {{ user.birthday }}
+                {{ userInfo.birthday }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                  <template #label><div class="item-label">IP</div></template>
-                {{ user.location }}
+                {{ userInfo.location }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
                  <template #label><div class="item-label">积分</div></template>
-                {{ user.points }}
+                {{ userInfo.points }}
             </el-descriptions-item>
         </el-descriptions>
     </div>
@@ -155,25 +155,28 @@
 </template>
 
 <script>
-import AvatarPicker from './AvatarPicker.vue';
+import AvatarPicker from './AvatarPicker.vue'
+import global from '@/store/global'
+import axios from '@/axios'
+import { ElMessage } from "element-plus"
+import { onMounted,ref } from 'vue'
 
 export default {
     components: {
         AvatarPicker
     },
-    computed: {
-        user() {
-            return this.$store.state.user.users[0];
-        }
-    },
     data() {
         return {
+            user:{
+                fans: 0,
+                follows:0
+            },
             avatarfemale:require('../assets/avatar-female.jpg'),
             avatarmale: require('../assets/avatar-male.jpg'),
             dialogFormVisible: false,
             dialogVisible: false,
             ept_field: "",
-            experience:"",
+            experience: "",
             citys: [
                 { value: '上海' },
                 { value: '北京' }, 
@@ -182,7 +185,28 @@ export default {
                 { value: '浙江' }
             ]
         }
+    },
+    setup() {
+    const userInfo = ref({});    
+
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
+        userInfo.value = response.data.data;
+        userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
+      } catch (error) {
+        ElMessage.error(error.message);
+      }
     }
+
+    onMounted(() => {
+      fetchUser();
+    });
+
+    return {
+        userInfo
+    }
+  }
 }
 </script>
 

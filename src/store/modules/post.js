@@ -5,7 +5,6 @@ export default {
                 post_id: 6,
                 avatar: require('@/assets/avatar.jpg'),
                 username: 'fby',
-                user_id: 2251654,
                 time: '19分钟前',
                 title: '泉州露营溯溪好去处 | 营地超详细攻略来了',
                 views: 350,
@@ -70,7 +69,6 @@ export default {
                 post_id: 8,
                 avatar: require('@/assets/avatar-female.jpg'),
                 username: 'zyj',
-                user_id: 2250693,
                 time: '19分钟前',
                 title: '上海滴水湖组队——露营爱好者来！',
                 views: 350,
@@ -101,7 +99,6 @@ export default {
             {
                 avatar: require('@/assets/avatar.jpg'),
                 username: 'sjy',
-                user_id: 2251742,
                 time: '19分钟前',
                 views: 350,
                 likes: 101,
@@ -123,7 +120,7 @@ export default {
                     require('@/assets/product-1.png'),
                     require('@/assets/product-1.png'),
                 ],
-                location: '上海市·同济大学嘉定校区',
+                title: '大空间野营帐篷-美观实用 | 良心推荐'
             }
         ]
     }

@@ -33,7 +33,7 @@ import { ref } from 'vue';
       methods: {
         goToPostDetail (ldleitemspost) {
           const ldleitemsPostId = ldleitemspost.post_id
-          this.$router.push({ path: `/home/forum/rent/${ldleitemsPostId}/order`,
+          this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPostId}`,
           query: {  
             ldleitemsPostId: ldleitemsPostId
         }})

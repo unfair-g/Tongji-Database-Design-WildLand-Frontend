@@ -60,7 +60,11 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">发布成功</div>
           </div>
           <div class="success">
+<<<<<<< Updated upstream
             <el-button type="text" class="Pbutton" @click="GoToPost(post)">查看帖子</el-button>
+=======
+            <el-button type="text" class="Pbutton" @click="GoToPost()">查看帖子</el-button>
+>>>>>>> Stashed changes
           </div>
         </div>
       </div>

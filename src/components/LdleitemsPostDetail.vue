@@ -10,14 +10,42 @@
           <el-icon><Close /></el-icon>
         </el-button>
       </div>
-      <div class="post-details" style="display:flex;">
-        <div class="details-text" style="flex:1;">
-          <span class="time">发布时间：{{ ldleitemsPost.time }}</span>
-          <h1 class="item-name">{{ ldleitemsPost.item_name }}</h1>
-          <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
-          <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
-          <span class="item-price">￥{{ ldleitemsPost.price }}</span>
-        </div>
+
+      <div style="display:flex;">
+        <div style="flex:1;">
+          <div class="post-details" style="display:flex;">
+            <div class="details-text" style="flex:1;">
+            <span class="time">发布时间：{{ ldleitemsPost.time }}</span>
+            <h1 class="item-name">{{ ldleitemsPost.title }}</h1>
+            <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
+            <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
+            <span class="item-price">￥{{ ldleitemsPost.price }}</span>
+          </div>
+      </div>
+
+      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>上海市/嘉定区/同济大学</div>
+        <div class="post-content">
+          <el-dialog
+          v-model="dialogVisible"
+          width="80%"
+          :show-close="true"
+          >
+          </el-dialog>
+          <el-dialog
+          v-model="deleteDialogVisible"
+          title="确认删除"
+          width="30%"
+        >
+          <span>{{ deleteMessage }}</span>
+          <template v-slot:footer>
+            <el-button @click="cancelDelete">否</el-button>
+            <el-button type="primary" @click="confirmDelete">是</el-button>
+          </template>
+        </el-dialog>
+      </div>
+    </div>
+       
+      <div>
 
         <div class="post-visible-states">
           <el-select
@@ -32,37 +60,19 @@
               :label="option.label"
               :value="option.value"
             />
-          </el-select>
+            </el-select>
         </div>
-      </div>
-      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>上海市/嘉定区/同济大学</div>
-      <div class="post-content">
-        <el-dialog
-          v-model="dialogVisible"
-          width="80%"
-          :show-close="true"
-        >
-        </el-dialog>
-        <el-dialog
-          v-model="deleteDialogVisible"
-          title="确认删除"
-          width="30%"
-        >
-          <span>{{ deleteMessage }}</span>
-          <template v-slot:footer>
-            <el-button @click="cancelDelete">否</el-button>
-            <el-button type="primary" @click="confirmDelete">是</el-button>
-          </template>
-        </el-dialog>
-      </div>
-
-      <div class="image-gallery">
-        <el-carousel indicator-position="outside">
+        <div class="image-gallery">
+          <el-carousel indicator-position="outside">
           <el-carousel-item v-for="(image, index) in ldleitemsPost.item_images" :key="index">
             <img :src="image" class="carousel-image">
           </el-carousel-item>
         </el-carousel>
-      </div> 
+        </div>
+      </div>
+      </div>
+
+ 
 
       <div class="post-stats">
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
@@ -75,7 +85,7 @@
           <el-icon v-else><StarFilled /></el-icon>
           收藏
         </el-button>
-        <el-button class="stat-item" @click="goToReportPostWindow">
+        <el-button class="stat-item">
           <el-icon><Bell/></el-icon>举报
         </el-button>
       </div>
@@ -93,20 +103,14 @@
             <el-input v-model="recipientInfo.address" placeholder="请输入收件地址"></el-input>
           </el-form-item>
           <el-form-item label="收件人电话">
-            <el-input v-model="recipientInfo.phone" placeholder="请输入收件人姓电话"></el-input>
+            <el-input v-model="recipientInfo.phone" placeholder="请输入收件人电话"></el-input>
           </el-form-item>
         </el-form>
       </div>
-      <ReportPost
-        v-model:isReportDialogVisible="isReportPostWindowVisible"
-        :isDetailShow="false"
-        :PostSuccess="false"
-        :post="ldleitemsPost"
-        @closeDialog="isReportPostWindowVisible=false"
-        />  
+      
       <div class="action-buttons">
         <el-button class="pay" @click="Rent_Success()">立即租赁</el-button>
-        <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" />
+        <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
 
     </div>
@@ -116,15 +120,14 @@
 </template>
 
 <script>
+import axios from 'axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
-import ReportPost from '@/components/ReportPostWindow.vue'
 
 export default {
-  name: 'ldleitemsPost',
+  name: 'ldleitemsPost', 
   props: ['ldleitemsPostID'],
   components: {
-    PostPayWindow,
-    ReportPost
+    PostPayWindow
   },
   data() {
     return {
@@ -140,7 +143,6 @@ export default {
       deleteComment: null,
       deleteReply: null,
       parentComment: null,
-      isReportPostWindowVisible:false,//举报弹窗显示
       options: [
         { label: '仅自己可见', value: '仅自己可见' },
         { label: '所有人可见', value: '所有人可见' }
@@ -149,18 +151,25 @@ export default {
       recipientInfo: {
         name: '',
         address: '',
-        phone: ''
+        phone:null
       },
-      RentdialogVisible: false
+      RentdialogVisible: false,
+      ldleitemsPost: null
     };
   },
-  computed: {
-    ldleitemsPost() {
-      const ldleitemsPostID = this.ldleitemsPostID;
-      return this.$store.state.post.ldleitemsposts.find(ldleitemsPost => ldleitemsPost.post_id === parseInt(ldleitemsPostID));
-    }
+  created() {
+    this.fetchLdleitemsPost();
   },
   methods: {
+    fetchLdleitemsPost() {
+      axios.get(`https://localhost:7218/api/LdleitemsPosts/${this.ldleitemsPostID}`)
+        .then(response => {
+          this.ldleitemsPost = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldleitems post:', error);
+        });
+      },
     toggleLike(ldleitemsPost) {
       ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
       ldleitemsPost.likes = ldleitemsPost.isLiked ? ldleitemsPost.likes + 1 : ldleitemsPost.likes - 1;
@@ -213,10 +222,6 @@ export default {
     },
     Rent_Success(){
       this.RentdialogVisible= true;
-    },
-    goToReportPostWindow() {
-      this.isReportPostWindowVisible = true;
-      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
     },
   }
 };
@@ -330,9 +335,8 @@ export default {
 .post-stats {
   margin-top: 20px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 120px; /* 增加按钮之间的间隔 */
-  justify-content: flex-start;
   width: 100%; /* 调整宽度以适应新的间隔 */
 }
 
@@ -345,19 +349,23 @@ export default {
   background-color: #fff !important;
   color: #1D5B5E !important;
   border-color: #1D5B5E !important;
-  margin-left:100px;
 }
 
 .image-gallery {
   margin-top:20px;
   border: 1px solid #1D5B5E;
+  width:100%;
+  height:200px;
+  align-items: center;
+  align-content: center;
+  overflow: hidden;
 }
 
 .carousel-image {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
+  max-width: 100%; /* 调整宽度适应容器 */
+  max-height: 100%; /* 调整高度适应容器 */
+  object-fit: contain;
+  padding-left:5px;
 }
 
 .dashed-line {

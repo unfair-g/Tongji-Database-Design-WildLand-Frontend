@@ -1,5 +1,5 @@
 <template>
-<div class="bg">
+<div class="white-bg">
     <div class="custom-style">
     <el-segmented v-model="role" :options="options" :block="true"/>
     </div>
@@ -30,11 +30,14 @@
 
 <script setup>
 import router from '../router'
-import axios from 'axios'
+import axios from '@/axios'
 import { reactive } from 'vue'
 import { User, Key } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import global from '@/store/global'
+import { saveToSessionStorage } from '@/store/global'
+import CryptoJS from 'crypto-js'
 
 const role = ref('游客')
 
@@ -64,45 +67,66 @@ const Login = () => {
     if(valid){
       if (role.value == "游客") {
         try {
-          const response = await axios.post('https://localhost:7218/api/Users/login', {
+          const hashedPassword = CryptoJS.SHA256(user.password).toString()
+          const response = await axios.post('/api/Users/login', {
             user_name: user.user_name,
-            password: user.password
+            password: hashedPassword
           });
           router.push({ path: '/home' });
+          global.Login = true;
+          global.userId = response.data.data.user_id;
+          saveToSessionStorage(true,response.data.data.user_id);
           ElMessage.success('登录成功！');
-          console.log('登录成功', response)
         } catch (error) {
-          ElMessage.error('用户名或密码错误！')
-          console.error('登录失败', error)
+          if(error.response)
+            ElMessage.error(error.response.data.message)
+          else
+            ElMessage.error(error.message)
+          loginDisabled.value = false
         }
       }
       else {
-         try {
-          const response = await axios.post('https://localhost:7218/api/Administrators/login', {
-            admin_name: user.user_name,
-            password: user.password
-          })
+        try {
+          const response = await axios.post('/api/Administrators/login', {
+              admin_name: user.user_name,
+              password: user.password
+          });
+          saveToSessionStorage(true, response.data.admin_id)
+          global.Login = true;
+          global.userId = response.data.admin_id;
           router.push({ path: '/administrator' });
           ElMessage.success('登录成功！');
-          console.log('登录成功', response)
-        } catch (error) {
-          ElMessage.error('用户名或密码错误！');
-          console.error('登录失败', error)
-        }
+          console.log('登录成功', response);
+      } catch (error) {
+          if(error.response)
+            ElMessage.error(error.response.data.message)
+          else
+            ElMessage.error(error.message)
+          console.error('登录失败', error);
+          loginDisabled.value = false;
+}
       }
     }
     else {
       ElMessage.error('请完善登录信息！');
+      loginDisabled.value = false
     }
   })
-  loginDisabled.value = false
-
 }
+
+ onMounted(() => {
+   if (global.Login) {
+     global.Login = false;
+     global.userId = 0;
+     sessionStorage.clear();
+   }
+
+  });
 
 </script>
 
 <style>
-.bg{
+.white-bg{
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
