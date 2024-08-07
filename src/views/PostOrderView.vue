@@ -5,7 +5,7 @@
           <img :src="ldleitemsPost.item_image" alt="product image">
         </div>
         <div style="flex:2;position:relative;">
-          <h2>{{ ldleitemsPost.product_name }}</h2>
+          <h2>{{ ldleitemsPost.title }}</h2>
           <p>商品提供者: {{ ldleitemsPost.username }}</p>
           <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
           <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>

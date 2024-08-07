@@ -16,7 +16,7 @@
           <div class="post-details" style="display:flex;">
             <div class="details-text" style="flex:1;">
             <span class="time">发布时间：{{ ldleitemsPost.time }}</span>
-            <h1 class="item-name">{{ ldleitemsPost.item_name }}</h1>
+            <h1 class="item-name">{{ ldleitemsPost.title }}</h1>
             <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
             <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
             <span class="item-price">￥{{ ldleitemsPost.price }}</span>
@@ -103,14 +103,14 @@
             <el-input v-model="recipientInfo.address" placeholder="请输入收件地址"></el-input>
           </el-form-item>
           <el-form-item label="收件人电话">
-            <el-input v-model="recipientInfo.phone" placeholder="请输入收件人姓电话"></el-input>
+            <el-input v-model="recipientInfo.phone" placeholder="请输入收件人电话"></el-input>
           </el-form-item>
         </el-form>
       </div>
       
       <div class="action-buttons">
         <el-button class="pay" @click="Rent_Success()">立即租赁</el-button>
-        <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" />
+        <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
 
     </div>
@@ -120,10 +120,11 @@
 </template>
 
 <script>
+import axios from 'axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
 
 export default {
-  name: 'ldleitemsPost',
+  name: 'ldleitemsPost', 
   props: ['ldleitemsPostID'],
   components: {
     PostPayWindow
@@ -150,18 +151,25 @@ export default {
       recipientInfo: {
         name: '',
         address: '',
-        phone: ''
+        phone:null
       },
-      RentdialogVisible: false
+      RentdialogVisible: false,
+      ldleitemsPost: null
     };
   },
-  computed: {
-    ldleitemsPost() {
-      const ldleitemsPostID = this.ldleitemsPostID;
-      return this.$store.state.post.ldleitemsposts.find(ldleitemsPost => ldleitemsPost.post_id === parseInt(ldleitemsPostID));
-    }
+  created() {
+    this.fetchLdleitemsPost();
   },
   methods: {
+    fetchLdleitemsPost() {
+      axios.get(`https://localhost:7218/api/LdleitemsPosts/${this.ldleitemsPostID}`)
+        .then(response => {
+          this.ldleitemsPost = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldleitems post:', error);
+        });
+      },
     toggleLike(ldleitemsPost) {
       ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
       ldleitemsPost.likes = ldleitemsPost.isLiked ? ldleitemsPost.likes + 1 : ldleitemsPost.likes - 1;
@@ -214,7 +222,7 @@ export default {
     },
     Rent_Success(){
       this.RentdialogVisible= true;
-    }
+    },
   }
 };
 </script>

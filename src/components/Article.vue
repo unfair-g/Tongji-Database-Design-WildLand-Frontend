@@ -94,7 +94,7 @@
         <div class="post-content">
           <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <span>{{ ldleitemspost.item_name}}</span>
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
             <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
@@ -112,6 +112,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   name: 'ArticleCard',
@@ -128,12 +129,18 @@ export default {
     recruitposts() {
       return this.$store.state.post.recruitmentposts; 
     },
-    ldleitemsposts() {
-      return this.$store.state.post.ldleitemsposts
-    }
 
   },
   methods: {
+    fetchLdleitemsPosts() {
+      axios.get('https://localhost:7218/api/LdleitemsPosts')
+        .then(response => {
+          this.ldleitemsposts = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldle items posts:', error);
+        });
+    },
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
@@ -148,6 +155,23 @@ export default {
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
+    }
+  },
+  data() {
+    return {
+      ldleitemsposts: [],
+    }
+  },
+  watch: {
+    view(newValue) {
+      if (newValue === 'lease') {
+        this.fetchLdleitemsPosts();
+      }
+    }
+  },
+  created() {
+    if (this.view === 'lease') {
+      this.fetchLdleitemsPosts();
     }
   }
 };

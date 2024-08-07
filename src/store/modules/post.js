@@ -120,7 +120,7 @@ export default {
                     require('@/assets/product-1.png'),
                     require('@/assets/product-1.png'),
                 ],
-                location: '上海市·同济大学嘉定校区',
+                title: '大空间野营帐篷-美观实用 | 良心推荐'
             }
         ]
     }

@@ -11,13 +11,13 @@
           <img :src="ldleitemsPost.item_image" alt="product image"> 
         </div>
         <div style="flex:2;">
-          <h2>{{ ldleitemsPost.item_name }}</h2>
+          <h2>{{ ldleitemsPost.title }}</h2>
           <p>商品提供者: {{ ldleitemsPost.username }}</p>
           <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
           <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
-          <p>收件人姓名: {{ ldleitemsPost.recipient_name }}</p>
-          <p>收件人地址: {{ ldleitemsPost.recipient_address }}</p>
-          <p>收件人电话: {{ ldleitemsPost.recipient_phone }}</p>
+          <p>收件人姓名: {{ recipientInfo.name }}</p>
+          <p>收件人地址: {{ recipientInfo.address }}</p>
+          <p>收件人电话: {{ recipientInfo.phone }}</p>
           <!-- 数量输入框 -->  
         </div>
       </div>
@@ -62,6 +62,8 @@
   </template>
   
   <script>
+  import axios from 'axios';
+
   export default {
     name: 'PostPayWindow',
     props: {
@@ -72,7 +74,11 @@
       ldleitemsPost: {
         type: Object,
         required: true
-      }
+      },
+    recipientInfo: {
+      type: Object,
+      required: true
+    }
     },
     data() {
       return {
@@ -80,8 +86,13 @@
         selectedPayment: '支付宝支付',
         quantity: 1,
         RentSuccess: false,
-        Order: false
+        Order: false,
+        users: [], // 存储用户数据
+    selectedUserId: null,
       }
+    },
+    created() {
+      this.selectedUser();
     },
     watch: {
       RentdialogVisible(newVal) {
@@ -92,6 +103,31 @@
       }
     },
     methods: {
+      fetchLdleitemsOrder() {
+      axios.get(`https://localhost:7218/api/Purchases/${this.ldleitemsOrderID}`)
+        .then(response => {
+          this.ldleitemsOrder = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldleitems order:', error);
+        });
+      },
+      selectedUser() {
+        axios.get('https://localhost:7218/api/Users')
+         .then(response => {
+      if (response.data.length > 0) {
+        // 选择第一个用户的 user_id，或根据你的逻辑选择
+        this.selectedUserId = response.data[0].user_id;
+      } else {
+        console.error('没有找到用户数据');
+      }
+    })
+        .catch(error => {
+          console.error('Error fetching ldleitems order:', error);
+        });
+      },
+      
+
       handleClose() {
         this.closeDialog();
       },
@@ -100,10 +136,39 @@
       },
       confirmDialog() {
         this.localDialogVisible = false
-        this.RentSuccess = true
+        this.createOrderAndUpload();
         //添加支付成功逻辑
         // 切换支付成功弹窗
       },
+    createOrderAndUpload() {
+      const orderData = {
+        order_date: new Date().toISOString(), // 生成订单日期
+        order_id: this.generateOrderId(), // 生成唯一订单ID
+        order_status: 'created',
+        post_id: this.ldleitemsPost.post_id,
+        recipient_address: this.recipientInfo.address,
+        recipient_name: this.recipientInfo.name,
+        recipient_phone: Number(this.recipientInfo.phone),
+        user_id: this.selectedUserId // 确保在 Vuex store 中有 user.id
+      };
+      console.log('订单上传:', orderData.order_id);
+      console.log('订单上传:', orderData.user_id);
+      axios.post('https://localhost:7218/api/Purchases', orderData,{headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      }
+    })
+        .then(response => {
+          console.log('订单上传成功:', response.data);
+          this.RentSuccess = true;
+        })
+        .catch(error => {
+          console.error('上传订单时出错:', error);
+        });
+    },
+    generateOrderId() {
+      return Math.floor(Math.random() * 100000);
+    },
       GoToOrder(ldleitemsPost)   //查看订单
       {
         const ldleitemsPostId = ldleitemsPost.post_id
