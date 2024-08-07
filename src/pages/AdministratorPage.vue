@@ -245,6 +245,7 @@ export default {
 .admin-avatar-info {
   display: flex;
   align-items: center;
+  flex-direction: column; /* 改为列布局 */
   margin-left: 20%;
   margin-right: 2%; /* 增加右边距，靠近昵称和个人ID */
 }

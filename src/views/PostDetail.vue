@@ -10,15 +10,15 @@
       <hr />
       <div v-if="postDetail" class="post-detail-content">
         <div class="post-info">
-          <div class="post-title">帖子标题: <span class="post-content">{{ postDetail.postTitle }}</span></div>
+          <div class="post-title">帖子标题: <span class="post-content">{{ postDetail.title }}</span></div>
           <div class="post-category">
-            帖子类别: 
-            <span class="post-type" :class="{'active': postDetail.postType === '分享贴'}">分享贴</span>
-            <span class="post-type" :class="{'active': postDetail.postType === '招募贴'}">招募贴</span>
-            <span class="post-type" :class="{'active': postDetail.postType === '闲置贴'}">闲置贴</span>
+            帖子类别:
+            <span class="post-type" :class="{ active: postDetail.post_kind === 0 }">分享贴</span>
+            <span class="post-type" :class="{ active: postDetail.post_kind === 1 }">闲置贴</span>
+            <span class="post-type" :class="{ active: postDetail.post_kind === 2 }">招募贴</span>
           </div>
-          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.postContent }}</span></div>
-          <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.publisherName }}</span></div>
+          <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.content || '无内容' }}</span></div>
+          <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.author_name }}</span></div>
         </div>
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
@@ -35,21 +35,27 @@ export default {
   setup() {
     const router = useRouter()
     const route = useRoute()
+    const id = route.params.id // 提取 ID
+
     const closeDetail = () => {
       router.push({ name: 'PostAudit' })
     }
 
     return {
       closeDetail,
-      route
+      id // 返回 ID
     }
   },
   computed: {
     ...mapState('admin', ['postDetail'])
   },
   created() {
-    const id = this.route.params.id
-    this.fetchPostDetail(id)
+    // 确保 ID 不为空后调用 fetchPostDetail
+    if (this.id) {
+      this.fetchPostDetail(this.id)
+    } else {
+      console.error('ID is missing in route params')
+    }
   },
   methods: {
     ...mapActions('admin', ['fetchPostDetail']),
@@ -136,11 +142,12 @@ export default {
   border-radius: 5px;
   background-color: #FEFFFF;
   border: 1px solid black;
+  color: black;
 }
 
 .post-category .post-type.active {
-  background-color: #1D5B5E;
-  color: white;
+  background-color: #1D5B5E; /* 选择的帖子类型底色 */
+  color: white; /* 文字颜色为白色 */
   border: none;
 }
 
