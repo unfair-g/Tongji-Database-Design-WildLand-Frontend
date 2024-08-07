@@ -10,7 +10,7 @@
               <el-upload
                 v-if="isEditing"
                 class="avatar-uploader"
-                :action="`https://localhost:7218/api/Administrators/uploadportrait/${admin_id}`"
+                :action="`/api/Administrators/uploadportrait/${admin_id}`"
                 :method="'post'"
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload"
@@ -83,14 +83,15 @@
 <script>
 import { UserFilled } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios from '@/axios'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
+import global from '@/store/global'
 
 export default {
   setup() {
     const router = useRouter()
-    const admin_id = ref(null)
+    const admin_id = ref(global.userId)
     const nickname = ref('')
     const phone = ref('')
     const Email = ref('')
@@ -100,12 +101,9 @@ export default {
     const editedPhone = ref('')
     const editedEmail = ref('')
 
-    // 从 sessionStorage 获取 admin_id
-    const storedAdminId = sessionStorage.getItem('admin_id')
-
-    const fetchAdminDetails = async (id) => {
+    const fetchAdminDetails = async () => {
       try {
-        const response = await axios.get(`https://localhost:7218/api/Administrators/${id}`)
+        const response = await axios.get(`/api/Administrators/${global.userId}`)
         const { admin_name, phone_number, email, portrait } = response.data.data
         nickname.value = admin_name
         phone.value = phone_number
@@ -130,20 +128,19 @@ export default {
           }
           const config = {
             method: 'put',
-            url: 'https://localhost:7218/api/Administrators/updateInfo',
+            url: '/api/Administrators/updateInfo',
             headers: { 
               'User-Agent': 'Apifox/1.0.0 (https://apifox.com)', 
               'Content-Type': 'application/json'
             },
             data: JSON.stringify(data)
           }
-          const response = await axios(config)
-          if (response.data.success) {
+          await axios(config)
             nickname.value = editedNickname.value
             phone.value = editedPhone.value
             Email.value = editedEmail.value
-          }
         } catch (error) {
+          ElMessage.error(error.message)
           console.error('更新管理员信息失败', error)
         }
       }
@@ -184,10 +181,7 @@ export default {
 
     // 在组件挂载时获取管理员详细信息
     onMounted(() => {
-      if (storedAdminId) {
-        admin_id.value = storedAdminId
-        fetchAdminDetails(storedAdminId)
-      }
+        fetchAdminDetails()
     })
 
     return {

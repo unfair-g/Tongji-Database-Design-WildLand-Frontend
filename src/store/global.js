@@ -1,6 +1,6 @@
 const state = {
     Login: false,
-    userId: 0
+    userId: 0,
 };
 
 // 保存数据到 sessionStorage
@@ -17,6 +17,7 @@ export function loadFromSessionStorage() {
         state.Login = true;
         const id = sessionStorage.getItem('userId')
         state.userId = JSON.parse(id);
+        console.log('从storage中读取',state.Login,state.userId);
     }
     else {
         console.log('读取失败');
