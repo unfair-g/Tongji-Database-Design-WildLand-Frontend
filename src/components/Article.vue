@@ -7,8 +7,8 @@
           <img :src="sharepost.avatar" alt="avatar" class="avatar">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}</span>
-              <span class="time">{{ sharepost.time }}</span>
+              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
               <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
@@ -91,10 +91,10 @@
           </div>
         </template>
 
-        <div style="display: flex;">
+        <div class="post-content">
           <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
+            <span>{{ ldleitemspost.item_name}}</span>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
             <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
@@ -112,7 +112,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import {ElMessage} from "element-plus";
+import axios from '@/axios'; // 确保路径是正确的
 
 export default {
   name: 'ArticleCard',
@@ -122,29 +123,79 @@ export default {
       required:true
     }
   },
+  data() {
+    return {
+      shareposts: [],
+    };
+  },
+  mounted() {
+    if (this.view === 'share') {
+      this.fetchSharePosts();
+    }
+    
+  },
   computed: {
-    shareposts() {
-      return this.$store.state.post.shareposts;
-    },
     recruitposts() {
       return this.$store.state.post.recruitmentposts; 
     },
+    ldleitemsposts() {
+      return this.$store.state.post.ldleitemsposts
+    }
 
   },
   methods: {
-    fetchLdleitemsPosts() {
-      axios.get('https://localhost:7218/api/LdleitemsPosts')
+    fetchSharePosts() {
+      axios.get('/api/Posts/GetOverview/0')
         .then(response => {
-          this.ldleitemsposts = response.data;
+          this.shareposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            title: post.title,
+            content: post.content,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            views: 0, // Assuming views is not available in the API response
+            isLiked: false,
+            isStarred: false,
+            avatar: post.portrait
+          }));
         })
         .catch(error => {
-          console.error('Error fetching ldle items posts:', error);
-        });
+          console.error('Error fetching share posts:', error);
+          this.handleError(error, '获取分享贴失败');
+        });  
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
+    },
+    formatTime(postTime) {
+      const postDate = new Date(postTime);
+      const now = new Date();
+      const diff = Math.floor((now - postDate) / 1000);
+      if (diff < 60) {
+        return `${diff} 秒前`;
+      } else if (diff < 3600) {
+        return `${Math.floor(diff / 60)} 分钟前`;
+      } else if (diff < 86400) {
+        return `${Math.floor(diff / 3600)} 小时前`;
+      } else {
+        return `${Math.floor(diff / 86400)} 天前`;
+      }
     },
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      
@@ -155,23 +206,6 @@ export default {
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
-    }
-  },
-  data() {
-    return {
-      ldleitemsposts: [],
-    }
-  },
-  watch: {
-    view(newValue) {
-      if (newValue === 'lease') {
-        this.fetchLdleitemsPosts();
-      }
-    }
-  },
-  created() {
-    if (this.view === 'lease') {
-      this.fetchLdleitemsPosts();
     }
   }
 };

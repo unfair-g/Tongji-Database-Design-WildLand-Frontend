@@ -9,7 +9,7 @@
     <div class="publish-container">
       <el-divider></el-divider>
       <div class="publish-info-form">
-        <el-form :model="postForm" ref="postForm" @submit.prevent="submitForm" label-width="100px">
+        <el-form :model="postForm" :rules="rules" ref="postFormRef" @submit.prevent="submitForm" label-width="100px">
           <el-form-item label="帖子标题：" prop="myTitle" style="font-weight: bold;">
             <el-input v-model="postForm.myTitle" placeholder="请输入帖子标题" />
           </el-form-item>
@@ -19,8 +19,10 @@
               v-model="postForm.content"
               placeholder="请输入帖子内容"
               rows="5"
+              
             />
           </el-form-item>
+
           
           <div class="form-row">
             <div class="left-side">
@@ -59,7 +61,11 @@
 
 
 <script>
-import { ref } from 'vue';
+import { reactive ,ref} from 'vue'
+import {ElMessage} from "element-plus";
+import axios from '@/axios'; // 确保路径是正确的
+import { provinceMap } from '@/store/global.js'; // 引入映射表
+
 
 export default {
   name: 'SharePublish',
@@ -78,31 +84,66 @@ export default {
     }
   },
   setup() {
-    const postForm = ref({
+    const postFormRef = ref();
+
+    const postForm = reactive({
       myTitle: '',
       content: '',
       previewImage: [], // 预览的图片 URL
       location: ''
     });
 
-    const fileList = ref([]); // 已上传的文件列表
+    const rules = ref({
+      myTitle: [
+        { required: true, message: '请输入帖子标题', trigger: 'blur' }
+      ],
+      content: [
+        { required: true, message: '请输入帖子内容', trigger: 'blur' }
+      ]
+    })
+
+    const fileList = reactive([]); // 已上传的文件列表
 
     const submitForm = () => {
-      console.log('Form submitted:', postForm.value);
-    };
+      postFormRef.value.validate((valid) => {
+        if (valid) {
+          console.log('Form submitted:', postForm.value);
+        } else {
+          ElMessage.error('表单验证失败');
+          return false;
+        }
+      });
+  };
 
     const resetForm = () => {
-      postForm.value = {
+      postForm.values = {
         myTitle: '',
         content: '',
         previewImage: [], // 预览的图片 URL
         location: ''
       };
-      fileList.value = [];
+      fileList.values = [];
     };
 
-    const addLocation = () => {
-      console.log('Add location');
+    const addLocation = async () => {
+      try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        const ip = response.data.ip;
+        console.log('IP Address:', ip);
+
+        const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
+        const province = geoResponse.data.state_prov;
+
+        // 使用映射表将英文省份名称翻译为中文
+        const chineseProvince = provinceMap[province] || province; // 如果找不到对应的中文名称，就使用英文名称
+        postForm.location = chineseProvince;
+    
+        
+        console.log('Province:', chineseProvince);
+      } catch (error) {
+        console.error('Error fetching location:', error);
+        ElMessage.error('获取定位信息失败');
+      }
     };
 
     const triggerUpload = () => {
@@ -116,8 +157,11 @@ export default {
     const handlePictureCardPreview = (file) => {
       console.log(file);
     };
-
+    
+   
     return {
+      postFormRef,
+      rules,
       postForm,
       fileList,
       submitForm,
@@ -125,7 +169,8 @@ export default {
       addLocation,
       triggerUpload,
       handleRemove,
-      handlePictureCardPreview
+      handlePictureCardPreview,
+      
     };
   },
   data() {
@@ -143,10 +188,42 @@ export default {
       this.localIsSharePostDialogVisible = false;
     },
     confirmDialog() {
-      this.localIsSharePostDialogVisible = false
-      this.PostSuccess = true
-      //添加发布成功逻辑
+      const postData = {
+        author_id: 123,
+        content: this.postForm.content,
+        exhibit_status: 1,
+        post_kind: 0,
+        post_position: this.postForm.location,
+        post_time: new Date().toISOString(),
+        title: this.postForm.myTitle,
+      };
+      axios.post('/api/Posts/PushShare', postData)
+        .then(response => {
+          console.log('Post submitted successfully:', response.data);
+          this.PostSuccess = true;
+          this.handleClose(); // 关闭对话框
+          ElMessage.success('分享贴发布成功！');
+        })
+        .catch(error => {
+          console.error('Error submitting post:', error);
+          this.handleError(error, '发布分享贴失败');
+        });
+      
+      this.localIsSharePostDialogVisible = false;
+      
 
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
     },
   }
 };
@@ -157,7 +234,7 @@ export default {
   flex-direction: column;
   width: 100%;
 }
-.divider {
+.el-divider {
   height: 1px;
   background-color: grey; /* 分界线颜色 */
   margin: 20px 0; /* 上下间距 */

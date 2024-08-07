@@ -25,3 +25,40 @@ export function loadFromSessionStorage() {
 }
 
 export default state;
+
+export const provinceMap = {
+    "Beijing": "北京",
+    "Shanghai": "上海",
+    "Tianjin": "天津",
+    "Chongqing": "重庆",
+    "Hebei": "河北",
+    "Shanxi": "山西",
+    "Liaoning": "辽宁",
+    "Jilin": "吉林",
+    "Heilongjiang": "黑龙江",
+    "Jiangsu": "江苏",
+    "Zhejiang": "浙江",
+    "Anhui": "安徽",
+    "Fujian": "福建",
+    "Jiangxi": "江西",
+    "Shandong": "山东",
+    "Henan": "河南",
+    "Hubei": "湖北",
+    "Hunan": "湖南",
+    "Guangdong": "广东",
+    "Hainan": "海南",
+    "Sichuan": "四川",
+    "Guizhou": "贵州",
+    "Yunnan": "云南",
+    "Shaanxi": "陕西",
+    "Gansu": "甘肃",
+    "Qinghai": "青海",
+    "Taiwan": "台湾",
+    "Inner Mongolia": "内蒙古",
+    "Guangxi": "广西",
+    "Tibet": "西藏",
+    "Ningxia": "宁夏",
+    "Xinjiang": "新疆",
+    "Hong Kong": "香港",
+    "Macau": "澳门"
+};
