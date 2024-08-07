@@ -9,12 +9,13 @@ import flash from './modules/flash'
 import admin from './modules/admin'
 import message from './modules/message'
 import post from './modules/post'
-import lease from './modules/lease'
 
 export default createStore({
   state: {
+    apiUrl: 'http://139.9.193.78' // 将你的IP地址存储在这里
   },
   getters: {
+    getApiUrl: state => state.apiUrl
   },
   mutations: {
   },
@@ -30,7 +31,6 @@ export default createStore({
     flash,
     admin,
     message,
-    post,
-    lease
+    post
   }
 })

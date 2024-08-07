@@ -1,41 +1,72 @@
 <template>
   <div class="camp-list">
-      <el-col :span="20" v-for="camp in filteredCamps" :key="camp.id" style="margin-bottom:25px;">
-        <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp)">
-          <img :src="camp.image" class="image" alt="camp image">
-          <div style="padding: 14px;">
-            <span class="name">{{ camp.campground_name}}</span>
-            <div class="bottom clearfix">
-              <span class="introduction">{{ camp.introduction }}</span>
-              <el-button type="text" class="button" @click="goToCampDetail(camp)">查看详情</el-button>
-            </div>
+    <el-col :span="20" v-for="camp in filteredCamps" :key="camp.campground_id" style="margin-bottom:25px;">
+      <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camp-card" @click="goToCampDetail(camp)">
+        <img :src="camp.camp_showpic" class="image" alt="camp image">
+        <div style="padding: 14px;">
+          <span class="name">{{ camp.campground_name }}</span>
+          <div class="bottom clearfix">
+            <span class="introduction">{{ camp.slogan }}</span>
+            <el-button type="text" class="button" @click="goToCampDetail(camp)">查看详情</el-button>
           </div>
+        </div>
       </el-card>
     </el-col>
   </div>
 </template>
 
 <script>
+import axios from '@/axios'; // 引入配置好的axios实例
+import { ElMessage } from "element-plus";
+
 export default {
   name: 'CampgroundDisplay',
   props: {
     currentMenu: String
   },
+  data() {
+    return {
+      camps: []
+    };
+  },
   computed: {
-    // 从 Vuex Store 中获取数据
-    camps() {
-      return this.$store.state.camp.camps;
-    },
     filteredCamps() {
-      return this.camps.filter(camp => camp.city.includes(this.currentMenu));
+      return this.camps; 
     }
   },
   methods: {
-    goToCampDetail (camp) {
-      this.$router.push({ path: `/home/campdetail/${camp.campground_id}` })
+    async fetchCamps() {
+      try {
+        const response = await axios.get(`/api/Campgrounds/GetCgIntro/${this.currentMenu}`);
+        this.camps = response.data;
+      } catch (error) {
+        console.error('Failed to fetch camps:', error);
+        this.handleError(error, '获取营地信息失败');
+      }
+    },
+    goToCampDetail(camp) {
+      this.$router.push({ path: `/home/campdetail/${camp.campground_id}` });
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
     }
+  },
+  watch: {
+    currentMenu: 'fetchCamps'
+  },
+  created() {
+    this.fetchCamps();
   }
-}
+};
 </script>
 
 <style scoped>
@@ -43,16 +74,16 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; /* 新增此行 */
-  margin:20px auto;
+  align-items: center;
+  margin: 20px auto;
 }
 
 .camp-card {
-  width:100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin: auto; /* 新增此行 */
+  margin: auto;
 }
 
 .image {
@@ -62,7 +93,7 @@ export default {
 
 .name {
   font-size: 20px;
-  font-weight: bold; /* 将字体设置为加粗 */
+  font-weight: bold;
 }
 
 .introduction {
@@ -75,5 +106,3 @@ export default {
   padding: 0;
 }
 </style>
-
-
