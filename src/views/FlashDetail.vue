@@ -11,8 +11,9 @@
               <span>{{ flash.favorite }}</span>
             </div>
             <span class="flash-title">{{ flash.title }}</span>
+            <span class="flash-meta">{{ flash.meta }}</span>
             <div>
-              <span class="flash-meta">{{ flash.meta }}</span>
+              <el-tag type="info">{{ flash.tag }}</el-tag>  
             </div>
             <span class="flash-content">{{ flash.content }}</span>
             <img :src="flash.image" width="730" style="border-radius: 10px; margin-right: 10px;">
@@ -76,6 +77,7 @@ margin-top: 2%;
 .flash-meta {
   color: #999;
   font-size: 0.9em;
+  margin-left: 1%;
 }
 .flash-view {
   padding: 3%;
