@@ -1,13 +1,13 @@
 <template>
-    <el-aside width="200px" class="aside-container">
-      <el-menu
-        :default-active="activeIndex"
-        class="aside"
-        @select="handleMenuSelect"
-      >
-        <img src="@/assets/camp.png" alt="Camp Logo" class="logo" />
-        <div class="divider"></div> <!-- Divider line -->
-       <el-menu-item
+  <el-aside width="200px" class="aside-container">
+    <el-menu
+      :default-active="activeIndex"
+      class="aside"
+      @select="handleMenuSelect"
+    >
+      <img src="@/assets/camp.png" alt="Camp Logo" class="logo" />
+      <div class="divider"></div>
+      <el-menu-item
         v-for="(city, index) in cityNames"
         :key="index"
         :index="city"
@@ -15,41 +15,53 @@
       >
         {{ city }}
       </el-menu-item>
-      </el-menu>
-    </el-aside>
-  </template>
-  
-  <script>
-  import axios from 'axios';
+    </el-menu>
+  </el-aside>
+</template>
 
-  export default {
-    name: 'SideBarMenu',
-    data() {
+  <script>
+import axios from '@/axios'; // 引入配置好的axios实例
+import {ElMessage} from "element-plus";
+
+export default {
+  name: 'SideBarMenu',
+  data() {
     return {
       cityNames: [],
       activeIndex: '上海'
     };
   },
-    methods: {
-      handleMenuSelect(index) {
-        this.$emit('menu-select', index); // 触发父组件的事件，并传递选项的索引
-      },
-      fetchCityNames() {
-      axios.get('https://localhost:7218/api/Campgrounds/GetCity')
-        .then(response => {
-          this.cityNames = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
-    }
+  methods: {
+    handleMenuSelect(index) {
+      this.$emit('menu-select', index); 
     },
+    async fetchCityNames() {
+      try {
+        const response = await axios.get('/api/Campgrounds/GetCity');
+        this.cityNames = response.data;
+      } catch (error) {
+        console.error('Error fetching city names:', error);
+        this.handleError(error, '获取城市列表失败');
+      }
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
+    }
+  },
   created() {
     this.fetchCityNames();
   }
-  }
-  </script>
-
+};
+</script>
 
 <style scoped>
 .aside-container {

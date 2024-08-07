@@ -23,30 +23,52 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ProductView',
   props: {
     activeTab: String
   },
-  computed: {
-    products()
-    {
-      return this.$store.state.product.products
-    },
-    filteredProducts () {
-      if (this.activeTab === 'all') {
-        return this.products
-      } else {
-        return this.products.filter(product => product.product_tag.includes(this.activeTab))
-      }
+  data() {
+    return {
+      products: [], // 存储所有产品
+      filteredProducts: [] // 存储筛选后的产品
     }
   },
+  watch: {
+    activeTab() {
+      this.filterProducts(); // 当 activeTab 变化时，重新筛选产品
+    }
+  },
+  mounted() {
+    this.fetchProduct(); // 组件加载时获取所有产品
+  },
   methods: {
+    fetchProduct() {
+      axios.get('https://localhost:7218/api/OutdoorProducts')
+        .then(response => {
+          this.products = response.data;
+          this.filterProducts(); // 获取数据后进行筛选
+        })
+        .catch(error => {
+          console.error('Error fetching products:', error);
+        });
+    },
+    filterProducts() {
+      if (this.activeTab === 'all') {
+        this.filteredProducts = this.products;
+      } else {
+        this.filteredProducts = this.products.filter(product => product.product_tag === this.activeTab);
+      }
+    },
+
     goToProductDetail (product) {
       const productId = product.product_id
       this.$router.push({ path: `/home/product/${productId}` })
     }
-  }
+  },
+
 }
 </script>
 

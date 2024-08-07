@@ -22,29 +22,33 @@
       </div>
     </div>
 
-    <span class="title">| 选择预定日期</span>
-        <div class="short-divider"></div> 
-        <div class="up-container">
-          
-          <div class="date-range-picker">
-            <span >请选择租赁的日期</span>
-            <el-date-picker
-              v-model="dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="取货日期"
-              end-placeholder="归还日期"
-              @change="handleDateChange"
-            >
-            </el-date-picker>
-          </div>
-        </div>
+    <!-- 筛选营地订单 -->
+    <div class="camp-order-filter">
+      <span class="title">| 筛选预定的营地订单</span>
+      <div class="short-divider"></div>
+      <div class="filter-container">
+        <el-select v-model="selectedCampOrder" placeholder="请选择营地名称——预约时间" @change="filterCampOrders">
+          <el-option
+            v-for="order in campOrders"
+            :key="order.order_id"
+            :label="`${order.campground_name} —— ${formatDate(order.startDate)}至${formatDate(order.endDate)}`"
+            :value="order">
+          </el-option>
+        </el-select>
 
-        <div class="delivery-requirements">
-         <span class="title">| 配送需求:</span>
-         <div class="short-divider"></div> 
-         <el-input v-model="command" placeholder="请输入配送需求" style="margin-top:15px;"></el-input>
+      </div>
+      <div v-if="filteredCampOrders.length > 0" class="camp-orders">
+        <div v-for="order in filteredCampOrders" :key="order.order_id" class="camp-order">
+          <p>营地名称: {{ order.campground_name }}</p>
+          <p>预定时间: {{ formatDate(order.startDate) }} 至 {{ formatDate(order.endDate) }}</p>
+          <p>营位{{ order.selectedCampsiteIds }}</p>
         </div>
+      </div>
+      <div v-else>
+        <p>没有符合条件的订单</p>
+      </div>
+    </div>
+    
 
     <div class="price-tag">¥{{ TotalPrice }}</div>
     <div class="payment-options">
@@ -56,10 +60,11 @@
         <el-radio-button label="银联卡支付"><el-icon><CreditCard /></el-icon> 银联卡</el-radio-button>
       </el-radio-group>
     </div>
+
     <template v-slot:footer>
       <span class="dialog-footer">
         <el-button @click="closeDialog">取消</el-button>
-        <el-button type="primary" @click="confirmDialog()">立即支付</el-button>
+        <el-button type="primary" @click="confirmDialog()" :disabled="filteredCampOrders.length === 0">立即支付</el-button>
       </span>
     </template>
   </el-dialog>
@@ -78,7 +83,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">租赁成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="button" @click="GoToOrder(product)">查看订单</el-button>
+            <el-button type="text" class="button" @click="GoToOrder(product,selectedCampOrder.order_id)">查看订单</el-button>
           </div>
         </div>
       </div>
@@ -109,7 +114,11 @@ export default {
       quantity: 1,
       PaySuccess: false,
       Order: false,
-      command:""
+      command:"",
+      selectedCampOrder: null,
+      filteredCampOrders: [],
+      startTime:null,
+      endTime:null
     }
   },
   watch: {
@@ -133,7 +142,7 @@ export default {
       //添加支付成功逻辑
       // 切换支付成功弹窗
     },
-    GoToOrder(product)   //查看订单
+    GoToOrder(product,orderId)   //查看订单
     {
       const productId = product.product_id
       this.$router.push({ path: `/home/product/${productId}/order`,
@@ -142,10 +151,24 @@ export default {
         quantity: this.quantity,
         startDate: this.startDate,
         endDate: this.endDate,
-        command:this.command
+        command:this.command,
+        orderID:orderId
       }})
       this.PaySuccess = false
       this.Order=true
+    },
+    filterCampOrders() {
+      if (this.selectedCampOrder) {
+        this.filteredCampOrders = [this.selectedCampOrder];
+        this.startTime=this.filteredCampOrders[0].startDate;
+        this.endTime=this.filteredCampOrders[0].endDate;
+        console.log(this.startTime, this.endTime);
+      } else {
+        this.filteredCampOrders = [];
+      }
+    },
+    formatDate(date) {
+      return dayjs(date).format('YYYY-MM-DD');
     }
   },
   computed: {
@@ -159,6 +182,9 @@ export default {
         }
       }
       return 0;
+    },
+    campOrders() {
+      return this.$store.state.camp_order.camp_orders;
     }
   },
 
@@ -307,5 +333,33 @@ export default {
 
 .delivery-requirements{
   margin-bottom:20px;
+}
+
+
+
+.camp-order-filter {
+  margin-top: 20px;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.camp-orders {
+  margin-top: 20px;
+}
+
+.camp-order {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.dialog-footer {
+  text-align: right;
 }
 </style>

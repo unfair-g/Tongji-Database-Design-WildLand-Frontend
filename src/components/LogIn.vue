@@ -87,19 +87,21 @@ const Login = () => {
       }
       else {
         try {
-          const response = await axios.post('https://localhost:7218/api/Administrators/login', {
+          const response = await axios.post('/api/Administrators/login', {
               admin_name: user.user_name,
               password: user.password
           });
-
-          const admin_id = response.data.admin_id;
-          sessionStorage.setItem('admin_id', admin_id);  // 存储 admin_id 到 sessionStorage
-          store.dispatch('admin/saveAdminId', admin_id);
+          saveToSessionStorage(true, response.data.admin_id)
+          global.Login = true;
+          global.userId = response.data.admin_id;
           router.push({ path: '/administrator' });
           ElMessage.success('登录成功！');
           console.log('登录成功', response);
       } catch (error) {
-          ElMessage.error('用户名或密码错误！');
+          if(error.response)
+            ElMessage.error(error.response.data.message)
+          else
+            ElMessage.error(error.message)
           console.error('登录失败', error);
           loginDisabled.value = false;
 }

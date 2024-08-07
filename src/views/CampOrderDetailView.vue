@@ -1,9 +1,6 @@
 <template>
     <div class="order">
       <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
-        <div class="product-img">
-          <img src="@/assets/camp/campsite/21.png" alt="product image">
-        </div>
 
         <div style="flex:2;position:relative;">
           <h2>预约营地：{{ camporder.campground_name }}</h2>
@@ -92,8 +89,8 @@
       }
       
       .product-img {
-        
-        width: 440px;
+        flex: 1;
+        width: 200px;
         height: 250px;
         padding: 10px;
         margin-right: 50px;

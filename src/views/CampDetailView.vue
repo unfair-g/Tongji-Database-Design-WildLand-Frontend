@@ -2,16 +2,15 @@
   <div class="container">
     <el-scrollbar max-height="100%">
       <el-main class="main">
-      
-        <el-carousel :interval="5000" arrow="default">
-          <el-carousel-item v-for="(image, index) in camp.detail_images" :key="index">
+        <el-carousel :interval="5000" arrow="default" v-if="camp && camp.campground_picurls">
+          <el-carousel-item v-for="(image, index) in camp.campground_picurls" :key="index">
             <img :src="image" alt="camp image" class="carousel-image">
           </el-carousel-item>
         </el-carousel>
         
-        <div class="up-container">
+        <div class="up-container" v-if="camp">
         <h2>{{ camp.campground_name }}</h2>
-        <p>{{ camp.introduction }}</p>
+        <p>{{ camp.slogan }}</p>
 
         <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
             <span>
@@ -26,27 +25,37 @@
 <!-- -------------------------------------------------------------------------------- -->
         <p class="title">| 基础设施</p>
         <div class="short-divider"></div> 
-        <div class="infrastructure-container">
-              <img v-for="infrastructure in camp.infrastructures" :key="infrastructure" :src="getInfrastructureImage(infrastructure)" :alt="infrastructure" class="infrastructure-image">
+        <div class="infrastructure-container" v-if="camp">
+          <img v-if="camp.has_fire_safety == '1'" src="@/assets/infrastructures/fire.png" alt="fire safety" class="infrastructure-image">
+          <img v-if="camp.has_parking_lot == '1'" src="@/assets/infrastructures/parkinglot.png" alt="parking lot" class="infrastructure-image">
+          <img v-if="camp.toilet_number >= '1'" src="@/assets/infrastructures/wc.png" alt="power supply" class="infrastructure-image">
+          <img v-if="camp.has_shower_room == '1'" src="@/assets/infrastructures/shower.png" alt="shower room" class="infrastructure-image">
+          <img v-if="camp.has_signal == '1'" src="@/assets/infrastructures/signal.png" alt="signal" class="infrastructure-image">
         </div>
 
 <!-- -------------------------------------------------------------------------------- -->
         <p class="title">| 营地概览</p>
         <div class="short-divider"></div> 
-        <p>{{ camp.address }}</p>
-        <p margin-left="20px">营位数量:{{ camp.campsite_number }}</p>
-        <div class="availability-container">
-          <div v-for="availability in camp.availabilities" :key="availability" class="availability-item">
-            {{ availability }} <span class="check-mark">✔️</span>
-          </div>
+        <p v-if="camp">{{ camp.address }}</p>
+        <p margin-left="20px" v-if="camp">营位数量:{{ camp.campsite_number }}</p>
+        <div class="availability-container" v-if="camp">
+          <div v-if="camp.has_power_supply == 1" class="availability-item">可供电 <span class="check-mark">✔️</span></div>
+          <div v-if="camp.can_stay_overnight == 1" class="availability-item">可拎包入住 <span class="check-mark">✔️</span></div>
+          <div v-if="camp.is_pet_friendly == 1" class="availability-item">可携带宠物 <span class="check-mark">✔️</span></div>
+          <div v-if="camp.is_own_tent_friendly == 1" class="availability-item">可自带帐篷 <span class="check-mark">✔️</span></div>
+          <div v-if="camp.has_grass_ground == 1" class="availability-item">草地 <span class="check-mark">✔️</span></div>
+          <div v-if="camp.has_sandy_ground == 1" class="availability-item">沙地 <span class="check-mark">✔️</span></div>
         </div>
+        
 
 <!-- -------------------------------------------------------------------------------- -->
         <p class="title">| 营地特色</p>
         <div class="short-divider"></div>
+        <!--
         <div class="introduction-image-container">
           <img :src="camp.introduction_image" alt="introduction image" class="introduction-image">
         </div> 
+      -->
 
        
       
@@ -60,35 +69,31 @@
 </template>
 
 <script>
+import axios from '@/axios'; // 引入配置好的axios实例
 import { ref } from 'vue'
 export default {
   name: 'CampDetail',
   props: ['campID'],
   data () {
     return {
+      camp: null,
       isStarSolid: ref(true),
     }
   },
-  computed: {
-    camp() {
-      const campId = this.campID;
-      return this.$store.state.camp.camps.find(camp => camp.campground_id === parseInt(campId));
-    }
+  created() {
+    this.fetchCampDetails();
   },
   methods: {
+    async fetchCampDetails() {
+      try {
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${this.campID}`);
+        this.camp = response.data;
+      } catch (error) {
+        console.error('获取营地具体信息失败:', error);
+      }
+    },
     goToCampBooking (camp) {
       this.$router.push({ path: `/home/campbooking/${camp.campground_id}` })
-    },
-
-    getInfrastructureImage (infrastructure) {
-      const images = {
-        '停车场': require('@/assets/infrastructures/parkinglot.png'),
-        '信号': require('@/assets/infrastructures/signal.png'),
-        '卫生间': require('@/assets/infrastructures/wc.png'),
-        '消防措施': require('@/assets/infrastructures/fire.png'),
-        '淋浴房': require('@/assets/infrastructures/shower.png'),
-      };
-      return images[infrastructure] || '';
     },
     toggleStarColor () {
       this.isStarSolid = !this.isStarSolid
