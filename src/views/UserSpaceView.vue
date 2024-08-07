@@ -65,7 +65,7 @@ function toOrder() {
 
 function toPostOrder() {
   router.push({
-    path:'/home/userspace/post/order'
+    path:'/home/userspace/leaseorder'
   })
 }
 

@@ -136,8 +136,8 @@ const routes = [
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
                     {
-                        path: "post/order",
-                        component: () => import('../components/LeaseForum.vue')
+                        path: "leaseorder",
+                        component: () => import('../components/UserLeaseOrderList.vue')
                     },
                     {
                         path: 'star',
@@ -217,7 +217,7 @@ const routes = [
                 props: true
             },
             {
-                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                path: `userspace/leaseorder/:ldleitemsPostId`,
                 component: () => import('../views/PostOrderView.vue'),
                 props: true
             }
