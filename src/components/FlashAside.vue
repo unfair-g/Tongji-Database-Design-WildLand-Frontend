@@ -7,7 +7,7 @@
       >
         <div class="divider"></div> <!-- Divider line -->
        <el-menu-item
-       v-for="(tag, index) in tags"  
+       v-for="(tag) in tags"  
         :default-active="activeIndex"
   :key="tag.id"  
   :index="tag.id"  
