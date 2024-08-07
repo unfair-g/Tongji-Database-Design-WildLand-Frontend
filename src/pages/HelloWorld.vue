@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import MyLogo from "../components/MyLogo.vue"
+import MyLogo from "../components/MyLogo.vue"
 
 export default {
   name: 'HelloWorld',

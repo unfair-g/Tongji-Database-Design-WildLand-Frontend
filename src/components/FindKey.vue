@@ -30,10 +30,12 @@
 
 <script setup>
 import router from '../router'
-import axios from 'axios'
+import axios from '@/axios'
 import { reactive,ref } from 'vue'
 import { User, Key, Iphone } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import global from '@/store/global'
+import CryptoJS from 'crypto-js'
 
 const findkey = reactive({
     user_name: '',
@@ -74,14 +76,17 @@ const Login = () => {
   loginDisabled.value = true
   formRef.value.validate(async (valid) => {
     if(valid){
-        try {
-          const response = await axios.post('https://localhost:7218/api/Users/resetPassword', {
+      try {
+          const hashedPassword = CryptoJS.SHA256(findkey.newpassword).toString()
+          const response = await axios.post('/api/Users/resetPassword', {
             user_name: findkey.user_name,
             phone_number:findkey.phone_number,
-            new_password: findkey.newpassword
+            new_password: hashedPassword
           });
-          router.push({ path: '/home' });
           ElMessage.success('密码重置成功！');
+          global.Login = true;
+          //global.userId = response.data.data.user_id;
+          router.push({ path: '/home' });
           console.log('登录成功', response)
         } catch (error) {
           ElMessage.error(error.response.data.message)

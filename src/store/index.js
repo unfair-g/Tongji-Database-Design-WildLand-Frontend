@@ -1,5 +1,4 @@
 import { createStore } from 'vuex'
-import user from './modules/user'
 import camp from './modules/camp'
 import camp_order from './modules/camp_order'
 import product from './modules/product'
@@ -21,7 +20,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    user,
     camp,
     camp_order,
     order,

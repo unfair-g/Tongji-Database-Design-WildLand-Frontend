@@ -30,12 +30,14 @@
 
 <script setup>
 import router from '../router'
-import axios from 'axios'
+import axios from '@/axios'
 import { reactive } from 'vue'
 import { User, Key } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex';
+import global from '@/store/global'
+import { saveToSessionStorage } from '@/store/global'
+import CryptoJS from 'crypto-js'
 
 const role = ref('游客')
 
@@ -59,28 +61,27 @@ const rules = ref({
   ]
 })
 
-const store = useStore();
-
 const Login = () => {
   loginDisabled.value = true
   userRef.value.validate(async (valid) => {
     if(valid){
       if (role.value == "游客") {
         try {
-          const response = await axios.post('https://localhost:7218/api/Users/login', {
+          const hashedPassword = CryptoJS.SHA256(user.password).toString()
+          const response = await axios.post('/api/Users/login', {
             user_name: user.user_name,
-            password: user.password
+            password: hashedPassword
           });
           router.push({ path: '/home' });
+          global.Login = true;
+          global.userId = response.data.data.user_id;
+          saveToSessionStorage(true,response.data.data.user_id);
           ElMessage.success('登录成功！');
-          await store.dispatch('fetchUserInfo',response.data.data.token);
-          console.log('登录成功', response)
         } catch (error) {
           if(error.response)
             ElMessage.error(error.response.data.message)
           else
             ElMessage.error(error.message)
-          console.error('登录失败', error)
           loginDisabled.value = false
         }
       }
@@ -94,7 +95,6 @@ const Login = () => {
           const admin_id = response.data.admin_id;
           sessionStorage.setItem('admin_id', admin_id);  // 存储 admin_id 到 sessionStorage
           store.dispatch('admin/saveAdminId', admin_id);
-
           router.push({ path: '/administrator' });
           ElMessage.success('登录成功！');
           console.log('登录成功', response);
@@ -111,6 +111,15 @@ const Login = () => {
     }
   })
 }
+
+ onMounted(() => {
+   if (global.Login) {
+     global.Login = false;
+     global.userId = 0;
+     sessionStorage.clear();
+   }
+
+  });
 
 </script>
 
