@@ -39,10 +39,10 @@ const routes = [
                 component: () => import('../views/PostAudit.vue')
             },
             {
-                path: 'postdetail',
+                path: 'postdetail/:id', // 添加 :id 作为动态路由参数
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
-            },
+            },              
             {
                 path: 'reportreview',
                 name: 'ReportReview',

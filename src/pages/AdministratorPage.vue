@@ -51,9 +51,9 @@
                 <template #title>
                   <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
                 </template>
-                <el-menu-item index="1-1" @click="navigateTo('PostAudit')">帖子审核</el-menu-item>
-                <el-menu-item index="1-2" @click="navigateTo('ReportReview')">举报审核</el-menu-item>
-                <el-menu-item index="1-3" @click="navigateTo('GeekAudit')">达人审核</el-menu-item>
+                <el-menu-item index="1-1" @click="navigateTo('PostAudit', admin_id)">帖子审核</el-menu-item>
+                <el-menu-item index="1-2" @click="navigateTo('ReportReview', admin_id)">举报审核</el-menu-item>
+                <el-menu-item index="1-3" @click="navigateTo('GeekAudit', admin_id)">达人审核</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="2">
                 <template #title>
@@ -147,10 +147,13 @@ export default {
       isEditing.value = !isEditing.value
     }
 
-    const navigateTo = (routeName) => {
-      router.push({ name: routeName })
-    }
-
+    const navigateTo = (routeName, admin_id) => {
+      if (admin_id) {
+        router.push({ name: routeName, query: { admin_id } });
+      } else {
+        router.push({ name: routeName });
+      }
+    };
     const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -245,6 +248,7 @@ export default {
 .admin-avatar-info {
   display: flex;
   align-items: center;
+  flex-direction: column; /* 改为列布局 */
   margin-left: 20%;
   margin-right: 2%; /* 增加右边距，靠近昵称和个人ID */
 }
