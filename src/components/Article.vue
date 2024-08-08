@@ -122,6 +122,24 @@ export default {
       required:true
     }
   },
+<<<<<<< Updated upstream
+=======
+  data() {
+    return {
+      shareposts: [],
+      ldleitemsposts: [],
+    };
+  },
+  mounted() {
+    if (this.view === 'share') {
+      this.fetchSharePosts();
+    }
+    if (this.view === 'lease') {
+      this.fetchLdleitemsPosts();
+    }
+    
+  },
+>>>>>>> Stashed changes
   computed: {
     shareposts() {
       return this.$store.state.post.shareposts;
@@ -138,8 +156,49 @@ export default {
           this.ldleitemsposts = response.data;
         })
         .catch(error => {
+<<<<<<< Updated upstream
           console.error('Error fetching ldle items posts:', error);
         });
+=======
+          console.error('Error fetching share posts:', error);
+          this.handleError(error, '获取分享贴失败');
+        });  
+    },
+    fetchLdleitemsPosts() {
+      axios.get('https://localhost:7218/api/LdleitemsPosts')
+        .then(response => {
+          this.ldleitemsposts = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldle items posts:', error);
+        });
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
+    },
+    formatTime(postTime) {
+      const postDate = new Date(postTime);
+      const now = new Date();
+      const diff = Math.floor((now - postDate) / 1000);
+      if (diff < 60) {
+        return `${diff} 秒前`;
+      } else if (diff < 3600) {
+        return `${Math.floor(diff / 60)} 分钟前`;
+      } else if (diff < 86400) {
+        return `${Math.floor(diff / 3600)} 小时前`;
+      } else {
+        return `${Math.floor(diff / 86400)} 天前`;
+      }
+>>>>>>> Stashed changes
     },
    goToPostDetail(post) {
       const postID = post.post_id;
@@ -157,11 +216,14 @@ export default {
       post.isStarred = !post.isStarred;
     }
   },
+<<<<<<< Updated upstream
   data() {
     return {
       ldleitemsposts: [],
     }
   },
+=======
+>>>>>>> Stashed changes
   watch: {
     view(newValue) {
       if (newValue === 'lease') {
