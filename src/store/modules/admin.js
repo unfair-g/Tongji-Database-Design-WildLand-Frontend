@@ -134,26 +134,63 @@ const actions = {
     };
     commit('setCommentDetail', commentDetail);
   },
-  fetchPostReportDetail({ commit }, id) {
-    const postReportDetail = {
-      id: id,
-      postTitle: "示例帖子标题",
-      postType: "分享贴",
-      postContent: "这是帖子内容。",
-      publisherName: "发布者名称",
-      ReportReason: "这里是举报原因",
-      audits: "pass",
-    };
-    commit('setPostReportDetail', postReportDetail);
+  async fetchPostReportDetail({ commit }, id) {
+    try {
+      const response = await axios.get(`https://localhost:7218/api/PostReports/${id}`);
+      console.log(response.data.data); // 打印响应以检查其结构
+      
+      const postReportDetail = response.data.data;
+      
+      if (!postReportDetail) {
+        console.error('API 响应中没有找到数据');
+        return;
+      }
+  
+      const postTypeMap = {
+        0: '分享贴',
+        1: '闲置贴',
+        2: '招募贴'
+      };
+  
+      const formattedPostReportDetail = {
+        id: postReportDetail.report_id,
+        postTitle: postReportDetail.post_title,
+        postType: postTypeMap[postReportDetail.post_kind], 
+        postContent: postReportDetail.post_content || '内容未提供',
+        publisherName: postReportDetail.post_author_name,
+        reportReason: postReportDetail.report_reason,
+        audits: 'pending'
+      };
+      
+
+      commit('setPostReportDetail', formattedPostReportDetail);
+    } catch (error) {
+      console.error('获取帖子举报详情失败:', error);
+    }
   },
-  fetchCommentReportDetail({ commit }, id) {
-    const commentReportDetail = {
-      id: id,
-      commentContent: "示例评论内容",
-      commenterName: "评论者名称",
-      ReportReason: "这里是举报原因"
-    };
-    commit('setCommentReportDetail', commentReportDetail);
+  async fetchCommentReportDetail({ commit }, id) {
+    try {
+      const response = await axios.get(`https://localhost:7218/api/CommentReports/${id}`);
+      console.log(response.data); // 检查 API 返回的内容
+  
+      const commentReport = response.data.data;
+      
+      if (!commentReport) {
+        console.error('API 响应中没有找到数据');
+        return;
+      }
+  
+      const formattedCommentReportDetail = {
+        id: commentReport.report_id,
+        commentContent: commentReport.comment_content || '内容未提供',
+        commenterName: commentReport.author_name,
+        ReportReason: commentReport.report_reason
+      };
+  
+      commit('setCommentReportDetail', formattedCommentReportDetail);
+    } catch (error) {
+      console.error('获取评论举报详情失败:', error);
+    }
   },
   async fetchPostAuditTableData({ commit }) {
     try {
@@ -171,33 +208,39 @@ const actions = {
       console.error('Failed to fetch post audit table data:', error);
     }
   },
-  fetchPostsTableData({ commit }) {
-    const postsTableData = [
-      {
-        id: 1,
-        reportContent: "帖子内容1",
-        reporter: "举报人1",
-        reportedUser: "被举报人1",
-        reason: "原因1",
-        reportTime: "时间1",
+  async fetchPostsTableData({ commit }) {
+    try {
+      const response = await axios.get('https://localhost:7218/api/PostReports/unreviewedList');
+      const postsTableData = response.data.data.map(post => ({
+        id: post.report_id,
+        reportContent: post.post_title,
+        reporter: post.user_name,
+        reportedUser: post.post_author_name,
+        reason: post.report_reason,
+        reportTime: post.report_time,
         isReviewed: false
-      }
-    ];
-    commit('setPostsTableData', postsTableData);
+      }));
+      commit('setPostsTableData', postsTableData);
+    } catch (error) {
+      console.error('Failed to fetch post report table data:', error);
+    }
   },
-  fetchCommentsTableData({ commit }) {
-    const commentsTableData = [
-      {
-        id: 1,
-        reportContent: "评论内容1",
-        reporter: "举报人1",
-        reportedUser: "被举报人1",
-        reason: "原因1",
-        reportTime: "时间1",
+  async fetchCommentsTableData({ commit }) {
+    try {
+      const response = await axios.get('https://localhost:7218/api/CommentReports/unreviewedList');
+      const commentsTableData = response.data.data.map(comment => ({
+        id: comment.report_id,
+        reportContent: comment.comment_content,
+        reporter: comment.user_name,
+        reportedUser: comment.comment_author_name,
+        reason: comment.report_reason,
+        reportTime: comment.report_time,
         isReviewed: false
-      }
-    ];
-    commit('setCommentsTableData', commentsTableData);
+      }));
+      commit('setCommentsTableData', commentsTableData);
+    } catch (error) {
+      console.error('Failed to fetch comment report table data:', error);
+    }
   },
   fetchGeekAuditTableData({ commit }) {
     const geekAuditTableData = [

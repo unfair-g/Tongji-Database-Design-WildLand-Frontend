@@ -59,10 +59,16 @@ export default {
     CircleClose,
     MoreFilled
   },
+  data() {
+    return {
+      admin_id: '' // 新增 admin_id 数据属性
+    }
+  },
   computed: {
     ...mapState('admin', ['postAuditTableData'])
   },
   created() {
+    this.admin_id = this.$route.query.admin_id;
     this.fetchPostAuditTableData();
   },
   watch: {
