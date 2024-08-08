@@ -1,5 +1,5 @@
 <template>
-    <div class="product-detail">
+    <div class="product-detail" v-if="product">
       <div class="product-img">
         <img :src="product.product_image" class="image" alt="product image">
       </div>
@@ -33,6 +33,7 @@
 <script>
 import { ref } from 'vue'
 import PayWindow from '@/components/PayWindow.vue'
+import axios from 'axios';
 
 export default {
   name: 'ProductDetail',
@@ -42,17 +43,24 @@ export default {
   data () {
     return {
       isStarSolid: ref(true),
-      dialogVisible: false
+      dialogVisible: false,
+      product:null
     }
   },
   props: ['productID'],
-  computed: {
-    product() {
-      const productId = this.productID;
-      return this.$store.state.product.products.find(product => product.product_id === parseInt(productId));
-    }
+  created() {
+    this.fetchProduct();
   },
   methods: {
+    fetchProduct() {
+      axios.get(`https://localhost:7218/api/OutdoorProducts/${this.productID}`)
+        .then(response => {
+          this.product = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching product:', error);
+        });
+      },
     toggleStarColor () {
       this.isStarSolid = !this.isStarSolid
       // 如果需要，你可以在这里添加额外的逻辑来改变图标的颜色

@@ -6,7 +6,7 @@
         </el-row>
         <el-row style="margin-top:1%">
         <el-col :span="2">
-            <el-avatar v-if="user.gender=='女'" :src="avatarfemale" style="width:100px;height:100px"/>
+            <el-avatar v-if="userInfo.gender=='f'" :src="avatarfemale" style="width:100px;height:100px"/>
             <el-avatar v-else :src="avatarmale" style="width:100px;height:100px"/>
         </el-col>
         <el-col :span="10">
@@ -155,28 +155,22 @@
 </template>
 
 <script>
-import AvatarPicker from './AvatarPicker.vue';
-import { mapGetters } from 'vuex';
+import AvatarPicker from './AvatarPicker.vue'
+import global from '@/store/global'
+import axios from '@/axios'
+import { ElMessage } from "element-plus"
+import { onMounted,ref } from 'vue'
 
 export default {
     components: {
         AvatarPicker
     },
-    computed: {
-        user() {
-            return this.$store.state.user.users[0];
-        },
-        ...mapGetters(['getUserId']),
-        userId() {
-            return this.getUserId;
-        },
-        ...mapGetters(['getUserInfo']),
-        userInfo() {
-            return this.getUserInfo;
-        }
-    },
     data() {
         return {
+            user:{
+                fans: 0,
+                follows:0
+            },
             avatarfemale:require('../assets/avatar-female.jpg'),
             avatarmale: require('../assets/avatar-male.jpg'),
             dialogFormVisible: false,
@@ -191,7 +185,28 @@ export default {
                 { value: '浙江' }
             ]
         }
+    },
+    setup() {
+    const userInfo = ref({});    
+
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
+        userInfo.value = response.data.data;
+        userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
+      } catch (error) {
+        ElMessage.error(error.message);
+      }
     }
+
+    onMounted(() => {
+      fetchUser();
+    });
+
+    return {
+        userInfo
+    }
+  }
 }
 </script>
 
