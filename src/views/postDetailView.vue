@@ -6,7 +6,7 @@
         <div class="post-details">
           <div class="post-info">
             <span class="username">{{ post.username }}</span>
-            <span class="time">发布时间：{{ post.time }}</span>
+            <span class="time">发布时间：{{ post.post_time }}</span>
           </div>
           <div v-if="isPostOwner" class="post-visible-states">
             <el-select
@@ -15,6 +15,7 @@
               size="large"
               style="width: 240px"
             >
+            <!-- v-model="post.exhibit_status" -->
               <el-option
                 v-for="option in options"
                 :key="option.value"
@@ -33,7 +34,7 @@
         <div v-if="type === 'share'">
           <div class="post-content">
             <h3 class="post-title">{{ post.title }}</h3>
-            <p v-for="line in post.content" :key="line" class="post-text">{{ line }}</p>
+            <p  class="post-text">{{ post.content }}</p>
             <div class="image-gallery">
               <div v-for="(imageRow, rowIndex) in imageRows" :key="rowIndex" class="image-row">
                 <img v-for="(image, index) in imageRow" 
@@ -57,7 +58,7 @@
             </div>
             </el-dialog>
             <div class="post-location">
-          <el-icon><Location /></el-icon> {{ post.location }}
+          <el-icon><Location /></el-icon> {{ post.post_location }}
           <span  v-if="isPostOwner" class="delete-button" @click="openDeleteDialog('post')">删除</span>
         </div>
         <el-dialog
@@ -77,7 +78,7 @@
             <el-button class="stat-item" @click="toggleLike(post)">
               <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !post.isLiked, 'icon-dianzanxuanzhong': post.isLiked}"></i>
               <span>点赞</span>
-              <span>{{ post.likes }}</span>
+              <span>{{ post.likes_number }}</span>
               
             </el-button>
             <el-button class="stat-item" @click="toggleStar(post)">
@@ -86,7 +87,7 @@
               收藏
             </el-button>
             <el-button class="stat-item">
-              <el-icon><ChatLineSquare /></el-icon> 评论{{ post.comments }}</el-button>
+              <el-icon><ChatLineSquare /></el-icon> 评论{{ post.total_floor }}</el-button>
             <el-button class="stat-item"  @click="goToReportPostWindow">
               <el-icon><Bell/></el-icon>举报
             </el-button>
@@ -214,6 +215,8 @@ import CommentItem from '@/components/CommentItem.vue';
 import SignUpInput from '@/components/SignUpInput.vue';
 import SignUpItem from '@/components/SignUpItem.vue';
 import ReportPost from '@/components/ReportPostWindow.vue'
+import axios from '@/axios'; // 确保路径是正确的
+import state from '@/store/global.js'; // 引入映射表
 
 export default {
   name: 'ShareForumDetail',
@@ -224,7 +227,7 @@ export default {
     SignUpItem,
     ReportPost,
   },
-  props: ['type','postID','isPostOwner','isCommentOwner','isSignupOwner'],
+  props: ['type','postID'],
   data() {
     return {
       dialogVisible: false,
@@ -244,45 +247,34 @@ export default {
       isReportPostWindowVisible:false,//举报弹窗显示
       showSignUpInput: false, // 控制SignUpInput显示
       options: [
-      { label: '仅自己可见', value: '仅自己可见' },
-      { label: '所有人可见', value: '所有人可见' }
-    ]
+        { label: '仅自己可见', value: '仅自己可见' },
+        { label: '所有人可见', value: '所有人可见' }
+      ],
+      post:null,
     };
   },
   watch: {
     $route(to, from) {
-      if (to.params.postID !== from.params.postID || 
-          to.query.isPostOwner !== from.query.isPostOwner ||
-          to.query.isCommentOwner !== from.query.isCommentOwner ||
-          to.query.isSignupOwner !== from.query.isSignupOwner) {
+      if (to.params.postID !== from.params.postID ) {
         this.fetchData();
       }
     }
   },
   computed: {
-    post() {
-      const postID = parseInt(this.postID);
-      if (this.type === 'share') {
-        return this.$store.state.post.shareposts.find(post => post.post_id === postID);
-      } else if (this.type === 'recruit') {
-        return this.$store.state.post.recruitmentposts.find(post => post.post_id === postID);
-      }
-      return null;
-    },
     imageRows() {
-      if (!this.post || !this.post.post_images) return [];
+      if (!this.post || !this.post.post_pics) return [];
       let rows = [];
-      for (let i = 0; i < this.post.post_images.length; i += 3) {
-        rows.push(this.post.post_images.slice(i, i + 3));
+      for (let i = 0; i < this.post.post_pics.length; i += 3) {
+        rows.push(this.post.post_pics.slice(i, i + 3));
       }
       return rows;
     },
     imageClass() {
-      if (!this.post || !this.post.post_images) return '';
+      if (!this.post || !this.post.post_pics) return '';
       let className = '';
-      if (this.post.post_images.length === 1) {
+      if (this.post.post_pics.length === 1) {
         className = 'image-one';
-      } else if (this.post.post_images.length === 2) {
+      } else if (this.post.post_pics.length === 2) {
         className = 'image-two';
       } else {
         className = 'image-multiple';
@@ -290,10 +282,24 @@ export default {
       return className;
     },
     allImages() {
-      return this.post ? this.post.post_images : [];
+      return this.post ? this.post.post_pics : [];
+    },
+    isPostOwner() {
+      return this.post && this.post.author_id === state.userId; // 根据实际逻辑调整
     }
   },
+  mounted() {
+    this.fetchData();
+  },
   methods: {
+    async fetchData() {
+      try {
+        const response = await axios.get(`/api/Posts/GetPostDetail/${this.postID}`);
+        this.post = response.data;
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+      }
+    },
     showImage(image) {
       this.currentIndex = this.allImages.indexOf(image);
       this.currentImage = image;
