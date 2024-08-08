@@ -7,14 +7,14 @@
       >
         <div class="divider"></div> <!-- Divider line -->
        <el-menu-item
-       v-for="(tag, index) in tags"  
+       v-for="(tag,index) in tags"  
         :default-active="activeIndex"
-  :key="tag.id"  
-  :index="tag.id"  
-  @click="handleMenuSelect(tag)" 
+  :key="index"  
+  :index="tag"  
+  @click="handleMenuSelect(index)" 
   class="menuitem"  
       >
-        {{ tag.title }}
+        {{ tag }}
       </el-menu-item>
       </el-menu>
     </el-aside>
@@ -22,24 +22,34 @@
   
   <script>
 
+  import axios from 'axios';
+
   export default {
     name: 'TagMenu',
     data() {
     return {
       Names: [],
-      activeIndex: ' '
+      activeIndex: ' ',
+      tags:[]
     };
   },
   methods: {
-      handleMenuSelect(tag) {
-        this.$emit('menu-select', tag.id); // 触发父组件的事件，并传递选项的索引
+      handleMenuSelect(index) {
+        this.$emit('menu-select', index); // 触发父组件的事件，并传递选项的索引
       },
+      fetchTagNames() {
+      axios.get('https://localhost:7218/api/FlashTags/GetTagNames')
+        .then(response => {
+          this.tags = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    }
     },
-  computed: {
-    tags() {
-      return this.$store.state.tag.tags;
-    },
-  },
+    created() {
+    this.fetchTagNames();
+  }
   }
   </script>
 
