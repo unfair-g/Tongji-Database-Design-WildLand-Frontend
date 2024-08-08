@@ -6,7 +6,7 @@
         active-text-color="#1D5B5E"
         background-color="#FFFFFF"
         class="sidebar"
-        default-active="2"
+        default-active="1"
         text-color="#0C0C0C"
       >
          <el-menu-item index="1" @click="toPersonalCenter">
@@ -32,6 +32,12 @@
           <el-icon><Bell /></el-icon>
           <span>消息中心</span>
         </el-menu-item>
+        <div class="flex-grow" />
+        <li style="flex:1;"></li>
+         <el-menu-item index="5" @click="exit">
+          <el-icon><SwitchButton /></el-icon>
+          <span>退出登录</span>
+        </el-menu-item>
       </el-menu>
     </el-col>
   </el-aside>
@@ -43,12 +49,14 @@
 
 <script setup>
 import router from '../router'
+import global from '@/store/global'
 
 import {
     Menu as IconMenu,
     ShoppingCart,
     Bell,
-    Star
+    Star,
+    SwitchButton
 } from '@element-plus/icons-vue';
 
 function toPersonalCenter() {
@@ -86,6 +94,16 @@ function toInformation() {
     path:'/home/userspace/information'
   })
 }
+
+function exit() {
+  sessionStorage.clear();
+  global.Login = false;
+  global.userId = 0;
+  router.push({
+    path:'/'
+  })
+}
+
 </script>
 
 <style scoped>
@@ -100,6 +118,8 @@ function toInformation() {
     --el-menu-item-font-size: 20px;
     min-height:92vh;
     height:100%;
+    display: flex;             
+    flex-direction: column; 
 }
 
 .el-menu-item:hover{
@@ -109,5 +129,9 @@ function toInformation() {
 
 .el-icon{
     font-size:50px;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 </style>

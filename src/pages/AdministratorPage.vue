@@ -15,6 +15,7 @@
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload"
                 :on-success="handleAvatarSuccess"
+                :on-error="handleAvatarError"
               >
                 <el-button size="mini" type="primary">上传头像</el-button>
               </el-upload>
@@ -46,10 +47,10 @@
       <el-container style="height: calc(100% - 190px)">
         <el-aside class="aside">
           <el-scrollbar>
-            <el-menu :default-openeds="['1', '2', '3']" @select="handleSelect" :unique-opened="true">
+            <el-menu :default-openeds="['1', '2', '3']" @select="handleSelect" class="sidebar">
               <el-sub-menu index="1">
                 <template #title>
-                  <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
+                  <el-icon><View /></el-icon>审核
                 </template>
                 <el-menu-item index="1-1" @click="navigateTo('PostAudit', admin_id)">帖子审核</el-menu-item>
                 <el-menu-item index="1-2" @click="navigateTo('ReportReview', admin_id)">举报审核</el-menu-item>
@@ -57,18 +58,24 @@
               </el-sub-menu>
               <el-sub-menu index="2">
                 <template #title>
-                  <el-icon><i class="el-icon-s-operation"></i></el-icon>内容管理
+                  <el-icon><EditPen /></el-icon>内容管理
                 </template>
                 <el-menu-item index="2-1" @click="navigateTo('AdminCamp')">营地</el-menu-item>
                 <el-menu-item index="2-2" @click="navigateTo('OutdoorGear')">户外用品</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="3">
                 <template #title>
-                  <el-icon><i class="el-icon-s-operation"></i></el-icon>经验资讯
+                  <el-icon><Document /></el-icon>经验资讯
                 </template>
                 <el-menu-item index="3-1" @click="navigateTo('TagAudit')">标签管理</el-menu-item>
                 <el-menu-item index="3-2" @click="navigateTo('FlashAudit')">资讯管理</el-menu-item>
               </el-sub-menu>
+              <div class="flex-grow" />
+              <li style="flex:1;"></li>
+              <el-menu-item index="5" @click="exit">
+                <el-icon><SwitchButton /></el-icon>
+                <span>退出登录</span>
+              </el-menu-item>
             </el-menu>
           </el-scrollbar>
         </el-aside>
@@ -154,6 +161,16 @@ export default {
         router.push({ name: routeName });
       }
     };
+
+    function exit() {
+      sessionStorage.clear();
+      global.Login = false;
+      global.userId = 0;
+      router.push({
+        path:'/'
+      })
+    }
+
     const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -170,7 +187,7 @@ export default {
     }
 
     const handleAvatarSuccess = (response, file) => {
-      if (response && response.message == "success") {
+      if (response.code===200) {
         avatarSrc.value = URL.createObjectURL(file.raw)
         ElMessage.success('头像上传成功')
       } else {
@@ -179,8 +196,10 @@ export default {
       }
     }
 
-
-
+    const handleAvatarError = (err) => {
+      ElMessage.error(err);
+      console.error(err); // 可以打印错误信息，便于调试
+    };
 
     // 在组件挂载时获取管理员详细信息
     onMounted(() => {
@@ -202,7 +221,9 @@ export default {
       toggleEdit,
       beforeAvatarUpload,
       handleAvatarSuccess,
-      ElMessage
+      handleAvatarError,
+      ElMessage,
+      exit
     }
   }
 }
@@ -314,5 +335,15 @@ export default {
 
 .avatar-uploader .el-button {
   margin-top: 10px;
+}
+
+.sidebar{
+    --el-menu-item-height:80px;
+    --el-sub-menu-item-height:80px;
+    --el-menu-item-font-size: 20px;
+    min-height:80vh;
+    height:100%;
+    display: flex;             
+    flex-direction: column; 
 }
 </style>
