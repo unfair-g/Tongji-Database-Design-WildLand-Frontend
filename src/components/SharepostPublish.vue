@@ -10,8 +10,8 @@
       <el-divider></el-divider>
       <div class="publish-info-form">
         <el-form :model="postForm" :rules="rules" ref="postFormRef" @submit.prevent="submitForm" label-width="100px">
-          <el-form-item label="帖子标题：" prop="myTitle" style="font-weight: bold;">
-            <el-input v-model="postForm.myTitle" placeholder="请输入帖子标题" />
+          <el-form-item label="帖子标题：" prop="title" style="font-weight: bold;">
+            <el-input v-model="postForm.title" placeholder="请输入帖子标题" />
           </el-form-item>
           <el-form-item label="帖子内容：" prop="content" style="font-weight: bold;">
             <el-input 
@@ -19,44 +19,44 @@
               v-model="postForm.content"
               placeholder="请输入帖子内容"
               rows="5"
-              
             />
           </el-form-item>
-
           
           <div class="form-row">
             <div class="left-side">
-              <el-form-item label="帖子位置：" prop="location" style="font-weight: bold;">
-                <el-button type="primary" color="#1D5B5E" @click="addLocation">点击添加定位</el-button>
-                <div v-if="postForm.location" class="location-info">
-                您的IP获取成功，IP所在地：{{ postForm.location }}
-              </div>
+              <el-form-item label="帖子位置：" prop="post_position" style="font-weight: bold;">
+                <el-button type="primary" color="#1D5B5E" @click="addLocation"  :loading="locationLoading" :disabled="locationLoading">点击添加定位</el-button>
+                <div v-if="postForm.post_position" class="location-info">
+                  您的IP获取成功，IP所在地：{{ postForm.post_position }}
+                </div>
               </el-form-item>
               <div class="map-container"></div>
-              
             </div>
 
             <div class="right-side">
               <el-form-item label="帖子图片：" prop="previewImage" style="font-weight: bold;">
                 <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
+                <el-upload
+                  ref="uploadRef"
+                  class="upload-demo"
+                  action="#"
+                  list-type="picture-card"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :before-upload="beforeImageUpload"
+                  :on-success="handleImageSuccess"
+                  :file-list="fileList"
+                  :auto-upload="false"
+                  @change="handleFileChange"
+                >
+                  <i class="el-icon-plus"></i>
+                </el-upload>
               </el-form-item>
-              <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-                :auto-upload="false"
-                ref="uploadRef"
-              >
-                <i class="el-icon-plus"></i>
-              </el-upload>
             </div>
           </div>
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
-            <el-button type="primary" color="#1D5B5E" native-type="submit" @click="confirmDialog()">立即发布</el-button>
+            <el-button type="primary" color="#1D5B5E" native-type="submit">立即发布</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -64,13 +64,11 @@
   </el-dialog>
 </template>
 
-
 <script>
-import { reactive ,ref} from 'vue'
-import {ElMessage} from "element-plus";
-import axios from '@/axios'; // 确保路径是正确的
-import { provinceMap } from '@/store/global.js'; // 引入映射表
-
+import { ElMessage } from "element-plus";
+import axios from '@/axios';
+import { provinceMap } from '@/store/global';
+import state from '@/store/global'; // 引入state
 
 export default {
   name: 'SharePublish',
@@ -80,6 +78,30 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      postForm: {
+        title: '',
+        content: '',
+        previewImage: [],
+        post_position: ''
+      },
+      rules: {
+        title: [
+          { required: true, message: '请输入帖子标题', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '请输入帖子内容', trigger: 'blur' }
+        ],
+        post_position: [
+          { required: true, message: '请添加帖子位置', trigger: 'blur' }
+        ]
+      },
+      fileList: [],
+      locationLoading: false, // 用于跟踪定位按钮的状态
+      localIsSharePostDialogVisible: this.isSharePostDialogVisible
+    };
+  },
   watch: {
     isSharePostDialogVisible(newVal) {
       this.localIsSharePostDialogVisible = newVal;
@@ -88,161 +110,10 @@ export default {
       this.$emit('update:isSharePostDialogVisible', newVal);
     }
   },
-  setup() {
-    const postFormRef = ref();
-
-    const postForm = reactive({
-      myTitle: '',
-      content: '',
-      previewImage: [], // 预览的图片 URL
-      location: ''
-    });
-
-    const rules = ref({
-      myTitle: [
-        { required: true, message: '请输入帖子标题', trigger: 'blur' }
-      ],
-      content: [
-        { required: true, message: '请输入帖子内容', trigger: 'blur' }
-      ]
-    })
-
-    const fileList = reactive([]); // 已上传的文件列表
-
-    // const handleUpload = () => {
-    //   const uploadRef = ref('uploadRef');
-    //   const files = uploadRef.value.uploadFiles;
-
-    //   const promises = files.map(file => {
-    //     const formData = new FormData();
-    //     formData.append('file', file.raw);
-
-    //     return axios.post('/api/Posts/uploadpost_pics', formData)
-    //       .then(response => response.data.url);
-    //   });
-
-    //   return Promise.all(promises);
-    // };
-
-    // const uploadAllImages = async () => {
-      // try {
-        // const urls = await handleUpload();
-        // postForm.previewImage = urls;
-        // return true;
-      // } catch (error) {
-        // console.error('Error uploading images:', error);
-        // ElMessage.error('图片上传失败');
-        // return false;
-      // }
-    // };
-
-    const submitForm = () => {
-      postFormRef.value.validate(async (valid) => {
-        if (valid) {
-          console.log('Form submitted:', postForm.value);
-        } else {
-          ElMessage.error('表单验证失败');
-          return false;
-        }
-      });
-  };
-
-    const resetForm = () => {
-      postForm.myTitle = '';
-      postForm.content = '';
-      postForm.previewImage = []; // 预览的图片 URL
-      postForm.location = '';
-      fileList.length = 0;
-    };
-
-    const addLocation = async () => {
-      try {
-        const response = await axios.get('https://api.ipify.org?format=json');
-        const ip = response.data.ip;
-        console.log('IP Address:', ip);
-
-        const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
-        const province = geoResponse.data.state_prov;
-
-        // 使用映射表将英文省份名称翻译为中文
-        const chineseProvince = provinceMap[province] || province; // 如果找不到对应的中文名称，就使用英文名称
-        postForm.location = chineseProvince;
-        
-        console.log('Province:', chineseProvince);
-      } catch (error) {
-        console.error('Error fetching location:', error);
-        ElMessage.error('获取定位信息失败');
-      }
-    };
-
-    const triggerUpload = () => {
-      document.querySelector('.upload-demo input[type=file]').click();
-    };
-
-    const handleRemove = (file, fileList) => {
-      console.log(file, fileList);
-    };
-
-    const handlePictureCardPreview = (file) => {
-      console.log(file);
-    };
-    
-   
-    return {
-      postFormRef,
-      rules,
-      postForm,
-      fileList,
-      submitForm,
-      resetForm,
-      addLocation,
-      triggerUpload,
-      handleRemove,
-      handlePictureCardPreview,
-      // handleUpload,
-      // uploadAllImages,
-      
-    };
-  },
-  data() {
-    return {
-      localIsSharePostDialogVisible: this.isSharePostDialogVisible,
-      PostSuccess: false
-    };
-  },
   methods: {
     handleClose() {
-      this.closeDialog();
+      this.localIsSharePostDialogVisible = false;
       this.resetForm();
-    },
-    closeDialog() {
-      this.localIsSharePostDialogVisible = false;
-    },
-    confirmDialog() {
-      const postData = {
-        author_id: 123,
-        content: this.postForm.content,
-        exhibit_status: 1,
-        post_kind: 0,
-        post_position: this.postForm.location,
-        post_time: new Date().toISOString(),
-        title: this.postForm.myTitle,
-      };
-      axios.post('/api/Posts/PushShare', postData)
-        .then(response => {
-          console.log('Post submitted successfully:', response.data);
-          this.PostSuccess = true;
-          this.handleClose(); // 关闭对话框
-          ElMessage.success('分享贴发布成功！');
-        })
-        .catch(error => {
-          console.error('Error submitting post:', error);
-          this.handleError(error, '发布分享贴失败');
-        });
-      
-      this.localIsSharePostDialogVisible = false;
-      
-
     },
     handleError(error, message) {
       if (error.response) {
@@ -256,9 +127,123 @@ export default {
         ElMessage.error(`${message} - 错误信息: ${error.message}`);
       }
     },
+    async submitForm() {
+      this.$refs.postFormRef.validate(async (valid) => {
+        if (valid) {
+          try {
+            // 检查 fileList 是否有文件
+            if (this.fileList.length > 9) {
+              ElMessage.error('最多只能上传九张图片');
+              return;
+            }
+
+            const formData = new FormData();
+            this.fileList.forEach((file) => {
+              console.log('File added to FormData:', file.name); // 检查文件是否被添加
+              formData.append('files', file.raw);
+            });
+
+            // 日志输出 FormData 内容
+            for (let pair of formData.entries()) {
+              console.log(pair[0]+ ', ' + pair[1]);
+            }
+
+            const author_id = state.userId; 
+            const content = encodeURIComponent(this.postForm.content);
+            const post_position = encodeURIComponent(this.postForm.post_position);
+            const title = encodeURIComponent(this.postForm.title);
+
+            const response = await axios.post(`/api/Posts/PushShareWithPics/${author_id}/${content}/${post_position}/${title}`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+
+            console.log('Post submitted successfully:', response.data);
+            ElMessage.success('分享贴发布成功！');
+            this.handleClose();
+          } catch (error) {
+            console.error('Error submitting post:', error);
+            this.handleError(error, '发布分享贴失败');
+          }
+        } else {
+          ElMessage.error('表单验证失败');
+          return false;
+        }
+      });
+    },
+    resetForm() {
+      this.postForm.title = '';
+      this.postForm.content = '';
+      this.postForm.previewImage = [];
+      this.postForm.post_position = '';
+      this.fileList = [];
+      this.locationLoading = false; // 重置定位按钮状态
+    },
+    async addLocation() {
+      this.locationLoading = true; // 开始加载状态
+      try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        const ip = response.data.ip;
+        console.log('IP Address:', ip);
+
+        const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
+        const province = geoResponse.data.state_prov;
+      
+        const chineseProvince = provinceMap[province] || province;
+        this.postForm.post_position = chineseProvince;
+        
+        console.log('Province:', chineseProvince);
+      } catch (error) {
+        console.error('Error fetching location:', error);
+        ElMessage.error('获取定位信息失败');
+      } finally {
+        this.locationLoading = false; // 结束加载状态
+      }
+    },
+    triggerUpload() {
+      this.$refs.uploadRef.$el.querySelector('input[type=file]').click();
+    },
+    beforeImageUpload(file) {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传图片只能是 JPG 或 PNG 格式!');
+        return false;
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传图片大小不能超过 2MB!');
+        return false;
+      }
+      return true;
+    },
+    handleImageSuccess(response, file) {
+      if (response && response.message === "success") {
+        const url = URL.createObjectURL(file.raw);
+        this.postForm.previewImage.push(url);
+        ElMessage.success('图片上传成功');
+      } else {
+        console.log('上传图片失败，服务器响应:', response);
+        ElMessage.error('上传图片失败');
+      }
+    },
+    handleRemove(file, fileList) {
+      this.fileList = fileList;
+    },
+    handlePictureCardPreview(file) {
+      console.log(file);
+    },
+    handleFileChange(file, fileList) {
+      this.fileList = fileList;
+      console.log('File list updated:', fileList);
+    }
   }
 };
 </script>
+
+
+
 <style scoped>
 .publish-container {
   display: flex;
