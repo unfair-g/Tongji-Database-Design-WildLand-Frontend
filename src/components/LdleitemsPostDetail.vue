@@ -1,5 +1,5 @@
 <template>
-  <el-card class="post-container">
+  <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
       <div class="post-header">
         <img :src="ldleitemsPost.avatar" alt="avatar" class="avatar">

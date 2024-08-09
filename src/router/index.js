@@ -220,6 +220,11 @@ const routes = [
                 path: `userspace/leaseorder/:ldleitemsPostId`,
                 component: () => import('../views/PostOrderView.vue'),
                 props: true
+            },
+            {
+                path: `searchProduct`,
+                component: () => import('../views/SearchProduct.vue'),
+                props: true
             }
         ]
     },

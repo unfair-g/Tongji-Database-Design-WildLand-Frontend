@@ -21,7 +21,7 @@
         placeholder="Please input"
         clearable
     />
-    <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px">搜索</el-button>
+    <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px" @click="searchProducts">搜索</el-button>
     </div>
     <el-menu-item class="menuitem" index="/home/userspace">个人空间</el-menu-item>
   </el-menu>
@@ -29,9 +29,18 @@
 </template>
 
 <script setup>
-import { Search } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { Search } from '@element-plus/icons-vue'
+
 const input = ref('')
+const router = useRouter()
+
+function searchProducts() {
+  if (input.value.trim()) {
+    router.push({ path: '/home/searchProduct', query: { keyword: input.value } })
+  }
+}
 
 </script>
 

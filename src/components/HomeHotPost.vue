@@ -6,23 +6,8 @@
         </div>
         </template>
         <div class="hot-post">
-            <div style="width:15%">
-                 <el-menu 
-                 default-active="1"
-                 class="userlist"
-                 @select="handleSelect"
-                 >
-                    <el-menu-item
-                    v-for="user in users"
-                    :key="user.id"
-                    :index="user.id"
-                    >
-                    <el-avatar :src="user.avatar" />
-                    <span style="margin-left: 5%">{{ user.name }}</span>
-                    </el-menu-item>
-                </el-menu>
-            </div>
-            <div style="width:85%;">
+        <el-carousel style="width:100%" height="75vh">
+            <div style="width:90%;display: block;margin:0 auto;">
                 <el-card v-if="user" style="min-height: fit-content;" @click="toPostDetail">
                 <template #header>
                     <h2>{{ post[0].title }}</h2>
@@ -49,6 +34,7 @@
                 </template>
                 </el-card>
             </div>
+        </el-carousel>
         </div>
 </el-card>
 </template>

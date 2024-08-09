@@ -4,11 +4,12 @@
   
       <h2>订单信息</h2>
   
-      <div class="sub-container">
-        <span class="title">营地名称: {{ camp.campground_name }}</span>
+      <div class="sub-container" v-if="camp">
+        <span class="title" >营地名称: {{ camp.campground_name }}</span>
         <div class="divider"></div> <!-- Divider line -->
+        <span>具体位置: {{ camp.address }} </span>
         <span>预定日期: {{ startDate }} 至 {{ endDate }}</span>
-        <span>预定营位: {{ selectedCampsiteIds.join(', ') }}</span>
+        <span>预定营位: {{ selectedCampsites.map(campsite => campsite.campsite_number).join(', ') }}</span>
       </div>
       
   
@@ -17,13 +18,13 @@
         <span class="title">预订人信息</span>
         <div class="divider"></div> <!-- Divider line -->
         <el-form-item label="预约人姓名" prop="order_person_name" required>
-          <el-input v-model="orderForm.name"></el-input>
+          <el-input v-model="orderForm.order_person_name"></el-input>
         </el-form-item>
         <el-form-item label="预约人电话" prop="order_person_phone_number" required>
-          <el-input v-model="orderForm.phone"></el-input>
+          <el-input v-model="orderForm.order_person_phone_number"></el-input>
         </el-form-item>
         <el-form-item label="预约人身份证" prop="order_person_id" required>
-          <el-input v-model="orderForm.idCard"></el-input>
+          <el-input v-model="orderForm.order_person_id"></el-input>
         </el-form-item>
         <el-form-item label="预约人备注" prop="remark">
           <el-input v-model="orderForm.remark" ></el-input>
@@ -34,27 +35,29 @@
       <div class="sub-container">
         <span class="title">价格明细</span>
         <div class="divider"></div> <!-- Divider line -->
-            <div v-for="campsite in selectedCampsites" :key="campsite.id">
-              {{ campsite.id }}: ¥{{ campsite.price }}
+            <div v-for="campsite in selectedCampsites" :key="campsite.campsite_id">
+              {{ campsite.campsite_number }}: ¥{{ campsite.price }}
             </div>
             <p>总价: {{ totalPriceDetail }} = ¥{{ totalPrice }}</p>
+            
       </div>
-  
+      
       <CampPayWindow v-model:dialogVisible="dialogVisible" :totalPrice="totalPrice" />
-  
+      
       </el-main>
       <el-footer>
         <span class="price-tag">¥{{ totalPrice }}</span>
         <el-button class="go-to-pay-button" type="primary" @click="go_to_pay()">提交订单</el-button>
       </el-footer>
+
     </div>
-  </template>
+    
+</template>
   
   <script >
-  import { mapState } from 'vuex';
+  import axios from '@/axios'; // 引入配置好的axios实例
   import dayjs from 'dayjs';
   import CampPayWindow from '@/components/CampPayWindow.vue'
-  import { v4 as uuidv4 } from 'uuid'; // 导入uuid库
   
   export default {
     name: 'CampOrder',
@@ -63,33 +66,23 @@
     },
     data() {
       return {
-        orderForm: {
+        orderForm: { //填写表单内容
           order_person_name: '',
           order_person_phone_number: '',
           order_person_id: '',
           remark: '',
         },
         dialogVisible: false,
+        camp:null, //订单对应的营地
+        selectedCampsites: [], //订单选中的营位
       };
     },
     computed: {
-      ...mapState({
-        camps: state => state.camp.camps
-      }),
-      camp() {
-        const campId = this.$route.query.campID;
-        return this.camps.find(camp => camp.campground_id === parseInt(campId));
-      },
       startDate() {
         return this.$route.query.startDate;
       },
       endDate() {
         return this.$route.query.endDate;
-      },
-      selectedCampsites() {
-        return this.selectedCampsiteIds.map(id => {
-          return this.camp.campsites.find(campsite => campsite.id === id);
-        });
       },
       selectedCampsiteIds() {
         return this.$route.query.selectedCampsiteIds.split(',');
@@ -104,28 +97,69 @@
       }
     },
     methods: {
-      go_to_pay() {
-        const orderCreatedTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        const orderId = uuidv4(); // 生成一个唯一的 order_id
+      //接口1 获取营地信息
+      async fetchCampDetails() {
+      const campId = this.$route.query.campID;
+      try {
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}`);
+          this.camp = response.data;
+      } catch (error) {
+        console.error('获取营地信息失败:', error);
+      }
+      },
+
+      // 接口2 获取指定营地下的所有营位信息
+      async fetchAllCampsites() {
+      const campId = this.$route.query.campID;
+      try {
+        const response = await axios.get(`api/Campsites/getcampsites/${campId}`);
+        return response.data;
+      } catch (error) {
+        console.error('获取营地的营位信息失败：', error);
+        throw error;
+      }
+      },
+      
+      //接口3 获取已选营位的具体信息
+      async fetchSelectedCampsites() {
+    try {
+      const allCampsites = await this.fetchAllCampsites();
+      this.selectedCampsites = allCampsites.filter(campsite => 
+        this.selectedCampsiteIds.includes(campsite.campsite_id.toString())
+      );
+    } catch (error) {
+      console.error('获取已选营位信息失败：', error);
+    }
+    },
+      
+      //接口4 提交订单，把信息传给后端
+      async go_to_pay() {
         const campOrder = {
-          order_id: orderId,
-          campground_id: this.camp.campground_id,
-          startDate: this.startDate,
-          endDate: this.endDate,
-          selectedCampsiteIds: this.selectedCampsiteIds,
+          order_person_id: this.orderForm.order_person_id,
           order_person_name: this.orderForm.order_person_name,
           order_person_phone_number: this.orderForm.order_person_phone_number,
-          order_person_id: this.orderForm.order_person_id,
           remark: this.orderForm.remark,
-          //campsite_number: ,
-          total_price: this.totalPrice,
-          order_created_time: orderCreatedTime,
-  
+          total_price: parseInt(this.totalPrice),
+          reserved_start_time: dayjs(this.startDate).toISOString(),//toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
+          reserved_end_time: dayjs(this.endDate).toISOString(),
+          campsite_ids: this.selectedCampsiteIds.map(id => parseInt(id)),
         };
-        this.$store.dispatch('order/addCampOrder', campOrder);// 添加订单到 Vuex store
+        try {
+        console.log('开始提交订单')
+        const response = await axios.post('/api/ReserveOrders/createreserveorder', campOrder);
+        console.log('订单提交成功:', response.data);
         this.dialogVisible = true;
+        
+        } catch (error) {
+        console.error('订单提交失败:', error);
+        }
+
       },
   
+    },
+    created() {
+      this.fetchCampDetails();
+      this.fetchSelectedCampsites();
     }
   };
   </script>
