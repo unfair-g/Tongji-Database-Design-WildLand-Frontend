@@ -169,7 +169,7 @@ export default {
         });  
     },
     fetchLdleitemsPosts() {
-      axios.get('https://localhost:7218/api/LdleitemsPosts')
+      axios.get('/api/LdleitemsPosts')
         .then(response => {
           this.ldleitemsposts = response.data;
         })
@@ -251,11 +251,6 @@ export default {
         this.handleError(error, '收藏操作失败');
       });
       }
-    }
-  },
-  data() {
-    return {
-      ldleitemsposts: [],
     }
   },
   watch: {

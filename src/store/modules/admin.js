@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@/axios';
 
 const state = {
   nickname: null,
@@ -116,7 +116,7 @@ const actions = {
     commit('setavatarSrc', data.avatarSrc);
   },
   fetchPostDetail({ commit }, id) {
-    axios.get(`https://localhost:7218/api/Posts/getAdminView/${id}`)
+    axios.get(`/api/Posts/getAdminView/${id}`)
       .then(response => {
         const postDetail = response.data.data;
         commit('setPostDetail', postDetail);
@@ -136,7 +136,7 @@ const actions = {
   },
   async fetchPostReportDetail({ commit }, id) {
     try {
-      const response = await axios.get(`https://localhost:7218/api/PostReports/${id}`);
+      const response = await axios.get(`/api/PostReports/${id}`);
       console.log(response.data.data); // 打印响应以检查其结构
       
       const postReportDetail = response.data.data;
@@ -170,7 +170,7 @@ const actions = {
   },
   async fetchCommentReportDetail({ commit }, id) {
     try {
-      const response = await axios.get(`https://localhost:7218/api/CommentReports/${id}`);
+      const response = await axios.get(`/api/CommentReports/${id}`);
       console.log(response.data); // 检查 API 返回的内容
   
       const commentReport = response.data.data;
@@ -194,7 +194,7 @@ const actions = {
   },
   async fetchPostAuditTableData({ commit }) {
     try {
-      const response = await axios.get('https://localhost:7218/api/PostReviews/unreviewedList');
+      const response = await axios.get('/api/PostReviews/unreviewedList');
       const postAuditTableData = response.data.data.map(post => ({
         id: post.post_id,
         title: post.title,
@@ -210,7 +210,7 @@ const actions = {
   },
   async fetchPostsTableData({ commit }) {
     try {
-      const response = await axios.get('https://localhost:7218/api/PostReports/unreviewedList');
+      const response = await axios.get('/api/PostReports/unreviewedList');
       const postsTableData = response.data.data.map(post => ({
         id: post.report_id,
         reportContent: post.post_title,
@@ -227,7 +227,7 @@ const actions = {
   },
   async fetchCommentsTableData({ commit }) {
     try {
-      const response = await axios.get('https://localhost:7218/api/CommentReports/unreviewedList');
+      const response = await axios.get('/api/CommentReports/unreviewedList');
       const commentsTableData = response.data.data.map(comment => ({
         id: comment.report_id,
         reportContent: comment.comment_content,
@@ -244,7 +244,7 @@ const actions = {
   },
   async fetchGeekAuditTableData({ commit }) {
     try {
-      const response = await axios.get('https://localhost:7218/api/CertificationReviews/unreviewedList');
+      const response = await axios.get('/api/CertificationReviews/unreviewedList');
       const geekAuditTableData = response.data.data.map(item => ({
         applicant_id: item.applicant_id,
         applicant: item.applicant_name,  

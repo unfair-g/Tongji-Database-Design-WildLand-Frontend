@@ -10,7 +10,7 @@
               <el-upload
                 v-if="isEditing"
                 class="avatar-uploader"
-                :action="`/api/Administrators/uploadportrait/${admin_id}`"
+                :action="`https://localhost:7218/api/Administrators/uploadportrait/${admin_id}`"
                 :method="'post'"
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload"
