@@ -23,7 +23,6 @@
   <script>
 
   import axios from 'axios';
-
   export default {
     name: 'TagMenu',
     data() {

@@ -39,5 +39,5 @@ export default{
             const flash = state.flashes.find(f => f.id === flashId);  
             flash.isSolid = !flash.isSolid;  
           }  
-      },   
+      }
 }

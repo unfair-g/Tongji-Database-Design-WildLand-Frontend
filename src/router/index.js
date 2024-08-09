@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HelloWorld from '../pages/HelloWorld.vue'
+import { ElMessage } from 'element-plus'
 
 const routes = [
     {
@@ -10,6 +11,7 @@ const routes = [
     {
         path: '/administrator',
         component: () => import('../pages/AdministratorPage.vue'),
+        meta: { requiresAuth: true },
         children: [
             {
                 path: 'personalinformation',
@@ -37,10 +39,10 @@ const routes = [
                 component: () => import('../views/PostAudit.vue')
             },
             {
-                path: 'postdetail',
+                path: 'postdetail/:id', // 添加 :id 作为动态路由参数
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
-            },
+            },              
             {
                 path: 'reportreview',
                 name: 'ReportReview',
@@ -82,6 +84,7 @@ const routes = [
         path: '/home',
         name: 'home',
         component: () => import('../pages/HomePage.vue'),
+        meta: { requiresAuth: true },
         children: [
             {
                 path: "",
@@ -133,8 +136,8 @@ const routes = [
                         component: () => import('../views/UserCampOrderListView.vue')
                     },
                     {
-                        path: "post/order",
-                        component: () => import('../components/LeaseForum.vue')
+                        path: "leaseorder",
+                        component: () => import('../components/UserLeaseOrderList.vue')
                     },
                     {
                         path: 'star',
@@ -214,8 +217,13 @@ const routes = [
                 props: true
             },
             {
-                path: `/home/forum/rent/:ldleitemsPostId/order`,
+                path: `userspace/leaseorder/:ldleitemsPostId`,
                 component: () => import('../views/PostOrderView.vue'),
+                props: true
+            },
+            {
+                path: `searchProduct`,
+                component: () => import('../views/SearchProduct.vue'),
                 props: true
             }
         ]
@@ -226,6 +234,7 @@ const routes = [
         children: [
             {
                 path: "login",
+                name: 'Login',
                 component: () => import('../components/LogIn.vue')
             },
             {
@@ -244,5 +253,23 @@ const router = createRouter({
     history: createWebHashHistory(process.env.BASE_URL),
     routes
 })
+
+router.beforeEach((to, from, next) => {
+
+    const isLogin = sessionStorage.getItem('state');
+
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        // 需要登录的路由
+        if (!isLogin) {
+            // 未登录用户
+            next({ name: 'Login' }); // 重定向到登录页面
+            ElMessage.error('请先登录！');
+        } else {
+            next(); // 允许访问
+        }
+    } else {
+        next(); // 不需要登录的路由，允许访问
+    }
+});
 
 export default router

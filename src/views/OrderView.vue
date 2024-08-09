@@ -17,19 +17,19 @@
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;"><p>{{ startTime }}</p></div>
+      <div style="text-align:center;justify-content:center;"><p>{{ camp_order.startDate }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;"><p>{{ endTime }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ camp_order.endDate }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
-      <div style="text-align:center;"><p>{{ Command }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;营地：{{ camp_order.campground_name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 营位：{{ camp_order.selectedCampsiteIds }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>物流详情</h2></div>
-      <div style="text-align:center;"><p>现处于上海市/嘉定区</p></div>
+      <div style="text-align:center;justify-content: center; "><p>现处于上海市/嘉定区</p></div>
     </div>
     <div class="order_3">
       <el-button class="pay">申请退款</el-button>
@@ -55,7 +55,8 @@
           endTime:null,
           time:"2024年4月23日",
           time2:"2024年4月24日",
-          Command:"上海市嘉定区曹安公路4800号同济大学嘉定校区 fby XXXXXXXXXX"
+          Command:"上海市嘉定区曹安公路4800号同济大学嘉定校区 fby XXXXXXXXXX",
+          orderId:null
         }
       },
     created() {  
@@ -64,11 +65,16 @@
     this.startTime = this.$route.query.startDate||this.time;
     this.endTime = this.$route.query.endDate||this.time2;
     this.Lquantity = parseInt(this.$route.query.quantity) || this.quantity;  
-    this.Command = this.$route.query.command||this.Command
+    this.Command = this.$route.query.command||this.Command;
+    this.orderId = this.$route.query.orderID
     },
       computed: {
         product() {
           return this.$store.state.product.products.find(product => product.product_id === parseInt(this.productId));
+    },
+    camp_order()
+    {
+      return this.$store.state.camp_order.camp_orders.find(camp_order => camp_order.order_id === parseInt(this.orderId));
     },
         TotalPrice(){
           if (this.product && this.product.price && !isNaN(this.Lquantity)) {

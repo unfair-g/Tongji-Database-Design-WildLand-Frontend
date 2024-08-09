@@ -6,7 +6,7 @@
         </el-row>
         <el-row style="margin-top:1%">
         <el-col :span="2">
-            <el-avatar v-if="user.gender=='女'" :src="avatarfemale" style="width:100px;height:100px"/>
+            <el-avatar v-if="userInfo.gender=='f'" :src="avatarfemale" style="width:100px;height:100px"/>
             <el-avatar v-else :src="avatarmale" style="width:100px;height:100px"/>
         </el-col>
         <el-col :span="10">
@@ -50,18 +50,40 @@
                 {{ userInfo.location }}
             </el-descriptions-item>
             <el-descriptions-item width="20%">
-                 <template #label><div class="item-label">积分</div></template>
+                 <template #label><div class="item-label">钱包</div></template>
                 {{ userInfo.points }}
+                 <el-button type="primary" color="#1D5B5E" round @click="ifCharge = true" style="margin-left:20%">充值</el-button>
             </el-descriptions-item>
         </el-descriptions>
     </div>
 
-    <el-dialog v-model="dialogFormVisible" title="编辑资料" width="500">
+    <el-dialog
+    v-model="ifCharge"
+    title="钱包充值"
+    width="500"
+    draggable="true"
+    align-center="true"
+  >
+    <span style="margin-right: 5%;">请选择充值数目</span>
+    <el-input-number v-model="num" :min="1" />
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="ifCharge = false">取消</el-button>
+        <el-button type="primary" color="#1D5B5E" @click="dialogVisible = false">
+          确认充值
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+    <el-dialog v-model="dialogFormVisible" title="编辑资料" width="500" align-center="true">
         <AvatarPicker />
             <el-form
                 label-position="top"
                 label-width="auto"
-                :model="formLabelAlign"
+                :model="user"
+                :rules="rules"
+                ref="formRef"
                 style="max-width: 600px; margin-top:5%; margin-bottom: 10%;"
                 >
                 <el-form-item label="用户名">
@@ -98,18 +120,10 @@
                 />
                 </el-select>
                 </el-form-item>
-                <el-form-item label="生日">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="请选择您的生日"
-                    style="width:500px"
-                />
-                </el-form-item>
-                <el-form-item label="手机号码">
+                <el-form-item label="手机号码" prop="phone_number">
                 <el-input v-model="user.phone_number" placeholder="请输入您的手机号码"/>
                 </el-form-item>
-                <el-form-item label="邮箱">
+                <el-form-item label="邮箱" prop="email">
                 <el-input v-model="user.email" placeholder="请输入您的邮箱" :prefix-icon="Key"/>
                 </el-form-item>
                 <el-form-item label="个性签名">
@@ -119,7 +133,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false" color="#1D5B5E">
+        <el-button type="primary" @click="onSubmit" color="#1D5B5E">
           保存
         </el-button>
       </div>
@@ -155,31 +169,21 @@
 </template>
 
 <script>
-import AvatarPicker from './AvatarPicker.vue';
-import { mapGetters } from 'vuex';
+import AvatarPicker from './AvatarPicker.vue'
+import global from '@/store/global'
+import axios from '@/axios'
+import { ElMessage } from "element-plus"
+import { onMounted,ref,reactive } from 'vue'
 
 export default {
     components: {
         AvatarPicker
     },
-    computed: {
-        user() {
-            return this.$store.state.user.users[0];
-        },
-        ...mapGetters(['getUserId']),
-        userId() {
-            return this.getUserId;
-        },
-        ...mapGetters(['getUserInfo']),
-        userInfo() {
-            return this.getUserInfo;
-        }
-    },
     data() {
         return {
+            num:5,
             avatarfemale:require('../assets/avatar-female.jpg'),
             avatarmale: require('../assets/avatar-male.jpg'),
-            dialogFormVisible: false,
             dialogVisible: false,
             ept_field: "",
             experience: "",
@@ -191,7 +195,99 @@ export default {
                 { value: '浙江' }
             ]
         }
+    },
+    setup() {
+        const dialogFormVisible = ref(false);
+        const ifCharge = ref(false);
+
+        const userInfo = ref({}); 
+
+        const user = reactive({
+                user_name: '',
+                gender: '',
+                birthday: '',
+                phone_number: '',
+                location: '',
+                email: '',
+                personal_signature:'',
+                fans: 0,
+                follows:0
+        });
+
+        const formRef = ref()
+
+        const rules = ref({
+            email: [
+                { type: 'email', message: '请输入规范的邮箱', trigger: 'blur' }
+            ],
+            phone_number: [
+                { message: '请输入您的手机号码',trigger: 'blur' },
+                { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入规范的手机号码', trigger: 'blur' },
+            ]
+        })
+
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
+          userInfo.value = response.data.data;
+          userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
+          user.user_name = userInfo.value.user_name;
+          if (userInfo.value.gender == 'f')
+              user.gender = '女';
+          else
+              user.gender = '男';
+          user.birthday = userInfo.value.birthday;
+          user.phone_number = userInfo.value.phone_number;
+          user.location = userInfo.value.location;
+          user.email = userInfo.value.email;
+          user.personal_signature = userInfo.value.personal_signature;
+      } catch (error) {
+        ElMessage.error(error.message);
+      }
+        }
+
+    const onSubmit = () => {
+      formRef.value.validate(async (valid) => {
+          if (valid) {
+              const gender = (user.gender === '女' ? 'f' : 'm')
+          try {
+            const response = await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
+              userName: user.user_name,
+              gender: gender,
+              birthday: user.birthday,
+              location: user.location,
+              phoneNumber: user.phone_number,
+              email: user.email,
+              personal_signature:user.personal_signature
+            });
+            ElMessage.success('信息修改成功！');
+              console.log('User registered:', response.data);
+              fetchUser();
+              dialogFormVisible.value = false
+          } catch (error) {
+            ElMessage.error(error.message);
+            console.error('Error update:', error);
+          }
+        } else {
+          ElMessage.error('请完善信息！');
+        }
+      });
+    };
+
+    onMounted(() => {
+      fetchUser();
+    });
+
+    return {
+        dialogFormVisible,
+        ifCharge,
+        userInfo,
+        user,
+        rules,
+        formRef,
+        onSubmit
     }
+  }
 }
 </script>
 

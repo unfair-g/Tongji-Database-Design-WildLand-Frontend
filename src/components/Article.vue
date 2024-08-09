@@ -7,8 +7,8 @@
           <img :src="sharepost.avatar" alt="avatar" class="avatar">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}</span>
-              <span class="time">{{ sharepost.time }}</span>
+              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
               <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
@@ -91,10 +91,10 @@
           </div>
         </template>
 
-        <div style="display: flex;">
+        <div class="post-content">
           <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <span>{{ ldleitemspost.item_name}}</span>
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
             <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
@@ -112,6 +112,9 @@
 </template>
 
 <script>
+import {ElMessage} from "element-plus";
+import axios from '@/axios'; // 确保路径是正确的
+import state from '@/store/global.js'; // 引入映射表
 
 export default {
   name: 'ArticleCard',
@@ -121,23 +124,89 @@ export default {
       required:true
     }
   },
+  data() {
+    return {
+      shareposts: [],
+      ldleitemsposts: [],
+    };
+  },
+  mounted() {
+    if (this.view === 'share') {
+      this.fetchSharePosts();
+    }
+    if (this.view === 'lease') {
+      this.fetchLdleitemsPosts();
+    }
+  },
   computed: {
-    shareposts() {
-      return this.$store.state.post.shareposts;
-    },
     recruitposts() {
       return this.$store.state.post.recruitmentposts; 
     },
-    ldleitemsposts() {
-      return this.$store.state.post.ldleitemsposts
-    }
 
   },
   methods: {
+    fetchSharePosts() {
+      const userId = state.userId;
+      axios.get(`/api/Posts/GetOverview/0/${userId}`)
+        .then(response => {
+          this.shareposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_content,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            views: 0, // Assuming views is not available in the API response
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+          }));
+        })
+        .catch(error => {
+          console.error('Error fetching share posts:', error);
+          this.handleError(error, '获取分享贴失败');
+        });  
+    },
+    fetchLdleitemsPosts() {
+      axios.get('https://localhost:7218/api/LdleitemsPosts')
+        .then(response => {
+          this.ldleitemsposts = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldle items posts:', error);
+        });
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
+    },
+    formatTime(postTime) {
+      const postDate = new Date(postTime);
+      const now = new Date();
+      const diff = Math.floor((now - postDate) / 1000);
+      if (diff < 60) {
+        return `${diff} 秒前`;
+      } else if (diff < 3600) {
+        return `${Math.floor(diff / 60)} 分钟前`;
+      } else if (diff < 86400) {
+        return `${Math.floor(diff / 3600)} 小时前`;
+      } else {
+        return `${Math.floor(diff / 86400)} 天前`;
+      }
+    },
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      
@@ -145,9 +214,60 @@ export default {
     toggleLike(post) {
       post.isLiked = !post.isLiked;
       post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+      if (this.view === 'share') {
+        axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
+      }
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
+      if (this.view === 'share') {
+        axios.post('/api/StarPosts/starpost', {
+          post_id: post.post_id,
+          tips:"收藏测试",
+          user_id: state.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number+=1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number-=1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
+      }
+    }
+  },
+  data() {
+    return {
+      ldleitemsposts: [],
+    }
+  },
+  watch: {
+    view(newValue) {
+      if (newValue === 'lease') {
+        this.fetchLdleitemsPosts();
+      }
+    }
+  },
+  created() {
+    if (this.view === 'lease') {
+      this.fetchLdleitemsPosts();
     }
   }
 };

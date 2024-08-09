@@ -1,5 +1,5 @@
 <template>
-    <div class="product-detail">
+    <div class="product-detail" v-if="product">
       <div class="product-img">
         <img :src="product.product_image" class="image" alt="product image">
       </div>
@@ -31,38 +31,115 @@
 </template>
 
 <script>
+
 import { ref } from 'vue'
 import PayWindow from '@/components/PayWindow.vue'
+import axios from 'axios';
+import globalState from '../store/global'; // 引入 global.js 中的状态
 
 export default {
   name: 'ProductDetail',
   components: {
     PayWindow
   },
-  data () {
+  data() {
     return {
       isStarSolid: ref(true),
-      dialogVisible: false
+      dialogVisible: false,
+      product: null,
+      thisUserId: globalState.userId,
     }
   },
   props: ['productID'],
-  computed: {
-    product() {
-      const productId = this.productID;
-      return this.$store.state.product.products.find(product => product.product_id === parseInt(productId));
-    }
+  created() {
+    this.fetchProduct();
   },
   methods: {
-    toggleStarColor () {
-      this.isStarSolid = !this.isStarSolid
-      // 如果需要，你可以在这里添加额外的逻辑来改变图标的颜色
-      // 但通常，我们会通过 CSS 来处理颜色的变化
+    fetchProduct() {
+      axios.get(`https://localhost:7218/api/OutdoorProducts/${this.productID}`)
+        .then(response => {
+          this.product = response.data;
+          // Check if the product is already favorited
+          this.checkIfFavorited();
+          console.error('Error checking if product is favorited:', this.isStarSolid);
+        })
+        .catch(error => {
+          console.error('Error fetching product:', error);
+        });
+    },
+    checkIfFavorited() {
+      // Check if the product is already in the favorites on the backend
+      axios.get(`https://localhost:7218/api/StarProducts`)
+        .then(response => {
+          const favoriteProducts = response.data;
+          // 检查当前商品是否在收藏列表中
+          this.isStarSolid = !(favoriteProducts.some(favorite => favorite.product_id === this.product.product_id&&favorite.user_id === this.thisUserId));
+        })
+        .catch(error => {
+          console.error('Error checking if product is favorited:', error);
+        });
+    },
+    toggleStarColor() {     
+      if (!this.isStarSolid) {
+        // Remove from favorites
+        // Remove from backend
+        axios.get(`https://localhost:7218/api/StarProducts`)
+  .then(response => {
+    const starProduct = response.data.find(favorite => favorite.product_id === this.product.product_id && favorite.user_id === this.thisUserId);
+    
+    if (starProduct) {
+      // 如果找到对应的StarProduct实体，使用它的id删除
+      this.deleteStarProduct(starProduct.user_id, starProduct.product_id);
+    } else {
+      console.error('StarProduct not found');
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching StarProducts:', error);
+  });
+      } else {
+        // Add to favorites
+        
+        // Add to backend
+        axios.post('https://localhost:7218/api/StarProducts', {
+          product_id: this.product.product_id,
+          user_id: this.thisUserId
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'text/plain'
+          }
+        })
+        .then(() => {
+          this.isStarSolid = false;
+          console.log('Product added to favorites:', this.product.product_id);
+        })
+        .catch(error => {
+          console.error('Error adding product to favorites:', error);
+        });
+      }
+      
+      // Update local storage
     },
     openDialog() {
-      console.log('Opening dialog');
       this.dialogVisible = true;
-      console.log('Dialog Visible:', this.dialogVisible);
+    },
+
+    deleteStarProduct(userId, productId) {
+      axios.delete(`https://localhost:7218/api/StarProducts/${userId}/${productId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'text/plain'
     }
+  })
+  .then(() => {
+    this.isStarSolid = true;
+    console.log('Product removed from favorites:', this.product.product_id);
+  })
+  .catch(error => {
+    console.error('Error removing product from favorites:', error);
+  });
+}
   }
 }
 </script>
