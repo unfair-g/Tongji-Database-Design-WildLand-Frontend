@@ -59,12 +59,13 @@
 
 <script setup>
 import router from '../router'
-import axios from 'axios'
+import axios from '@/axios'
 import { ref,reactive } from 'vue'
 import { User, Key, Iphone,Message } from '@element-plus/icons-vue'
 import Avatar from '../components/AvatarPicker.vue'
 import { ElMessage } from 'element-plus'
 import CryptoJS from 'crypto-js'
+import global from '@/store/global'
 
 const loginDisabled = ref(false)
 
@@ -133,7 +134,7 @@ const onSubmit = () => {
         if (valid) {
           try {
             const hashedPassword = CryptoJS.SHA256(newuser.password).toString()
-            const response = await axios.post('https://localhost:7218/api/Users/register', {
+            const response = await axios.post('/api/Users/register', {
               user_name: newuser.user_name,
               phone_number: newuser.phone_number,
               password: hashedPassword,
@@ -143,6 +144,8 @@ const onSubmit = () => {
               email: newuser.email
             });
             ElMessage.success('注册成功！');
+            global.Login = true;
+            global.userId = response.data.data.user_id;
             toHomePage()
             console.log('User registered:', response.data);
           } catch (error) {

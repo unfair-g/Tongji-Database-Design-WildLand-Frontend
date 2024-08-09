@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HelloWorld from '../pages/HelloWorld.vue'
+import { ElMessage } from 'element-plus'
 
 const routes = [
     {
@@ -10,6 +11,7 @@ const routes = [
     {
         path: '/administrator',
         component: () => import('../pages/AdministratorPage.vue'),
+        meta: { requiresAuth: true },
         children: [
             {
                 path: 'personalinformation',
@@ -37,10 +39,10 @@ const routes = [
                 component: () => import('../views/PostAudit.vue')
             },
             {
-                path: 'postdetail',
+                path: 'postdetail/:id', // 添加 :id 作为动态路由参数
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
-            },
+            },              
             {
                 path: 'reportreview',
                 name: 'ReportReview',
@@ -82,6 +84,7 @@ const routes = [
         path: '/home',
         name: 'home',
         component: () => import('../pages/HomePage.vue'),
+        meta: { requiresAuth: true },
         children: [
             {
                 path: "",
@@ -194,7 +197,14 @@ const routes = [
             {
                 path: "forum/post/:type/:postID",
                 component: () => import('../views/postDetailView.vue'),
-                props: route => ({ type: route.params.type, postID: route.params.postID })
+                props: route => ({
+                    type: route.params.type,
+                    postID: route.params.postID,
+                    isPostOwner: route.query.isPostOwner === 'true', // 传递布尔类型的参数
+                    isCommentOwner: route.query.isCommentOwner === 'true', // 传递布尔类型的参数
+                    isSignupOwner: route.query.isSignupOwner === 'true' // 传递布尔类型的参数
+                })
+
             },
             {
                 path: "forum/post/lease/:ldleitemsPostID",
@@ -224,6 +234,7 @@ const routes = [
         children: [
             {
                 path: "login",
+                name: 'Login',
                 component: () => import('../components/LogIn.vue')
             },
             {
@@ -242,5 +253,23 @@ const router = createRouter({
     history: createWebHashHistory(process.env.BASE_URL),
     routes
 })
+
+router.beforeEach((to, from, next) => {
+
+    const isLogin = sessionStorage.getItem('state');
+
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        // 需要登录的路由
+        if (!isLogin) {
+            // 未登录用户
+            next({ name: 'Login' }); // 重定向到登录页面
+            ElMessage.error('请先登录！');
+        } else {
+            next(); // 允许访问
+        }
+    } else {
+        next(); // 不需要登录的路由，允许访问
+    }
+});
 
 export default router

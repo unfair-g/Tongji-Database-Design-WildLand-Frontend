@@ -1,17 +1,15 @@
 <template>
+  <flashaside  @menu-select="handleMenuSelect"/>
   <el-card class="flash">
-    <template #header>
-      <div class="flash-header">推荐资讯</div>
-    </template>
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in flash" :key="flash.title" @click="goToDetail(flash)">
+      <div class="flash-item" v-for="(flash) in filteredFlashes" :key="flash.title" @click="goToDetail(flash)">
         <div class="img">
             <img :src="flash.image" />
         </div>
         <div class="flash-info">
             <span class="flash-title">{{ flash.title }}</span>
-          <div>
             <span class="flash-meta">作者： {{ flash.meta }}</span>
+          <div>
             <span class="flash-like">{{ flash.like }}收藏</span>
             <span class="flash-like">{{ flash.view }}浏览</span>
           </div>
@@ -23,15 +21,31 @@
 
 <script>
 
+import flashaside from '../components/FlashAside.vue';
+
 export default {
   name: 'RecommendFlash',
   props: ['flashID'],
+  components: {
+  flashaside
+},
+data() {
+    return {
+      currentMenu: 1, // 默认选中的菜单项
+    };
+  },
   computed: {
     flash() {
       return this.$store.state.flash.flashes;
     },
+    filteredFlashes() {
+      return this.flash.filter(flash => {return flash.tag_id === this.currentMenu;}  );
+    }
   },
   methods: {
+    handleMenuSelect(index) {
+      this.currentMenu = index;
+    },
     goToDetail (flash) {
       const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
@@ -48,14 +62,6 @@ export default {
 .flash {
   margin-bottom: 20px;
   background: transparent;
-}
-.flash-header {
-  font-size: 37px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  background: transparent;
-  color:#1D5B5E;
 }
 .flash-list {
   background: transparent;

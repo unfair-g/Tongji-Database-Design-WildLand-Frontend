@@ -5,42 +5,77 @@
         <div class="logo">WildLand</div>
         <div class="admin-details">
           <div class="admin-avatar-info">
-            <el-avatar :icon="UserFilled" size="large"></el-avatar>
-            <div class="admin-info-wrapper">
-              <div class="nickname">昵称: {{ nickname }}</div>
-              <div class="user-id">个人ID: {{ userId }}</div>
+            <el-avatar :src="avatarSrc ? avatarSrc : undefined" :icon="!avatarSrc ? UserFilled : undefined" size="large"></el-avatar>
+            <div class="avatar-upload-wrapper">
+              <el-upload
+                v-if="isEditing"
+                class="avatar-uploader"
+                :action="`/api/Administrators/uploadportrait/${admin_id}`"
+                :method="'post'"
+                :show-file-list="false"
+                :before-upload="beforeAvatarUpload"
+                :on-success="handleAvatarSuccess"
+                :on-error="handleAvatarError"
+              >
+                <el-button size="mini" type="primary">上传头像</el-button>
+              </el-upload>
             </div>
           </div>
-          <div class="admin-info phone-info">手机: {{ phone }}</div>
-          <div class="admin-info email-info">邮箱: {{ email }}</div>
+          <div class="admin-info-wrapper">
+            <div class="nickname">
+              昵称: 
+              <el-input v-if="isEditing" v-model="editedNickname" size="mini" />
+              <span v-else>{{ nickname }}</span>
+            </div>
+            <div class="user-id">个人ID: {{ admin_id }}</div>
+          </div>
+          <div class="admin-info phone-info">
+            手机: 
+            <el-input v-if="isEditing" v-model="editedPhone" size="mini" />
+            <span v-else>{{ phone }}</span>
+          </div>
+          <div class="admin-info email-info">
+            邮箱: 
+            <el-input v-if="isEditing" v-model="editedEmail" size="mini" />
+            <span v-else>{{ Email }}</span>
+          </div>
+        </div>
+        <div class="edit-button">
+          <el-button type="primary" @click="toggleEdit">{{ isEditing ? '保存' : '编辑个人信息' }}</el-button>
         </div>
       </el-header>
       <el-container style="height: calc(100% - 190px)">
         <el-aside class="aside">
           <el-scrollbar>
-            <el-menu :default-openeds="['1','2','3']" @select="handleSelect" :unique-opened="true">
+            <el-menu :default-openeds="['1', '2', '3']" @select="handleSelect" class="sidebar">
               <el-sub-menu index="1">
                 <template #title>
-                  <el-icon><i class="el-icon-s-operation"></i></el-icon>审核
+                  <el-icon><View /></el-icon>审核
                 </template>
-                <el-menu-item index="1-1" @click="navigateTo('PostAudit')">帖子审核</el-menu-item>
-                <el-menu-item index="1-2" @click="navigateTo('ReportReview')">举报审核</el-menu-item>
-                <el-menu-item index="1-3" @click="navigateTo('GeekAudit')">达人审核</el-menu-item>
+                <el-menu-item index="1-1" @click="navigateTo('PostAudit', admin_id)">帖子审核</el-menu-item>
+                <el-menu-item index="1-2" @click="navigateTo('ReportReview', admin_id)">举报审核</el-menu-item>
+                <el-menu-item index="1-3" @click="navigateTo('GeekAudit', admin_id)">达人审核</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="2">
                 <template #title>
-                  <el-icon><i class="el-icon-s-operation"></i></el-icon>内容管理
+                  <el-icon><EditPen /></el-icon>内容管理
                 </template>
                 <el-menu-item index="2-1" @click="navigateTo('AdminCamp')">营地</el-menu-item>
                 <el-menu-item index="2-2" @click="navigateTo('OutdoorGear')">户外用品</el-menu-item>
               </el-sub-menu>
               <el-sub-menu index="3">
                 <template #title>
-                  <el-icon><i class="el-icon-s-operation"></i></el-icon>经验资讯
+                  <el-icon><Document /></el-icon>经验资讯
                 </template>
                 <el-menu-item index="3-1" @click="navigateTo('TagAudit')">标签管理</el-menu-item>
                 <el-menu-item index="3-2" @click="navigateTo('FlashAudit')">资讯管理</el-menu-item>
               </el-sub-menu>
+              <div class="flex-grow" />
+              <li style="flex:1;"></li>
+              <el-menu-item index="5" @click="exit">
+                <el-icon><SwitchButton /></el-icon>
+                <span>退出登录</span>
+              </el-menu-item>
             </el-menu>
           </el-scrollbar>
         </el-aside>
@@ -55,22 +90,140 @@
 <script>
 import { UserFilled } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { mapGetters } from 'vuex'
+import axios from '@/axios'
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus' // 导入 ElMessage
+import global from '@/store/global'
 
 export default {
-  computed: {
-    ...mapGetters('admin', ['nickname', 'userId', 'phone', 'email'])
-  },
   setup() {
     const router = useRouter()
+    const admin_id = ref(global.userId)
+    const nickname = ref('')
+    const phone = ref('')
+    const Email = ref('')
+    const avatarSrc = ref('') // 用于存储头像 URL
+    const isEditing = ref(false)
+    const editedNickname = ref('')
+    const editedPhone = ref('')
+    const editedEmail = ref('')
 
-    const navigateTo = (routeName) => {
-      router.push({ name: routeName })
+    const fetchAdminDetails = async () => {
+      try {
+        const response = await axios.get(`/api/Administrators/${global.userId}`)
+        const { admin_name, phone_number, email, portrait } = response.data.data
+        nickname.value = admin_name
+        phone.value = phone_number
+        Email.value = email
+        avatarSrc.value = portrait // 设置头像 URL
+        editedNickname.value = admin_name
+        editedPhone.value = phone_number
+        editedEmail.value = email
+      } catch (error) {
+        console.error('获取管理员信息失败', error)
+      }
     }
+
+    const toggleEdit = async () => {
+      if (isEditing.value) {
+        try {
+          const data = {
+            admin_id: admin_id.value,
+            admin_name: editedNickname.value,
+            phone_number: editedPhone.value,
+            email: editedEmail.value
+          }
+          const config = {
+            method: 'put',
+            url: '/api/Administrators/updateInfo',
+            headers: { 
+              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)', 
+              'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data)
+          }
+          await axios(config)
+            nickname.value = editedNickname.value
+            phone.value = editedPhone.value
+            Email.value = editedEmail.value
+        } catch (error) {
+          ElMessage.error(error.message)
+          console.error('更新管理员信息失败', error)
+        }
+      }
+      isEditing.value = !isEditing.value
+    }
+
+    const navigateTo = (routeName, admin_id) => {
+      if (admin_id) {
+        router.push({ name: routeName, query: { admin_id } });
+      } else {
+        router.push({ name: routeName });
+      }
+    };
+
+    function exit() {
+      sessionStorage.clear();
+      global.Login = false;
+      global.userId = 0;
+      router.push({
+        path:'/'
+      })
+    }
+
+    const beforeAvatarUpload = (file) => {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传头像图片大小不能超过 2MB!')
+        return false
+      }
+      return true
+    }
+
+    const handleAvatarSuccess = (response, file) => {
+      if (response.code===200) {
+        avatarSrc.value = URL.createObjectURL(file.raw)
+        ElMessage.success('头像上传成功')
+      } else {
+        console.log('上传头像失败，服务器响应:', response) // 打印响应信息
+        ElMessage.error('上传头像失败')
+      }
+    }
+
+    const handleAvatarError = (err) => {
+      ElMessage.error(err);
+      console.error(err); // 可以打印错误信息，便于调试
+    };
+
+    // 在组件挂载时获取管理员详细信息
+    onMounted(() => {
+        fetchAdminDetails()
+    })
 
     return {
       navigateTo,
-      UserFilled
+      UserFilled,
+      admin_id,
+      nickname,
+      phone,
+      Email,
+      avatarSrc,
+      isEditing,
+      editedNickname,
+      editedPhone,
+      editedEmail,
+      toggleEdit,
+      beforeAvatarUpload,
+      handleAvatarSuccess,
+      handleAvatarError,
+      ElMessage,
+      exit
     }
   }
 }
@@ -96,6 +249,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  position: relative;
 }
 
 .logo {
@@ -108,7 +262,6 @@ export default {
 .admin-details {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
   position: relative;
 }
@@ -116,38 +269,44 @@ export default {
 .admin-avatar-info {
   display: flex;
   align-items: center;
-  position: absolute;
-  left: 30%;
+  flex-direction: column; /* 改为列布局 */
+  margin-left: 20%;
+  margin-right: 2%; /* 增加右边距，靠近昵称和个人ID */
+}
+
+.avatar-upload-wrapper {
+  margin-top: 10px;
 }
 
 .admin-info-wrapper {
   display: flex;
   flex-direction: column;
-  margin-left: 10px;
 }
 
-.nickname {
-  font-size: 24px;
-  margin-bottom: 10px;
+.nickname, .user-id {
+  font-size: 16px;
+  text-align: left;
+  margin: 0; /* 删除上方和下方的间距 */
 }
 
-.user-id {
-  font-size: 18px;
-  margin-bottom: 10px;
+.phone-info, .email-info {
+  position: absolute;
+  font-size: 16px;
+  text-align: left;
 }
 
 .phone-info {
-  position: absolute;
   left: 55%;
-  font-size: 16px;
-  text-align: left;
 }
 
 .email-info {
-  position: absolute;
   left: 80%;
-  font-size: 16px;
-  text-align: left;
+}
+
+.edit-button {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
 }
 
 .aside {
@@ -166,5 +325,25 @@ export default {
   flex-grow: 1;
   height: calc(100%);
   background-color: rgba(255, 255, 255, 0.7);
+}
+
+.el-button {
+  background-color: #1D5B5E;
+  border-color: #1D5B5E;
+  color: #fff;
+}
+
+.avatar-uploader .el-button {
+  margin-top: 10px;
+}
+
+.sidebar{
+    --el-menu-item-height:80px;
+    --el-sub-menu-item-height:80px;
+    --el-menu-item-font-size: 20px;
+    min-height:80vh;
+    height:100%;
+    display: flex;             
+    flex-direction: column; 
 }
 </style>

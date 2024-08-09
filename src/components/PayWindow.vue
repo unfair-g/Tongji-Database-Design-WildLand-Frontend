@@ -123,7 +123,6 @@ export default {
       endTime:null,
       productID:this.product.product_id,
       ProductId:null
-      
     }
   },
   watch: {
@@ -237,7 +236,7 @@ export default {
     },
     campOrders() {
       return this.$store.state.camp_order.camp_orders;
-    },
+    }
   },
 
   setup() {

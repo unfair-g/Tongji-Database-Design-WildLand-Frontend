@@ -3,31 +3,35 @@
     <el-table :data="postAuditTableData" style="width: 100%">
       <el-table-column prop="title" label="帖子标题" width="300" align="center" />
       <el-table-column prop="author" label="帖子作者" width="300" align="center" />
-      <el-table-column prop="post_kind" label="帖子类型" width="300" align="center" />
+      <el-table-column
+        label="帖子类型"
+        width="300"
+        align="center"
+        :formatter="formatPostKind"
+      />
       <el-table-column prop="post_time" label="发表时间" width="300" align="center" />
       <el-table-column label="操作台" width="300" align="center">
         <template #default="scope">
-          <el-button 
+          <el-button
             :class="{ 'selected-action': scope.row.action === 'check' }"
-            type="primary" 
-            color="#1D5B5E" 
+            type="primary"
+            color="#1D5B5E"
             :disabled="scope.row.isReviewed"
             @click="handleAction(scope.row, 'check')">
             <CircleCheck />通过
           </el-button>
-          <el-button 
+          <el-button
             :class="{ 'selected-action': scope.row.action === 'close' }"
-            type="primary" 
-            color="#1D5B5E" 
+            type="primary"
+            color="#1D5B5E"
             :disabled="scope.row.isReviewed"
             @click="handleAction(scope.row, 'close')">
             <CircleClose />拒绝
           </el-button>
-          <el-button 
+          <el-button
             :class="{ 'selected-action': scope.row.action === 'more' }"
-            type="primary" 
-            color="#1D5B5E" 
-            :disabled="scope.row.isReviewed"
+            type="primary"
+            color="#1D5B5E"
             @click="handleAction(scope.row, 'more')">
             <MoreFilled />更多
           </el-button>
@@ -45,8 +49,9 @@
 </template>
 
 <script>
-import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue'
-import { mapState, mapActions } from 'vuex'
+import axios from 'axios';
+import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   components: {
@@ -54,36 +59,67 @@ export default {
     CircleClose,
     MoreFilled
   },
+  data() {
+    return {
+      admin_id: '' // 新增 admin_id 数据属性
+    }
+  },
   computed: {
     ...mapState('admin', ['postAuditTableData'])
   },
   created() {
-    this.fetchPostAuditTableData()
+    this.admin_id = this.$route.query.admin_id;
+    this.fetchPostAuditTableData();
   },
   watch: {
     postAuditTableData: {
       handler(newVal) {
-        console.log('postAuditTableData has changed:', newVal)
-        // 这里可以添加更多逻辑，例如保存变化，更新UI等
+        console.log('postAuditTableData has changed:', newVal);
+        // Additional logic can be added here if needed
       },
-      deep: true // 深度监听
+      deep: true // Deep watch
     }
   },
   methods: {
     ...mapActions('admin', ['fetchPostAuditTableData', 'updatePostAuditStatus']),
-    handleAction(row, action) {
+    async handleAction(row, action) {
       if (action === 'check' || action === 'close') {
-        // Update the status in the store
-        this.updatePostAuditStatus({ id: row.id, status: true })
-        row.isReviewed = true // 将行标记为已审核
-        row.action = action // 保存动作状态，用于改变按钮颜色
+        try {
+          const status = action === 'check' ? 1 : 0;
+          const response = await axios.post('https://localhost:7218/api/PostReviews/updatePostReview', {
+            post_id: row.id,
+            admin_id: this.admin_id,
+            status: status
+          });
+
+          if (response.status === 200) {
+            // Update the status in the store
+            this.updatePostAuditStatus({ id: row.id, status: true });
+            row.isReviewed = true; // Mark the row as reviewed
+            row.action = action; // Save the action state to change button color
+          }
+        } catch (error) {
+          console.error('Failed to update post review status:', error);
+        }
       }
       if (action === 'more') {
-        this.$router.push({ name: 'PostDetail', params: { id: row.id } })
+        this.$router.push({ name: 'PostDetail', params: { id: row.id } });
+      }
+    },
+    formatPostKind(row) {
+      switch (row.post_kind) {
+        case 0:
+          return '分享贴';
+        case 1:
+          return '闲置贴';
+        case 2:
+          return '招募贴';
+        default:
+          return '未知类型';
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

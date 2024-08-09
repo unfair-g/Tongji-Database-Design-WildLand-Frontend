@@ -1,5 +1,5 @@
 <template>  
-  <div>  
+  <div style="margin:1%">  
     <h2>消息通知</h2>
     <el-button
       text
@@ -12,7 +12,7 @@
     <el-tab-pane label="全部" name="all"></el-tab-pane>
     <el-tab-pane label="关注" name="follow"></el-tab-pane>
     <el-tab-pane label="活动" name="activity"></el-tab-pane>
-    <el-tab-pane label="举报" name="tip-off"></el-tab-pane>
+    <el-tab-pane label="举报" name="report"></el-tab-pane>
     </el-tabs>
     <MessageList :activeTab="activeTab"/>  
   </div>  

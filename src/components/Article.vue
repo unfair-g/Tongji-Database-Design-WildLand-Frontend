@@ -7,8 +7,8 @@
           <img :src="sharepost.avatar" alt="avatar" class="avatar">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}</span>
-              <span class="time">{{ sharepost.time }}</span>
+              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
               <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
@@ -112,7 +112,9 @@
 </template>
 
 <script>
-import axios from 'axios';
+import {ElMessage} from "element-plus";
+import axios from '@/axios'; // 确保路径是正确的
+import state from '@/store/global.js'; // 引入映射表
 
 export default {
   name: 'ArticleCard',
@@ -122,8 +124,6 @@ export default {
       required:true
     }
   },
-<<<<<<< Updated upstream
-=======
   data() {
     return {
       shareposts: [],
@@ -137,29 +137,33 @@ export default {
     if (this.view === 'lease') {
       this.fetchLdleitemsPosts();
     }
-    
   },
->>>>>>> Stashed changes
   computed: {
-    shareposts() {
-      return this.$store.state.post.shareposts;
-    },
     recruitposts() {
       return this.$store.state.post.recruitmentposts; 
     },
 
   },
   methods: {
-    fetchLdleitemsPosts() {
-      axios.get('https://localhost:7218/api/LdleitemsPosts')
+    fetchSharePosts() {
+      const userId = state.userId;
+      axios.get(`/api/Posts/GetOverview/0/${userId}`)
         .then(response => {
-          this.ldleitemsposts = response.data;
+          this.shareposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_content,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            views: 0, // Assuming views is not available in the API response
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+          }));
         })
         .catch(error => {
-<<<<<<< Updated upstream
-          console.error('Error fetching ldle items posts:', error);
-        });
-=======
           console.error('Error fetching share posts:', error);
           this.handleError(error, '获取分享贴失败');
         });  
@@ -198,12 +202,11 @@ export default {
       } else {
         return `${Math.floor(diff / 86400)} 天前`;
       }
->>>>>>> Stashed changes
     },
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      
@@ -211,19 +214,50 @@ export default {
     toggleLike(post) {
       post.isLiked = !post.isLiked;
       post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+      if (this.view === 'share') {
+        axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
+      }
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
+      if (this.view === 'share') {
+        axios.post('/api/StarPosts/starpost', {
+          post_id: post.post_id,
+          tips:"收藏测试",
+          user_id: state.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number+=1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number-=1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
+      }
     }
   },
-<<<<<<< Updated upstream
   data() {
     return {
       ldleitemsposts: [],
     }
   },
-=======
->>>>>>> Stashed changes
   watch: {
     view(newValue) {
       if (newValue === 'lease') {
