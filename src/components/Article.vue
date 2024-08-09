@@ -94,7 +94,7 @@
         <div class="post-content">
           <img :src="ldleitemspost.item_image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <span>{{ ldleitemspost.item_name}}</span>
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
             <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
@@ -127,21 +127,21 @@ export default {
   data() {
     return {
       shareposts: [],
+      ldleitemsposts: [],
     };
   },
   mounted() {
     if (this.view === 'share') {
       this.fetchSharePosts();
     }
-    
+    if (this.view === 'lease') {
+      this.fetchLdleitemsPosts();
+    }
   },
   computed: {
     recruitposts() {
       return this.$store.state.post.recruitmentposts; 
     },
-    ldleitemsposts() {
-      return this.$store.state.post.ldleitemsposts
-    }
 
   },
   methods: {
@@ -167,6 +167,15 @@ export default {
           console.error('Error fetching share posts:', error);
           this.handleError(error, '获取分享贴失败');
         });  
+    },
+    fetchLdleitemsPosts() {
+      axios.get('https://localhost:7218/api/LdleitemsPosts')
+        .then(response => {
+          this.ldleitemsposts = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ldle items posts:', error);
+        });
     },
     handleError(error, message) {
       if (error.response) {
@@ -242,6 +251,23 @@ export default {
         this.handleError(error, '收藏操作失败');
       });
       }
+    }
+  },
+  data() {
+    return {
+      ldleitemsposts: [],
+    }
+  },
+  watch: {
+    view(newValue) {
+      if (newValue === 'lease') {
+        this.fetchLdleitemsPosts();
+      }
+    }
+  },
+  created() {
+    if (this.view === 'lease') {
+      this.fetchLdleitemsPosts();
     }
   }
 };

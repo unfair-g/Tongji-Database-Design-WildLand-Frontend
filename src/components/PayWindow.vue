@@ -94,6 +94,8 @@
 <script>
 import { ref } from 'vue';
 import dayjs from 'dayjs';
+import axios from 'axios';
+import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
 export default {
   name: 'PayWindow',
@@ -118,7 +120,9 @@ export default {
       selectedCampOrder: null,
       filteredCampOrders: [],
       startTime:null,
-      endTime:null
+      endTime:null,
+      productID:this.product.product_id,
+      ProductId:null
     }
   },
   watch: {
@@ -129,6 +133,9 @@ export default {
       this.$emit('update:dialogVisible', newVal);
     }
   },
+  created() {
+    this.fetchProductId()
+  },
   methods: {
     handleClose() {
       this.closeDialog();
@@ -138,9 +145,53 @@ export default {
     },
     confirmDialog() {
       this.localDialogVisible = false
-      this.PaySuccess = true
+      this.createOrderAndUpload();
+      
       //添加支付成功逻辑
       // 切换支付成功弹窗
+    },
+    fetchProductId() {
+      axios.get(`https://localhost:7218/api/OutdoorProducts/${this.productID}`)
+        .then(response => {
+          this.ProductId = response.data.product_id;
+        })
+        .catch(error => {
+          console.error('Error fetching ldle items posts:', error);
+        });
+    },
+    createOrderAndUpload() {
+      const orderData = {
+        lease_id: this.generateOrderId(),
+        user_id: globalState.userId,
+        product_id: this.ProductId,
+        pick_time: dayjs(this.startTime).format('YYYY-MM-DDTHH:mm:ss'),
+        remark: `营地：${this.selectedCampOrder.campground_name}     营位：${this.selectedCampOrder.selectedCampsiteIds}`,
+        back_time: dayjs(this.endTime).format('YYYY-MM-DDTHH:mm:ss'),
+      };
+      console.log('订单上传:', orderData.lease_id);
+      console.log('订单上传:', orderData.user_id);
+      console.log('订单上传成功:', orderData.pick_time);
+      console.log(orderData)
+      axios.post('https://localhost:7218/api/Leases', orderData,{headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      }
+    })
+        .then(response => {
+          console.log('订单上传成功:', response.data);
+          this.PaySuccess = true
+        })
+        .catch(error => {
+          console.error('上传订单时出错:', error);
+        });
+    },
+    generateOrderId() {
+      return Math.floor(Math.random() * 100000);
+    },
+    formatDateToFullDate(dateStr) {
+      // 假设 dateStr 是 "YYYY-MM-DD" 格式的日期字符串
+      const [year, month, day] = dateStr.split('-');
+      return `${year}-${month}-${day}T00:00:00.000Z`; // ISO 8601 格式的午夜时间
     },
     GoToOrder(product,orderId)   //查看订单
     {
