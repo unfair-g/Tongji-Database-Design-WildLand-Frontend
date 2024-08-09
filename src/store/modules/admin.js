@@ -242,20 +242,23 @@ const actions = {
       console.error('Failed to fetch comment report table data:', error);
     }
   },
-  fetchGeekAuditTableData({ commit }) {
-    const geekAuditTableData = [
-      {
-        id: 1,
-        applicant: "申请人1",
-        expertise: "擅长领域1",
-        qualification: "资质证明1",
-        outdoorExperience: "户外经历1",
-        applicationTime: "申请时间1",
+  async fetchGeekAuditTableData({ commit }) {
+    try {
+      const response = await axios.get('https://localhost:7218/api/CertificationReviews/unreviewedList');
+      const geekAuditTableData = response.data.data.map(item => ({
+        applicant_id: item.applicant_id,
+        applicant: item.applicant_name,  
+        expertise: item.ept_field,
+        qualification: item.proof,
+        outdoorExperience: item.experience,
+        applicationTime: item.summit_date,
         isReviewed: false,
         reviewStatus: null
-      }
-    ];
-    commit('setGeekAuditTableData', geekAuditTableData);
+      }));
+      commit('setGeekAuditTableData', geekAuditTableData);
+    } catch (error) {
+      console.error('Failed to fetch geek audit table data:', error);
+    }
   },
   updatePostAuditStatus({ commit }, { id, status }) {
     commit('updatePostAuditStatus', { id, status });
