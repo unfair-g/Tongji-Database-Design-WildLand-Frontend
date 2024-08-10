@@ -199,10 +199,7 @@ const routes = [
                 component: () => import('../views/postDetailView.vue'),
                 props: route => ({
                     type: route.params.type,
-                    postID: route.params.postID,
-                    isPostOwner: route.query.isPostOwner === 'true', // 传递布尔类型的参数
-                    isCommentOwner: route.query.isCommentOwner === 'true', // 传递布尔类型的参数
-                    isSignupOwner: route.query.isSignupOwner === 'true' // 传递布尔类型的参数
+                    postID: route.params.postID
                 })
 
             },

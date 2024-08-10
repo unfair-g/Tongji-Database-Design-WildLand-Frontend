@@ -2,10 +2,10 @@
   <el-card class="post-container">
     <div v-if="post">
       <div class="post-header">
-        <img :src="post.avatar" alt="avatar" class="avatar">
+        <img :src="post.portrait" alt="avatar" class="avatar">
         <div class="post-details">
           <div class="post-info">
-            <span class="username">{{ post.username }}</span>
+            <span class="username">{{ post.author_name }}</span>
             <span class="time">发布时间：{{ post.post_time }}</span>
           </div>
           <div v-if="isPostOwner" class="post-visible-states">
@@ -36,37 +36,30 @@
             <h3 class="post-title">{{ post.title }}</h3>
             <p  class="post-text">{{ post.content }}</p>
             <div class="image-gallery">
-              <div v-for="(imageRow, rowIndex) in imageRows" :key="rowIndex" class="image-row">
-                <img v-for="(image, index) in imageRow" 
+              <div  v-for="(imageRow, rowIndex) in imageRows" :key="rowIndex" class="image-row">
+                <el-image v-for="(image, index) in imageRow" 
                 :key="index" 
+                style="width: 250px; height: 250px"
+                :fit="'cover'"
                 :src="image" 
                 :alt="'Image ' + (rowIndex * 3 + index + 1)" 
                 :class="imageClass"
-                @click="showImage(image)"
-              >
+                :preview-src-list="allImages"
+                :initial-index="rowIndex * 3 + index"
+              />
               </div>
             </div>
-            <el-dialog
-              v-model="dialogVisible"
-              width="80%"
-              :show-close="true"
-            >
-            <div class="image-dialog">
-              <el-button @click="prevImage" class="prev-button" ><el-icon><ArrowLeftBold /></el-icon></el-button>
-                <img :src="currentImage" alt="Enlarged image" style="width: 100%;">
-              <el-button @click="nextImage" class="next-button"><el-icon><ArrowRightBold /></el-icon></el-button>
-            </div>
-            </el-dialog>
+            
             <div class="post-location">
-          <el-icon><Location /></el-icon> {{ post.post_location }}
-          <span  v-if="isPostOwner" class="delete-button" @click="openDeleteDialog('post')">删除</span>
+          <el-icon><Location /></el-icon> {{ post.post_position }}
+          <span  v-if="!isPostOwner" class="delete-button" @click="openDeleteDialog">删除</span>
         </div>
         <el-dialog
           v-model="deleteDialogVisible"
           title="确认删除"
           width="30%"
         >
-          <span>{{deleteMessage}}</span>
+          <span>{{'您是否确认删除这条帖子'}}</span>
           <template v-slot:footer>
             <el-button @click="cancelDelete">否</el-button>
             <el-button type="primary" @click="confirmDelete">是</el-button>
@@ -95,22 +88,14 @@
 
           <div class="comments-section">
             <CommentInput
-              :isCommentOwner="isCommentOwner"
-              :avatar="post.avatar"
               v-model:commentContent="comment"
-              @submit-comment="addComment"
+              :postId="this.postID"
             />
-
+            <!-- 这里的评论回复的是帖子 -->
             <div >
               <CommentItem
-              v-for="comment in post.comments_details"
-              :key="comment.comment_id"
-              :comment="comment"
-              @delete-comment="openDeleteDialog('comment', $event)"
-              @delete-reply="openDeleteDialog('reply', $event, comment)"
-              @toggle-like="toggleLike"
-              @add-reply="addReply"
-            />
+                :postId="this.postID"
+              />
             </div>
           </div>
         </div>
@@ -129,7 +114,7 @@
           </h4>
           <div class="post-location">
           <el-icon><Location /></el-icon> {{ post.location }}
-          <span class="delete-button" @click="openDeleteDialog('post')">删除</span>
+          <span v-if="isPostOwner" class="delete-button" @click="openDeleteDialog('post')">删除</span>
         </div>
         <el-dialog
           v-model="deleteDialogVisible"
@@ -193,10 +178,11 @@
         <ReportPost
           v-model:isReportDialogVisible="isReportPostWindowVisible"
           :isDetailShow="false"
-          :PostSuccess="false"
+          :thisPostId="this.postID"
           :post="post"
           @closeDialog="isReportPostWindowVisible=false"
         />  
+        <!-- 用于举报帖子 -->
         
       </div>
       
@@ -217,6 +203,7 @@ import SignUpItem from '@/components/SignUpItem.vue';
 import ReportPost from '@/components/ReportPostWindow.vue'
 import axios from '@/axios'; // 确保路径是正确的
 import state from '@/store/global.js'; // 引入映射表
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'ShareForumDetail',
@@ -230,7 +217,6 @@ export default {
   props: ['type','postID'],
   data() {
     return {
-      dialogVisible: false,
       deleteDialogVisible: false, // 控制删除弹窗显示
       currentImage: '',
       currentIndex: 0,
@@ -238,7 +224,7 @@ export default {
       value: '',
       comment: '',
       signup:'',
-      deleteMessage: '', // 删除确认消息
+    
       deleteType: '', // 删除类型（帖子或评论或报名）
       deleteComment: null, // 要删除的评论
       deleteReply: null, // 要删除的回复
@@ -250,7 +236,7 @@ export default {
         { label: '仅自己可见', value: '仅自己可见' },
         { label: '所有人可见', value: '所有人可见' }
       ],
-      post:null,
+      post: null,
     };
   },
   watch: {
@@ -294,59 +280,66 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const response = await axios.get(`/api/Posts/GetPostDetail/${this.postID}`);
+        const user_id = state.userId;
+        const response = await axios.get(`/api/Posts/GetPostDetail/${this.postID}/${user_id}`);
         this.post = response.data;
       } catch (error) {
         console.error('Error fetching post data:', error);
       }
     },
-    showImage(image) {
-      this.currentIndex = this.allImages.indexOf(image);
-      this.currentImage = image;
-      this.dialogVisible = true;
-    },
-    prevImage() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
       } else {
-        this.currentIndex = this.allImages.length - 1;
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
       }
-      this.currentImage = this.allImages[this.currentIndex];
-    },
-    nextImage() {
-      if (this.currentIndex < this.allImages.length - 1) {
-        this.currentIndex++;
-      } else {
-        this.currentIndex = 0;
-      }
-      this.currentImage = this.allImages[this.currentIndex];
     },
     toggleLike(post) {
       post.isLiked = !post.isLiked;
       post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+      axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
+      axios.post('/api/StarPosts/starpost', {
+        post_id: post.post_id,
+        tips:"收藏测试",
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number+=1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number-=1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
     },
-    openDeleteDialog(type, item = null, parentComment = null) {
-      this.deleteType = type;
-      if (type === 'reply') {
-        this.deleteReply = item;
-        this.parentComment = parentComment;
-        this.deleteMessage = '您是否确认删除这条评论';
-      } else if(type==='comment') {
-        this.deleteComment = item;
-        this.deleteMessage = '您是否确认删除这条评论';
-      } else if (type === 'post') {
-        this.deleteMessage = '您是否确认删除这条帖子'; 
-      } else {
-        this.deleteSignup = item;
-        this.deleteMessage = '您是否确认删除这条报名信息';
-        
-      }
+    openDeleteDialog() {
       this.deleteDialogVisible = true;
     },
     confirmDelete() {
@@ -372,16 +365,6 @@ export default {
     },
     cancelDelete() {
       this.deleteDialogVisible = false;
-    },
-    addComment(newComment) {
-      this.post.comments_details.push(newComment);
-      this.post.comments += 1;
-    },
-    addReply({ parentComment, reply }) {
-      const comment = this.post.comments_details.find(c => c.comment_id === parentComment.comment_id);
-      if (comment) {
-        comment.replies.push(reply);
-      }
     },
     addSignUp(newSignUp) {
       this.post.signups_details.push(newSignUp);
@@ -422,10 +405,9 @@ export default {
 }
 .post-title {
   margin-bottom: 20px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 .post-text {
-  margin-top: 7px;
   font-size:14px;
 }
 .post-location {
@@ -438,14 +420,13 @@ export default {
   margin-top:20px;
   /* align-items: center; 没有解决居中问题 */
 }
-
+.el-image{
+  margin-right: 20px;
+}
 .image-row {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
-}
-.image-row img {
-  margin-right: 20px;
 }
 .image-one {
   width: 75%;
@@ -456,24 +437,7 @@ export default {
 .image-multiple {
   width: 25%;
 }
-.image-dialog {
 
-  display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  height: 60%; /* 确保容器的高度填满父元素 */
-}
-.image-dialog img {
-  max-width: 75%; /* 最宽为容器宽度的75% */
-  max-height: 50%; /* 高度不超过容器高度 */
-  width: auto; /* 宽度自适应 */
-  height: auto; /* 高度自适应 */
-}
-
-.post-item {
-  margin-bottom: 20px;
-  width: 100%;
-}
 .post-header {
   display: flex;
   align-items: center;
@@ -530,7 +494,7 @@ export default {
   margin-right:5px;
 }
 .delete-button {
-  color: rgb(15, 130, 218);
+  color: red;
   cursor: pointer;
   margin-left: 15px; /* 调整位置 */
 }

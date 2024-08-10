@@ -10,9 +10,6 @@
       <el-divider></el-divider>
       <div class="report-info-form">
         <el-form :model="reportForm" ref="reportForm" @submit.prevent="submitForm" label-width="150px">
-          <div v-if="localIsDetailShow">
-            
-          </div>
           <el-form-item label="举报原因：" prop="reportReason" style="font-weight: bold;">
             <el-input
               type="textarea"
@@ -24,7 +21,7 @@
          
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
-            <el-button type="primary" color="#1D5B5E" native-type="submit" @click="confirmDialog">确认举报</el-button>
+            <el-button type="primary" color="#1D5B5E" native-type="submit" @click="submitReport">确认举报</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -33,6 +30,9 @@
 </template>
 
 <script>
+import axios from '@/axios'; // 确保路径是正确的
+import state from '@/store/global.js'; // 引入映射表
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'ReportPost',
@@ -41,55 +41,29 @@ export default {
       type: Boolean,
       default: false,
     },
-    PostSuccess: {
-      type: Boolean,
-      default: false,
+    thisPostId: {
+      type: Number,
+      required: true,
+      default:null
     },
-    post: {
-      type: Object,
-      required:true,
-    },
-    isDetailShow: {
-      type: Boolean,
-      default:false,
-      required:true,
+    thisCommentId: {
+      type: Number,
+      required: true,
+      default:null
     }
+   
   },
   data() {
     return {
-      localIsDetailShow: this.isDetailShow,
       localIsReportDialogVisible: this.isReportDialogVisible,
       reportForm: {
-        postTitle: this.post.title,
-        postContent: this.post.content,
-        postUsername: this.post.username,
-        postUserID: this.post.user_id,
         reportReason: '',
-        Audits: '',
       }
     };
   },
   watch: {
-    post: {
-      immediate: true,
-      handler(newVal) {
-        if (newVal) {
-          this.reportForm.postTitle = newVal.title;
-          this.reportForm.postContent = newVal.content;
-          this.reportForm.postUsername = newVal.username;
-          this.reportForm.postUserID = newVal.user_id;
-        }
-      }
-    },
-
-    isDetailShow(newVal) {
-      this.localIsDetailShow = newVal;
-    },
     isReportDialogVisible(newVal) {
       this.localIsReportDialogVisible = newVal;
-    },
-    localIsDetailShow(newVal) {
-      this.$emit('update:isDetailShow', newVal);
     },
     localIsReportDialogVisible(newVal) {
       this.$emit('update:isReportDialogVisible', newVal);
@@ -101,30 +75,58 @@ export default {
     },
     resetForm() {
       this.reportForm = {
-        postTitle: '',
-        postContent: '',
-        postUsername: '',
-        postUserID: '',
         reportReason: '',
-        Audits: '',
       };
     },
     handleClose() {
-      this.closeDialog();
+      this.localIsReportDialogVisible = false;
       this.$emit('closeDialog');
     },
-    closeDialog() {
-      this.localIsDetailShow = false;
+   
+    async submitReport() {
+      if (this.thisPostId != null) {
+        axios.post('/api/PostReports/pushreportpost', {
+          post_id: this.thisPostId,
+          user_id: state.userId,
+          report_reason:this.reportForm.reportReason          
+        }).then(
+          response => {
+            if (response.status === 200) {
+              ElMessage.success('举报提交成功')
+            }
+          }
+        ).catch(
+          error => {
+            if (error.response) {
+              // 请求已发出，但服务器以状态码进行响应
+              // 超出了2xx的范围
+              console.error('Error:', error.response.data);
+              ElMessage.error(error.response.data.message);
+              // 显示错误信息
+              if (error.response.status === 401) {
+                // 特别处理已经举报过的情况
+                console.log('You have already reported this post.');
+              }
+            } else if (error.request) {
+              // 请求已经发起，但没有收到响应
+              ElMessage.error('没有收到响应');
+              console.error('No response received:', error.request);
+            } else {
+              // 在设置请求时发生了某些事情，触发了一个错误
+              console.error('Error', error.message);
+              ElMessage.error('错误信息： ${error.message}');
+            }
+          }
+        )
+      }
+
+
       this.localIsReportDialogVisible = false;
-    },
-    confirmDialog() {
-      this.localIsDetailShow = false;
-      this.localIsReportDialogVisible = false;
-      this.$emit('update:PostSuccess', true);
-      // 添加发布成功逻辑
-    }
-  }
-};
+
+      
+      }
+        }
+      };
 </script>
 
 <style scoped>
