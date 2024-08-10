@@ -22,22 +22,65 @@
     
     <script>
 import { ref } from 'vue';
+import axios from 'axios';
+import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
     export default ({
       name: 'LeaseView',
-      computed: {
-        ldleitemsposts() {
-            return this.$store.state.post.ldleitemsposts
-        }
+      data() {
+        return {
+          ldleitemsposts: [],
+        };
       },
+    mounted(){
+     this.fetchPosts();
+    },
       methods: {
+         fetchPosts() {
+          axios.get(`https://localhost:7218/api/Posts/GetOverview/1/${globalState.userId}`)
+        .then(response => {
+          this.ldleitemsposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            item_summary:post.item_summary,
+            condition:post.condition,
+            price:post.price,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            views: 0, // Assuming views is not available in the API response
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+          }));
+        })
+        .catch(error => {
+          console(this.ldleitemsposts)
+          console.error('Error fetching share posts:', error);
+          this.handleError(error, '获取闲置帖失败');
+        });
+    },
+
         goToPostDetail (ldleitemspost) {
           const ldleitemsPostId = ldleitemspost.post_id
           this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPostId}`,
           query: {  
             ldleitemsPostId: ldleitemsPostId
         }})
-        }
+        },
+        handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        this.$message.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        this.$message.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        this.$message.error(`${message} - 错误信息: ${error.message}`);
+      }
+    }
       },
       setup() {
     const isLiked = ref(false);
