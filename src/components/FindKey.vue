@@ -35,6 +35,7 @@ import { reactive,ref } from 'vue'
 import { User, Key, Iphone } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import global from '@/store/global'
+import { saveToSessionStorage } from '@/store/global'
 import CryptoJS from 'crypto-js'
 
 const findkey = reactive({
@@ -85,7 +86,8 @@ const Login = () => {
           });
           ElMessage.success('密码重置成功！');
           global.Login = true;
-          //global.userId = response.data.data.user_id;
+          global.userId = response.data.data.user_id;
+          saveToSessionStorage(true,response.data.data.user_id);
           router.push({ path: '/home' });
           console.log('登录成功', response)
         } catch (error) {

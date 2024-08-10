@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import 'dayjs/locale/zh-cn'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import './assets/fonts/fonts.css'
@@ -12,7 +14,9 @@ import { loadFromSessionStorage } from '@/store/global';
 const app = createApp(App)
 
 loadFromSessionStorage();
-app.use(ElementPlus)
+app.use(ElementPlus, {
+    locale: zhCn,
+})
 app.use(router)
 app.use(store)
 

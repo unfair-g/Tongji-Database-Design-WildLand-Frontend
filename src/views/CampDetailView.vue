@@ -51,13 +51,11 @@
 <!-- -------------------------------------------------------------------------------- -->
         <p class="title">| 营地特色</p>
         <div class="short-divider"></div>
-        <!--
-        <div class="introduction-image-container">
-          <img :src="camp.introduction_image" alt="introduction image" class="introduction-image">
+        <div class="introduction-image-container" v-if="camp">
+          <img :src="camp.camp_intropic" alt="introduction image" class="introduction-image">
         </div> 
-      -->
 
-       
+
       
       </el-main>
     </el-scrollbar>

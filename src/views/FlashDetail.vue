@@ -13,7 +13,7 @@
             <span class="flash-title">{{ flash.title }}</span>
             <span class="flash-meta">{{ flash.meta }}</span>
             <div>
-              <el-tag type="info">{{ flash.tag }}</el-tag>  
+              <el-tag type="info" class="custom-tag">{{ flash.tag }}</el-tag>  
             </div>
             <span class="flash-content">{{ flash.content }}</span>
             <img :src="flash.image" width="730" style="border-radius: 10px; margin-right: 10px;">
@@ -168,6 +168,15 @@ flex-direction: column;
   height: 50px;  
   border-radius: 50%;  
   margin-right: 10px;  
+}  
+.custom-tag {  
+  /* 增大标签的字体大小和padding来使标签看起来更大 */  
+  font-size: 20px; /* 或者你需要的任何大小 */  
+  padding: 15px 15px; /* 增大padding以匹配字体大小 */  
+  
+  /* 减小与上方元素的间距 */  
+  margin-top: 1%; /* 根据需要调整 */  
+  /* 如果需要，还可以调整其他样式 */  
 }  
   
 .name {  
