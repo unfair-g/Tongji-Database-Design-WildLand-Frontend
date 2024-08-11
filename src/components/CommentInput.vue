@@ -1,6 +1,6 @@
 <template>
   <div class="comment-input">
-    <img :src="avatar" alt="avatar" class="avatar">
+    <img :src="avatarUrl" alt="avatar" class="avatar">
     <textarea 
       v-model="localCommentContent" 
       placeholder="发表你的评论">
@@ -10,11 +10,20 @@
 </template>
 
 <script>
+import axios from '@/axios'; // 确保路径是正确的
+import state from '@/store/global.js'; // 引入映射表
+import { ElMessage } from "element-plus";
+
 export default {
   name: 'CommentInput',
   props: {
-    avatar: {
-      type: String,
+    postId: {
+      type: Number,
+      required: true
+    },
+    parentCommentId: {
+      type: Number,
+      default: null,
       required: true
     },
     commentContent: {
@@ -24,7 +33,10 @@ export default {
   },
   data() {
     return {
-      localCommentContent: this.commentContent
+      localPostId: this.postId,
+      localParentCommentId:this.parentCommentId,
+      localCommentContent: this.commentContent,
+      avatarUrl: '', // 新增变量
     };
   },
   watch: {
@@ -33,25 +45,52 @@ export default {
     }
   },
   methods: {
-    submitComment() {
+    async submitComment() {
       if (this.localCommentContent.trim() !== '') {
-        const newComment = {
-          comment_id: new Date().toLocaleString(),
-          avatar: this.avatar,
-          username: 'fby', // 假设当前用户的用户名
-          user_id: 56, // 随便起了一个ID
-          timestamp: new Date().toLocaleString(),
-          location: '上海', // 假设当前用户的位置
-          content: this.localCommentContent,
-          likes: 0,
-          comments: 0,
-          replies: []
-        };
-        this.$emit('submit-comment', newComment);
+        try {
+          const response = await axios.post('/api/Comments/PushComment', {
+            author_id: state.userId,
+            content: this.localCommentContent,
+            parent_comment_id: this.parentCommentId,
+            post_id: this.postId
+          });
+          if (response.data.success) {
+            ElMessage.success('评论提交成功'); // 添加成功提示
+          }
+        }catch (error) {
+          this.handleError(error, '评论提交失败');
+        }
         this.localCommentContent = ''; // 清空输入框
-        this.$emit('update:commentContent', ''); // 更新父组件中的 commentContent
       }
-    }
+    },
+    async fetchData() {
+      try {
+        const user_id = state.userId;
+        const avatarResponse = await axios.get(`/api/Users/GetUserPortrait/${user_id}`);
+        this.avatarUrl = avatarResponse.data.portraitUrl;
+        if (avatarResponse.data.success) {
+          ElMessage.success('头像获取成功'); // 添加成功提示
+        }
+      } catch (error) {
+        console.error('Error fetching  avatar:', error);
+        this.handleError(error,'头像获取失败')
+      }
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
+    },
+  },
+  mounted() {
+    this.fetchData(); // Ensure avatar is loaded when the component is mounted
   }
 };
 </script>
