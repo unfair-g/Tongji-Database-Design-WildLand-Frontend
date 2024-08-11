@@ -10,12 +10,10 @@
               <el-upload
                 v-if="isEditing"
                 class="avatar-uploader"
-                :action="`/api/Administrators/uploadportrait/${admin_id}`"
                 :method="'post'"
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload"
-                :on-success="handleAvatarSuccess"
-                :on-error="handleAvatarError"
+                @change="handleFileChange"
               >
                 <el-button size="mini" type="primary">上传头像</el-button>
               </el-upload>
@@ -170,7 +168,7 @@ export default {
         path:'/'
       })
     }
-
+    
     const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -183,23 +181,26 @@ export default {
         ElMessage.error('上传头像图片大小不能超过 2MB!')
         return false
       }
-      return true
+      
+      const formData = new FormData();
+      formData.append('file', file);
+
+      axios.post(`/api/Administrators/uploadportrait/${admin_id.value}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      ElMessage.success('头像上传成功')
+      .catch(error => {
+        ElMessage.error(error.message)
+      });
+
+      return false;
     }
 
-    const handleAvatarSuccess = (response, file) => {
-      if (response.code===200) {
-        avatarSrc.value = URL.createObjectURL(file.raw)
-        ElMessage.success('头像上传成功')
-      } else {
-        console.log('上传头像失败，服务器响应:', response) // 打印响应信息
-        ElMessage.error('上传头像失败')
-      }
+    const handleFileChange = (file) => {
+      avatarSrc.value = URL.createObjectURL(file.raw)
     }
-
-    const handleAvatarError = (err) => {
-      ElMessage.error(err);
-      console.error(err); // 可以打印错误信息，便于调试
-    };
 
     // 在组件挂载时获取管理员详细信息
     onMounted(() => {
@@ -220,8 +221,7 @@ export default {
       editedEmail,
       toggleEdit,
       beforeAvatarUpload,
-      handleAvatarSuccess,
-      handleAvatarError,
+      handleFileChange,
       ElMessage,
       exit
     }

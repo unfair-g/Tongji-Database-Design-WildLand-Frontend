@@ -169,12 +169,9 @@ export default {
         });  
     },
     fetchLdleitemsPosts() {
-<<<<<<< Updated upstream
       axios.get('https://localhost:7218/api/LdleitemsPosts')
-=======
       const userId = state.userId;
       axios.get(`/api/Posts/GetOverview/1/${userId}`)
->>>>>>> Stashed changes
         .then(response => {
           this.ldleitemsposts = response.data.map(post => ({
             post_id: post.post_id,
@@ -194,7 +191,7 @@ export default {
         })
         .catch(error => {
           console.error('Error fetching share posts:', error);
-          this.handleError(error, '获取分享贴失败');
+          this.handleError(error, '获取闲置贴失败');
         }); 
     },
     handleError(error, message) {
@@ -273,6 +270,7 @@ export default {
       }
     }
   },
+
   data() {
     return {
       ldleitemsposts: [],

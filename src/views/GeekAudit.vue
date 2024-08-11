@@ -13,7 +13,11 @@
             icon="CircleCheck"
             :disabled="scope.row.isReviewed"
             @click="handleAction(scope.row, 'approve')"
-            :class="{ 'reviewed': scope.row.isReviewed && scope.row.action === 'approve' }"
+            :class="[
+              'action-button',
+              { 'selected-action': scope.row.action === 'approve' },
+              { 'faded': scope.row.isReviewed && scope.row.action !== 'approve' }
+            ]"
           >
             <circle-check />通过
           </el-button>
@@ -22,7 +26,11 @@
             icon="CircleClose"
             :disabled="scope.row.isReviewed"
             @click="handleAction(scope.row, 'reject')"
-            :class="{ 'reviewed': scope.row.isReviewed && scope.row.action === 'reject' }"
+            :class="[
+              'action-button',
+              { 'selected-action': scope.row.action === 'reject' },
+              { 'faded': scope.row.isReviewed && scope.row.action !== 'reject' }
+            ]"
           >
             <circle-close />拒绝
           </el-button>
@@ -39,10 +47,16 @@
 </template>
 
 <script>
-import { CircleCheck, CircleClose } from '@element-plus/icons-vue'
-import { mapState, mapActions } from 'vuex'
+import { CircleCheck, CircleClose } from '@element-plus/icons-vue';
+import { mapState, mapActions } from 'vuex';
+import axios from 'axios';
 
 export default {
+  data() {
+    return {
+      admin_id: ''
+    };
+  },
   components: {
     CircleCheck,
     CircleClose
@@ -51,21 +65,34 @@ export default {
     ...mapState('admin', ['geekAuditTableData'])
   },
   created() {
-    this.fetchGeekAuditTableData()
+    this.admin_id = this.$route.query.admin_id;
+    this.fetchGeekAuditTableData();
   },
   methods: {
     ...mapActions('admin', ['fetchGeekAuditTableData', 'updateGeekAuditStatus']),
-    handleAction(row, action) {
-      console.log(`Action: ${action} on row:`, row)
-      if (action === 'approve' || action === 'reject') {
-        // 更新审核状态为已审核
-        this.updateGeekAuditStatus({ id: row.id, status: true })
-        row.isReviewed = true // 将行标记为已审核
-        row.action = action // 保存动作状态，用于改变按钮颜色
+    async handleAction(row, action) {
+      // 在前端立即更新按钮状态
+      row.isReviewed = true;
+      row.action = action;
+
+      const status = action === 'approve' ? 1 : 0;
+
+      try {
+        const response = await axios.post('https://localhost:7218/api/CertificationReviews/updateStatus', {
+          admin_id: this.admin_id,
+          applicant_id: row.applicant_id,
+          status: status
+        });
+
+        if (!response.data.success) {
+          console.error('Failed to update the status:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error updating the status:', error);
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -76,12 +103,22 @@ export default {
   overflow-x: auto;
 }
 
-.reviewed {
-  color: inherit !important;
+.action-button {
+  transition: opacity 0.3s ease;
+}
+
+.selected-action {
+  background-color: #1D5B5E !important;
+  color: white !important;
+}
+
+.faded {
+  opacity: 0.5;
 }
 
 .el-button.disabled {
-  background-color: #dcdcdc;
-  border-color: #dcdcdc;
+  background-color: #dcdcdc !important;
+  border-color: #dcdcdc !important;
+  cursor: not-allowed;
 }
 </style>

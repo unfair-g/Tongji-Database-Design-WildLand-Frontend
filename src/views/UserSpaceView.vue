@@ -1,7 +1,7 @@
 <template>
   <el-container class="usercenter">
     <el-aside>
-    <el-col :span="24" style="height:100%">
+    <el-col :span="24" style="height:100%;">
       <el-menu
         active-text-color="#1D5B5E"
         background-color="#FFFFFF"
@@ -41,8 +41,10 @@
       </el-menu>
     </el-col>
   </el-aside>
-  <el-main style="padding:0"> 
+  <el-main style="padding:0;"> 
+    <el-scrollbar height="92vh">
     <router-view></router-view>
+    </el-scrollbar>
   </el-main>
   </el-container>
 </template>
@@ -117,7 +119,6 @@ function exit() {
     --el-sub-menu-item-height:80px;
     --el-menu-item-font-size: 20px;
     min-height:92vh;
-    height:100%;
     display: flex;             
     flex-direction: column; 
 }
