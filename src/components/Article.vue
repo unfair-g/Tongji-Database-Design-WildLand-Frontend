@@ -169,13 +169,30 @@ export default {
         });  
     },
     fetchLdleitemsPosts() {
-      axios.get('/api/LdleitemsPosts')
+      axios.get('https://localhost:7218/api/LdleitemsPosts')
+      const userId = state.userId;
+      axios.get(`/api/Posts/GetOverview/1/${userId}`)
         .then(response => {
-          this.ldleitemsposts = response.data;
+          this.ldleitemsposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            item_summary:post.item_summary,
+            condition:post.condition,
+            price:post.price,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            views: 0, // Assuming views is not available in the API response
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+          }));
         })
         .catch(error => {
-          console.error('Error fetching ldle items posts:', error);
-        });
+          console.error('Error fetching share posts:', error);
+          this.handleError(error, '获取闲置贴失败');
+        }); 
     },
     handleError(error, message) {
       if (error.response) {
@@ -206,7 +223,7 @@ export default {
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      
@@ -251,6 +268,12 @@ export default {
         this.handleError(error, '收藏操作失败');
       });
       }
+    }
+  },
+
+  data() {
+    return {
+      ldleitemsposts: [],
     }
   },
   watch: {
