@@ -41,6 +41,11 @@ function searchProducts() {
     router.push({ path: '/home/searchProduct', query: { keyword: input.value } })
   }
 }
+function searchFlash() {
+  if (input.value.trim()) {
+    router.push({ path: '/home/searchFlash', query: { keyword: input.value } })
+  }
+}
 
 </script>
 

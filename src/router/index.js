@@ -225,6 +225,11 @@ const routes = [
                 path: `searchProduct`,
                 component: () => import('../views/SearchProduct.vue'),
                 props: true
+            },
+            {
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
+                props: true
             }
         ]
     },
