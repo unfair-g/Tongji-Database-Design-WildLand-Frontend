@@ -270,12 +270,6 @@ export default {
       }
     }
   },
-
-  data() {
-    return {
-      ldleitemsposts: [],
-    }
-  },
   watch: {
     view(newValue) {
       if (newValue === 'lease') {
