@@ -126,7 +126,11 @@ export default {
     },
 
     deleteStarProduct(userId, productId) {
-      axios.delete(`https://localhost:7218/api/StarProducts/${userId}/${productId}`, {
+      axios.delete(`https://localhost:7218/api/StarProducts/DeleteStarProduct`,  {
+    params: {
+      userId: userId,
+      productId: productId
+    },
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'text/plain'

@@ -10,7 +10,7 @@
               <el-upload
                 v-if="isEditing"
                 class="avatar-uploader"
-                :action="`/api/Administrators/uploadportrait/${admin_id}`"
+                :action="`https://localhost:7218/api/Administrators/uploadportrait/${admin_id}`"
                 :method="'post'"
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload"
@@ -170,7 +170,7 @@ export default {
         path:'/'
       })
     }
-
+    
     const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2

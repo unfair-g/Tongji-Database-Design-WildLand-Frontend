@@ -42,10 +42,34 @@ export default {
     }
   },
   mounted() {
-    this.fetchProduct(); // 组件加载时获取所有产品
+    this.fetchProduct_no_url(); // 组件加载时获取所有产品
   },
   methods: {
-    fetchProduct() {
+    async fetchProduct() {
+      try {
+        const productS = await axios.get('https://localhost:7218/api/OutdoorProducts'); 
+        console.log(productS)
+      // 根据 post_id 从 Posts 接口获取帖子详情
+      const OutDoorPromises = productS.data.map(async product => {
+        const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/${product.product_id}`);
+        console.log('oooook',detailResponse)
+        const item_image=detailResponse.data.pic_url;
+            // 将 order_id 添加到每个帖子对象中
+            return { 
+              ...product, 
+              item_image:item_image,
+            };
+      });
+      // 等待所有请求完成
+      this.products = await Promise.all(OutDoorPromises);
+      console.log(this.products)
+    }
+      catch(error){
+          console.error('Error fetching products:', error);
+        }
+    },
+    fetchProduct_no_url()
+    {
       axios.get('https://localhost:7218/api/OutdoorProducts')
         .then(response => {
           this.products = response.data;
