@@ -3,13 +3,13 @@
       <el-scrollbar max-height="100%">
         <el-main class="main">
         
-          <h2>{{ camp.campground_name }}</h2>
+          <h2 v-if="camp">{{ camp.campground_name }}</h2>
           <div class="divider"></div> <!-- Divider line -->
 <!-- -------------------------------------------------------------------------------- -->
-        <span class="title">| 选择预定日期</span>
-        <div class="short-divider"></div> 
-        <div class="up-container">
-          
+          <span class="title">| 选择预定日期</span>
+          <div class="short-divider"></div> 
+
+        <div class="up-container">     
           <div class="date-range-picker">
             <span >请选择预定的日期</span>
             <el-date-picker
@@ -23,8 +23,8 @@
             </el-date-picker>
           </div>
           
-          <div class="introduction-image-container">
-            <img :src="camp.campsite_image" alt="campsite image" class="campsite-image">
+          <div class="introduction-image-container" v-if="camp">
+            <img :src="camp.map_picture" alt="campsite image" class="campsite-image">
           </div> 
         </div>
   
@@ -34,21 +34,22 @@
 
           <el-collapse v-model="activeSections">
           <el-collapse-item
-            v-for="(ids, section) in groupedCampsiteIds"
+            v-for="(campsites, section) in groupedCampsiteIds"
             :key="section"
             :title="`${section}区`"
             :name="section"
           >
             <div class="campsite-buttons">
               <el-button
-                v-for="id in ids"
-                :key="id"
+                v-for="campsite in campsites"
+                :key="campsite.campsite_id"
                 type="primary"
-                :class="{ selected: selectedCampsiteIds.includes(id) , 'campsite-button': true}"
-                @click="toggleSelection(id)"
+                :class="{ selected: selectedCampsiteIds.includes(campsite.campsite_id) , 'campsite-button': true}"
+                @click="toggleSelection(campsite.campsite_id)"
               >
-                {{ id }}
+                {{ campsite.campsite_number }}
               </el-button>
+
             </div>
           </el-collapse-item>
         </el-collapse>
@@ -64,9 +65,9 @@
   
 
 <script>
+import axios from '@/axios'; // 引入配置好的axios实例
 import { ref } from 'vue';
 import { ElDatePicker } from 'element-plus';
-import dayjs from 'dayjs';
 
   export default {
     name: 'CampBooking',
@@ -75,11 +76,13 @@ import dayjs from 'dayjs';
     ElDatePicker
     },
     data() {
-    return {
+      return {
       activeSections: [], // 控制折叠面板的展开和折叠
-      selectedCampsiteIds: [] // 选中的营位ID
-    };
-  },
+      selectedCampsiteIds: [], // 选中的营位ID
+      camp: null, // 存储营地详细信息
+      campsites:[], //营位集合
+      };
+    },
   
   setup() {
     const dateRange = ref([null, null]);
@@ -87,14 +90,14 @@ import dayjs from 'dayjs';
     const endDate = ref('');
 
     const handleDateChange = (value) => {
-      if (value && value.length === 2) {
-        startDate.value = dayjs(value[0]).format('YYYY年MM月DD日');
-        endDate.value = dayjs(value[1]).format('YYYY年MM月DD日');
-      } else {
-        startDate.value = '';
-        endDate.value = '';
-      }
-    };
+  if (value && value.length === 2) {
+    startDate.value = value[0];  
+    endDate.value = value[1];    
+  } else {
+    startDate.value = '';
+    endDate.value = '';
+  }
+};
 
     return {
       dateRange,
@@ -104,23 +107,43 @@ import dayjs from 'dayjs';
     };
   },
     computed: {
-      camp() {
-        const campId = this.campID;
-        return this.$store.state.camp.camps.find(camp => camp.campground_id === parseInt(campId));
-      },
       groupedCampsiteIds() {
-      if (!this.camp || !this.camp.campsites) return {};
-      return this.camp.campsites.reduce((groups, campsite) => {
-        const section = campsite.id.charAt(0).toUpperCase();
+      if (!this.campsites) return {};
+      return this.campsites.reduce((groups, campsite) => {
+        const section = campsite.campsite_number.charAt(0).toUpperCase();
         if (!groups[section]) {
           groups[section] = [];
         }
-        groups[section].push(campsite.id);
+        groups[section].push(campsite);
         return groups;
       }, {});
-    },
+    }
     },
     methods: {
+      //接口1：获取营地的详细信息
+      async fetchCampDetails() {
+      try {
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${this.campID}`);
+        this.camp = response.data;
+      } catch (error) {
+        console.error("获取营地详细信息失败", error);
+      }
+    },
+
+      //接口2：获取营地中有哪些营位
+      async fetchCampsites() {
+      try {
+        const response = await axios.get(`api/Campsites/getcampsites/${this.campID}`);
+        this.campsites = response.data;
+
+          // 更新折叠面板
+        this.activeSections = Object.keys(this.groupedCampsiteIds);
+      } catch (error) {
+        console.error("获取营位失败", error);
+      }
+    },
+
+      //跳转到营地订单界面
       goToCampOrder () {
         this.$router.push({
         path: '/home/camporder',
@@ -143,9 +166,9 @@ import dayjs from 'dayjs';
       }
     },
     },
-    created() {
-    // 初始化所有折叠面板展开
-    this.activeSections = Object.keys(this.groupedCampsiteIds);
+    created() { //接口调用
+      this.fetchCampDetails();
+      this.fetchCampsites();
   },
 
   }

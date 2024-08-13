@@ -63,6 +63,7 @@
   
   <script>
   import axios from 'axios';
+  import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
   export default {
     name: 'PostPayWindow',
@@ -113,18 +114,7 @@
         });
       },
       selectedUser() {
-        axios.get('https://localhost:7218/api/Users')
-         .then(response => {
-      if (response.data.length > 0) {
-        // 选择第一个用户的 user_id，或根据你的逻辑选择
-        this.selectedUserId = response.data[0].user_id;
-      } else {
-        console.error('没有找到用户数据');
-      }
-    })
-        .catch(error => {
-          console.error('Error fetching ldleitems order:', error);
-        });
+        this.selectedUserId = globalState.userId
       },
       
 

@@ -39,7 +39,7 @@ const routes = [
                 component: () => import('../views/PostAudit.vue')
             },
             {
-                path: 'postdetail',
+                path: 'postdetail/:id', // 添加 :id 作为动态路由参数
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
             },
@@ -199,7 +199,7 @@ const routes = [
                 component: () => import('../views/postDetailView.vue'),
                 props: route => ({
                     type: route.params.type,
-                    postID: route.params.postID
+                    postID: route.params.postID,
                 })
 
             },
@@ -216,6 +216,11 @@ const routes = [
             {
                 path: `userspace/leaseorder/:ldleitemsPostId`,
                 component: () => import('../views/PostOrderView.vue'),
+                props: true
+            },
+            {
+                path: `searchProduct`,
+                component: () => import('../views/SearchProduct.vue'),
                 props: true
             }
         ]

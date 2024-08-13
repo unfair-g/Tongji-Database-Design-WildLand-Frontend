@@ -66,6 +66,7 @@
 <script>
 import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue'
 import { mapState, mapActions } from 'vuex'
+import axios from 'axios'
 
 export default {
   components: {
@@ -75,11 +76,12 @@ export default {
   },
   data() {
     return {
-      selectedOption: 'posts'  // 默认选择“帖子举报”
+      selectedOption: 'posts', // 默认选择“帖子举报”
+      admin_id:''
     }
   },
   computed: {
-    ...mapState('admin', ['postsTableData', 'commentsTableData']),
+    ...mapState('admin', ['postsTableData', 'commentsTableData', 'admin_id']), // 添加 admin_id
     currentTableData() {
       return this.selectedOption === 'posts' ? this.postsTableData : this.commentsTableData;
     }
@@ -89,21 +91,40 @@ export default {
     if (selectedOption) {
       this.selectedOption = selectedOption
     }
+    this.admin_id = this.$route.query.admin_id;
     this.fetchPostsTableData();
     this.fetchCommentsTableData();
   },
   methods: {
-    ...mapActions('admin', ['fetchPostsTableData', 'fetchCommentsTableData', 'updatePostAuditStatus']),
+    ...mapActions('admin', ['fetchPostsTableData', 'fetchCommentsTableData']),
     selectOption(option) {
       this.selectedOption = option;
     },
-    handleAction(row, action) {
-      if (action === 'check' || action === 'close') {
-        // 更新审核状态
-        this.updatePostAuditStatus({ id: row.id, status: true });
+    async handleAction(row, action) {
+      const reportStatus = action === 'check' ? 1 : 0; // 1 表示通过，0 表示拒绝
+      const updateApi = this.selectedOption === 'posts'
+        ? 'https://localhost:7218/api/PostReports/updatePostReport'
+        : 'https://localhost:7218/api/CommentReports/updateCommentReport';
+        
+      const payload = {
+        report_id: row.id,
+        administrator_id: this.admin_id, // 从 Vuex store 中获取 admin_id
+        report_status: reportStatus,
+      };
+
+      // 打印 payload 以调试
+      console.log('Sending payload:', payload);
+
+      try {
+        const response = await axios.post(updateApi, payload);
+        console.log('Response from server:', response);
+
         row.isReviewed = true; // 将行标记为已审核
-        row.action = action; // 保存动作状态，用于改变按钮颜色
+        row.action = action; // 保存动作状态以更改按钮颜色
+      } catch (error) {
+        console.error("Failed to update report status", error);
       }
+
       if (action === 'more') {
         const routeName = this.selectedOption === 'posts' ? 'PostReportDetail' : 'CommentReportDetail';
         this.$router.push({ name: routeName, params: { id: row.id } });
