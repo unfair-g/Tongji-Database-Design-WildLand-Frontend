@@ -53,6 +53,14 @@ export default {
     emitDeleteSignup(signup) {
       this.$emit('delete-signup', signup);
     },
+    openDeleteDialog() {
+    
+      
+        this.deleteMessage = '您是否确认删除这条报名信息';
+        
+      
+      this.deleteDialogVisible = true;
+    }
   }
 };
 </script>

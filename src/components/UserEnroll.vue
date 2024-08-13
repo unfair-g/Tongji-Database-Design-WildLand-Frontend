@@ -8,9 +8,19 @@
     ref="formRef"
     label-position="top"
     label-width="auto"
-    style="max-width: 600px; margin-top:5%; margin-bottom: 8%;padding-right:5%"
+    style="max-width: 600px; margin-top:5%; margin-bottom: 3%;padding-right:5%"
     >
-    <Avatar />
+    <div class="avatar-picker">
+     <el-upload
+    class="avatar-uploader"
+    :show-file-list="false"
+    :before-upload="beforeAvatarUpload"
+    @change="handleFileChange"
+  >
+    <el-avatar v-if="imageUrl" :src="imageUrl" class="avatar" />
+    <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+    </el-upload>
+    </div>
     <el-form-item label="用户名" prop="user_name">
       <el-input v-model="newuser.user_name" placeholder="请输入您的用户名"  :prefix-icon="User"/>
     </el-form-item>
@@ -25,6 +35,16 @@
     </el-form-item>
      <el-form-item label="邮箱" prop="email">
       <el-input v-model="newuser.email" placeholder="请输入您的邮箱" :prefix-icon="Message"/>
+    </el-form-item>
+    <el-form-item label="性别">
+      <el-select
+        v-model="newuser.gender"
+        placeholder="请选择您的性别"
+        size="large"
+      >
+      <el-option value="男"/>
+      <el-option value="女"/>
+    </el-select>
     </el-form-item>
     <div style="display: flex;">  
     <el-form-item label="生日" prop="birthday">
@@ -61,11 +81,10 @@
 import router from '../router'
 import axios from '@/axios'
 import { ref,reactive } from 'vue'
-import { User, Key, Iphone,Message } from '@element-plus/icons-vue'
-import Avatar from '../components/AvatarPicker.vue'
+import { User, Key, Iphone,Message,Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import CryptoJS from 'crypto-js'
-import global from '@/store/global'
+import global,{saveToSessionStorage} from '@/store/global'
 
 const loginDisabled = ref(false)
 
@@ -87,7 +106,7 @@ const newuser = reactive({
   confirmpassword:'',
   email: '',
   phone_number: '',
-  gender: 'f',
+  gender: '',
   birthday: '',
   location: ''
 })
@@ -119,14 +138,34 @@ const rules = ref({
   phone_number: [
     { required: true, message: '请输入您的手机号码',trigger: 'blur' },
     { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入规范的手机号码', trigger: 'blur' },
-  ],
-  birthday: [
-    { required: true, message: '请输入生日', trigger: 'change' }
-  ],
-  location: [
-    { required: true, message: '请选择IP地址', trigger: 'change' }
-  ],
+  ]
 })
+
+const imageUrl = ref('')
+const formData = new FormData();
+
+const beforeAvatarUpload = (file) => {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传头像图片大小不能超过 2MB!')
+        return false
+      }
+      
+      formData.append('file', file);
+      ElMessage.success('上传头像成功')
+
+      return false;
+}
+
+const handleFileChange=(file)=> {
+      imageUrl.value = URL.createObjectURL(file.raw)
+    }
 
 const onSubmit = () => {
       loginDisabled.value=true
@@ -134,22 +173,30 @@ const onSubmit = () => {
         if (valid) {
           try {
             const hashedPassword = CryptoJS.SHA256(newuser.password).toString()
-            const response = await axios.post('/api/Users/register', {
-              user_name: newuser.user_name,
-              phone_number: newuser.phone_number,
-              password: hashedPassword,
-              gender: 'f',
-              birthday: newuser.birthday,
-              location: newuser.location,
-              email: newuser.email
+            if (newuser.gender == '女')
+              newuser.gender = 'f';
+            else if (newuser.gender == '男')
+              newuser.gender = 'm';
+            const response = await axios.post(`/api/Users/register/${newuser.user_name}/${newuser.phone_number}/${hashedPassword}`,
+              formData, {
+                params: {
+                  Email: newuser.email,
+                  Gender: newuser.gender,
+                  Birthday: newuser.birthday,
+                  IP:newuser.location
+                },
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              }
             });
             ElMessage.success('注册成功！');
+            saveToSessionStorage(true, response.data.data.user_id)
             global.Login = true;
             global.userId = response.data.data.user_id;
             toHomePage()
             console.log('User registered:', response.data);
           } catch (error) {
-            ElMessage.error(error.response.data.message);
+            ElMessage.error(error.message);
             console.error('Error registering user:', error);
             loginDisabled.value=false
           }
@@ -190,7 +237,14 @@ function toWelcomePage() {
     padding-bottom:2%;
     margin-left:18%;
     margin-right:20%;
-    margin-top: 7%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.avatar-uploader .avatar {
+  width: 120px;
+  height: 120px;
+  display: block;
 }
 
 .avatar-uploader .el-upload{
@@ -211,8 +265,8 @@ function toWelcomePage() {
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 178px;
-  height: 178px;
+  width: 120px;
+  height: 120px;
   text-align: center;
 }
 
