@@ -2,7 +2,7 @@
   <el-card class="post-container">
     <div v-if="post">
       <div class="post-header">
-        <img :src="post.portrait" alt="avatar" class="avatar">
+        <img :src="post.portrait" alt="avatar" class="avatar" @click="goToUserSpace(post.author_id)">
         <div class="post-details">
           <div class="post-info">
             <span class="username">{{ post.author_name }}</span>
@@ -376,6 +376,18 @@ export default {
     },
     toggleSignUpInput() {
       this.showSignUpInput = !this.showSignUpInput;
+    },
+    goToUserSpace(author_id) {
+      if (author_id == state.userId) {
+        this.$router.push({
+          path: `/home/userspace`
+        })
+      }
+      else {
+        this.$router.push({
+          path: `/home/userspace/${author_id}`
+        })
+      }
     }
   }
 };

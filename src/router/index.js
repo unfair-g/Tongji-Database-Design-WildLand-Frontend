@@ -219,8 +219,8 @@ const routes = [
                 props: true
             },
             {
-                path: `searchProduct`,
-                component: () => import('../views/SearchProduct.vue'),
+                path: `userspace/:userId`,
+                component: () => import('../views/OtherUserSpace.vue'),
                 props: true
             }
         ]
