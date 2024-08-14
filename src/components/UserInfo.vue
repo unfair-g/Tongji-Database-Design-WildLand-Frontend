@@ -6,11 +6,11 @@
         </el-row>
         <el-row style="margin-top:1%">
         <el-col :span="2">
-            <el-avatar :src="userInfo.portrait" style="width:100px;height:100px"/>
+            <el-avatar :src="userInfo.portrait" style="width:100px;height:100px" />
         </el-col>
         <el-col :span="10">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="4">{{ userInfo.user_name }} </el-col>
+                <el-col :span="5">{{ userInfo.user_name }} </el-col>
                 <el-col :span="5">
                     <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
                     <el-tag v-else-if="userInfo.outdoor_master_title==='0'&&!TalentStatus" type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
@@ -20,7 +20,7 @@
             <el-row style="min-width:100%;margin-top: 2%">
             <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
             <el-col :span="3">{{ user.fans }} 粉丝</el-col>
-            <el-col :span="3">{{ user.follows }} 关注</el-col>
+            <el-col :span="3"><span>{{ user.follows }} 关注</span></el-col>
             </el-row>
         </el-col>
         <el-col :span="12">
@@ -111,6 +111,7 @@
                     v-model="user.birthday"
                     type="date"
                     placeholder="请选择您的生日"
+                    :disabled-date="disabledDate"
                     style="width:500px"
                 />
                 </el-form-item>
@@ -250,7 +251,9 @@ export default {
           image:null,
           ept_field: '',
           experience:''
-        })
+      })
+
+      const follows=ref(null)
 
         const UserformRef = ref()
         const ExpertformRef = ref()
@@ -273,7 +276,8 @@ const TalentStatus=ref(false)
     const fetchUser = async () => {
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
-          userInfo.value = response.data.data;
+        userInfo.value = response.data.data;
+        if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
           user.user_name = userInfo.value.user_name;
           if (userInfo.value.gender == 'f')
@@ -296,9 +300,18 @@ const TalentStatus=ref(false)
             TalentStatus.value = true;
           }
         } catch (error) {
-          ElMessage.error(error.message);
+          console.error(error.message);
         }
       }
+      }
+
+      const fetchFollows = async () => {
+        try {
+          const response = await axios.get(`/api/Follows/getFollowedUsers/${global.userId}`);
+          follows.value=response.data.data
+        } catch (error) {
+          console.error(error)
+        }
       }
 
       const formData = new FormData();
@@ -323,9 +336,12 @@ const TalentStatus=ref(false)
       return false;
 }
 
+const avatarchange=ref(false)
+
 const handleFileChange=(file)=> {
-      user.avatar = URL.createObjectURL(file.raw)
-    }
+  user.avatar = URL.createObjectURL(file.raw)
+  avatarchange.value = true;
+}
 
     const ResetUserInfo = () => {
       UserformRef.value.validate(async (valid) => {
@@ -341,22 +357,24 @@ const handleFileChange=(file)=> {
               email: user.email,
               personal_signature: user.personal_signature
             });
-            try {
-              await axios.post(`/api/Users/upload_user_portrait/${global.userId}`, 
-                formData,{
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                }
-              })
-            } catch (error) {
-              ElMessage.error(error.message);
+            if (avatarchange.value) {
+              try {
+                await axios.post(`/api/Users/upload_user_portrait/${global.userId}`,
+                  formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  }
+                })
+              } catch (error) {
+                ElMessage.error(error.message);
+              }
             }
             ElMessage.success('信息修改成功！');
               console.log('User registered:', response.data);
               fetchUser();
               dialogFormVisible.value = false
           } catch (error) {
-            ElMessage.error(error.response.message);
+            ElMessage.error(error.message);
             console.error('Error update:', error);
           }
         } else {
@@ -398,7 +416,7 @@ const handleFileChange=(file)=> {
 
     const onCharge=async() =>{
       try {
-        await axios.put(`/api/Users/${global.userId}/points`, userInfo.value.points+num.value,
+        await axios.put(`/api/Users/${global.userId}/updateUserPoints`, userInfo.value.points+num.value,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -412,6 +430,10 @@ const handleFileChange=(file)=> {
         ElMessage.error(error.message)
       }
       }
+
+      const disabledDate = (time) => {
+      return time.getTime() > Date.now()
+    }
     
     onMounted(() => {
       fetchUser();
@@ -423,6 +445,8 @@ const handleFileChange=(file)=> {
         userInfo,
         user,
         expert,
+        follows,
+        fetchFollows,
         rules,
         UserformRef,
         ExpertformRef,
@@ -434,7 +458,8 @@ const handleFileChange=(file)=> {
         TalentStatus,
         onCharge,
         num,
-        onSubmit
+        onSubmit,
+        disabledDate
     }
   }
 }

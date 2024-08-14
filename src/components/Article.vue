@@ -4,10 +4,10 @@
     <el-card class="post-item">
       <template #header>
         <div class="post-header">
-          <img :src="sharepost.avatar" alt="avatar" class="avatar">
+          <img :src="sharepost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(sharepost.author_id)">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="username">{{ sharepost.username }}</span>
               <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
@@ -70,7 +70,7 @@
       <el-card class="post-item">
         <template #header>
          <div class="post-header">
-            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
+            <img :src="ldleitemspost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemspost.author_id)"/>
             <div class="post-details">
               <div class="post-info">
                 <span class="username">{{ ldleitemspost.author_name }}</span>
@@ -123,6 +123,10 @@ export default {
     view: {
       type: String,
       required:true
+    },
+    user_id: {
+      type: Number,
+      default:null
     }
   },
   data() {
@@ -147,27 +151,53 @@ export default {
   },
   methods: {
     fetchSharePosts() {
-      const userId = state.userId;
-      axios.get(`/api/Posts/GetOverview/0/${userId}`)
-        .then(response => {
-          this.shareposts = response.data.map(post => ({
-            post_id: post.post_id,
-            username: post.author_name,
-            avatar: post.portrait,
-            title: post.title,
-            shortContent:post.short_content,
-            likes: post.likes_number,
-            comments: post.total_floor,
-            post_time: post.post_time,
-            views: 0, // Assuming views is not available in the API response
-            isLiked: post.isLiked,
-            isStarred: post.isStarred,
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching share posts:', error);
-          this.handleError(error, '获取分享贴失败');
-        });  
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/Posts/GetOverview/0/${userId}`)
+          .then(response => {
+            this.shareposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:post.author_id,
+              avatar: post.portrait,
+              title: post.title,
+              shortContent: post.short_content,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
+      else {
+        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/0`)
+          .then(response => {
+            this.shareposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:this.user_id,
+              avatar: post.portrait,
+              title: post.title,
+              shortContent: post.short_content,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
     },
     async fetchLdleitemsPosts() {
       //const userId = state.userId; // 确保 state.userId 是可访问的  
@@ -213,11 +243,70 @@ export default {
     // 在这里，你可能想设置 this.ldleitemsposts 为空数组或错误消息数组  
     this.ldleitemsposts = []; // 或 [{ error: 'Failed to fetch posts' }]  
   }
+
+    fetchLdleitemsPosts() {
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/Posts/GetOverview/1/${userId}`)
+          .then(response => {
+            this.ldleitemsposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:post.author_id,
+              avatar: post.portrait,
+              title: post.title,
+              item_summary: post.item_summary,
+              condition: post.condition,
+              price: post.price,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取闲置贴失败');
+          });
+      }
+      else {
+         axios.get(`/api/Posts/GetUserPosts/${this.user_id}/1`)
+          .then(response => {
+            this.ldleitemsposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:this.user_id,
+              avatar: post.portrait,
+              title: post.title,
+              item_summary: post.item_summary,
+              condition: post.condition,
+              price: post.price,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取闲置贴失败');
+          });
+      } 
+
     },
     handleError(error, message) {
       if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        if (error.response.status == '404') {
+          ElMessage.error('暂时未发布该类帖子！')
+        }
+        else {
+          console.error(`${message}:`, error.response.data);
+          ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        }
       } else if (error.request) {
         console.error(`${message}: No response received`);
         ElMessage.error(`${message} - 没有收到响应`);
@@ -321,6 +410,17 @@ export default {
         console.error('Error toggling star:', error);
         this.handleError(error, '收藏操作失败');
       });
+    },
+    goToUserSpace(author_id) {
+      if (author_id == state.userId) {
+        this.$router.push({
+          path: `/home/userspace`
+        })
+      }
+      else {
+        this.$router.push({
+          path: `/home/userspace/${author_id}`
+        })
       }
     }
   },

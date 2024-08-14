@@ -69,6 +69,8 @@
 <script>
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref } from 'vue'
+import global from '@/store/global.js';
+
 export default {
   name: 'CampDetail',
   props: ['campID'],
@@ -84,7 +86,7 @@ export default {
   methods: {
     async fetchCampDetails() {
       try {
-        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${this.campID}`);
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${this.campID}/${global.userId}`);
         this.camp = response.data;
       } catch (error) {
         console.error('获取营地具体信息失败:', error);
@@ -93,10 +95,23 @@ export default {
     goToCampBooking (camp) {
       this.$router.push({ path: `/home/campbooking/${camp.campground_id}` })
     },
-    toggleStarColor () {
+    
+    async toggleStarColor () {
       this.isStarSolid = !this.isStarSolid
       // 如果需要，你可以在这里添加额外的逻辑来改变图标的颜色
       // 但通常，我们会通过 CSS 来处理颜色的变化
+      // 构造要发送的数据
+    const data = {
+      campground_id: this.camp.campground_id,
+      user_id: global.userId,
+    };
+
+    try {
+      const response = await axios.post('/api/Starcampgrounds/starcampground', data);
+      console.log('收藏成功:', response.data);
+    } catch (error) {
+      console.error('收藏失败:', error);
+    }
     },
   }
 }

@@ -1,0 +1,122 @@
+<template>
+<div class="otherspersonalcenter">
+        <el-row>
+            <el-col :span="2"><h2>个人信息</h2></el-col>
+             <el-col :span="2">
+                <el-tag v-if="followed" color="#1D5B5E" size="large" effect="dark" style="width:80%;font-size:18px">已关注</el-tag>
+                <el-tag v-else color="#1D5B5E" size="large" effect="dark" style="width:80%;font-size:18px" @click="Follow">+ 关注</el-tag>
+            </el-col>
+        </el-row>
+        <el-row style="margin-top:1%">
+        <el-col :span="2">
+            <el-avatar :src="userInfo.portrait" style="width:100px;height:100px"/>
+        </el-col>
+        <el-col :span="10">
+            <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
+                <el-col :span="4">{{ userInfo.user_name }} </el-col>
+                <el-col :span="5">
+                    <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
+                    <el-tag v-else type="info" size="large" effect="dark" round>户外达人</el-tag>
+                </el-col> 
+            </el-row>
+            <el-row style="min-width:100%;margin-top: 2%">
+            <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
+            <el-col :span="3">{{ user.fans }} 粉丝</el-col>
+            <el-col :span="3">{{ user.follows }} 关注</el-col>
+            </el-row>
+        </el-col>
+        <el-col :span="7">
+            <el-row style="margin-top: 1%">
+            <div style="font-weight:bold;margin-top:1%">个性签名</div>
+            </el-row>
+            <el-row>
+            <div style="margin-top:2%">{{ userInfo.personal_signature }}</div>
+            </el-row>
+        </el-col>
+        <el-col :span="5">
+        <el-row style="margin-top: 1%">
+            <div style="margin-top:1%;display: flex;"><div style="font-weight:bold;">生日：</div><span>{{ userInfo.birthday }}</span></div>
+            </el-row>
+            <el-row style="margin-top: 2%">
+            <div style="margin-top:2%;display: flex;"><div style="font-weight:bold;">IP：</div><span>{{userInfo.location}}</span></div>
+            </el-row>
+        </el-col>
+        </el-row>
+        <el-divider />
+        <Post :user_id=" route.params.userId"/>
+    </div>
+</template>
+
+<script setup>
+import axios from '@/axios'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router';
+import { ElMessage } from 'element-plus'
+import Post from '../components/MyPost.vue'
+import global from '@/store/global'
+
+const userInfo = ref({})
+const route = useRoute();
+const followed=ref(false)
+
+const user = ref({
+    fans:0,
+    follows:0
+})
+
+const Follow = async() => {
+    try {
+        await axios.post(`/api/Follows/${global.userId}/follow/${route.params.userId}`)
+        ElMessage.success('关注成功！')
+        followed.value=true
+    } catch (error) {
+        console.error(error)        
+    }
+}
+
+const fetchUser=async (id) =>{
+    try{
+        const response = await axios.get(`/api/Users/getUserInfo/${id}`);
+        userInfo.value = response.data.data
+        userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
+    } catch (error) {
+        ElMessage.error(error.message);
+    }
+}
+
+const ifFollowed = async () => {
+    try {
+        const response = await axios.get(`/api/Follows/getFollowedUsers/${global.userId}`);
+        const follows = response.data.data
+        followed.value = follows.some(item => item.followed_id == userInfo.value.user_id)
+    }
+    catch (error) {
+        console.error(error)
+    }
+}
+
+onMounted(() => {
+    const userId = route.params.userId
+    fetchUser(userId)
+    ifFollowed()
+})
+</script>
+
+<style scoped>
+ .otherspersonalcenter{
+    height:fit-content;
+    width:80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:1%;
+    background-color: rgb(255,255,255,80%);
+    box-shadow: 0 0 5px 1px #888888;
+    padding:1%;
+    margin-bottom:1%;
+   }
+
+   .item-label{
+    font-weight:bold;
+   }
+
+</style>
