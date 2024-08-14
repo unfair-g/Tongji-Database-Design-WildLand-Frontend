@@ -1,38 +1,39 @@
 <template>
-    <div class="container">
-      <el-scrollbar max-height="100%">
-        <el-main class="main">
-        
-          <h2 v-if="camp">{{ camp.campground_name }}</h2>
-          <div class="divider"></div> <!-- Divider line -->
+  <div class="container">
+    <el-scrollbar max-height="100%">
+      <el-main class="main">
+      
+        <h2 v-if="camp">{{ camp.campground_name }}</h2>
+        <div class="divider"></div> <!-- Divider line -->
 <!-- -------------------------------------------------------------------------------- -->
-          <span class="title">| 选择预定日期</span>
-          <div class="short-divider"></div> 
+        <span class="title">| 选择预定日期</span>
+        <div class="short-divider"></div> 
 
-        <div class="up-container">     
-          <div class="date-range-picker">
-            <span >请选择预定的日期</span>
-            <el-date-picker
-              v-model="dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="handleDateChange"
-            >
-            </el-date-picker>
-          </div>
-          
-          <div class="introduction-image-container" v-if="camp">
-            <img :src="camp.map_picture" alt="campsite image" class="campsite-image">
-          </div> 
+      <div class="up-container">     
+        <div class="date-range-picker">
+          <span >请选择预定的日期</span>
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            @change="handleDateChange"
+            :disabled-date="disabledDate"
+          >
+          </el-date-picker>
         </div>
-  
-  <!-- -------------------------------------------------------------------------------- -->
-          <span class="title">| 选择预定营位</span>
-          <div class="short-divider"></div> 
+        
+        <div class="introduction-image-container" v-if="camp">
+          <img :src="camp.map_picture" alt="campsite image" class="campsite-image">
+        </div> 
+      </div>
 
-          <el-collapse v-model="activeSections">
+<!-- -------------------------------------------------------------------------------- -->
+        <span class="title">| 选择预定营位</span>
+        <div class="short-divider"></div> 
+
+        <el-collapse v-model="activeSections">
           <el-collapse-item
             v-for="(campsites, section) in groupedCampsiteIds"
             :key="section"
@@ -43,71 +44,51 @@
               <el-button
                 v-for="campsite in campsites"
                 :key="campsite.campsite_id"
-                type="primary"
+                :type="isCampsiteAvailable(campsite.campsite_id) ? 'primary' : 'info'"
                 :class="{ selected: selectedCampsiteIds.includes(campsite.campsite_id) , 'campsite-button': true}"
+                :disabled="!isCampsiteAvailable(campsite.campsite_id)"
                 @click="toggleSelection(campsite.campsite_id)"
               >
                 {{ campsite.campsite_number }}
               </el-button>
-
             </div>
           </el-collapse-item>
         </el-collapse>
-  
-        </el-main>
-      </el-scrollbar>
-  
-      <el-footer>
-        <el-button class="booking-button" type="primary" @click="goToCampOrder()">填写订单</el-button>
-      </el-footer>
-    </div>
-  </template>
-  
+
+      </el-main>
+    </el-scrollbar>
+
+    <el-footer>
+      <el-button class="booking-button" type="primary" @click="goToCampOrder()">填写订单</el-button>
+    </el-footer>
+  </div>
+</template>
 
 <script>
 import axios from '@/axios'; // 引入配置好的axios实例
-import { ref } from 'vue';
 import { ElDatePicker } from 'element-plus';
+import global from '@/store/global.js';
 
-  export default {
-    name: 'CampBooking',
-    props: ['campID'],
-    components: {
+export default {
+  name: 'CampBooking',
+  props: ['campID'],
+  components: {
     ElDatePicker
-    },
-    data() {
-      return {
+  },
+  data() {
+    return {
       activeSections: [], // 控制折叠面板的展开和折叠
       selectedCampsiteIds: [], // 选中的营位ID
       camp: null, // 存储营地详细信息
-      campsites:[], //营位集合
-      };
-    },
-  
-  setup() {
-    const dateRange = ref([null, null]);
-    const startDate = ref('');
-    const endDate = ref('');
-
-    const handleDateChange = (value) => {
-  if (value && value.length === 2) {
-    startDate.value = value[0];  
-    endDate.value = value[1];    
-  } else {
-    startDate.value = '';
-    endDate.value = '';
-  }
-};
-
-    return {
-      dateRange,
-      startDate,
-      endDate,
-      handleDateChange
+      campsites: [], // 营位集合
+      availableCampsiteIds: [], // 用于存储可用的营位ID
+      dateRange: [null, null], // 日期范围
+      startDate: '', // 开始日期
+      endDate: '' // 结束日期
     };
   },
-    computed: {
-      groupedCampsiteIds() {
+  computed: {
+    groupedCampsiteIds() {
       if (!this.campsites) return {};
       return this.campsites.reduce((groups, campsite) => {
         const section = campsite.campsite_number.charAt(0).toUpperCase();
@@ -118,34 +99,83 @@ import { ElDatePicker } from 'element-plus';
         return groups;
       }, {});
     }
-    },
-    methods: {
-      //接口1：获取营地的详细信息
-      async fetchCampDetails() {
+  },
+  methods: {
+    async fetchCampDetails() {
       try {
-        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${this.campID}`);
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${this.campID}/${global.userId}`);
         this.camp = response.data;
       } catch (error) {
         console.error("获取营地详细信息失败", error);
       }
     },
 
-      //接口2：获取营地中有哪些营位
-      async fetchCampsites() {
+    async fetchCampsites() {
       try {
         const response = await axios.get(`api/Campsites/getcampsites/${this.campID}`);
         this.campsites = response.data;
 
-          // 更新折叠面板
+        // 更新折叠面板
         this.activeSections = Object.keys(this.groupedCampsiteIds);
       } catch (error) {
         console.error("获取营位失败", error);
       }
     },
 
-      //跳转到营地订单界面
-      goToCampOrder () {
-        this.$router.push({
+    async fetchAvailableCampsites() {
+   try {
+    const data={
+      campground_id: 11,
+      startTime: "2024-08-13T15:22:09.071Z",
+      endTime: "2024-08-13T15:22:09.071Z"
+
+    }
+    console.log('开始提交订单')
+    const response = await axios.post('api/CampsiteReserves/available',data );
+      //campground_id: this.campID,  // 确保传递的是 campID，而不是 'available'
+      //startTime: this.startDate,
+      //endTime: this.endDate
+      
+    
+    this.availableCampsiteIds = response.data;
+  } catch (error) {
+    console.error("获取空闲营位失败", error);
+    this.availableCampsiteIds = [];
+  }
+},
+
+
+    async handleDateChange(value) {
+      if (value && value.length === 2) {
+        this.startDate = value[0];
+        this.endDate = value[1];
+        await this.fetchAvailableCampsites();
+      } else {
+        this.startDate = '';
+        this.endDate = '';
+        this.availableCampsiteIds = [];
+      }
+    },
+
+    disabledDate(time) {
+      return time.getTime() < Date.now() - 86400000; // 禁用今天之前的日期
+    },
+
+    isCampsiteAvailable(campsiteId) {
+      return this.availableCampsiteIds.includes(campsiteId);
+    },
+
+    toggleSelection(id) {
+      const index = this.selectedCampsiteIds.indexOf(id);
+      if (index === -1) {
+        this.selectedCampsiteIds.push(id);
+      } else {
+        this.selectedCampsiteIds.splice(index, 1);
+      }
+    },
+
+    goToCampOrder() {
+      this.$router.push({
         path: '/home/camporder',
         query: {
           campID: this.campID,
@@ -154,25 +184,13 @@ import { ElDatePicker } from 'element-plus';
           selectedCampsiteIds: this.selectedCampsiteIds.join(',')
         }
       });
-      },
-      
-      toggleSelection(id) {
-        //如果 id 尚未选中，则将其添加到 selectedCampsiteIds 数组中；如果 id 已经选中，则将其从数组中移除。
-      const index = this.selectedCampsiteIds.indexOf(id);
-      if (index === -1) {
-        this.selectedCampsiteIds.push(id);
-      } else {
-        this.selectedCampsiteIds.splice(index, 1);
-      }
-    },
-    },
-    created() { //接口调用
-      this.fetchCampDetails();
-      this.fetchCampsites();
+    }
   },
-
+  created() {
+    this.fetchCampDetails();
+    this.fetchCampsites();
   }
-  
+};
 </script>
   
 
