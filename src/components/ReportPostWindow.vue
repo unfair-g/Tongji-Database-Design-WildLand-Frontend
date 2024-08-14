@@ -41,10 +41,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    PostSuccess: {
-      type: Boolean,
-      default: false,
-    },
     post: {
       type: Object,
       required:true,
@@ -60,10 +56,6 @@ export default {
       localIsDetailShow: this.isDetailShow,
       localIsReportDialogVisible: this.isReportDialogVisible,
       reportForm: {
-        postTitle: this.post.title,
-        postContent: this.post.content,
-        postUsername: this.post.username,
-        postUserID: this.post.user_id,
         reportReason: '',
         Audits: '',
       }

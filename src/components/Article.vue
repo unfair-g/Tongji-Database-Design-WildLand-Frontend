@@ -11,7 +11,6 @@
               <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
-              <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
               <span class="stat-item" @click="toggleLike(sharepost)">
                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !sharepost.isLiked, 'icon-dianzanxuanzhong': sharepost.isLiked}"></i>{{ sharepost.likes }}
               </span>
@@ -43,7 +42,6 @@
                 <span class="time">{{ recruitpost.time }}</span>
             </div>
             <div class="post-stats">
-              <span class="stat-item"><el-icon><View /></el-icon>{{ recruitpost.views }}</span>
               <span class="stat-item" @click="toggleLike(recruitpost)">
                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !recruitpost.isLiked, 'icon-dianzanxuanzhong': recruitpost.isLiked}"></i>{{ recruitpost.likes }}
               </span>
@@ -77,7 +75,6 @@
                 <span class="time">{{ ldleitemspost.time }}</span>
               </div>
               <div class="post-stats">
-                <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
                 <span class="stat-item" @click="toggleLike">
                   <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes }}
                 </span>
@@ -158,7 +155,7 @@ export default {
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            views: 0, // Assuming views is not available in the API response
+            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
           }));
@@ -184,7 +181,7 @@ export default {
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            views: 0, // Assuming views is not available in the API response
+            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
           }));
@@ -275,11 +272,17 @@ export default {
       if (newValue === 'lease') {
         this.fetchLdleitemsPosts();
       }
+      else if (newValue === 'share') {
+        this.fetchSharePosts();
+      }
     }
   },
   created() {
     if (this.view === 'lease') {
       this.fetchLdleitemsPosts();
+    }
+    else if (this.view === 'share') {
+      this.fetchSharePosts();
     }
   }
 };

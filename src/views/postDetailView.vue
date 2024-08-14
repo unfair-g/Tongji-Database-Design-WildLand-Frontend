@@ -233,8 +233,8 @@ export default {
       isReportPostWindowVisible:false,//举报弹窗显示
       showSignUpInput: false, // 控制SignUpInput显示
       options: [
-        { label: '仅自己可见', value: '仅自己可见' },
-        { label: '所有人可见', value: '所有人可见' }
+        { label: '仅自己可见', value: 0 },
+        { label: '所有人可见', value: 1 }
       ],
       post: null,
     };
@@ -376,7 +376,10 @@ export default {
     },
     toggleSignUpInput() {
       this.showSignUpInput = !this.showSignUpInput;
-    }
+    },
+    // addComment(newComment) {
+      
+    // }
   }
 };
 </script>

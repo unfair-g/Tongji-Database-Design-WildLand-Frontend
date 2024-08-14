@@ -132,7 +132,6 @@ export default {
       postForm.memberNum = '';
       postForm.summary = '';
       postForm.ip_position = '';
-    
     };
 
     const handleClose = () => {
@@ -160,8 +159,6 @@ export default {
       }
       
     };
-
-
 
     return {
       postFormRef,
@@ -238,6 +235,7 @@ export default {
   width: 75%;
 }
 .left-side{
+  width:auto;
   display:flex;
   flex-direction: column;
 }

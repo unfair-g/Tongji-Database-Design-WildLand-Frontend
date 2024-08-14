@@ -12,6 +12,7 @@
             <div class="comment-footer">
               <span class="timestamp">{{ comment.comment_time }}</span>
               <span v-if="isCommentOwner" type="text" class="delete-comment-button" @click="openDeleteDialog">删除</span>
+              <span v-if="!isCommentOwner" type="text" class="delete-comment-button" @click="goToReportPostWindow"><el-icon><Bell/></el-icon>举报</span>
             </div>
           </div>
           <div class="comment-stats">
@@ -24,12 +25,13 @@
           </div>
           
         </div>
-        <div v-if="showReplyInput" class="reply-input">
-            <CommentInput
-              v-model:commentContent="replyContent"
-              :postId="this.postID"
-              :parentCommentId="comment.comment_id"
-            />
+        <!-- 仅在当前评论 ID 匹配时显示回复输入框 -->
+        <div v-if="activeReplyInputId === comment.comment_id" class="reply-input">
+          <CommentInput
+            v-model:commentContent="replyContent"
+            :postId="this.postID"
+            :parentCommentId="comment.comment_id"
+          />
         </div>
         
         <div v-if="getReplies(comment.comment_id).length > 0" class="replies-section">
@@ -63,7 +65,7 @@
 
             </div><!-- end of comment-item reply -->
             
-            <div v-if="showReplyInput" class="reply-input">
+            <div v-if="activeReplyInputId === reply.comment_id" class="reply-input">
               <CommentInput
                 v-model:commentContent="replyContent"
                 :postId="this.postID"
@@ -100,7 +102,7 @@
                     </div><!-- end of one-comment -->
                   </div><!-- end of comment-details -->
                 </div>
-                <div v-if="showReplyInput" class="reply-input">
+                <div v-if="activeReplyInputId === subReply.comment_id" class="reply-input">
                   <CommentInput
                     v-model:commentContent="replyContent"
                     :postId="this.postID"
@@ -131,12 +133,19 @@
         <el-button type="primary" @click="confirmDelete">是</el-button>
       </template>
     </el-dialog>
-   
+    <!-- <ReportPost
+      v-model:isReportDialogVisible="isReportPostWindowVisible"
+      :isDetailShow="false"
+      :thisPostId="this.postID"
+      :post="post"
+      @closeDialog="isReportPostWindowVisible=false"
+    />   -->
   </div>
 </template>
 
 <script>
 import CommentInput from '@/components/CommentInput.vue';
+// import ReportPost from '@/components/ReportPostWindow.vue'
 import axios from '@/axios'; // 确保路径是正确的
 import state from '@/store/global.js'; // 引入映射表
 import { ElMessage } from "element-plus";
@@ -144,7 +153,8 @@ import { ElMessage } from "element-plus";
 export default {
   name: 'CommentItem',
   components: {
-    CommentInput
+    CommentInput,
+    // ReportPost
   },
   props: {
     postId: {
@@ -155,10 +165,12 @@ export default {
   data() {
     return {
       comments: [], // 存储所有评论
+      activeReplyInputId: null, // 当前显示回复输入框的评论ID
       showReplyInput: false,
       replyContent: '',
       parentComment: null,
-      deleteDialogVisible:false,
+      deleteDialogVisible: false,
+      isReportPostWindowVisible:false,//举报弹窗显示
     };
   },
   created() {
@@ -199,8 +211,9 @@ export default {
         this.handleError(error, '点赞操作失败');
       });
     },
-    toggleReplyInput() {
-      this.showReplyInput = !this.showReplyInput;
+    toggleReplyInput(commentId) {
+      // 如果当前显示的输入框是点击的同一个评论，则隐藏它；否则，显示对应的输入框
+      this.activeReplyInputId = this.activeReplyInputId === commentId ? null : commentId;
     },
     submitReply() {
       this.showReplyInput = false;
@@ -217,7 +230,12 @@ export default {
     },
     getReplies(parentCommentId) {
       return this.comments.filter(comment => comment.parent_comment_id === parentCommentId) || [];
-    }
+    },
+    goToReportPostWindow() {
+      this.isReportPostWindowVisible = true;
+      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
+    },
+    
   }
 };
 </script>
