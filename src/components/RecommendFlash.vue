@@ -2,16 +2,16 @@
   <flashaside  @menu-select="handleMenuSelect"/>
   <el-card class="flash">
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in filteredFlashes" :key="flash.title" @click="goToDetail(flash)">
+      <div class="flash-item" v-for="(flash) in filteredFlashes" :key="flash.flashTitle" @click="goToDetail(flash)">
         <div class="img">
-            <img :src="flash.image" />
+            <img :src="flash.flashImage" />
         </div>
         <div class="flash-info">
-            <span class="flash-title">{{ flash.title }}</span>
+            <span class="flash-title">{{ flash.flashTitle }}</span>
             <span class="flash-meta">作者： {{ flash.meta }}</span>
           <div>
-            <span class="flash-like">{{ flash.like }}收藏</span>
-            <span class="flash-like">{{ flash.view }}浏览</span>
+            <span class="flash-like">{{ flash.collectionNumber }}收藏</span>
+            <span class="flash-like">{{ flash.viewsNumber }}浏览</span>
           </div>
         </div>
       </div>
@@ -22,6 +22,8 @@
 <script>
 
 import flashaside from '../components/FlashAside.vue';
+import axios from '@/axios'; // 引入配置好的axios实例
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'RecommendFlash',
@@ -32,24 +34,51 @@ export default {
 data() {
     return {
       currentMenu: 1, // 默认选中的菜单项
+      flashes: []
     };
+    
   },
   computed: {
-    flash() {
-      return this.$store.state.flash.flashes;
-    },
     filteredFlashes() {
-      return this.flash.filter(flash => {return flash.tag_id === this.currentMenu;}  );
+      return this.flashes.filter(flash => {return flash.tagId === this.currentMenu;}  );
     }
   },
   methods: {
     handleMenuSelect(index) {
       this.currentMenu = index;
     },
+    fetchFlashes() {
+      axios.get('https://localhost:7218/api/Flashes/Display')
+        .then(response => {
+          this.flashes = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
     goToDetail (flash) {
-      const flashId = flash.flash_id
+      const flashId = flash.flashId;
       this.$router.push({ path: `/home/flash/${flashId}` })
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
     }
+  },
+  
+  watch: {
+    currentMenu: 'fetchFlashes'
+  },
+  created() {
+    this.fetchFlashes();
   }
 }
 </script>

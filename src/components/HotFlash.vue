@@ -4,12 +4,12 @@
       <div class="flash-header">热门资讯</div>
     </template>
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in flash" :key="flash.title" @click="goToDetail(flash)">
+      <div class="flash-item" v-for="(flash) in flash" :key="flash.flash_title" @click="goToDetail(flash)">
         <div class="img">
-            <img :src="flash.image" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
+            <img :src="flash.flash_image" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
         </div>
         <div class="flash-info">
-          <span class="flash-title">{{ flash.title }}</span>
+          <span class="flash-title">{{ flash.flash_title }}</span>
           <span class="flash-meta">作者：{{ flash.meta }}</span>
         </div>
       </div>
@@ -19,19 +19,34 @@
 
 <script>
 
+import axios from '@/axios'; // 引入配置好的axios实例
+
 export default {
   name: 'HotPosts',
   props: ['flashID'],
-  computed: {
-    flash() {
-      return this.$store.state.flash.flashes;
-    },
+  data() {
+    return {
+      flash: []
+    };
+    
   },
   methods: {
     goToDetail (flash) {
       const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
-    }
+    },
+    fetchFlashes() {
+      axios.get('https://localhost:7218/api/Flashes/GetMostPopularNFlash?n=3')
+        .then(response => {
+          this.flash = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
+  },
+  created() {
+    this.fetchFlashes();
   }
 }
 </script>
