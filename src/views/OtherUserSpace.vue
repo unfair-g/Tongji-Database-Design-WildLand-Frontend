@@ -21,8 +21,8 @@
             </el-row>
             <el-row style="min-width:100%;margin-top: 2%">
             <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
-            <el-col :span="3">{{ user.fans }} 粉丝</el-col>
-            <el-col :span="3">{{ user.follows }} 关注</el-col>
+            <el-col :span="3">{{ userInfo.fans }} 粉丝</el-col>
+            <el-col :span="3">{{ userInfo.follows }} 关注</el-col>
             </el-row>
         </el-col>
         <el-col :span="7">
@@ -59,11 +59,6 @@ const userInfo = ref({})
 const route = useRoute();
 const followed=ref(false)
 
-const user = ref({
-    fans:0,
-    follows:0
-})
-
 const Follow = async() => {
     try {
         await axios.post(`/api/Follows/${global.userId}/follow/${route.params.userId}`)
@@ -77,8 +72,11 @@ const Follow = async() => {
 const fetchUser=async (id) =>{
     try{
         const response = await axios.get(`/api/Users/getUserInfo/${id}`);
-        userInfo.value = response.data.data
-        userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
+        userInfo.value = response.data.data.user
+        if (userInfo.value.birthday != null)
+            userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
+        userInfo.value.follows = response.data.data.followingCount;
+        userInfo.value.fans = response.data.data.followerCount;
     } catch (error) {
         ElMessage.error(error.message);
     }
