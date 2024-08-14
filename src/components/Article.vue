@@ -73,16 +73,17 @@
             <img :src="ldleitemspost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemspost.author_id)"/>
             <div class="post-details">
               <div class="post-info">
-                <span class="username">{{ ldleitemspost.username }}</span>
+                <span class="username">{{ ldleitemspost.author_name }}</span>
                 <span class="time">{{ ldleitemspost.time }}</span>
               </div>
               <div class="post-stats">
+                <!---->
                 <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
-                <span class="stat-item" @click="toggleLike">
-                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes }}
+                <span class="stat-item" @click="toggleLike(ldleitemspost)">
+                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes_number }}
                 </span>
                 <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
-                <span class="stat-item" @click="toggleStar">
+                <span class="stat-item" @click="toggleStar(ldleitemspost)">
                   <el-icon v-if="!isStarred"><Star /></el-icon>
                   <el-icon v-else><StarFilled /></el-icon>
                 </span>
@@ -92,7 +93,7 @@
         </template>
 
         <div class="post-content" @click="goToPostDetail(ldleitemspost)">
-          <img :src="ldleitemspost.item_image" class="image" alt="order image">
+          <img :src="ldleitemspost.post_pics" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
             <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
@@ -198,6 +199,51 @@ export default {
           });
       }
     },
+    async fetchLdleitemsPosts() {
+      //const userId = state.userId; // 确保 state.userId 是可访问的  
+  try {  
+    const overviewResponse = await axios.get(`/api/Posts`); 
+      // 假设overviewResponse.data是一个包含多个对象的数组  
+      const filteredPosts = overviewResponse.data.filter(post => post.post_kind === 1);  
+      console.log(filteredPosts); // 输出筛选后的数据  
+      // 你可以在这里对filteredPosts进行进一步处理  
+      const posts = filteredPosts.map(async post => {  
+      // 第一步：获取 author_id  
+      const authorResponse = await axios.get(`https://localhost:7218/api/Posts/${post.post_id}`);  
+      const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
+  
+      // 第二步：使用 author_id 和 post_id 获取 post_pics  
+      const detailResponse = await axios.get(`https://localhost:7218/api/Posts/GetPostDetail/${post.post_id}/${authorId}`);  
+      const postPics = detailResponse.data.post_pics; // 假设这是一个图片数组  
+      const author_name = detailResponse.data.author_id; 
+      const portrait = detailResponse.data.portrait; 
+  
+      // 假设我们只想要第一张图片，如果没有图片则使用 null 或默认图片 URL  
+      const firstPic = postPics.length > 0 ? postPics[0] : null; // 或者 'default-image.jpg'  
+      // 返回一个新的对象，包含原始数据和额外数据  
+      return {  
+        ...post, // 展开原始帖子对象  
+        author_id: authorId, // 添加 author_id  
+        author_name:author_name,
+        portrait:portrait,
+        post_pics: firstPic, // 添加第一张图片（或图片数组，根据需要）  
+      };  
+    }); 
+    // 由于 map 返回的是 Promise 数组，我们需要等待所有 Promise 解决  
+    this.ldleitemsposts = await Promise.all(posts.map(p => p.catch(error => {  
+      console.error('Error fetching additional data for post:', error);  
+      // 可以选择在这里处理错误，比如返回一个带有错误标记的帖子对象  
+      return {  error: 'Failed to fetch additional data' }; // 注意：这里的 post 是未定义的，需要适当处理  
+    })));  
+    console.log(this.ldleitemsposts); // 输出筛选后的数据  
+  
+  } catch (error) {  
+    console.error('Error fetching overview posts:', error);  
+    this.handleError(error, '获取分享贴概览失败');  
+    // 在这里，你可能想设置 this.ldleitemsposts 为空数组或错误消息数组  
+    this.ldleitemsposts = []; // 或 [{ error: 'Failed to fetch posts' }]  
+  }
+
     fetchLdleitemsPosts() {
       if (this.user_id == null) {
         const userId = state.userId;
@@ -250,6 +296,7 @@ export default {
             this.handleError(error, '获取闲置贴失败');
           });
       } 
+
     },
     handleError(error, message) {
       if (error.response) {
@@ -307,6 +354,20 @@ export default {
         this.handleError(error, '点赞操作失败');
       });
       }
+      else if (this.view === 'lease') {
+        axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
+      }
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
@@ -330,6 +391,25 @@ export default {
         this.handleError(error, '收藏操作失败');
       });
       }
+      else if (this.view === 'lease') {
+        axios.post('/api/StarPosts/starpost', {
+          post_id: post.post_id,
+          tips:"收藏测试",
+          user_id: state.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number+=1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number-=1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
     },
     goToUserSpace(author_id) {
       if (author_id == state.userId) {

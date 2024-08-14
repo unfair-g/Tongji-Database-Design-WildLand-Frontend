@@ -1,6 +1,6 @@
 <template>
   <div class="table-wrapper">
-    <el-table :data="filteredProducts" style="width: 100%">
+    <el-table :data="products" style="width: 100%">
       <el-table-column prop="product_name" label="名称" width="300" align="center" />
       <el-table-column prop="price" label="价格" width="200" align="center">
         <template #default="scope">
@@ -30,7 +30,7 @@
     </el-table>
     <!-- 当 filteredProducts 为空时显示提示信息 -->
     <el-alert
-      v-if="filteredProducts.length === 0"
+      v-if="products.length === 0"
       title="当前无户外用品数据"
       type="info"
       center
@@ -40,6 +40,7 @@
 
 <script>
 import { More, Edit, Delete } from '@element-plus/icons-vue'
+import axios from 'axios';
 
 export default {
   components: {
@@ -47,12 +48,25 @@ export default {
     Edit,
     Delete
   },
-  computed: {
-    filteredProducts() {
-      return this.$store.state.product.products.filter(product => product.product_tag.includes('all'));
+  data() {
+    return {
+      products:[]
     }
   },
+  mounted() {
+    this.fetchProduct(); // 组件加载时获取所有产品
+  },
   methods: {
+    fetchProduct() {
+      axios.get('https://localhost:7218/api/OutdoorProducts')
+        .then(response => {
+          this.products = response.data;
+        })
+        .catch(error => {
+          console.log(this.products)
+          console.error('Error fetching products:', error);
+        });
+    },
     handleAction(row, action) {
       if (action === 'more') {
         this.goToProductDetail(row);

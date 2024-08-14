@@ -8,11 +8,11 @@
       @close="handleClose">
       <div class="product-info-header" style="display:flex;" shadow="hover">
         <div class="product-img">
-          <img :src="ldleitemsPost.item_image" alt="product image"> 
+          <img :src="ldleitemsPost.post_pics[0]" alt="product image"> 
         </div>
         <div style="flex:2;">
           <h2>{{ ldleitemsPost.title }}</h2>
-          <p>商品提供者: {{ ldleitemsPost.username }}</p>
+          <p>商品提供者: {{ ldleitemsPost.author_name }}</p>
           <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
           <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
           <p>收件人姓名: {{ recipientInfo.name }}</p>
@@ -53,7 +53,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">租赁成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="Pbutton" @click="GoToOrder(ldleitemsPost)">查看订单</el-button>
+            <el-button type="text" class="Pbutton" @click="GoToOrder()">查看订单</el-button>
           </div>
         </div>
       </div>
@@ -90,6 +90,7 @@
         Order: false,
         users: [], // 存储用户数据
     selectedUserId: null,
+    orderId:0
       }
     },
     created() {
@@ -134,7 +135,8 @@
       const orderData = {
         order_date: new Date().toISOString(), // 生成订单日期
         order_id: this.generateOrderId(), // 生成唯一订单ID
-        order_status: 'created',
+        order_status: '已支付',
+        logistics:0,
         post_id: this.ldleitemsPost.post_id,
         recipient_address: this.recipientInfo.address,
         recipient_name: this.recipientInfo.name,
@@ -157,14 +159,14 @@
         });
     },
     generateOrderId() {
-      return Math.floor(Math.random() * 100000);
+      this.orderId=Math.floor(Math.random() * 100000);
+      return this.orderId;
     },
-      GoToOrder(ldleitemsPost)   //查看订单
+      GoToOrder()   //查看订单
       {
-        const ldleitemsPostId = ldleitemsPost.post_id
-        this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPostId}`,
+        this.$router.push({ path: `/home/userspace/leaseorder/${this.orderId}`,
           query: {  
-            ldleitemsPostId: this.ldleitemsPost.post_id
+            ldleitemsPostId: this.orderId
         }})
         this.PentSuccess = false
         this.Order=true

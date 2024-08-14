@@ -1,7 +1,7 @@
 <template>
     <div class="product-list">
       <el-row :gutter="80"  justify="center">
-        <el-col :span="7" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
+        <el-col :span="8" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToProductDetail(product)">
             <img :src="product.product_image" class="image" alt="product image">
             <div style="padding: 14px;">
@@ -23,62 +23,53 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
-export default {
-  name: 'SearchProduct',
-  setup() {
-    const route = useRoute();
-    const router = useRouter();
-    const products = ref([]);
-    const filteredProducts = ref([]);
-
-    const fetchProduct = () => {
-      axios.get('https://localhost:7218/api/OutdoorProducts')
-        .then(response => {
-          products.value = response.data;
-          filterProducts(); // 数据获取后进行过滤
-        })
-        .catch(error => {
-          console.error('Error fetching products:', error);
-        });
-    };
-
-    const filterProducts = () => {
-      const keyword = route.query.keyword || '';
-      if (keyword.trim()) {
-        filteredProducts.value = products.value.filter(product => 
-          product.product_name.toLowerCase().includes(keyword.toLowerCase())
-        );
-      } else {
-        filteredProducts.value = products.value;
-      }
-    };
-
-    onMounted(() => {
-      fetchProduct();
-    });
-
-    watch(() => route.query.keyword, filterProducts);
-
-    const goToProductDetail = (product) => {
-      const productId = product.product_id;
-      // Assuming you have router setup
-      router.push({ path: `/home/product/${productId}` });
-    };
-
-    return { filteredProducts, goToProductDetail };
-  }
-};
+import axios from 'axios';  
+  
+export default {  
+  name: 'SearchProduct',  
+  data() {  
+    return {  
+      filteredProducts: []  
+    };  
+  },  
+  watch: {  
+    '$route.query.keyword'(newValue, oldValue) { 
+      console.log('Keyword changed from', oldValue, 'to', newValue);  
+      this.filterProducts();  
+    }  
+  },  
+  created() {  
+    this.filterProducts(); // 组件创建时立即过滤产品  
+  },  
+  methods: {  
+    filterProducts() {  
+      const Keyword = this.$route.query.keyword || '';  
+      axios.get('https://localhost:7218/api/OutdoorProducts/SearchProduct', {  
+        params: {  
+          keyword: Keyword  
+        }  
+      })  
+      .then(response => {  
+        this.filteredProducts = response.data;  
+        console.log(this.filteredProducts);  
+      })  
+      .catch(error => {  
+        console.error('Error fetching products:', error);  
+      });  
+    },  
+    goToProductDetail(product) {  
+      const productId = product.product_id;  
+      this.$router.push({ path: `/home/product/${productId}` });  
+    }  
+  }  
+}; 
 </script>
 
 <style scoped>
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start; /* Align items to the left */
+  justify-content:space-around; /* Align items to the left */
   margin-top: 20px;
 
 }
