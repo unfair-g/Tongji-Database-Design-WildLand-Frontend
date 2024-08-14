@@ -19,54 +19,41 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+//import { ref, onMounted, watch } from 'vue';
+//import { useRoute, useRouter } from 'vue-router';
 
 export default {
-  name: 'SearchFlash',
-  setup() {
-    const route = useRoute();
-    const router = useRouter();
-    const products = ref([]);
-    const filteredFlashes = ref([]);
+  name: 'SearchFlash'
+//  setup() {
+//    const route = useRoute();
+//    const router = useRouter();
+//    const filteredFlashes = ref([]);
 
-    const fetchProduct = () => {
-      axios.get('')
-        .then(response => {
-          flashes.value = response.data;
-          filterFlashes(); // 数据获取后进行过滤
-        })
-        .catch(error => {
-          console.error('Error fetching products:', error);
-        });
-    };
+//    const filterFlashes = () => {
+//      const keyword = route.query.keyword || '';
+//      if (keyword.trim()) {
+//        filteredFlashes.value = flashes.value.filter(flash => 
+//        flash.flash_title.toLowerCase().includes(keyword.toLowerCase())
+//        );
+//      } else {
+//        filteredFlashes.value = flashes.value;
+//      }
+//    };
 
-    const filterFlashes = () => {
-      const keyword = route.query.keyword || '';
-      if (keyword.trim()) {
-        filteredFlashes.value = flashes.value.filter(flash => 
-        flash.flash_title.toLowerCase().includes(keyword.toLowerCase())
-        );
-      } else {
-        filteredFlashes.value = flashes.value;
-      }
-    };
+//    onMounted(() => {
+//      fetchFlashn();
+//    });
 
-    onMounted(() => {
-      fetchFlashn();
-    });
+//    watch(() => route.query.keyword, filterFlashes);
+//
+//    const goToFlashDetail = (flash) => {
+//      const flashId =  flash.flash_title;
+//      router.push({ path: `/home/flash/${flashId}` });
+//    };
 
-    watch(() => route.query.keyword, filterFlashes);
-
-    const goToFlashDetail = (product) => {
-      const flashId =  flash.flash_title;
-      router.push({ path: `/home/flash/${flashId}` });
-    };
-
-    return { filteredFlashe, goToFlashDetail };
-  }
-};
+//    return { filteredFlashe, goToFlashDetail };
+//  }
+}
 </script>
 
 <style scoped>
