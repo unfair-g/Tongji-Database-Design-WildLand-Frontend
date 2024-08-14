@@ -199,6 +199,7 @@ export default {
           });
       }
     },
+<<<<<<< HEAD
     async fetchLdleitemsPosts() {
       //const userId = state.userId; // 确保 state.userId 是可访问的  
   try {  
@@ -245,31 +246,42 @@ export default {
   }
 
     fetchLdleitemsPosts() {
+=======
+
+   async fetchLdleitemsPosts() {
+>>>>>>> main
       if (this.user_id == null) {
-        const userId = state.userId;
-        axios.get(`/api/Posts/GetOverview/1/${userId}`)
-          .then(response => {
-            this.ldleitemsposts = response.data.map(post => ({
-              post_id: post.post_id,
-              username: post.author_name,
-              author_id:post.author_id,
-              avatar: post.portrait,
-              title: post.title,
-              item_summary: post.item_summary,
-              condition: post.condition,
-              price: post.price,
-              likes: post.likes_number,
-              comments: post.total_floor,
-              post_time: post.post_time,
-              views: 0, // Assuming views is not available in the API response
-              isLiked: post.isLiked,
-              isStarred: post.isStarred,
-            }));
-          })
-          .catch(error => {
-            console.error('Error fetching share posts:', error);
-            this.handleError(error, '获取闲置贴失败');
-          });
+        try {  
+          const overviewResponse = await axios.get(`/api/Posts`); 
+            const filteredPosts = overviewResponse.data.filter(post => post.post_kind === 1);  
+            console.log(filteredPosts); // 输出筛选后的数据  
+            const posts = filteredPosts.map(async post => {  
+            const authorResponse = await axios.get(`/api/Posts/${post.post_id}`);  
+            const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
+            const detailResponse = await axios.get(`/api/Posts/GetPostDetail/${post.post_id}/${authorId}`);  
+            const postPics = detailResponse.data.post_pics; // 假设这是一个图片数组  
+            const author_name = detailResponse.data.author_id; 
+            const portrait = detailResponse.data.portrait; 
+            const firstPic = postPics.length > 0 ? postPics[0] : null; // 或者 'default-image.jpg'  
+            return {  
+              ...post, // 展开原始帖子对象  
+              author_id: authorId, // 添加 author_id  
+              author_name:author_name,
+              portrait:portrait,
+              post_pics: firstPic, // 添加第一张图片（或图片数组，根据需要）  
+            };  
+          }); 
+          this.ldleitemsposts = await Promise.all(posts.map(p => p.catch(error => {  
+            console.error('Error fetching additional data for post:', error);    
+            return {  error: 'Failed to fetch additional data' }; // 注意：这里的 post 是未定义的，需要适当处理  
+          })));  
+          console.log(this.ldleitemsposts); // 输出筛选后的数据  
+        
+        } catch (error) {  
+          console.error('Error fetching overview posts:', error);  
+          this.handleError(error, '获取闲置贴失败');  
+          this.ldleitemsposts = []; // 或 [{ error: 'Failed to fetch posts' }]  
+        }
       }
       else {
          axios.get(`/api/Posts/GetUserPosts/${this.user_id}/1`)
@@ -374,22 +386,42 @@ export default {
       if (this.view === 'share') {
         axios.post('/api/StarPosts/starpost', {
           post_id: post.post_id,
-          tips:"收藏测试",
+          tips: "收藏测试",
           user_id: state.userId
-      })
-      .then(response => {
-        response.data.isStarred = post.isStarred;
-        if (post.isStarred === true) {
-          response.data.stars_number+=1;
-        }
-        else if (post.isStarred === false) {
-          response.data.stars_number-=1;
-        }
-      })
-      .catch(error => {
-        console.error('Error toggling star:', error);
-        this.handleError(error, '收藏操作失败');
-      });
+        })
+          .then(response => {
+            response.data.isStarred = post.isStarred;
+            if (post.isStarred === true) {
+              response.data.stars_number += 1;
+            }
+            else if (post.isStarred === false) {
+              response.data.stars_number -= 1;
+            }
+          })
+          .catch(error => {
+            console.error('Error toggling star:', error);
+            this.handleError(error, '收藏操作失败');
+          });
+      }
+      else if (this.view === 'lease') {
+        axios.post('/api/StarPosts/starpost', {
+          post_id: post.post_id,
+          tips: "收藏测试",
+          user_id: state.userId
+        })
+          .then(response => {
+            response.data.isStarred = post.isStarred;
+            if (post.isStarred === true) {
+              response.data.stars_number += 1;
+            }
+            else if (post.isStarred === false) {
+              response.data.stars_number -= 1;
+            }
+          })
+          .catch(error => {
+            console.error('Error toggling star:', error);
+            this.handleError(error, '收藏操作失败');
+          });
       }
       else if (this.view === 'lease') {
         axios.post('/api/StarPosts/starpost', {

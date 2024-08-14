@@ -233,8 +233,8 @@ export default {
       isReportPostWindowVisible:false,//举报弹窗显示
       showSignUpInput: false, // 控制SignUpInput显示
       options: [
-        { label: '仅自己可见', value: '仅自己可见' },
-        { label: '所有人可见', value: '所有人可见' }
+        { label: '仅自己可见', value: 0 },
+        { label: '所有人可见', value: 1 }
       ],
       post: null,
     };
@@ -301,14 +301,14 @@ export default {
     },
     toggleLike(post) {
       post.isLiked = !post.isLiked;
-      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+      post.likes_number = post.isLiked ? post.likes_number + 1 : post.likes_number - 1;
       axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
       .then(response => {
         response.data.isLiked=post.isLiked;
-        response.data.likesCount=post.likes;
+        response.data.likesCount=post.likes_number;
       })
       .catch(error => {
         console.error('Error toggling like:', error);

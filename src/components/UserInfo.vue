@@ -19,8 +19,8 @@
             </el-row>
             <el-row style="min-width:100%;margin-top: 2%">
             <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
-            <el-col :span="3">{{ user.fans }} 粉丝</el-col>
-            <el-col :span="3"><span>{{ user.follows }} 关注</span></el-col>
+            <el-col :span="3">{{ userInfo.fans }} 粉丝</el-col>
+            <el-col :span="3"><span>{{ userInfo.follows }} 关注</span></el-col>
             </el-row>
         </el-col>
         <el-col :span="12">
@@ -276,7 +276,8 @@ const TalentStatus=ref(false)
     const fetchUser = async () => {
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
-        userInfo.value = response.data.data;
+        userInfo.value = response.data.data.user;
+        console.log('用户信息',userInfo.value)
         if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
           user.user_name = userInfo.value.user_name;
@@ -290,6 +291,8 @@ const TalentStatus=ref(false)
           user.email = userInfo.value.email;
           user.personal_signature = userInfo.value.personal_signature;
           user.avatar = userInfo.value.portrait;
+          userInfo.value.follows = response.data.data.followingCount;
+          userInfo.value.fans = response.data.data.followerCount;
       } catch (error) {
         ElMessage.error(error.message);
       }
