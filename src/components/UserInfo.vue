@@ -20,7 +20,8 @@
             <el-row style="min-width:100%;margin-top: 2%">
             <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
             <el-col :span="3">{{ userInfo.fans }} 粉丝</el-col>
-            <el-col :span="3"><span>{{ userInfo.follows }} 关注</span></el-col>
+            <el-col :span="3"><span @click="isListVisible=true">{{ userInfo.follows }} 关注</span></el-col>
+            <FollowedList v-model="isListVisible"/>
             </el-row>
         </el-col>
         <el-col :span="12">
@@ -191,17 +192,20 @@
 <script>
 import global from '@/store/global'
 import axios from '@/axios'
+import FollowedList from './FollowedList.vue'
 import { ElMessage } from "element-plus"
 import { onMounted, ref, reactive } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 
 export default {
   components: {
-    Plus
+    Plus,
+    FollowedList
   },
     data() {
         return {
             dialogVisible: false,
+            isListVisible:false,
             citys: [
                 { value: '上海' },
                 { value: '北京' }, 
