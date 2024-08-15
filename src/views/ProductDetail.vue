@@ -1,7 +1,7 @@
 <template>
     <div class="product-detail" v-if="product">
       <div class="product-img">
-        <img :src="product.product_image" class="image" alt="product image">
+        <img :src="this.image" class="image" alt="product image">
       </div>
       <div class="product-info">
         <div class="right">
@@ -48,6 +48,7 @@ export default {
       dialogVisible: false,
       product: null,
       thisUserId: globalState.userId,
+      image:''
     }
   },
   props: ['productID'],
@@ -66,6 +67,10 @@ export default {
         .catch(error => {
           console.error('Error fetching product:', error);
         });
+        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=4`)
+        .then(response =>{
+           this.image=response.data?.length>0?response.data[0]:'图片'
+        })
     },
     checkIfFavorited() {
       // Check if the product is already in the favorites on the backend
