@@ -7,7 +7,7 @@
           <img :src="sharepost.avatar" alt="avatar" class="avatar">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="username">{{ sharepost.username }}</span>
               <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
@@ -39,7 +39,7 @@
           <div class="post-details">
             <div class="post-info">
                 <span class="username">{{ recruitpost.username }}</span>
-                <span class="time">{{ recruitpost.time }}</span>
+                <span class="time">{{ formatTime(recruitpost.time) }}</span>
             </div>
             <div class="post-stats">
               <span class="stat-item" @click="toggleLike(recruitpost)">
@@ -57,7 +57,7 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动要求：{{ recruitpost.requirements }}</p></div>
+          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍：{{ recruitpost.intro }}</p></div>
         </div>
 
       </el-card>
@@ -125,6 +125,7 @@ export default {
     return {
       shareposts: [],
       ldleitemsposts: [],
+      recruitposts:[],
     };
   },
   mounted() {
@@ -134,12 +135,9 @@ export default {
     if (this.view === 'lease') {
       this.fetchLdleitemsPosts();
     }
-  },
-  computed: {
-    recruitposts() {
-      return this.$store.state.post.recruitmentposts; 
-    },
-
+    if (this.view === 'recruit') {
+      this.fetchRecruitPosts();
+    }
   },
   methods: {
     fetchSharePosts() {
@@ -150,14 +148,13 @@ export default {
             post_id: post.post_id,
             username: post.author_name,
             avatar: post.portrait,
-            title: post.title,
-            shortContent:post.short_content,
+            post_time: post.post_time,
             likes: post.likes_number,
             comments: post.total_floor,
-            post_time: post.post_time,
-            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
+            title: post.title,
+            shortContent:post.short_content,
           }));
         })
         .catch(error => {
@@ -190,6 +187,33 @@ export default {
           console.error('Error fetching share posts:', error);
           this.handleError(error, '获取闲置贴失败');
         }); 
+    },
+    fetchRecruitPosts() {
+      const userId = state.userId;
+      axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
+        .then(response => {
+          this.recruitposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_activity_summary,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            //views: 0,
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+            activity_time: post.activity_time,
+            activity_address: post.location,
+            total_recruit: post.planned_count,
+            intro:post.short_activity_summary,
+          }));
+        })
+        .catch(error => {
+          console.error('Error fetching recruit posts:', error);
+          this.handleError(error, '获取招募贴失败');
+        });  
     },
     handleError(error, message) {
       if (error.response) {
@@ -275,6 +299,9 @@ export default {
       else if (newValue === 'share') {
         this.fetchSharePosts();
       }
+      else if (newValue === 'recruit') {
+        this.fetchRecruitPosts();
+      }
     }
   },
   created() {
@@ -283,6 +310,8 @@ export default {
     }
     else if (this.view === 'share') {
       this.fetchSharePosts();
+    } else if (this.view === 'recruit') {
+      this.fetchRecruitPosts();
     }
   }
 };
