@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="comment-item">
-      <img :src="this.localComment.portrait" alt="avatar" class="avatar">
+      <img :src="this.localComment.portrait" alt="avatar" class="avatar"  @click="goToUserSpace(this.localComment.author_id)">
       <div class="comment-details">
         <div class="one-comment">
           <div class="comment-info">
             <div class="comment-header">
-              <span class="comment-username">{{ this.localComment.author_name }}</span>
+              <span class="comment-username" @click="goToUserSpace(this.localComment.author_id)">{{ this.localComment.author_name }}</span>
               <span v-if="isReply" class="comment-username">回复</span>
               <span v-if="isReply" class="comment-username">{{ this.localComment.reply_name }}</span>
             </div>
@@ -22,7 +22,7 @@
               <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !this.localComment.isLiked, 'icon-dianzanxuanzhong': this.localComment.isLiked}"></i>{{ this.localComment.likes_number }}
             </span>
             <span class="stat-item" @click="toggleReplyInput">
-              <el-icon><ChatLineSquare /></el-icon>
+              <el-icon><ChatLineSquare /></el-icon>点击评论
             </span>
           </div>
 
@@ -58,7 +58,7 @@
 import CommentInput from '@/components/CommentInput.vue';
 import axios from '@/axios';
 import state from '@/store/global.js';
-// import { ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus';
 
 
 export default {
@@ -116,16 +116,6 @@ export default {
     toggleReplyInput() {
       this.showReplyInput = !this.showReplyInput;
     },
-    openDeleteDialog() {
-
-      this.deleteDialogVisible = true;
-    },
-    cancelDelete() {
-      this.deleteDialogVisible = false;
-    },
-    confirmDelete() {
-      // 删除评论逻辑
-    },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
 
@@ -134,7 +124,50 @@ export default {
       this.showReplyInput = false;
       this.$emit('reply-submitted'); // 触发事件，通知父组件
       
-    }
+    },
+    goToUserSpace(author_id) {
+      if (author_id == state.userId) {
+        this.$router.push({
+          path: `/home/userspace`
+        })
+      }
+      else {
+        this.$router.push({
+          path: `/home/userspace/${author_id}`
+        })
+      }
+    },
+    openDeleteDialog() {
+      this.deleteDialogVisible = true;
+    },
+    cancelDelete() {
+      this.deleteDialogVisible = false;
+    },
+    confirmDelete() {
+      this.deleteDialogVisible = false;
+      axios.delete(`api/Comments/${this.localComment.comment_id}`)
+        .then(response => {
+          if (response.data!=null) {
+            this.$emit('comment-deleted'); // 触发事件，通知父组件
+          }
+      })
+      .catch(error => {
+        this.handleError(error, '删除评论失败');
+      })
+      
+    },
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
+    },
   }
 };
 </script>
