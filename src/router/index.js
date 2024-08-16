@@ -234,10 +234,10 @@ const routes = [
                 props: true
             },
             {
-                path: `searchProduct`,
-                component: () => import('../views/SearchProduct.vue'),
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
                 props: true
-            },
+            }
         ]
     },
     {

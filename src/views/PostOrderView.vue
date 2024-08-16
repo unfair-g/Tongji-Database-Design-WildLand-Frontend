@@ -15,7 +15,18 @@
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单状态</h2></div>
-          <div style="text-align:center;justify-content:center;"><p>已支付</p></div>
+          <el-steps 
+            style="max-width: 600px" 
+            :active=leaseOrder.status
+            align-center 
+            finish-status="success"
+            process-status="error"
+            class="postorder-status"
+          >
+            <el-step title="已支付" />
+            <el-step title="已发货" />
+            <el-step title="已收货" />
+          </el-steps>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单创建时间</h2></div>
@@ -38,7 +49,8 @@
           <div style="text-align:center;justify-content:center;"><p>{{ this.state }}</p></div>
         </div>
         <div class="order_3">
-          <el-button class="pay">申请退款</el-button>
+          <el-button class="order_buttons" :disabled="isdeliver" color="#1D5B5E">确认收货</el-button>
+          <el-button class="order_buttons" color="#1D5B5E">申请退款</el-button>
         </div>
       </div>
       </template>
@@ -49,12 +61,13 @@ import axios from '@/axios'; // 确保路径是正确的
 
   export default {
     name: 'PostOrderView',
-          data() {
+    data() {
     return {
       ldleitemsPostId: null,
       ldleitemsPost: [],
       leaseOrder: [],
-      state:''
+      state: '',
+      isdeliver:true
     };
   },
   created() {
@@ -77,8 +90,11 @@ import axios from '@/axios'; // 确保路径是正确的
           if(this.leaseOrder.logistics_status==0)
               this.state='自提';
           else
-            this.state='快递'
-
+            this.state = '快递'
+          this.leaseOrder.order_date=this.leaseOrder.order_date.substring(0,10)
+          this.leaseOrder.status = 2
+          if (this.leaseOrder.status > 1)
+            this.isdeliver=false
         })
         .catch(error => {
           console.error('Error fetching lease order:', this.ldleitemsPostId);
@@ -124,6 +140,12 @@ import axios from '@/axios'; // 确保路径是正确的
       border: 1px solid #ddd;
       border-radius: 5px;
       background-color: #fff;
+    }
+
+    .postorder-status{
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 2%;
     }
     
     .product-info-header {
@@ -187,11 +209,10 @@ import axios from '@/axios'; // 确保路径是正确的
         margin-bottom: 20px;
       }
     
-      .pay {
-      background-size: 60px;
-      background-color: #3085887d;
+      .order_buttons {
       font-size:x-large;
-      color: #0c0c0c;
+      margin-left: auto;
+      margin-right: auto;
     }
       </style>
       

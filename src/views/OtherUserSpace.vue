@@ -3,7 +3,7 @@
         <el-row>
             <el-col :span="2"><h2>个人信息</h2></el-col>
              <el-col :span="2">
-                <el-tag v-if="followed" color="#1D5B5E" size="large" effect="dark" style="width:80%;font-size:18px">已关注</el-tag>
+                <el-tag v-if="followed" color="#1D5B5E" size="large" effect="dark" style="width:80%;font-size:18px" @click="unFollow">已关注</el-tag>
                 <el-tag v-else color="#1D5B5E" size="large" effect="dark" style="width:80%;font-size:18px" @click="Follow">+ 关注</el-tag>
             </el-col>
         </el-row>
@@ -57,15 +57,29 @@ import global from '@/store/global'
 
 const userInfo = ref({})
 const route = useRoute();
-const followed=ref(false)
+const followed=ref()
 
-const Follow = async() => {
+const Follow = async () => {
     try {
         await axios.post(`/api/Follows/${global.userId}/follow/${route.params.userId}`)
         ElMessage.success('关注成功！')
-        followed.value=true
+        followed.value = true
+        userInfo.value.fans += 1;
     } catch (error) {
+        ElMessage.error(error.message)
         console.error(error)        
+    }
+}
+
+const unFollow = async () => {
+    try {
+        await axios.delete(`/api/Follows/unfollow/${global.userId}/${route.params.userId}`)
+        followed.value = false
+        userInfo.value.fans -= 1;
+        ElMessage.success('取关成功！')
+    } catch (error) {
+        ElMessage.error(error.message)
+        console.log(error)
     }
 }
 
@@ -86,7 +100,8 @@ const ifFollowed = async () => {
     try {
         const response = await axios.get(`/api/Follows/getFollowedUsers/${global.userId}`);
         const follows = response.data.data
-        followed.value = follows.some(item => item.followed_id == userInfo.value.user_id)
+        followed.value = follows.some(item => item.followed_id == route.params.userId)
+        console.log('followed',followed.value)
     }
     catch (error) {
         console.error(error)
