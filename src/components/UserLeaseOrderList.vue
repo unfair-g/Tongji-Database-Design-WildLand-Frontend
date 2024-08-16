@@ -4,9 +4,9 @@
         <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
 
     <div class="post-content">
-      <img :src="ldleitemspost.item_image" class="image" alt="order image">
+      <img :src="ldleitemspost.image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <span>{{ ldleitemspost.item_name}}</span>
+            <h1>{{ ldleitemspost.item_name}}</h1>
               <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
               <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
               <div class="bottom clearfix">
@@ -22,22 +22,81 @@
     
     <script>
 import { ref } from 'vue';
+import axios from 'axios';
+import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
 
     export default ({
       name: 'LeaseView',
-      computed: {
-        ldleitemsposts() {
-            return this.$store.state.post.ldleitemsposts
-        }
+      data() {
+        return {
+          ldleitemsposts: [],
+        };
       },
+      create(){
+        this.fetchPosts();
+      },
+    mounted(){
+     this.fetchPosts();
+    },
       methods: {
+        async fetchPosts() {
+          try {
+      // 从 Purchase 接口获取所有订单的 post_id 和 order_id
+      const purchaseResponse = await axios.get(`https://localhost:7218/api/Purchases`);
+      const purchaseData = purchaseResponse.data.filter(order => order.user_id === globalState.userId);  
+      console.log(purchaseData); // 输出筛选后的数据  
+
+      // 根据 post_id 从 Posts 接口获取帖子详情
+      const ldleitemspostsPromises = purchaseData.map(async order => {
+        const detailResponse = await axios.get(`https://localhost:7218/api/LdleitemsPosts/${order.post_id}`);
+        const item_name=detailResponse.data.item_name;
+        const condition=detailResponse.data.condition;
+        const price=detailResponse.data.price;
+        const item_summary=detailResponse.data.item_summary;
+
+        const pics= await axios.get('https://localhost:7218/api/LdleitemsPosts/GetLdleitemsPosts');
+        const image = pics.data.filter(order2 => order2.postId === order.post_id).picUrl; 
+        console.log(image)
+
+            // 将 order_id 添加到每个帖子对象中
+            return { 
+              ...order, 
+              order_id: order.order_id ,
+              item_name:item_name,
+              item_summary:item_summary,
+              condition:condition,
+              price:price,
+              image:image
+            };
+      });
+      // 等待所有请求完成
+      this.ldleitemsposts = await Promise.all(ldleitemspostsPromises);
+      console.log(this.ldleitemsposts)
+      } catch (error) {
+        console.error('Error fetching ldleitemsposts:', error);
+        this.handleError(error, '获取闲置帖失败');
+      }
+    },
         goToPostDetail (ldleitemspost) {
-          const ldleitemsPostId = ldleitemspost.post_id
+          const ldleitemsPostId = ldleitemspost.order_id
+
           this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPostId}`,
           query: {  
             ldleitemsPostId: ldleitemsPostId
         }})
-        }
+        },
+        handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        this.$message.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        this.$message.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        this.$message.error(`${message} - 错误信息: ${error.message}`);
+      }
+    }
       },
       setup() {
     const isLiked = ref(false);

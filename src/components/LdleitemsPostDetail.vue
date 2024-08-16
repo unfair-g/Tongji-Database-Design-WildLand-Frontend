@@ -2,9 +2,9 @@
   <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
       <div class="post-header">
-        <img :src="ldleitemsPost.avatar" alt="avatar" class="avatar">
+        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar">
         <div class="post-header-info">
-          <span class="username">{{ ldleitemsPost.username }}</span>
+          <span class="username">{{ ldleitemsPost.author_name }}</span>
         </div>
         <el-button @click="goBackToForumView" class="close-button">
           <el-icon><Close /></el-icon>
@@ -15,7 +15,7 @@
         <div style="flex:1;">
           <div class="post-details" style="display:flex;">
             <div class="details-text" style="flex:1;">
-            <span class="time">发布时间：{{ ldleitemsPost.time }}</span>
+            <span class="time">发布时间：{{ ldleitemsPost.post_time }}</span>
             <h1 class="item-name">{{ ldleitemsPost.title }}</h1>
             <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
             <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
@@ -23,7 +23,7 @@
           </div>
       </div>
 
-      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>上海市/嘉定区/同济大学</div>
+      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>{{ldleitemsPost. post_positon }}</div>
         <div class="post-content">
           <el-dialog
           v-model="dialogVisible"
@@ -64,7 +64,7 @@
         </div>
         <div class="image-gallery">
           <el-carousel indicator-position="outside">
-          <el-carousel-item v-for="(image, index) in ldleitemsPost.item_images" :key="index">
+          <el-carousel-item v-for="(image, index) in ldleitemsPost.post_pics" :key="index">
             <img :src="image" class="carousel-image">
           </el-carousel-item>
         </el-carousel>
@@ -78,7 +78,7 @@
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
           <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost.isLiked, 'icon-dianzanxuanzhong': ldleitemsPost.isLiked}"></i>
           <span>点赞</span>
-          <span>{{ ldleitemsPost.likes }}</span>
+          <span>{{ ldleitemsPost.likes_number }}</span>
         </el-button>
         <el-button class="stat-item" @click="toggleStar(ldleitemsPost)">
           <el-icon v-if="!ldleitemsPost.isStarred"><Star /></el-icon>
@@ -109,7 +109,7 @@
       </div>
       
       <div class="action-buttons">
-        <el-button class="pay" @click="Rent_Success()">立即租赁</el-button>
+        <el-button class="pay" id="rentButton" :disabled="isButtonDisabled" @click="Rent_Success()">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
 
@@ -122,6 +122,7 @@
 <script>
 import axios from 'axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
+import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
 export default {
   name: 'ldleitemsPost', 
@@ -154,28 +155,107 @@ export default {
         phone:null
       },
       RentdialogVisible: false,
-      ldleitemsPost: null
+      ldleitemsPost: null,
+      isLike:false,
+      liStar:false,
+      location:'',
+      rent:[],
+      isButtonDisabled: true, // 控制按钮的禁用状态  
     };
   },
   created() {
-    this.fetchLdleitemsPost();
+    this.fetchLdleitemsPosts();
   },
   methods: {
-    fetchLdleitemsPost() {
-      axios.get(`https://localhost:7218/api/LdleitemsPosts/${this.ldleitemsPostID}`)
-        .then(response => {
-          this.ldleitemsPost = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching ldleitems post:', error);
-        });
-      },
+      async fetchLdleitemsPosts() {
+      //const userId = state.userId; // 确保 state.userId 是可访问的  
+  try {  
+    const overviewResponse = await axios.get(`https://localhost:7218/api/Posts/${this.ldleitemsPostID}`); 
+    console.log(overviewResponse)
+      // 你可以在这里对filteredPosts进行进一步处理  
+     const post=overviewResponse.data;
+     console.log(post)
+      // 第一步：获取 author_id  
+      const authorResponse = await axios.get(`https://localhost:7218/api/Posts/${post.post_id}`);  
+      const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
+  
+      const LdleResponse = await axios.get(`https://localhost:7218/api/LdleitemsPosts/${post.post_id}`);  
+      const item_summary = LdleResponse.data.item_summary; 
+      const condition = LdleResponse.data.condition; 
+      const price = LdleResponse.data.price; 
+
+      // 第二步：使用 author_id 和 post_id 获取 post_pics  
+      const detailResponse = await axios.get(`https://localhost:7218/api/Posts/GetPostDetail/${post.post_id}/${authorId}`);  
+      const postPics = detailResponse.data.post_pics; // 假设这是一个图片数组  
+      const author_name = detailResponse.data.author_id; 
+      const portrait = detailResponse.data.portrait; 
+      const post_time = detailResponse.data.post_time; 
+      const position = detailResponse.data.post_position; 
+  
+      // 返回一个新的对象，包含原始数据和额外数据  
+      this.ldleitemsPost= {  
+        ...post, // 展开原始帖子对象  
+        author_id: authorId, // 添加 author_id  
+        author_name:author_name,
+        portrait:portrait,
+        post_pics: postPics, // 添加第一张图片（或图片数组，根据需要）  
+        post_time:post_time,
+        item_summary:item_summary,
+        condition:condition,
+        price:price,
+        post_positon:position
+      };  
+    // 由于 map 返回的是 Promise 数组，我们需要等待所有 Promise 解决  
+    console.log(this.ldleitemsPost); // 输出筛选后的数据  
+  
+  } catch (error) {  
+    console.error('Error fetching overview posts:', error);  
+    // 在这里，你可能想设置 this.ldleitemsposts 为空数组或错误消息数组  
+    this.ldleitemsPost = []; // 或 [{ error: 'Failed to fetch posts' }]  
+  }
+    },
     toggleLike(ldleitemsPost) {
       ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
       ldleitemsPost.likes = ldleitemsPost.isLiked ? ldleitemsPost.likes + 1 : ldleitemsPost.likes - 1;
+      const likePost = {
+        post_id: this.ldleitemsPost.post_id,
+        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
+      };
+      console.log('点赞上传:', likePost.post_id);
+      console.log('点赞上传:', likePost.user_id);
+      axios.post('https://localhost:7218/api/LikePosts', likePost,{headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      }
+    })
+        .then(response => {
+          console.log('点赞成功:', response.data);
+        })
+        .catch(error => {
+          console.error('点赞出错:', error);
+        });
     },
     toggleStar(ldleitemsPost) {
       ldleitemsPost.isStarred = !ldleitemsPost.isStarred;
+      const starPost = {
+        post_id: this.ldleitemsPost.post_id,
+        time:new Date().toISOString(), // 生成订单日期
+        tips:"闲置折叠椅",
+        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
+      };
+      console.log('点赞上传:', starPost.post_id);
+      console.log('点赞上传:', starPost.user_id);
+      axios.post('https://localhost:7218/api/StarPosts', starPost,{headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      }
+    })
+        .then(response => {
+          console.log('点赞成功:', response.data);
+        })
+        .catch(error => {
+          console.error('点赞出错:', error);
+        });
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
@@ -210,18 +290,20 @@ export default {
     cancelDelete() {
       this.deleteDialogVisible = false;
     },
-    addComment(newComment) {
-      this.ldleitemsPost.comments_details.push(newComment);
-      this.ldleitemsPost.comments += 1;
-    },
-    addReply({ parentComment, reply }) {
-      const comment = this.ldleitemsPost.comments_details.find(c => c.comment_id === parentComment.comment_id);
-      if (comment) {
-        comment.replies.push(reply);
-      }
-    },
     Rent_Success(){
       this.RentdialogVisible= true;
+    },
+    BanRent()
+    {
+      axios.get(`https://localhost:7218/api/Purchases/${this.ldleitemsPostID}`)
+        .then(response => {
+          this.rent = response.data;
+          this.isButtonDisabled = this.rent.length === 0; // 更新按钮的禁用状态
+        })
+        .catch(error => {
+          console.log(this.rent)
+          console.error('Error fetching products:', error);
+        });
     },
   }
 };

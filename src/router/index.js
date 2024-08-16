@@ -42,7 +42,7 @@ const routes = [
                 path: 'postdetail/:id', // 添加 :id 作为动态路由参数
                 name: 'PostDetail',
                 component: () => import('../views/PostDetail.vue')
-            },              
+            },
             {
                 path: 'reportreview',
                 name: 'ReportReview',
@@ -200,9 +200,6 @@ const routes = [
                 props: route => ({
                     type: route.params.type,
                     postID: route.params.postID,
-                    isPostOwner: route.query.isPostOwner === 'true', // 传递布尔类型的参数
-                    isCommentOwner: route.query.isCommentOwner === 'true', // 传递布尔类型的参数
-                    isSignupOwner: route.query.isSignupOwner === 'true' // 传递布尔类型的参数
                 })
 
             },
@@ -222,8 +219,13 @@ const routes = [
                 props: true
             },
             {
-                path: `searchProduct`,
-                component: () => import('../views/SearchProduct.vue'),
+                path: `userspace/:userId`,
+                component: () => import('../views/OtherUserSpace.vue'),
+                props: true
+            },
+            {
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
                 props: true
             },
             {

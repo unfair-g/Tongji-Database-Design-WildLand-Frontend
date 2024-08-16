@@ -6,21 +6,22 @@
         </el-row>
         <el-row style="margin-top:1%">
         <el-col :span="2">
-            <el-avatar v-if="userInfo.gender=='f'" :src="avatarfemale" style="width:100px;height:100px"/>
-            <el-avatar v-else :src="avatarmale" style="width:100px;height:100px"/>
+            <el-avatar :src="userInfo.portrait" style="width:100px;height:100px" />
         </el-col>
         <el-col :span="10">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="4">{{ userInfo.user_name }} </el-col>
+                <el-col :span="5">{{ userInfo.user_name }} </el-col>
                 <el-col :span="5">
                     <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
-                    <el-tag v-else type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
-                </el-col>
+                    <el-tag v-else-if="userInfo.outdoor_master_title==='0'&&!TalentStatus" type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
+                    <el-tag v-else type="info" size="large" effect="dark" round>户外达人：审核中</el-tag>
+                </el-col> 
             </el-row>
             <el-row style="min-width:100%;margin-top: 2%">
             <el-col :span="7">ID:{{ userInfo.user_id }}</el-col>
-            <el-col :span="3">{{ user.fans }} 粉丝</el-col>
-            <el-col :span="3">{{ user.follows }} 关注</el-col>
+            <el-col :span="3">{{ userInfo.fans }} 粉丝</el-col>
+            <el-col :span="3"><span @click="isListVisible=true">{{ userInfo.follows }} 关注</span></el-col>
+            <FollowedList v-model="isListVisible"/>
             </el-row>
         </el-col>
         <el-col :span="12">
@@ -69,7 +70,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="ifCharge = false">取消</el-button>
-        <el-button type="primary" color="#1D5B5E" @click="dialogVisible = false">
+        <el-button type="primary" color="#1D5B5E" @click="onCharge">
           确认充值
         </el-button>
       </div>
@@ -77,15 +78,22 @@
   </el-dialog>
 
     <el-dialog v-model="dialogFormVisible" title="编辑资料" width="500" align-center="true">
-        <AvatarPicker />
-            <el-form
-                label-position="top"
-                label-width="auto"
-                :model="user"
-                :rules="rules"
-                ref="formRef"
-                style="max-width: 600px; margin-top:5%; margin-bottom: 10%;"
-                >
+      <el-form
+          label-position="top"
+          label-width="auto"
+          :model="user"
+          :rules="rules"
+          ref="UserformRef"
+          style="max-width: 600px; margin-top:2%; margin-bottom: 10%;"
+          >
+          <el-upload
+              class="avatar-uploader"
+              :show-file-list="false"
+              :before-upload="beforeAvatarUpload"
+              @change="handleFileChange"
+            >
+          <el-avatar :src="user.avatar" class="avatar"/>
+          </el-upload>
                 <el-form-item label="用户名">
                 <el-input v-model="user.user_name" placeholder="请输入您的昵称"/>
                 </el-form-item>
@@ -104,6 +112,7 @@
                     v-model="user.birthday"
                     type="date"
                     placeholder="请选择您的生日"
+                    :disabled-date="disabledDate"
                     style="width:500px"
                 />
                 </el-form-item>
@@ -133,7 +142,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="onSubmit" color="#1D5B5E">
+        <el-button type="primary" @click="ResetUserInfo" color="#1D5B5E">
           保存
         </el-button>
       </div>
@@ -146,47 +155,57 @@
         width="500"
     >
         <el-form 
-        :model="form" 
+        :model="expert" 
         label-width="auto" 
         label-position="top"
+        :rules="rules"
+        ref="ExpertformRef"
         style="max-width: 600px"
         >
-        
-         <el-form-item label="擅长领域">
-            <el-input v-model="ept_field" placeholder="请输入您擅长的领域"/>
+        <el-form-item label="资质证明" prop="image">
+          <el-upload
+            class="image-uploader"
+            :show-file-list="false"
+            @change="handleImageChange"
+            :before-upload="beforeImageUpload"
+          >
+            <img v-if="expert.image" :src="expert.image" class="image" />
+            <el-icon v-else class="image-uploader-icon"><Plus /></el-icon>
+          </el-upload>
         </el-form-item>
-        <el-form-item label="户外经历">
-            <el-input v-model="experience" type="textarea" placeholder="请输入您的户外经历" />
+         <el-form-item label="擅长领域" prop="ept_field">
+            <el-input v-model="expert.ept_field" placeholder="请输入您擅长的领域"/>
+        </el-form-item>
+        <el-form-item label="户外经历" prop="experience">
+            <el-input v-model="expert.experience" type="textarea" placeholder="请输入您的户外经历" />
         </el-form-item>
         </el-form>
         <template #footer>
         <div class="dialog-footer">
             <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="dialogVisible = false" color="#1D5B5E">确认</el-button>
+            <el-button type="primary" @click="onSubmit" color="#1D5B5E">确认</el-button>
         </div>
         </template>
     </el-dialog>
 </template>
 
 <script>
-import AvatarPicker from './AvatarPicker.vue'
 import global from '@/store/global'
 import axios from '@/axios'
+import FollowedList from './FollowedList.vue'
 import { ElMessage } from "element-plus"
-import { onMounted,ref,reactive } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
+import { Plus } from '@element-plus/icons-vue'
 
 export default {
-    components: {
-        AvatarPicker
-    },
+  components: {
+    Plus,
+    FollowedList
+  },
     data() {
         return {
-            num:5,
-            avatarfemale:require('../assets/avatar-female.jpg'),
-            avatarmale: require('../assets/avatar-male.jpg'),
             dialogVisible: false,
-            ept_field: "",
-            experience: "",
+            isListVisible:false,
             citys: [
                 { value: '上海' },
                 { value: '北京' }, 
@@ -195,6 +214,23 @@ export default {
                 { value: '浙江' }
             ]
         }
+  },
+  methods: {
+    beforeImageUpload(file) {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传图片只能是 JPG 或 PNG 格式!');
+        return false;
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传图片大小不能超过 2MB!');
+        return false;
+      }
+      this.Proof.append('file', file);
+      return true;
+    }
     },
     setup() {
         const dialogFormVisible = ref(false);
@@ -211,10 +247,20 @@ export default {
                 email: '',
                 personal_signature:'',
                 fans: 0,
-                follows:0
+                follows: 0,
+                points:0
         });
 
-        const formRef = ref()
+      const expert = reactive({
+          image:null,
+          ept_field: '',
+          experience:''
+      })
+
+      const follows=ref(null)
+
+        const UserformRef = ref()
+        const ExpertformRef = ref()
 
         const rules = ref({
             email: [
@@ -223,13 +269,20 @@ export default {
             phone_number: [
                 { message: '请输入您的手机号码',trigger: 'blur' },
                 { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入规范的手机号码', trigger: 'blur' },
-            ]
+          ],
+          image: { required: true, message: '请上传您的资质证明', trigger: 'change' },
+          ept_field: { required: true, message: '请填写您擅长的领域', trigger: 'blur' },
+          experience: { required: true, message: '请填写您的户外经历', trigger: 'blur' },
         })
+
+const TalentStatus=ref(false)
 
     const fetchUser = async () => {
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
-          userInfo.value = response.data.data;
+        userInfo.value = response.data.data.user;
+        console.log('用户信息',userInfo.value)
+        if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
           user.user_name = userInfo.value.user_name;
           if (userInfo.value.gender == 'f')
@@ -241,13 +294,64 @@ export default {
           user.location = userInfo.value.location;
           user.email = userInfo.value.email;
           user.personal_signature = userInfo.value.personal_signature;
+          user.avatar = userInfo.value.portrait;
+          userInfo.value.follows = response.data.data.followingCount;
+          userInfo.value.fans = response.data.data.followerCount;
       } catch (error) {
         ElMessage.error(error.message);
       }
+      if (userInfo.value.outdoor_master_title == '0') {
+        try {
+          const TalentCertification = await axios.get(`/api/CertificationReviews/${global.userId}`);
+          if (TalentCertification.data.status == '2') {
+            TalentStatus.value = true;
+          }
+        } catch (error) {
+          console.error(error.message);
         }
+      }
+      }
 
-    const onSubmit = () => {
-      formRef.value.validate(async (valid) => {
+      const fetchFollows = async () => {
+        try {
+          const response = await axios.get(`/api/Follows/getFollowedUsers/${global.userId}`);
+          follows.value=response.data.data
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      const formData = new FormData();
+      const Proof = new FormData();
+
+      const beforeAvatarUpload = (file) => {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传头像图片大小不能超过 2MB!')
+        return false
+      }
+      
+      formData.set('file', file);
+      ElMessage.success('上传头像成功')
+
+      return false;
+}
+
+const avatarchange=ref(false)
+
+const handleFileChange=(file)=> {
+  user.avatar = URL.createObjectURL(file.raw)
+  avatarchange.value = true;
+}
+
+    const ResetUserInfo = () => {
+      UserformRef.value.validate(async (valid) => {
           if (valid) {
               const gender = (user.gender === '女' ? 'f' : 'm')
           try {
@@ -258,8 +362,20 @@ export default {
               location: user.location,
               phoneNumber: user.phone_number,
               email: user.email,
-              personal_signature:user.personal_signature
+              personal_signature: user.personal_signature
             });
+            if (avatarchange.value) {
+              try {
+                await axios.post(`/api/Users/upload_user_portrait/${global.userId}`,
+                  formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  }
+                })
+              } catch (error) {
+                ElMessage.error(error.message);
+              }
+            }
             ElMessage.success('信息修改成功！');
               console.log('User registered:', response.data);
               fetchUser();
@@ -272,8 +388,60 @@ export default {
           ElMessage.error('请完善信息！');
         }
       });
-    };
+      };
 
+    const handleImageChange=(file)=> {
+       expert.image = URL.createObjectURL(file.raw);
+      }
+    
+      const onSubmit = () => {
+        ExpertformRef.value.validate(async (valid) => {
+        if(valid){
+          try {
+             await axios.post(`/api/TalentCertifications/apply_outdoor_master/${global.userId}`,
+              Proof, {
+                params: {
+                  ept_field: expert.ept_field,
+                  experience:expert.experience
+                },
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                }
+             });
+            ElMessage.success('申请成功！');
+          } catch (error) {
+              ElMessage.error(error.message);
+            }
+          }
+        else {
+          ElMessage.error('请完善信息！');
+        }
+      })
+      }
+
+      const num=ref(5)
+
+    const onCharge=async() =>{
+      try {
+        await axios.put(`/api/Users/${global.userId}/updateUserPoints`, userInfo.value.points+num.value,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        ElMessage.success('充值成功！')
+        fetchUser()
+        ifCharge.value = false;
+        num.value = 5;
+      } catch (error) {
+        ElMessage.error(error.message)
+      }
+      }
+
+      const disabledDate = (time) => {
+      return time.getTime() > Date.now()
+    }
+    
     onMounted(() => {
       fetchUser();
     });
@@ -283,9 +451,22 @@ export default {
         ifCharge,
         userInfo,
         user,
+        expert,
+        follows,
+        fetchFollows,
         rules,
-        formRef,
-        onSubmit
+        UserformRef,
+        ExpertformRef,
+        beforeAvatarUpload,
+        handleFileChange,
+        ResetUserInfo,
+        handleImageChange,
+        Proof,
+        TalentStatus,
+        onCharge,
+        num,
+        onSubmit,
+        disabledDate
     }
   }
 }
@@ -303,5 +484,39 @@ export default {
    .item-label{
     font-weight:bold;
    }
-   
+
+   .avatar-uploader .avatar {
+  width: 100px;
+  height: 100px;
+  margin-left: 170px;
+  margin-bottom: 20px;
+}
+
+.image-uploader .image {
+  width: 150px;
+  height: 150px;
+  display: block;
+}
+
+.image-uploader{
+  margin-left: 32%;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.image-uploader:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.image-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+}
 </style>

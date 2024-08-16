@@ -4,10 +4,10 @@
     <el-card class="post-item">
       <template #header>
         <div class="post-header">
-          <img :src="sharepost.avatar" alt="avatar" class="avatar">
+          <img :src="sharepost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(sharepost.author_id)">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="username">{{ sharepost.username }}</span>
               <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
@@ -67,22 +67,23 @@
   </div>
   <div v-else-if="view === 'lease'">
     <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
-      <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
+      <el-card class="post-item">
         <template #header>
          <div class="post-header">
-            <img :src="ldleitemspost.avatar" alt="avatar" class="avatar">
+            <img :src="ldleitemspost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemspost.author_id)"/>
             <div class="post-details">
               <div class="post-info">
-                <span class="username">{{ ldleitemspost.username }}</span>
+                <span class="username">{{ ldleitemspost.author_name }}</span>
                 <span class="time">{{ ldleitemspost.time }}</span>
               </div>
               <div class="post-stats">
+                <!---->
                 <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
-                <span class="stat-item" @click="toggleLike">
-                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes }}
+                <span class="stat-item" @click="toggleLike(ldleitemspost)">
+                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes_number }}
                 </span>
                 <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
-                <span class="stat-item" @click="toggleStar">
+                <span class="stat-item" @click="toggleStar(ldleitemspost)">
                   <el-icon v-if="!isStarred"><Star /></el-icon>
                   <el-icon v-else><StarFilled /></el-icon>
                 </span>
@@ -91,8 +92,8 @@
           </div>
         </template>
 
-        <div class="post-content">
-          <img :src="ldleitemspost.item_image" class="image" alt="order image">
+        <div class="post-content" @click="goToPostDetail(ldleitemspost)">
+          <img :src="ldleitemspost.post_pics" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
             <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
@@ -122,6 +123,10 @@ export default {
     view: {
       type: String,
       required:true
+    },
+    user_id: {
+      type: Number,
+      default:null
     }
   },
   data() {
@@ -146,41 +151,125 @@ export default {
   },
   methods: {
     fetchSharePosts() {
-      const userId = state.userId;
-      axios.get(`/api/Posts/GetOverview/0/${userId}`)
-        .then(response => {
-          this.shareposts = response.data.map(post => ({
-            post_id: post.post_id,
-            username: post.author_name,
-            avatar: post.portrait,
-            title: post.title,
-            shortContent:post.short_content,
-            likes: post.likes_number,
-            comments: post.total_floor,
-            post_time: post.post_time,
-            views: 0, // Assuming views is not available in the API response
-            isLiked: post.isLiked,
-            isStarred: post.isStarred,
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching share posts:', error);
-          this.handleError(error, '获取分享贴失败');
-        });  
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/Posts/GetOverview/0/${userId}`)
+          .then(response => {
+            this.shareposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:post.author_id,
+              avatar: post.portrait,
+              title: post.title,
+              shortContent: post.short_content,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
+      else {
+        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/0`)
+          .then(response => {
+            this.shareposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:this.user_id,
+              avatar: post.portrait,
+              title: post.title,
+              shortContent: post.short_content,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
     },
-    fetchLdleitemsPosts() {
-      axios.get('/api/LdleitemsPosts')
-        .then(response => {
-          this.ldleitemsposts = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching ldle items posts:', error);
-        });
+
+   async fetchLdleitemsPosts() {
+      if (this.user_id == null) {
+        try {  
+          const overviewResponse = await axios.get(`/api/Posts`); 
+            const filteredPosts = overviewResponse.data.filter(post => post.post_kind === 1);  
+            console.log(filteredPosts); // 输出筛选后的数据  
+            const posts = filteredPosts.map(async post => {  
+            const authorResponse = await axios.get(`/api/Posts/${post.post_id}`);  
+            const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
+            const detailResponse = await axios.get(`/api/Posts/GetPostDetail/${post.post_id}/${authorId}`);  
+            const postPics = detailResponse.data.post_pics; // 假设这是一个图片数组  
+            const author_name = detailResponse.data.author_id; 
+            const portrait = detailResponse.data.portrait; 
+            const firstPic = postPics.length > 0 ? postPics[0] : null; // 或者 'default-image.jpg'  
+            return {  
+              ...post, // 展开原始帖子对象  
+              author_id: authorId, // 添加 author_id  
+              author_name:author_name,
+              portrait:portrait,
+              post_pics: firstPic, // 添加第一张图片（或图片数组，根据需要）  
+            };  
+          }); 
+          this.ldleitemsposts = await Promise.all(posts.map(p => p.catch(error => {  
+            console.error('Error fetching additional data for post:', error);    
+            return {  error: 'Failed to fetch additional data' }; // 注意：这里的 post 是未定义的，需要适当处理  
+          })));  
+          console.log(this.ldleitemsposts); // 输出筛选后的数据  
+        
+        } catch (error) {  
+          console.error('Error fetching overview posts:', error);  
+          this.handleError(error, '获取闲置贴失败');  
+          this.ldleitemsposts = []; // 或 [{ error: 'Failed to fetch posts' }]  
+        }
+      }
+      else {
+         axios.get(`/api/Posts/GetUserPosts/${this.user_id}/1`)
+          .then(response => {
+            this.ldleitemsposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:this.user_id,
+              avatar: post.portrait,
+              title: post.title,
+              item_summary: post.item_summary,
+              condition: post.condition,
+              price: post.price,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取闲置贴失败');
+          });
+      } 
+
     },
     handleError(error, message) {
       if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        if (error.response.status == '404') {
+          ElMessage.error('暂时未发布该类帖子！')
+        }
+        else {
+          console.error(`${message}:`, error.response.data);
+          ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        }
       } else if (error.request) {
         console.error(`${message}: No response received`);
         ElMessage.error(`${message} - 没有收到响应`);
@@ -206,7 +295,7 @@ export default {
    goToPostDetail(post) {
       const postID = post.post_id;
       if (this.view === 'lease') {
-        this.$router.push({ path: `/home/forum/lease/${postID}` });
+        this.$router.push({ path: `/home/forum/post/lease/${postID}` });
       } else {
         this.$router.push({ path: `/home/forum/post/${this.view}/${postID}` });
       }      
@@ -228,28 +317,74 @@ export default {
         this.handleError(error, '点赞操作失败');
       });
       }
+      else if (this.view === 'lease') {
+        axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
+      }
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
       if (this.view === 'share') {
         axios.post('/api/StarPosts/starpost', {
           post_id: post.post_id,
-          tips:"收藏测试",
+          tips: "收藏测试",
           user_id: state.userId
-      })
-      .then(response => {
-        response.data.isStarred = post.isStarred;
-        if (post.isStarred === true) {
-          response.data.stars_number+=1;
-        }
-        else if (post.isStarred === false) {
-          response.data.stars_number-=1;
-        }
-      })
-      .catch(error => {
-        console.error('Error toggling star:', error);
-        this.handleError(error, '收藏操作失败');
-      });
+        })
+          .then(response => {
+            response.data.isStarred = post.isStarred;
+            if (post.isStarred === true) {
+              response.data.stars_number += 1;
+            }
+            else if (post.isStarred === false) {
+              response.data.stars_number -= 1;
+            }
+          })
+          .catch(error => {
+            console.error('Error toggling star:', error);
+            this.handleError(error, '收藏操作失败');
+          });
+      }
+      else if (this.view === 'lease') {
+        axios.post('/api/StarPosts/starpost', {
+          post_id: post.post_id,
+          tips: "收藏测试",
+          user_id: state.userId
+        })
+          .then(response => {
+            response.data.isStarred = post.isStarred;
+            if (post.isStarred === true) {
+              response.data.stars_number += 1;
+            }
+            else if (post.isStarred === false) {
+              response.data.stars_number -= 1;
+            }
+          })
+          .catch(error => {
+            console.error('Error toggling star:', error);
+            this.handleError(error, '收藏操作失败');
+          });
+      }
+    },
+    goToUserSpace(author_id) {
+      if (author_id == state.userId) {
+        this.$router.push({
+          path: `/home/userspace`
+        })
+      }
+      else {
+        this.$router.push({
+          path: `/home/userspace/${author_id}`
+        })
       }
     }
   },

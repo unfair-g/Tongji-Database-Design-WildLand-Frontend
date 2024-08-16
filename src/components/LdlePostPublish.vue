@@ -1,7 +1,7 @@
 <template>
     <div class="container">
       <div class="post-box">
-        <el-form :model="postForm" ref="postForm" @submit.prevent="submitForm">
+        <el-form :model="postForm" ref="postForm">
           <el-form-item label="闲置物品名称:" prop="itemName" style="font-weight: bold;" class="form-item">
             <el-input v-model="postForm.itemName" placeholder="请输入物品名称" />
           </el-form-item>
@@ -60,11 +60,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">发布成功</div>
           </div>
           <div class="success">
-<<<<<<< Updated upstream
-            <el-button type="text" class="Pbutton" @click="GoToPost(post)">查看帖子</el-button>
-=======
             <el-button type="text" class="Pbutton" @click="GoToPost()">查看帖子</el-button>
->>>>>>> Stashed changes
           </div>
         </div>
       </div>
@@ -75,7 +71,9 @@
   
 
   <script>
-  import { ref } from 'vue';
+
+  import axios from 'axios';
+  import  globalState  from '../store/global'; // 引入 global.js 中的状态
   
   export default {
     name: 'LdlePost',
@@ -93,62 +91,87 @@
       this.$emit('update:isLdlePostDialogVisible', newVal);
     }
   },
-    setup() {
-      const postForm = ref({
+  data() {
+    return {
+      postForm: {
         itemName: '',
         category: '闲置贴',
         itemDescription: '',
         itemPrice: '',
         itemLocation: '',
         itemImages: [],
-      });
-  
-      const fileList = ref([]);
-  
-      const submitForm = () => {
-        console.log('Form submitted:', postForm.value);
-      };
-  
-      const resetForm = () => {
-        postForm.value = {
-          itemName: '',
-          category: '闲置贴',
-          itemDescription: '',
-          itemPrice: '',
-          itemLocation: '',
-          itemImages: [],
-        };
-        fileList.value = [];
-      };
-  
-      const addLocation = () => {
-        console.log('Add location');
-      };
-  
-      const handleRemove = (file, fileList) => {
-        console.log(file, fileList);
-      };
-  
-      const handlePictureCardPreview = (file) => {
-        console.log(file);
-      };
-
-      const triggerUpload = () => {
-      document.querySelector('.upload-demo input[type=file]').click();
-      };
-  
-      return {
-        postForm,
-        fileList,
-        submitForm,
-        resetForm,
-        addLocation,
-        handleRemove,
-        handlePictureCardPreview,
-        triggerUpload,
-      };
+      },
+      fileList: [],
+      PostSuccess: false,
+      LisLdlePostDialogVisible: this.isLdlePostDialogVisible,
+    };
+  },
+  methods: {
+    getCurrentPosition(callback) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          callback(`(${latitude}, ${longitude})`);
+        },
+        (error) => {
+          console.error('定位失败:', error);
+          callback(null);
+        }
+      );
     },
-    methods: {
+    submitForm() {
+      this.getCurrentPosition((currentPosition) => {
+        const postData = {
+          author_id: globalState.userId, // 根据实际情况填充作者ID
+          title: `${this.postForm.itemName} - 十分好用，安利`,
+          post_time: new Date().toISOString(),
+          post_position: this.postForm.itemLocation || currentPosition,
+          post_kind: 0, // 根据实际情况填充帖子的类型
+          exhibit_status: 0, // 根据实际情况填充展览状态
+          condition: this.postForm.itemDescription,
+          item_name: this.postForm.itemName,
+          item_summary: this.postForm.itemDescription,
+          price: parseFloat(this.postForm.itemPrice),
+        };
+
+        axios.post('https://localhost:7218/api/Posts/PushLdle', postData)
+          .then((response) => {
+            console.log('发布成功:', response.data);
+            this.PostSuccess = true;
+          })
+          .catch((error) => {
+            console.error('发布失败:', error);
+          });
+      });
+    },
+    resetForm() {
+      this.postForm = {
+        itemName: '',
+        category: '闲置贴',
+        itemDescription: '',
+        itemPrice: '',
+        itemLocation: '',
+        itemImages: [],
+      };
+      this.fileList = [];
+    },
+    addLocation() {
+      this.getCurrentPosition((currentPosition) => {
+        if (currentPosition) {
+          this.postForm.itemLocation = currentPosition;
+          console.log('定位成功:', currentPosition);
+        }
+      });
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      console.log(file);
+    },
+    triggerUpload() {
+      this.$refs.upload.click();
+    },
     handleClose() {
       this.closeDialog();
     },
@@ -156,19 +179,11 @@
       this.LisLdlePostDialogVisible = false;
     },
     confirmDialog() {
-      this.LisLdlePostDialogVisible = false
-      this.PostSuccess = true
-      //添加支付成功逻辑
-      // 切换支付成功弹窗
+      this.submitForm(); // 点击发布按钮时提交表单
+      this.LisLdlePostDialogVisible = false;
     },
-    },
-    data() {
-        return {
-            LisLdlePostDialogVisible: this.isLdlePostDialogVisible,
-            PostSuccess: false
-        }
-    }
-  };
+  }
+};
   </script>
   
 

@@ -35,6 +35,16 @@
               rows="5"
             />
           </el-form-item>
+      
+          <el-form-item label="IP定位：" prop="ip_position" style="font-weight: bold;" >
+            <div class="left-side">
+              <el-button type="primary" color="#1D5B5E" @click="addLocation" >点击添加定位</el-button>
+              <div v-if="postForm.ip_position" class="location-info">
+                您的IP获取成功，IP所在地：{{ postForm.ip_position }}
+              </div>
+            </div>
+          </el-form-item>
+          
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
             <el-button type="primary" color="#1D5B5E" native-type="submit" @click="confirmDialog()">立即发布</el-button>
@@ -67,7 +77,8 @@ export default {
       time: '',
       location: '',
       memberNum: '',
-      summary: ''
+      summary: '',
+      ip_position:''
     });
 
     const rules = ref({
@@ -86,11 +97,14 @@ export default {
       summary: [
         { required: true, message: '请输入活动介绍（包括对报名者的要求）', trigger: 'blur' }
       ],
+      ip_position: [
+        { required: true, message: '请点击按钮获取您当前位置', trigger: 'blur' }
+      ]
     });
 
     const localIsRecruitPostDialogVisible = ref(props.isRecruitPostDialogVisible);
 
-    const userLocation = ref(''); // 新增变量用于存储用户位置
+    
 
     watch(() => props.isRecruitPostDialogVisible, (newVal) => {
       localIsRecruitPostDialogVisible.value = newVal;
@@ -117,6 +131,7 @@ export default {
       postForm.location = '';
       postForm.memberNum = '';
       postForm.summary = '';
+      postForm.ip_position = '';
     };
 
     const handleClose = () => {
@@ -124,7 +139,8 @@ export default {
       resetForm();
     };
 
-    const getUserLocation = async () => {
+    const addLocation = async () => {
+     
       try {
         const response = await axios.get('https://api.ipify.org?format=json');
         const ip = response.data.ip;
@@ -135,15 +151,14 @@ export default {
 
         // 使用映射表将英文省份名称转换为中文
         const chineseProvince = provinceMap[province] || province;
-        userLocation.value = chineseProvince;
+        postForm.ip_position = chineseProvince;
         console.log('User Location:', chineseProvince);
       } catch (error) {
         console.error('Error fetching location:', error);
         ElMessage.error('获取定位信息失败');
       }
+      
     };
-
-    getUserLocation();
 
     return {
       postFormRef,
@@ -153,8 +168,7 @@ export default {
       submitForm,
       resetForm,
       handleClose,
-      getUserLocation,
-      userLocation,
+      addLocation
     };
   },
   methods: {
@@ -169,7 +183,7 @@ export default {
 
       const postData = {
         author_id: 123,
-        post_position: this.userLocation,
+        post_position: this.postForm.ip_position,
         activity_summary: this.postForm.summary,
         activity_time: formattedTime,
         location: this.postForm.location,
@@ -219,5 +233,15 @@ export default {
 .publish-info-form {
   margin-top: 2px;
   width: 75%;
+}
+.left-side{
+  width:auto;
+  display:flex;
+  flex-direction: column;
+}
+.location-info {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #1D5B5E;
 }
 </style>
