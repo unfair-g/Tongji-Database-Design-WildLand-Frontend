@@ -10,7 +10,7 @@
     label-width="auto"
     style="max-width: 600px; margin-top:5%; margin-bottom: 3%;padding-right:5%"
     >
-    <div class="avatar-picker">
+    <el-form-item prop="avatar">
      <el-upload
     class="avatar-uploader"
     :show-file-list="false"
@@ -20,7 +20,7 @@
     <el-avatar v-if="imageUrl" :src="imageUrl" class="avatar" />
     <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
     </el-upload>
-    </div>
+    </el-form-item>
     <el-form-item label="用户名" prop="user_name">
       <el-input v-model="newuser.user_name" placeholder="请输入您的用户名"  :prefix-icon="User"/>
     </el-form-item>
@@ -101,6 +101,7 @@ const disabledDate = (time) => {
 }
 
 const newuser = reactive({
+  avatar:null,
   user_name: '',
   password: '',
   confirmpassword:'',
@@ -122,8 +123,12 @@ const validateConfirmPassword = (rule, value, callback) => {
     };
 
 const rules = ref({
-   user_name: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
+  avatar: [
+    { required: true, message: '请上传您的头像', trigger: 'change' }
+  ],
+  user_name: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { max: 10, message: '用户名长度不超过10位', trigger: 'blur' },
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' }
@@ -260,6 +265,10 @@ function toWelcomePage() {
 
 .avatar-uploader .el-upload:hover {
   border-color: #888888;
+}
+
+.avatar-uploader{
+  margin-left: 30%;
 }
 
 .el-icon.avatar-uploader-icon {

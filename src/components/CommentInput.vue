@@ -24,6 +24,7 @@ export default {
     parentCommentId: {
       type: Number,
       default: null,
+
     },
     // commentContent: {
     //   type: String,

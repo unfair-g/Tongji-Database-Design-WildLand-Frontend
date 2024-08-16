@@ -25,8 +25,9 @@
               <el-icon><ChatLineSquare /></el-icon>
             </span>
           </div>
+
         </div>
-        
+       
         <!-- 根据 showReplyInput 的值控制显示与隐藏 -->
         <div v-if="showReplyInput" class="reply-input">
           <CommentInput
@@ -38,7 +39,6 @@
         </div>
       </div>
     </div>
-
     <!-- 删除确认对话框 -->
     <el-dialog
       v-model="deleteDialogVisible"
@@ -60,10 +60,12 @@ import axios from '@/axios';
 import state from '@/store/global.js';
 // import { ElMessage } from 'element-plus';
 
+
 export default {
   name: 'CommentItem',
   components: {
     CommentInput,
+
   },
   props: {
     postID: {
@@ -115,6 +117,7 @@ export default {
       this.showReplyInput = !this.showReplyInput;
     },
     openDeleteDialog() {
+
       this.deleteDialogVisible = true;
     },
     cancelDelete() {
@@ -125,6 +128,7 @@ export default {
     },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
+
     },
     hideReplyInput() {
       this.showReplyInput = false;
