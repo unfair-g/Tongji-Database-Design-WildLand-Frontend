@@ -193,12 +193,11 @@
           :Pcontent="post.content"
           :Pusername="post.username"
           :PuserID="post.user_id" -->
-        <ReportPost
+        <ReportWindow
           v-model:isReportDialogVisible="isReportPostWindowVisible"
-          :isDetailShow="false"
-          :thisPostId="this.postID"
-          :post="post"
-          @closeDialog="isReportPostWindowVisible=false"
+          :reportID="Number(this.postID)"
+          :isReportPost="true"
+          
         />  
         <!-- 用于举报帖子 -->
         
@@ -218,8 +217,7 @@ import CommentInput from '@/components/CommentInput.vue';
 import CommentItem from '@/components/CommentItem.vue';
 import SignUpInput from '@/components/SignUpInput.vue';
 import SignUpItem from '@/components/SignUpItem.vue';
-import ReportPost from '@/components/ReportPostWindow.vue'
-import NestedReplies from '@/components/NestedReplies.vue';
+import ReportWindow from '@/components/ReportPostWindow.vue'
 import axios from '@/axios'; // 确保路径是正确的
 import state from '@/store/global.js'; // 引入映射表
 import { ElMessage } from "element-plus";
@@ -231,8 +229,7 @@ export default {
     CommentItem,
     SignUpInput,
     SignUpItem,
-    ReportPost,
-    NestedReplies,
+    ReportWindow,
   },
   props: ['type','postID'],
   data() {
@@ -441,7 +438,7 @@ export default {
     },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
-      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
+      console.log('Dialog Visible:', this.isReportPostWindowVisible);
     },
     toggleSignUpInput() {
       this.showSignUpInput = !this.showSignUpInput;
