@@ -60,6 +60,7 @@ import axios from '@/axios';
 import state from '@/store/global.js';
 // import { ElMessage } from 'element-plus';
 
+
 export default {
   name: 'CommentItem',
   components: {
@@ -112,9 +113,8 @@ export default {
         this.handleError(error, '点赞操作失败');
       });
     },
-    toggleReplyInput(commentId) {
-      // 如果当前显示的输入框是点击的同一个评论，则隐藏它；否则，显示对应的输入框
-      this.activeReplyInputId = this.activeReplyInputId === commentId ? null : commentId;
+    toggleReplyInput() {
+      this.showReplyInput = !this.showReplyInput;
     },
     openDeleteDialog() {
 
