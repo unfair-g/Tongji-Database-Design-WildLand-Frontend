@@ -139,7 +139,7 @@ export default {
       this.fetchSharePosts();
     }
     if (this.view === 'lease') {
-      this.fetchLdleitemsPosts();
+      this.fetchLdlePosts();
     }
     if (this.view === 'recruit') {
       this.fetchRecruitPosts();
@@ -207,7 +207,61 @@ export default {
           console.error('Error fetching products:', error);
         });
     },
-    
+    async fetchRecruitPosts() {
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
+        .then(response => {
+          this.recruitposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_activity_summary,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            //views: 0,
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+            activity_time: post.activity_time,
+            activity_address: post.location,
+            total_recruit: post.planned_count,
+            intro:post.short_activity_summary,
+          }));
+        })
+        .catch(error => {
+          console.error('Error fetching recruit posts:', error);
+          this.handleError(error, '获取招募贴失败');
+        }); 
+      }
+      else {
+        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/2`)
+        .then(response => {
+          this.recruitposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_activity_summary,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            //views: 0,
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+            activity_time: post.activity_time,
+            activity_address: post.location,
+            total_recruit: post.planned_count,
+            intro:post.short_activity_summary,
+          }));
+        })
+        .catch(error => {
+          console.error('Error fetching recruit posts:', error);
+          this.handleError(error, '获取招募贴失败');
+        }); 
+      }
+    },
     handleError(error, message) {
       if (error.response) {
         if (error.response.status == '404') {
@@ -301,7 +355,7 @@ export default {
   watch: {
     view(newValue) {
       if (newValue === 'lease') {
-        this.fetchLdleitemsPosts();
+        this.fetchLdlePosts();
       }
       else if (newValue === 'share') {
         this.fetchSharePosts();
@@ -313,7 +367,7 @@ export default {
   },
   created() {
     if (this.view === 'lease') {
-      this.fetchLdleitemsPosts();
+      this.fetchLdlePosts();
     }
     else if (this.view === 'share') {
       this.fetchSharePosts();
