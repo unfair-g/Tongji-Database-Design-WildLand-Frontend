@@ -88,13 +88,21 @@
 
           <div class="comments-section">
             <CommentInput
-              v-model:commentContent="comment"
-              :postId="this.postID"
+              :postID="Number(this.postID)"
+              @comment-submitted="fetchComments"
             />
-            <!-- 这里的评论回复的是帖子 -->
-            <div >
+            <!-- 展示直接评论帖子的评论 -->
+            <div v-for="comment in directComments" :key="comment.comment_id">
               <CommentItem
-                :postId="this.postID"
+                :postID="Number(this.postID)"
+                :comment="comment"
+                :isReply="false"
+                @reply-submitted="fetchComments"
+              />
+              <!-- 使用NestedReplies组件展示评论下所有回复 -->
+              <NestedReplies
+                :rootCommentId="comment.comment_id"
+                :postID="postID"
               />
             </div>
           </div>
@@ -201,6 +209,7 @@ import CommentItem from '@/components/CommentItem.vue';
 import SignUpInput from '@/components/SignUpInput.vue';
 import SignUpItem from '@/components/SignUpItem.vue';
 import ReportPost from '@/components/ReportPostWindow.vue'
+import NestedReplies from '@/components/NestedReplies.vue';
 import axios from '@/axios'; // 确保路径是正确的
 import state from '@/store/global.js'; // 引入映射表
 import { ElMessage } from "element-plus";
@@ -213,6 +222,7 @@ export default {
     SignUpInput,
     SignUpItem,
     ReportPost,
+    NestedReplies,
   },
   props: ['type','postID'],
   data() {
@@ -222,14 +232,8 @@ export default {
       currentIndex: 0,
       isStarSolid: true,
       value: '',
-      comment: '',
+      comments: [],//存储所有评论
       signup:'',
-    
-      deleteType: '', // 删除类型（帖子或评论或报名）
-      deleteComment: null, // 要删除的评论
-      deleteReply: null, // 要删除的回复
-      deleteSignup:null, // 要删除的报名
-      parentComment: null, // 回复的父评论
       isReportPostWindowVisible:false,//举报弹窗显示
       showSignUpInput: false, // 控制SignUpInput显示
       options: [
@@ -247,6 +251,9 @@ export default {
     }
   },
   computed: {
+    directComments() {
+      return this.comments.filter(comment => !comment.parent_comment_id);
+    },
     imageRows() {
       if (!this.post || !this.post.post_pics) return [];
       let rows = [];
@@ -279,12 +286,40 @@ export default {
   },
   methods: {
     async fetchData() {
+      if (this.type === 'share') {
+        try {
+          const user_id = state.userId;
+          
+          // 使用 Promise.all 并行执行两个请求
+          const [postResponse, commentsResponse] = await Promise.all([
+            axios.get(`/api/Posts/GetPostDetail/${this.postID}/${user_id}`),
+            axios.get(`/api/Comments/GetComment/${this.postID}/${user_id}`)
+          ]);
+
+          // 分别处理两个请求的响应
+          this.post = postResponse.data;
+          this.comments = commentsResponse.data ||[];
+
+          console.log('帖子数据和评论数据获取成功:', this.post, this.comments);
+        } catch (error) {
+          console.error('Error fetching post or comments data:', error);
+          ElMessage.error('获取帖子或评论失败');
+        }
+      }
+      // else if (this.type === 'recruit') {
+        
+      // }
+    },
+    async fetchComments() {
       try {
         const user_id = state.userId;
-        const response = await axios.get(`/api/Posts/GetPostDetail/${this.postID}/${user_id}`);
-        this.post = response.data;
+        console.log('Fetching comments for postID:', this.postID);
+        const commentsResponse = await axios.get(`/api/Comments/GetComment/${this.postID}/${user_id}`);
+        this.comments = commentsResponse.data || [];
+        console.log('Comments fetched successfully:', this.comments);
       } catch (error) {
-        console.error('Error fetching post data:', error);
+        console.error('Error fetching comments:', error.response ? error.response.data : error.message);
+        ElMessage.error('获取评论失败');
       }
     },
     handleError(error, message) {
@@ -345,22 +380,23 @@ export default {
     confirmDelete() {
       if (this.deleteType === 'post') {
         // 这里处理帖子删除操作
-      } else if (this.deleteType === 'comment' && this.deleteComment) {
-        const index = this.post.comments_details.indexOf(this.deleteComment);
-        if (index !== -1) {
-          this.post.comments_details.splice(index, 1);
-        }
-      } else if (this.deleteType === 'reply' && this.deleteReply && this.parentComment) {
-        const index = this.parentComment.replies.indexOf(this.deleteReply);
-        if (index !== -1) {
-          this.parentComment.replies.splice(index, 1);
-        }
-      } else if (this.deleteType === 'signup' && this.deleteSignup) {
-        const index = this.post.signups_details.indexOf(this.deleteSignup);
-        if (index !== -1) {
-          this.post.signups_details.splice(index, 1);
-        }
       }
+      // else if (this.deleteType === 'comment' && this.deleteComment) {
+      //   const index = this.post.comments_details.indexOf(this.deleteComment);
+      //   if (index !== -1) {
+      //     this.post.comments_details.splice(index, 1);
+      //   }
+      // } else if (this.deleteType === 'reply' && this.deleteReply && this.parentComment) {
+      //   const index = this.parentComment.replies.indexOf(this.deleteReply);
+      //   if (index !== -1) {
+      //     this.parentComment.replies.splice(index, 1);
+      //   }
+      // } else if (this.deleteType === 'signup' && this.deleteSignup) {
+      //   const index = this.post.signups_details.indexOf(this.deleteSignup);
+      //   if (index !== -1) {
+      //     this.post.signups_details.splice(index, 1);
+      //   }
+      // }
       this.deleteDialogVisible = false;
     },
     cancelDelete() {
@@ -376,6 +412,12 @@ export default {
     },
     toggleSignUpInput() {
       this.showSignUpInput = !this.showSignUpInput;
+    },
+    // addComment(newComment) {
+
+    // }
+    getReplies(parentCommentId) {
+      return this.comments.filter(comment => comment.parent_comment_id === parentCommentId);
     },
     goToUserSpace(author_id) {
       if (author_id == state.userId) {
