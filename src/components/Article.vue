@@ -125,6 +125,14 @@ export default {
     user_id: {
       type: Number,
       default:null
+    },
+    star: {
+      type: Boolean,
+      default:false
+    },
+    post_id:{
+      type: Number,
+      default:null
     }
   },
   data() {
@@ -165,6 +173,8 @@ export default {
               isLiked: post.isLiked,
               isStarred: post.isStarred,
             }));
+            if(this.star)
+              this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
           })
           .catch(error => {
             console.error('Error fetching share posts:', error);
@@ -200,16 +210,48 @@ export default {
       axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
         .then(response => {
           this.ldleitemsposts = response.data;
+          if(this.star)
+            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
           console.log(this.ldleitemsposts)
-        })
+        }
+        )
         .catch(error => {
           console.log(this.products)
           console.error('Error fetching products:', error);
         });
     },
-    fetchRecruitPosts() {
-      const userId = state.userId;
-      axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
+    async fetchRecruitPosts() {
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
+        .then(response => {
+          this.recruitposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_activity_summary,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            //views: 0,
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+            activity_time: post.activity_time,
+            activity_address: post.location,
+            total_recruit: post.planned_count,
+            intro:post.short_activity_summary,
+          }))
+          if(this.star)
+            this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
+        })
+        .catch(error => {
+          console.error('Error fetching recruit posts:', error);
+          this.handleError(error, '获取招募贴失败');
+        }); 
+      }
+      else {
+        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/2`)
         .then(response => {
           this.recruitposts = response.data.map(post => ({
             post_id: post.post_id,
@@ -232,7 +274,8 @@ export default {
         .catch(error => {
           console.error('Error fetching recruit posts:', error);
           this.handleError(error, '获取招募贴失败');
-        });  
+        }); 
+      }
     },
     handleError(error, message) {
       if (error.response) {

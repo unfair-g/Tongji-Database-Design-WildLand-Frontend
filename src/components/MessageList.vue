@@ -5,12 +5,12 @@
         <!-- 头像 -->
         <div class="message">
           <div v-if="message.type === 'follow'" class="message-avatar" style="margin-right: 1%;">
-            <img :src="message.avatarUrl" alt="头像" class="avatar">
+            <img :src="message.portrait" alt="头像" class="avatar" @click="goToUserSpace(message.user_id)">
           </div>
           <!-- 用户名和消息内容 -->
           <div v-if="message.type === 'follow'" class="message-info">
             <div class="message-header">
-              <span class="username">{{ message.username }}</span>
+              <span class="username">{{ message.user_name }}</span>
             </div>
             <div class="message-content">
               <p>关注了你</p>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 import global from '@/store/global';
 
 export default {
@@ -62,6 +62,7 @@ export default {
   data() {
     return {
       reportMessages: [],
+      followMessages:[]
     }
   },
   props: {
@@ -69,7 +70,7 @@ export default {
   },
   computed: {
     filteredMessages() {
-      const allMessages = this.$store.state.message.messages.concat(this.reportMessages);
+      const allMessages = this.reportMessages.concat(this.followMessages);
 
       if (this.activeTab === 'all') {
         return allMessages;
@@ -89,25 +90,41 @@ export default {
     },
     fetchReportMessages() {
       const userId = global.userId;
-      console.log('UserId:', userId);  // 调试用，打印userId
 
-      axios.get(`https://localhost:7218/api/Users/reportUserViewList/${userId}`).then(response => {
-        if (response.data.message === 'success') {
-          console.log('API 返回的数据:', response.data.data); // 打印从API获取的消息
+      axios.get(`/api/Users/reportUserViewList/${userId}`).then(response => {
           this.reportMessages = response.data.data;
-          this.updateMessages();
-        }
+          this.reportMessages.forEach(item => {
+              item.type='report'
+          })
       }).catch(error => {
         console.error('获取举报消息时发生错误:', error);
       });
     },
+    fetchFollowMessages() {
+      const userId = global.userId;
+
+      axios.get(`/api/Follows/getFollowersData/${userId}`).then(response => {
+          this.followMessages = response.data.data;
+          this.followMessages.forEach(item => {
+              item.type='follow'
+          })
+      }).catch(error => {
+        console.error('获取关注消息时发生错误:', error);
+      });
+    },
+    goToUserSpace(user_id) {
+      this.$router.push({
+          path: `/home/userspace/${user_id}`
+        })
+    },
     formatDate(dateStr) {
       const date = new Date(dateStr);
       return date.toLocaleString();
-    }
+    },
   },
   mounted() {
     this.fetchReportMessages();
+    this.fetchFollowMessages();
   }
 }
 </script>
