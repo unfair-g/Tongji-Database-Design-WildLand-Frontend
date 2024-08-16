@@ -8,7 +8,7 @@
         </div>
         <div class="flash-info">
             <span class="flash-title">{{ flash.flashTitle }}</span>
-            <span class="flash-meta">作者： {{ flash.meta }}</span>
+            <span class="flash-meta">作者： {{ flash.user_id }}</span>
           <div>
             <span class="flash-like">{{ flash.collectionNumber }}收藏</span>
             <span class="flash-like">{{ flash.viewsNumber }}浏览</span>

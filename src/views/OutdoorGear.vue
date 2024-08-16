@@ -35,6 +35,10 @@
       type="info"
       center
     />
+    <!-- 加大按钮大小并在中间加上+号 -->  
+    <button class="custom-button" @click="handleUpload">  
+      <!-- 这里没有直接的内容，加号将由CSS生成 -->  
+    </button> 
   </div>
 </template>
 
@@ -86,7 +90,17 @@ export default {
     },
     deleteProduct(product) {
       // 提交删除请求
-      this.$store.commit('deleteProduct', product.product_id);
+      axios.delete(` https://localhost:7218/api/OutdoorProducts/${product.product_id}` )
+        .then(response => {
+          console.log('0k',response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching products:', error);
+        });
+    },
+    handleUpload()
+    {
+      this.$router.push({ path: `/home/OutdoorGear/AddProduct` });
     }
   }
 }
@@ -108,4 +122,45 @@ export default {
   background-color: #17494A;
   border-color: #17494A;
 }
+
+.custom-button {  
+  position: absolute;  
+  display: inline-block;  
+  width: 60px; /* 按钮的宽度 */  
+  height: 60px; /* 按钮的高度 */  
+  border: none; /* 移除默认的边框 */  
+  background-color: #1D5B5E; /* 背景色，以Element Plus的蓝色为例 */  
+  color: white; /* 文字颜色（虽然这里没有文字，但可以作为参考） */  
+  cursor: pointer; /* 鼠标悬停时的样式 */  
+  /* 如果你想要圆形按钮 */  
+  border-radius: 50%; 
+  overflow: hidden; /* 确保加号不会溢出按钮 */  
+  /* 可选：添加一些内边距，以便加号不完全贴边（如果需要的话） */  
+  right: 10px;  
+  bottom:20px;
+  box-sizing: border-box; /* 让padding不影响总宽度和高度 */  
+}  
+  
+.custom-button::before,  
+.custom-button::after {  
+  content: ''; /* 伪元素需要这个属性来生成内容 */  
+  position: absolute;  
+  top: 50%;  
+  left: 50%;  
+  transform: translate(-50%, -50%); /* 居中伪元素 */  
+  background-color: white; /* 加号的颜色 */  
+  width: 80%; /* 加号线的宽度 */  
+  height: 2px; /* 实线加号的高度（对于水平线） */  
+} 
+
+.custom-button::after {  
+  content: ''; /* 伪元素需要这个属性来生成内容（尽管这里的内容是空的） */  
+  position: absolute;  
+  top: 50%; /* 竖线在垂直方向上居中 */  
+  left: 50%; /* 初始位置在按钮的左侧边缘的中间，但我们会通过transform来调整 */  
+  transform: translateX(-50%,-50%); /* 将竖线向左移动其自身宽度的50%，以在按钮中居中 */  
+  width: 2px; /* 竖线的宽度 */  
+  height: 80%; /* 竖线的高度与按钮相同 */  
+  background-color: white; /* 竖线的颜色 */  
+} 
 </style>

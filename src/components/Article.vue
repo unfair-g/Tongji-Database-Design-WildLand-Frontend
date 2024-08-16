@@ -65,10 +65,10 @@
   </div>
   <div v-else-if="view === 'lease'">
     <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
-      <el-card class="post-item">
+      <el-card class="post-item" v-if="ldleitemspost.exhibit_status === 1">
         <template #header>
          <div class="post-header">
-            <img :src="ldleitemspost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemspost.author_id)"/>
+            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
             <div class="post-details">
               <div class="post-info">
                 <span class="username">{{ ldleitemspost.author_name }}</span>
@@ -76,13 +76,13 @@
               </div>
               <div class="post-stats">
                 <!---->
-                <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
+                <span class="stat-item"><el-icon><View /></el-icon>0</span>
                 <span class="stat-item" @click="toggleLike(ldleitemspost)">
-                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes_number }}
+                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemspost.isLiked, 'icon-dianzanxuanzhong': ldleitemspost.isLiked}"></i>{{ ldleitemspost.likes_number }}
                 </span>
-                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
+                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.total_floor }}</span>
                 <span class="stat-item" @click="toggleStar(ldleitemspost)">
-                  <el-icon v-if="!isStarred"><Star /></el-icon>
+                  <el-icon v-if="!ldleitemspost.isStarred"><Star /></el-icon>
                   <el-icon v-else><StarFilled /></el-icon>
                 </span>
               </div>
@@ -90,14 +90,14 @@
           </div>
         </template>
 
-        <div class="post-content" @click="goToPostDetail(ldleitemspost)">
-          <img :src="ldleitemspost.post_pics" class="image" alt="order image">
-          <div style="padding: 14px;flex:1;">
-            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
-            <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
-            <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
+        <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics?.length>0?ldleitemspost.post_pics[0]:'pic'" class="image" alt="order image"></div>
+          <div style="padding: 14px;flex:2;">
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
+            <div><span>商品简介: {{ ldleitemspost.content}}</span></div>
+            <div><span>商品新旧程度：{{ ldleitemspost.condition}}9成新</span></div>
             <div class="bottom clearfix">
-              <span class="price">¥{{ ldleitemspost.price }}</span>
+              <span class="price">¥{{ ldleitemspost.price }}90</span>
               <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
             </div>
           </div>
@@ -195,123 +195,19 @@ export default {
           });
       }
     },
-
-   async fetchLdleitemsPosts() {
-      if (this.user_id == null) {
-        try {  
-          const overviewResponse = await axios.get(`/api/Posts`); 
-            const filteredPosts = overviewResponse.data.filter(post => post.post_kind === 1);  
-            console.log(filteredPosts); // 输出筛选后的数据  
-            const posts = filteredPosts.map(async post => {  
-            const authorResponse = await axios.get(`/api/Posts/${post.post_id}`);  
-            const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
-            const detailResponse = await axios.get(`/api/Posts/GetPostDetail/${post.post_id}/${authorId}`);  
-            const postPics = detailResponse.data.post_pics; // 假设这是一个图片数组  
-            const author_name = detailResponse.data.author_id; 
-            const portrait = detailResponse.data.portrait; 
-            const firstPic = postPics.length > 0 ? postPics[0] : null; // 或者 'default-image.jpg'  
-            return {  
-              ...post, // 展开原始帖子对象  
-              author_id: authorId, // 添加 author_id  
-              author_name:author_name,
-              portrait:portrait,
-              post_pics: firstPic, // 添加第一张图片（或图片数组，根据需要）  
-            };  
-          }); 
-          this.ldleitemsposts = await Promise.all(posts.map(p => p.catch(error => {  
-            console.error('Error fetching additional data for post:', error);    
-            return {  error: 'Failed to fetch additional data' }; // 注意：这里的 post 是未定义的，需要适当处理  
-          })));  
-          console.log(this.ldleitemsposts); // 输出筛选后的数据  
-        
-        } catch (error) {  
-          console.error('Error fetching overview posts:', error);  
-          this.handleError(error, '获取闲置贴失败');  
-          this.ldleitemsposts = []; // 或 [{ error: 'Failed to fetch posts' }]  
-        }
-      }
-      else {
-         axios.get(`/api/Posts/GetUserPosts/${this.user_id}/1`)
-          .then(response => {
-            this.ldleitemsposts = response.data.map(post => ({
-              post_id: post.post_id,
-              username: post.author_name,
-              author_id:this.user_id,
-              avatar: post.portrait,
-              title: post.title,
-              item_summary: post.item_summary,
-              condition: post.condition,
-              price: post.price,
-              likes: post.likes_number,
-              comments: post.total_floor,
-              post_time: post.post_time,
-              views: 0, // Assuming views is not available in the API response
-              isLiked: post.isLiked,
-              isStarred: post.isStarred,
-            }));
-          })
-          .catch(error => {
-            console.error('Error fetching share posts:', error);
-            this.handleError(error, '获取闲置贴失败');
-          });
-      } 
-
-    },
-    async fetchRecruitPosts() {
-      if (this.user_id == null) {
-        const userId = state.userId;
-        axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
+    fetchLdlePosts() {
+      //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
+      axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
         .then(response => {
-          this.recruitposts = response.data.map(post => ({
-            post_id: post.post_id,
-            username: post.author_name,
-            avatar: post.portrait,
-            title: post.title,
-            shortContent:post.short_activity_summary,
-            likes: post.likes_number,
-            comments: post.total_floor,
-            post_time: post.post_time,
-            //views: 0,
-            isLiked: post.isLiked,
-            isStarred: post.isStarred,
-            activity_time: post.activity_time,
-            activity_address: post.location,
-            total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
-          }));
+          this.ldleitemsposts = response.data;
+          console.log(this.ldleitemsposts)
         })
         .catch(error => {
-          console.error('Error fetching recruit posts:', error);
-          this.handleError(error, '获取招募贴失败');
-        }); 
-      }
-      else {
-        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/2`)
-        .then(response => {
-          this.recruitposts = response.data.map(post => ({
-            post_id: post.post_id,
-            username: post.author_name,
-            avatar: post.portrait,
-            title: post.title,
-            shortContent:post.short_activity_summary,
-            likes: post.likes_number,
-            comments: post.total_floor,
-            post_time: post.post_time,
-            //views: 0,
-            isLiked: post.isLiked,
-            isStarred: post.isStarred,
-            activity_time: post.activity_time,
-            activity_address: post.location,
-            total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching recruit posts:', error);
-          this.handleError(error, '获取招募贴失败');
-        }); 
-      }
+          console.log(this.products)
+          console.error('Error fetching products:', error);
+        });
     },
+    
     handleError(error, message) {
       if (error.response) {
         if (error.response.status == '404') {
@@ -366,8 +262,7 @@ export default {
       .catch(error => {
         console.error('Error toggling like:', error);
         this.handleError(error, '点赞操作失败');
-      });
-      
+      });     
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
