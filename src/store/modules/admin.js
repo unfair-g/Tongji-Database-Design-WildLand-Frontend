@@ -159,7 +159,8 @@ const actions = {
         postContent: postReportDetail.post_content || '内容未提供',
         publisherName: postReportDetail.post_author_name,
         reportReason: postReportDetail.report_reason,
-        audits: 'pending'
+        audits: 'pending',
+        post_portrait:postReportDetail.post_portrait || null
       };
       
 

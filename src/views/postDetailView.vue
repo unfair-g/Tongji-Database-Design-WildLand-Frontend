@@ -219,6 +219,7 @@ import CommentItem from '@/components/CommentItem.vue';
 import SignUpInput from '@/components/SignUpInput.vue';
 import SignUpItem from '@/components/SignUpItem.vue';
 import ReportPost from '@/components/ReportPostWindow.vue'
+import NestedReplies from '@/components/NestedReplies.vue';
 import axios from '@/axios'; // 确保路径是正确的
 import state from '@/store/global.js'; // 引入映射表
 import { ElMessage } from "element-plus";
@@ -231,6 +232,7 @@ export default {
     SignUpInput,
     SignUpItem,
     ReportPost,
+    NestedReplies,
   },
   props: ['type','postID'],
   data() {

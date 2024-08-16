@@ -125,6 +125,14 @@ export default {
     user_id: {
       type: Number,
       default:null
+    },
+    star: {
+      type: Boolean,
+      default:false
+    },
+    post_id:{
+      type: Number,
+      default:null
     }
   },
   data() {
@@ -165,6 +173,8 @@ export default {
               isLiked: post.isLiked,
               isStarred: post.isStarred,
             }));
+            if(this.star)
+              this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
           })
           .catch(error => {
             console.error('Error fetching share posts:', error);
@@ -200,8 +210,11 @@ export default {
       axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
         .then(response => {
           this.ldleitemsposts = response.data;
+          if(this.star)
+            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
           console.log(this.ldleitemsposts)
-        })
+        }
+        )
         .catch(error => {
           console.log(this.products)
           console.error('Error fetching products:', error);
@@ -228,7 +241,9 @@ export default {
             activity_address: post.location,
             total_recruit: post.planned_count,
             intro:post.short_activity_summary,
-          }));
+          }))
+          if(this.star)
+            this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
         })
         .catch(error => {
           console.error('Error fetching recruit posts:', error);
