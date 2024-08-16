@@ -11,7 +11,6 @@
               <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
-              <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
               <span class="stat-item" @click="toggleLike(sharepost)">
                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !sharepost.isLiked, 'icon-dianzanxuanzhong': sharepost.isLiked}"></i>{{ sharepost.likes }}
               </span>
@@ -40,10 +39,9 @@
           <div class="post-details">
             <div class="post-info">
                 <span class="username">{{ recruitpost.username }}</span>
-                <span class="time">{{ recruitpost.time }}</span>
+                <span class="time">{{ formatTime(recruitpost.post_time) }}</span>
             </div>
             <div class="post-stats">
-              <span class="stat-item"><el-icon><View /></el-icon>{{ recruitpost.views }}</span>
               <span class="stat-item" @click="toggleLike(recruitpost)">
                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !recruitpost.isLiked, 'icon-dianzanxuanzhong': recruitpost.isLiked}"></i>{{ recruitpost.likes }}
               </span>
@@ -59,7 +57,7 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动要求：{{ recruitpost.requirements }}</p></div>
+          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍:{{ recruitpost.intro }}</p></div>
         </div>
 
       </el-card>
@@ -133,6 +131,7 @@ export default {
     return {
       shareposts: [],
       ldleitemsposts: [],
+      recruitposts:[],
     };
   },
   mounted() {
@@ -140,14 +139,11 @@ export default {
       this.fetchSharePosts();
     }
     if (this.view === 'lease') {
-      this.fetchLdlePosts();
+      this.fetchLdleitemsPosts();
     }
-  },
-  computed: {
-    recruitposts() {
-      return this.$store.state.post.recruitmentposts; 
-    },
-
+    if (this.view === 'recruit') {
+      this.fetchRecruitPosts();
+    }
   },
   methods: {
     fetchSharePosts() {
@@ -253,10 +249,9 @@ export default {
     },
     toggleLike(post) {
       post.isLiked = !post.isLiked;
-     
-      if (this.view === 'share') {
-        post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
-        axios.post('/api/LikePosts/postlike', {
+      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+      
+      axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
@@ -267,66 +262,29 @@ export default {
       .catch(error => {
         console.error('Error toggling like:', error);
         this.handleError(error, '点赞操作失败');
-      });
-      }
-      else if (this.view === 'lease') {
-        post.likes_number = post.isLiked ? post.likes_number + 1 : post.likes_number - 1;
-        axios.post('/api/LikePosts/postlike', {
-        post_id: post.post_id,
-        user_id: state.userId
-      })
-      .then(response => {
-        response.data.isLiked=post.isLiked;
-        response.data.likes_number=post.likes_number;
-      })
-      .catch(error => {
-        console.error('Error toggling like:', error);
-        this.handleError(error, '点赞操作失败');
-      });
-      }
+      });     
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
-      if (this.view === 'share') {
-        axios.post('/api/StarPosts/starpost', {
-          post_id: post.post_id,
-          tips: "收藏测试",
-          user_id: state.userId
-        })
-          .then(response => {
-            response.data.isStarred = post.isStarred;
-            if (post.isStarred === true) {
-              response.data.stars_number += 1;
-            }
-            else if (post.isStarred === false) {
-              response.data.stars_number -= 1;
-            }
-          })
-          .catch(error => {
-            console.error('Error toggling star:', error);
-            this.handleError(error, '收藏操作失败');
-          });
-      }
-      else if (this.view === 'lease') {
-        axios.post('/api/StarPosts/starpost', {
-          post_id: post.post_id,
-          tips: "收藏测试",
-          user_id: state.userId
-        })
-          .then(response => {
-            response.data.isStarred = post.isStarred;
-            if (post.isStarred === true) {
-              response.data.stars_number += 1;
-            }
-            else if (post.isStarred === false) {
-              response.data.stars_number -= 1;
-            }
-          })
-          .catch(error => {
-            console.error('Error toggling star:', error);
-            this.handleError(error, '收藏操作失败');
-          });
-      }},
+      axios.post('/api/StarPosts/starpost', {
+        post_id: post.post_id,
+        tips: "收藏测试",
+        user_id: state.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number += 1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number -= 1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
+    },
     goToUserSpace(author_id) {
       if (author_id == state.userId) {
         this.$router.push({
@@ -343,13 +301,24 @@ export default {
   watch: {
     view(newValue) {
       if (newValue === 'lease') {
-        this.fetchLdlePosts();
+        this.fetchLdleitemsPosts();
+      }
+      else if (newValue === 'share') {
+        this.fetchSharePosts();
+      }
+      else if (newValue === 'recruit') {
+        this.fetchRecruitPosts();
       }
     }
   },
   created() {
     if (this.view === 'lease') {
-      this.fetchLdlePosts();
+      this.fetchLdleitemsPosts();
+    }
+    else if (this.view === 'share') {
+      this.fetchSharePosts();
+    } else if (this.view === 'recruit') {
+      this.fetchRecruitPosts();
     }
   }
 };

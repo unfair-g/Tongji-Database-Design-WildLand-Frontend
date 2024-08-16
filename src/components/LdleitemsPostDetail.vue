@@ -10,7 +10,6 @@
           <el-icon><Close /></el-icon>
         </el-button>
       </div>
-
       <div style="display:flex;">
         <div style="flex:1;">
           <div class="post-details" style="display:flex;">
@@ -146,7 +145,6 @@
           @closeDialog="isReportPostWindowVisible=false"
         />  
         <!-- 用于举报帖子 -->
-
 </template>
 
 <script>
