@@ -5,6 +5,15 @@
     <container>
       <el-aside width="200px"></el-aside>
       <main>
+        <div class="searchbox">
+      <el-input
+        v-model="input"
+        style="width: 73%;height:50px;margin-left: 10%;margin-top: 1%;"
+        placeholder="Please input"
+        clearable
+    />
+    <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px;margin-top: 1%;" @click="searchFlash">搜索</el-button>
+    </div>
         <el-container>
           <div class="left-panel">
             <mainflash />
@@ -21,20 +30,27 @@
 </div>
 </template>
 
-<script>
+<script setup>
 import mainflash from '../components/RecommendFlash.vue';
 import hotflash from '../components/HotFlash.vue';
 import newflash from '../components/NewFlash.vue';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { Search } from '@element-plus/icons-vue'
 
-export default {
-name: 'R_Flash',
+const input = ref('')
+const router = useRouter()
+
+function searchFlash() {
+  if (input.value.trim()) {
+    router.push({ path: '/home/searchFlash', query: { keyword: input.value } })
+  }
+}
+
 components: {
   mainflash,
   hotflash,
   newflash
-},
-data() {
-}
 }
 </script>
 
@@ -64,4 +80,8 @@ data() {
   /* 实际上，这里的背景色已经在上面的通用规则中设置了，  
      但保留这个选择器以说明样式是应用于.right-panel的 */  
 }  
+.searchbox{
+        display: flex;
+        align-items: center;
+    }
 </style>
