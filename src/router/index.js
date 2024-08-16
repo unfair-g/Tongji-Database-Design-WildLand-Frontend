@@ -21,7 +21,7 @@ const routes = [
             {
                 path: 'OutdoorGear',
                 name: 'OutdoorGear',
-                component: () => import('../views/OutdoorGear.vue')
+                component: () => import('../views/OutdoorGear.vue'),
             },
             {
                 path: 'AdminCamp',
@@ -94,6 +94,11 @@ const routes = [
                 path: "product",
                 component: () => import('../views/ItemView.vue'),
                 props: true
+            },
+            {
+                path:'OutdoorGear/AddProduct',
+                name:'AddProduct',
+                component: () => import('../views/AddOutProduct.vue')
             },
             {
                 path: '/home/product/edit/:productId',

@@ -186,6 +186,7 @@ export default {
     })
         .then(response => {
           console.log('订单上传成功:', response.data);
+          this.handleClose();
           this.PostSuccess = true;
         })
         .catch(error => {

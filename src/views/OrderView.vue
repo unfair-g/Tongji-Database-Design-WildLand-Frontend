@@ -17,11 +17,11 @@
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;justify-content:center;"><p>{{ camp_order.pick_time }}</p></div>
+      <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(camp_order.pick_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ camp_order.back_time }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ this.formatDate(camp_order.back_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
@@ -94,6 +94,21 @@
           }
           return 0;
         }
+    },
+    methods: {
+      formatDate(dateTimeString) {  
+      // 创建一个Date对象  
+      const date = new Date(dateTimeString);  
+  
+      // 使用getFullYear(), getMonth() + 1, 和 getDate() 方法来获取年、月和日  
+      // 注意：getMonth() 返回的是从0开始的月份，所以需要加1  
+      const year = date.getFullYear();  
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 使用padStart确保月份是两位数  
+      const day = date.getDate().toString().padStart(2, '0'); // 使用padStart确保日期是两位数  
+  
+      // 返回格式化的日期字符串  
+      return `${year}-${month}-${day}`;   
+      }, 
     }
   }
   </script>

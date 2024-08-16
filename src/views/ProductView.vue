@@ -3,7 +3,7 @@
       <el-row :gutter="80"  justify="center">
         <el-col :span="7" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToProductDetail(product)">
-            <img :src="product.product_image" class="image" alt="product image">
+            <img :src="product.item_image" class="image" alt="product image">
             <div style="padding: 14px;">
               <span>{{ product.product_name}}</span>
               <div><span>尺寸：{{ product.size}}</span></div>
@@ -42,7 +42,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchProduct_no_url(); // 组件加载时获取所有产品
+    this.fetchProduct(); // 组件加载时获取所有产品
   },
   methods: {
     async fetchProduct() {
@@ -51,9 +51,16 @@ export default {
         console.log(productS)
       // 根据 post_id 从 Posts 接口获取帖子详情
       const OutDoorPromises = productS.data.map(async product => {
-        const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/${product.product_id}`);
+      //图片问题
+      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=4`)  
+        .catch(error => {  
+        console.error('Error fetching product pics for product_id:', product.product_id, error);  
+       // 你可以选择返回一个默认的对象或null，具体取决于你的应用逻辑  
+       return { item_image: '图片加载失败' };  
+      });
         console.log('oooook',detailResponse)
-        const item_image=detailResponse.data.pic_url;
+
+        const item_image=detailResponse.data.length>0?detailResponse.data[0]:'图片';
             // 将 order_id 添加到每个帖子对象中
             return { 
               ...product, 
@@ -63,12 +70,13 @@ export default {
       // 等待所有请求完成
       this.products = await Promise.all(OutDoorPromises);
       console.log(this.products)
+      this.filterProducts(); // 获取数据后进行筛选
     }
       catch(error){
           console.error('Error fetching products:', error);
         }
     },
-    fetchProduct_no_url()
+    /*fetchProduct_no_url()
     {
       axios.get('https://localhost:7218/api/OutdoorProducts')
         .then(response => {
@@ -78,7 +86,7 @@ export default {
         .catch(error => {
           console.error('Error fetching products:', error);
         });
-    },
+    },*/
     filterProducts() {
       if (this.activeTab === 'all') {
         this.filteredProducts = this.products;
@@ -100,7 +108,7 @@ export default {
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content:flex-start;
 }
 
 .product-card {

@@ -24,6 +24,7 @@
 
 <script>
 import axios from '@/axios';
+import globalState from '../store/global'; 
 
 export default {
   name: 'LeaseView',
@@ -40,7 +41,7 @@ export default {
       try {
         // 从 Leases 接口获取订单信息
         const ordersResponse = await axios.get('/api/Leases');
-        const orders = ordersResponse.data;
+        const orders = ordersResponse.data.filter(lease => lease.user_id===globalState.userId);
         
         // 提取所有产品 ID
         //const productIds = orders.map(order => order.product_id);
