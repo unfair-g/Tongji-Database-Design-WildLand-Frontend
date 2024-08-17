@@ -43,7 +43,10 @@
           </div>
           <!-- 时间戳 -->
           <div class="message-timestamp">
-            <div class="timestamp">{{ formatDate(message.update_time) }}</div>
+            <div class="timestamp">
+              <span v-if="message.type==='follow'">{{ formatDate(message.follow_time) }}</span>
+              <span v-else>{{ formatDate(message.update_time) }}</span>
+            </div>
             <el-link v-if="message.type === 'report' || message.type === 'activity'" type="primary">查看详情</el-link>
           </div>
         </div>
