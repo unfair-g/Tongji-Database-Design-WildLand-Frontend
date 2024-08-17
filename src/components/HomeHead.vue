@@ -45,6 +45,11 @@ const getUserAvatar = async () => {
         console.error(error)
     }
 }
+function searchFlash() {
+  if (input.value.trim()) {
+    router.push({ path: '/home/searchFlash', query: { keyword: input.value } })
+  }
+}
 
 function Exit() {
   sessionStorage.clear();
