@@ -4,14 +4,13 @@
     <el-card class="post-item">
       <template #header>
         <div class="post-header">
-          <img :src="sharepost.avatar" alt="avatar" class="avatar">
+          <img :src="sharepost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(sharepost.author_id)">
           <div class="post-details">
             <div class="post-info">
-              <span class="username">{{ sharepost.username }}{{ author_id }}</span>
+              <span class="username">{{ sharepost.username }}</span>
               <span class="time">{{ formatTime(sharepost.post_time)  }}</span>
             </div>
             <div class="post-stats">
-              <span class="stat-item"><el-icon><View /></el-icon>{{ sharepost.views }}</span>
               <span class="stat-item" @click="toggleLike(sharepost)">
                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !sharepost.isLiked, 'icon-dianzanxuanzhong': sharepost.isLiked}"></i>{{ sharepost.likes }}
               </span>
@@ -40,10 +39,9 @@
           <div class="post-details">
             <div class="post-info">
                 <span class="username">{{ recruitpost.username }}</span>
-                <span class="time">{{ recruitpost.time }}</span>
+                <span class="time">{{ formatTime(recruitpost.post_time) }}</span>
             </div>
             <div class="post-stats">
-              <span class="stat-item"><el-icon><View /></el-icon>{{ recruitpost.views }}</span>
               <span class="stat-item" @click="toggleLike(recruitpost)">
                 <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !recruitpost.isLiked, 'icon-dianzanxuanzhong': recruitpost.isLiked}"></i>{{ recruitpost.likes }}
               </span>
@@ -59,7 +57,7 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动要求：{{ recruitpost.requirements }}</p></div>
+          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍:{{ recruitpost.intro }}</p></div>
         </div>
 
       </el-card>
@@ -67,23 +65,24 @@
   </div>
   <div v-else-if="view === 'lease'">
     <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
-      <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
+      <el-card class="post-item" v-if="ldleitemspost.exhibit_status === 1">
         <template #header>
          <div class="post-header">
-            <img :src="ldleitemspost.avatar" alt="avatar" class="avatar">
+            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
             <div class="post-details">
               <div class="post-info">
-                <span class="username">{{ ldleitemspost.username }}</span>
+                <span class="username">{{ ldleitemspost.author_name }}</span>
                 <span class="time">{{ ldleitemspost.time }}</span>
               </div>
               <div class="post-stats">
-                <span class="stat-item"><el-icon><View /></el-icon>{{ ldleitemspost.views }}</span>
-                <span class="stat-item" @click="toggleLike">
-                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !isLiked, 'icon-dianzanxuanzhong': isLiked}"></i>{{ ldleitemspost.likes }}
+                <!---->
+                <span class="stat-item"><el-icon><View /></el-icon>0</span>
+                <span class="stat-item" @click="toggleLike(ldleitemspost)">
+                  <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemspost.isLiked, 'icon-dianzanxuanzhong': ldleitemspost.isLiked}"></i>{{ ldleitemspost.likes_number }}
                 </span>
-                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.comments }}</span>
-                <span class="stat-item" @click="toggleStar">
-                  <el-icon v-if="!isStarred"><Star /></el-icon>
+                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.total_floor }}</span>
+                <span class="stat-item" @click="toggleStar(ldleitemspost)">
+                  <el-icon v-if="!ldleitemspost.isStarred"><Star /></el-icon>
                   <el-icon v-else><StarFilled /></el-icon>
                 </span>
               </div>
@@ -91,14 +90,14 @@
           </div>
         </template>
 
-        <div class="post-content">
-          <img :src="ldleitemspost.item_image" class="image" alt="order image">
-          <div style="padding: 14px;flex:1;">
-            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
-            <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
-            <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
+        <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics?.length>0?ldleitemspost.post_pics[0]:'pic'" class="image" alt="order image"></div>
+          <div style="padding: 14px;flex:2;">
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
+            <div><span>商品简介: {{ ldleitemspost.content}}</span></div>
+            <div><span>商品新旧程度：{{ ldleitemspost.condition}}9成新</span></div>
             <div class="bottom clearfix">
-              <span class="price">¥{{ ldleitemspost.price }}</span>
+              <span class="price">¥{{ ldleitemspost.price }}90</span>
               <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
             </div>
           </div>
@@ -122,12 +121,25 @@ export default {
     view: {
       type: String,
       required:true
+    },
+    user_id: {
+      type: Number,
+      default:null
+    },
+    star: {
+      type: Boolean,
+      default:false
+    },
+    post_id:{
+      type: Number,
+      default:null
     }
   },
   data() {
     return {
       shareposts: [],
       ldleitemsposts: [],
+      recruitposts:[],
     };
   },
   mounted() {
@@ -135,69 +147,145 @@ export default {
       this.fetchSharePosts();
     }
     if (this.view === 'lease') {
-      this.fetchLdleitemsPosts();
+      this.fetchLdlePosts();
     }
-  },
-  computed: {
-    recruitposts() {
-      return this.$store.state.post.recruitmentposts; 
-    },
-
+    if (this.view === 'recruit') {
+      this.fetchRecruitPosts();
+    }
   },
   methods: {
     fetchSharePosts() {
-      const userId = state.userId;
-      axios.get(`/api/Posts/GetOverview/0/${userId}`)
-        .then(response => {
-          this.shareposts = response.data.map(post => ({
-            post_id: post.post_id,
-            username: post.author_name,
-            avatar: post.portrait,
-            title: post.title,
-            shortContent:post.short_content,
-            likes: post.likes_number,
-            comments: post.total_floor,
-            post_time: post.post_time,
-            views: 0, // Assuming views is not available in the API response
-            isLiked: post.isLiked,
-            isStarred: post.isStarred,
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching share posts:', error);
-          this.handleError(error, '获取分享贴失败');
-        });  
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/Posts/GetOverview/0/${userId}`)
+          .then(response => {
+            this.shareposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:post.author_id,
+              avatar: post.portrait,
+              title: post.title,
+              shortContent: post.short_content,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+            if(this.star)
+              this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
+      else {
+        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/0`)
+          .then(response => {
+            this.shareposts = response.data.map(post => ({
+              post_id: post.post_id,
+              username: post.author_name,
+              author_id:this.user_id,
+              avatar: post.portrait,
+              title: post.title,
+              shortContent: post.short_content,
+              likes: post.likes_number,
+              comments: post.total_floor,
+              post_time: post.post_time,
+              views: 0, // Assuming views is not available in the API response
+              isLiked: post.isLiked,
+              isStarred: post.isStarred,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
     },
-    fetchLdleitemsPosts() {
-      axios.get('https://localhost:7218/api/LdleitemsPosts')
-      const userId = state.userId;
-      axios.get(`/api/Posts/GetOverview/1/${userId}`)
+    fetchLdlePosts() {
+      //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
+      axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
         .then(response => {
-          this.ldleitemsposts = response.data.map(post => ({
+          this.ldleitemsposts = response.data;
+          if(this.star)
+            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
+          console.log(this.ldleitemsposts)
+        }
+        )
+        .catch(error => {
+          console.log(this.products)
+          console.error('Error fetching products:', error);
+        });
+    },
+    async fetchRecruitPosts() {
+      if (this.user_id == null) {
+        const userId = state.userId;
+        axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
+        .then(response => {
+          this.recruitposts = response.data.map(post => ({
             post_id: post.post_id,
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            item_summary:post.item_summary,
-            condition:post.condition,
-            price:post.price,
+            shortContent:post.short_activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            views: 0, // Assuming views is not available in the API response
+            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
+            activity_time: post.activity_time,
+            activity_address: post.location,
+            total_recruit: post.planned_count,
+            intro:post.short_activity_summary,
+          }))
+          if(this.star)
+            this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
+        })
+        .catch(error => {
+          console.error('Error fetching recruit posts:', error);
+          this.handleError(error, '获取招募贴失败');
+        }); 
+      }
+      else {
+        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/2`)
+        .then(response => {
+          this.recruitposts = response.data.map(post => ({
+            post_id: post.post_id,
+            username: post.author_name,
+            avatar: post.portrait,
+            title: post.title,
+            shortContent:post.short_activity_summary,
+            likes: post.likes_number,
+            comments: post.total_floor,
+            post_time: post.post_time,
+            //views: 0,
+            isLiked: post.isLiked,
+            isStarred: post.isStarred,
+            activity_time: post.activity_time,
+            activity_address: post.location,
+            total_recruit: post.planned_count,
+            intro:post.short_activity_summary,
           }));
         })
         .catch(error => {
-          console.error('Error fetching share posts:', error);
-          this.handleError(error, '获取闲置贴失败');
+          console.error('Error fetching recruit posts:', error);
+          this.handleError(error, '获取招募贴失败');
         }); 
+      }
     },
     handleError(error, message) {
       if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        if (error.response.status == '404') {
+          ElMessage.error('暂时未发布该类帖子！')
+        }
+        else {
+          console.error(`${message}:`, error.response.data);
+          ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        }
       } else if (error.request) {
         console.error(`${message}: No response received`);
         ElMessage.error(`${message} - 没有收到响应`);
@@ -231,8 +319,8 @@ export default {
     toggleLike(post) {
       post.isLiked = !post.isLiked;
       post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
-      if (this.view === 'share') {
-        axios.post('/api/LikePosts/postlike', {
+      
+      axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
@@ -243,43 +331,63 @@ export default {
       .catch(error => {
         console.error('Error toggling like:', error);
         this.handleError(error, '点赞操作失败');
-      });
-      }
+      });     
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
-      if (this.view === 'share') {
-        axios.post('/api/StarPosts/starpost', {
-          post_id: post.post_id,
-          tips:"收藏测试",
-          user_id: state.userId
+      axios.post('/api/StarPosts/starpost', {
+        post_id: post.post_id,
+        tips: "收藏测试",
+        user_id: state.userId
       })
       .then(response => {
         response.data.isStarred = post.isStarred;
         if (post.isStarred === true) {
-          response.data.stars_number+=1;
+          response.data.stars_number += 1;
         }
         else if (post.isStarred === false) {
-          response.data.stars_number-=1;
+          response.data.stars_number -= 1;
         }
       })
       .catch(error => {
         console.error('Error toggling star:', error);
         this.handleError(error, '收藏操作失败');
       });
+    },
+    goToUserSpace(author_id) {
+      if (author_id == state.userId) {
+        this.$router.push({
+          path: `/home/userspace`
+        })
+      }
+      else {
+        this.$router.push({
+          path: `/home/userspace/${author_id}`
+        })
       }
     }
   },
   watch: {
     view(newValue) {
       if (newValue === 'lease') {
-        this.fetchLdleitemsPosts();
+        this.fetchLdlePosts();
+      }
+      else if (newValue === 'share') {
+        this.fetchSharePosts();
+      }
+      else if (newValue === 'recruit') {
+        this.fetchRecruitPosts();
       }
     }
   },
   created() {
     if (this.view === 'lease') {
-      this.fetchLdleitemsPosts();
+      this.fetchLdlePosts();
+    }
+    else if (this.view === 'share') {
+      this.fetchSharePosts();
+    } else if (this.view === 'recruit') {
+      this.fetchRecruitPosts();
     }
   }
 };

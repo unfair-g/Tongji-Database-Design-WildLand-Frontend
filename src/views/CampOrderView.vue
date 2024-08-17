@@ -58,6 +58,7 @@
   import axios from '@/axios'; // 引入配置好的axios实例
   import dayjs from 'dayjs';
   import CampPayWindow from '@/components/CampPayWindow.vue'
+  import global from '@/store/global.js';
   
   export default {
     name: 'CampOrder',
@@ -79,10 +80,10 @@
     },
     computed: {
       startDate() {
-        return this.$route.query.startDate;
+        return dayjs(this.$route.query.startDate).format('YYYY年MM月DD日');
       },
       endDate() {
-        return this.$route.query.endDate;
+        return dayjs(this.$route.query.endDate).format('YYYY年MM月DD日');
       },
       selectedCampsiteIds() {
         return this.$route.query.selectedCampsiteIds.split(',');
@@ -135,14 +136,15 @@
       //接口4 提交订单，把信息传给后端
       async go_to_pay() {
         const campOrder = {
-          order_person_id: this.orderForm.order_person_id,
+          order_person_id: global.userId,
           order_person_name: this.orderForm.order_person_name,
           order_person_phone_number: this.orderForm.order_person_phone_number,
           remark: this.orderForm.remark,
           total_price: parseInt(this.totalPrice),
-          reserved_start_time: dayjs(this.startDate).toISOString(),//toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
-          reserved_end_time: dayjs(this.endDate).toISOString(),
+          reserved_start_time: dayjs(this.$route.query.startDate).toISOString(),//toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
+          reserved_end_time: dayjs(this.$route.query.endDate).toISOString(),
           campsite_ids: this.selectedCampsiteIds.map(id => parseInt(id)),
+          order_idcard: this.orderForm.order_person_id
         };
         try {
         console.log('开始提交订单')

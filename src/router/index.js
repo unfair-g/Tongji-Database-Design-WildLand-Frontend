@@ -21,7 +21,7 @@ const routes = [
             {
                 path: 'OutdoorGear',
                 name: 'OutdoorGear',
-                component: () => import('../views/OutdoorGear.vue')
+                component: () => import('../views/OutdoorGear.vue'),
             },
             {
                 path: 'AdminCamp',
@@ -94,6 +94,11 @@ const routes = [
                 path: "product",
                 component: () => import('../views/ItemView.vue'),
                 props: true
+            },
+            {
+                path:'OutdoorGear/AddProduct',
+                name:'AddProduct',
+                component: () => import('../views/AddOutProduct.vue')
             },
             {
                 path: '/home/product/edit/:productId',
@@ -219,8 +224,18 @@ const routes = [
                 props: true
             },
             {
-                path: `searchProduct`,
-                component: () => import('../views/SearchProduct.vue'),
+                path: `userspace/:userId`,
+                component: () => import('../views/OtherUserSpace.vue'),
+                props: true
+            },
+            {
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
+                props: true
+            },
+            {
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
                 props: true
             }
         ]
