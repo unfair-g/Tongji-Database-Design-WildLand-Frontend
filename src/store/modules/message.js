@@ -25,6 +25,18 @@ export default{
                 state: '待审核',
                 avatarUrl: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.uMf5AX3a6yYpIhpEkyDxiQAAAA?rs=1&pid=ImgDetMain'
               },  
+              { id: 4, username: '王五',
+                type:'rent',
+                timestamp: '刚刚',
+                title: '折叠椅-十分好用，安利一下',
+                state: '已发货',
+                avatarUrl: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.uMf5AX3a6yYpIhpEkyDxiQAAAA?rs=1&pid=ImgDetMain'
+              }, 
             ] 
     },
+    mutations: {  
+      addPaymentSuccessMessage(state, message) {  
+        state.messages.push(message);  
+      } 
+    }
 }

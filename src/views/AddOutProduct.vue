@@ -36,19 +36,28 @@
         </el-select>  
       </el-form-item> 
 
+
+      
         <!--<el-form-item label="户外用品图片">
           <el-input v-model="this.product_image" />
         </el-form-item>-->
         <el-form-item>
-          <el-button type="primary" @click="saveProduct">保存</el-button>
+          <el-button type="primary" @click="saveProduct">上传</el-button>
           <el-button @click="cancelEdit">取消</el-button>
         </el-form-item>
+
+        <el-form-item label="户外用品图片">  
+        <div>  
+          <input type="file" @change="handleFileChange" />  
+          <el-button type="primary" @click="submitUpload" :disabled="!selectedFile">上传文件</el-button>  
+        </div>  
+      </el-form-item> 
       </el-form>
     </div>
   </template>
   
   <script>
- import axios from 'axios';
+ import axios from '@/axios';
 
   export default {
     data() {
@@ -74,14 +83,16 @@
         { value: '其他', label: '其他' }  
       ] ,
       product_name: '',
+      selectedFile: null,  
+      uploadUrl: 'https://localhost:7218/api/OutdoorProductPics/UploadOutdoorProductPic'
       };
     },
     methods: {
-        saveProduct() {  
+    saveProduct() {  
       // http://139.9.193.78:90/images/outdoor_product/4.png 
        // 构造要发送的数据  
        const productData = {  
-        product_id: this.generateProductId(), // 注意：如果 product_id 是由后端生成的，这里可能不需要或应该设置为 null/undefined  
+        product_id: this.product.product_id, // 注意：如果 product_id 是由后端生成的，这里可能不需要或应该设置为 null/undefined  
         product_name: this.product.product_name,  
         product_tag: this.product.product_tag,  
         size: this.product.size,  
@@ -105,7 +116,7 @@
         // 处理成功响应  
         console.log('Product saved successfully', response.data);  
         // 可以在这里添加额外的逻辑，比如重置表单或显示成功消息  
-        this.$router.push({ path: `/administrator/OutdoorGear` });
+        
 
       })  
       .catch(error => {  
@@ -118,6 +129,7 @@
     cancelEdit() {  
       // 取消编辑的逻辑，例如重置表单或关闭对话框  
       console.log('Cancel clicked');  
+      this.$refs.productForm.resetFields(); // 重置表单 
       this.$router.push({ path: `/administrator/OutdoorGear` });
       //this.$refs.yourFormRef.resetFields(); // 如果你需要重置表单  
     },
@@ -129,7 +141,39 @@
       // 如果你需要整数，并且不担心溢出，你可以使用：  
       // this.product.product_id = Math.floor(Math.random() * 1000000000); // 生成一个9位数的随机数  
     },
-    },
+    handleFileChange(event) {  
+      this.selectedFile = event.target.files[0];  
+    },  
+    submitUpload() {  
+      if (!this.selectedFile) {  
+        this.$message.error('请先选择文件！');  
+        return;  
+      }  
+  
+      const formData = new FormData();  
+      formData.append('file', this.selectedFile);  
+      formData.append('productId', 2968);  
+      console.log(formData)
+  
+      // 使用axios或其他HTTP客户端发送请求  
+      axios.post(this.uploadUrl, formData, {  
+        headers: {  
+          'Content-Type': 'multipart/form-data'  
+        }  
+      })  
+      .then(response => {  
+        console.log(response.data)
+        // 处理成功响应  
+        this.$message.success('文件上传成功！');  
+        this.$router.push({ path: `/administrator/OutdoorGear` });
+      })  
+      .catch(error => {  
+        // 处理错误  
+        this.$message.error('文件上传失败！',error);  
+      });  
+    }
+    // 其他方法...  
+  },
     created() {
         this.generateProductId()
     }

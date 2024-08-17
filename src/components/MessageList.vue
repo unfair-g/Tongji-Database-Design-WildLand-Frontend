@@ -27,7 +27,7 @@
               <span v-else style="color:red">{{message.state}}</span>  
             </div>  
           </div>    
-           <div v-else class="message-info" @click="handleClick">  
+           <div v-else-if="message.type==='report'" class="message-info" @click="handleClick">  
             <div class="message-header">  
               <span class="username">{{ message.title }}</span>  
             </div>  
@@ -37,11 +37,22 @@
               <span v-else-if="message.state==='审核通过'" style="color:green">{{message.state}}</span>  
               <span v-else style="color:red">{{message.state}}</span>  
             </div>  
-          </div>    
+          </div>   
+          <div v-else class="message-info" @click="handleClick">  
+            <div class="message-header">  
+              <span class="username">{{ message.title }}</span>  
+            </div>  
+            <div class="message-content">  
+              <span  style="color:black">订单状态：</span>
+              <span v-if="message.state==='已支付'">{{message.state}}</span>  
+              <span v-else-if="message.state==='已发货'" style="color:green">{{message.state}}</span>  
+              <span v-else style="color:red">{{message.state}}</span>  
+            </div>  
+          </div> 
           <!-- 时间戳 -->  
           <div class="message-timestamp">  
             <div class="timestamp">{{ message.timestamp }}</div> 
-            <el-link v-if="message.type==='report'||message.type==='activity'" type="primary">查看详情</el-link>  
+            <el-link v-if="message.type==='report'||message.type==='activity'||message.type==='rent'" type="primary">查看详情</el-link>  
           </div>
           </div>
           <el-divider />

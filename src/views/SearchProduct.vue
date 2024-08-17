@@ -1,7 +1,7 @@
 <template>
     <div class="product-list">
       <el-row :gutter="80"  justify="center">
-        <el-col :span="8" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
+        <el-col :span="filteredProducts.length < 3 ? 12 : 7"  v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToProductDetail(product)">
             <img :src="product.item_image" class="image" alt="product image">
             <div style="padding: 14px;">
@@ -70,7 +70,7 @@ export default {
       // 根据 post_id 从 Posts 接口获取帖子详情
       const OutDoorPromises = productS.data.map(async product => {
       //图片问题
-      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=4`)  
+      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${product.product_id}`)  
         .catch(error => {  
         console.error('Error fetching product pics for product_id:', product.product_id, error);  
        // 你可以选择返回一个默认的对象或null，具体取决于你的应用逻辑  

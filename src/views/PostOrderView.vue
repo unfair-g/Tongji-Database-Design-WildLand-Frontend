@@ -37,9 +37,9 @@
           <div style="margin:10px;"><h2>物流详情</h2></div> 
           <div style="text-align:center;justify-content:center;"><p>{{ this.state }}</p></div>
         </div>
-        <div class="order_3">
+        <!--<div class="order_3">
           <el-button class="pay">申请退款</el-button>
-        </div>
+        </div>-->
       </div>
       </template>
       

@@ -67,7 +67,7 @@ export default {
         .catch(error => {
           console.error('Error fetching product:', error);
         });
-        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=4`)
+        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.productID}`)
         .then(response =>{
            this.image=response.data?.length>0?response.data[0]:'图片'
         })

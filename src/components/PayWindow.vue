@@ -8,7 +8,7 @@
     @close="handleClose">
     <div class="product-info-header" style="display:flex;" shadow="hover">
       <div class="product-img">
-        <img :src="product.product_image" alt="product image"> 
+        <img :src="this.image" alt="product image"> 
       </div>
       <div style="flex:2;">
         <h2>{{ product.product_name }}</h2>
@@ -124,7 +124,8 @@ export default {
       productID:this.product.product_id,
       ProductId:null,
       campOrders:[],
-      order_ID:0
+      order_ID:0,
+      image:''
     }
   },
   watch: {
@@ -161,6 +162,11 @@ export default {
         .catch(error => {
           console.error('Error fetching ldle items posts:', error);
         });
+        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product_id}`)
+        .then(response =>{
+           this.image=response.data?.length>0?response.data[0]:'图片'
+           console.log('kkkk',this.image)
+        })
     },
     createOrderAndUpload() {
       const orderData = {

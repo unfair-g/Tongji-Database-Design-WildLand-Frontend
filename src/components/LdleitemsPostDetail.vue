@@ -2,9 +2,9 @@
   <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
       <div class="post-header">
-        <img :src="ldleitemsPost[0].portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost[0].author_id)">
+        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost[0].author_id)">
         <div class="post-header-info">
-          <span class="username">{{ ldleitemsPost[0].author_name }}</span>
+          <span class="username">{{ ldleitemsPost.user_name }}</span>
         </div>
         <el-button @click="goBackToForumView" class="close-button">
           <el-icon><Close /></el-icon>
@@ -15,7 +15,7 @@
         <div style="flex:1;">
           <div class="post-details" style="display:flex;">
             <div class="details-text" style="flex:1;">
-            <span class="time">发布时间：{{ ldleitemsPost[0].post_time }}</span>
+            <span class="time">发布时间：{{ ldleitemsPost.post_time }}</span>
             <h1 class="item-name">{{ ldleitemsPost.title }}</h1>
             <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
             <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
@@ -23,7 +23,7 @@
           </div>
       </div>
 
-      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>{{ldleitemsPost[0]. post_position }}</div>
+      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>{{ldleitemsPost. post_position }}</div>
         <div class="post-content">
           <el-dialog
           v-model="dialogVisible"
@@ -46,7 +46,7 @@
     </div>
     
       <div>
-        <div class="post-visible-states"  v-if="this.userid===ldleitemsPost[0].author_id">
+        <div class="post-visible-states"  v-if="this.userid===ldleitemsPost.author_id">
           <el-select
             v-model="value"
             placeholder="修改帖子可见状态"
@@ -71,7 +71,7 @@
         </div>
         <div class="image-gallery">
           <el-carousel indicator-position="outside">
-          <el-carousel-item v-for="(image, index) in ldleitemsPost[0].post_pics" :key="index">
+          <el-carousel-item v-for="(image, index) in ldleitemsPost.post_pics" :key="index">
             <img :src="image" class="carousel-image">
           </el-carousel-item>
         </el-carousel>
@@ -83,12 +83,12 @@
 
       <div class="post-stats">
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
-          <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost[0].isLiked, 'icon-dianzanxuanzhong': ldleitemsPost[0].isLiked}"></i>
+          <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost.isLiked, 'icon-dianzanxuanzhong': ldleitemsPost.isLiked}"></i>
           <span>点赞</span>
-          <span>{{ ldleitemsPost[0].likes_number }}</span>
+          <span>{{ ldleitemsPost.likes_number }}</span>
         </el-button>
         <el-button class="stat-item" @click="toggleStar(ldleitemsPost)">
-          <el-icon v-if="!ldleitemsPost[0].isStarred"><Star /></el-icon>
+          <el-icon v-if="!ldleitemsPost.isStarred"><Star /></el-icon>
           <el-icon v-else><StarFilled /></el-icon>
           收藏
         </el-button>
@@ -202,49 +202,20 @@ export default {
     this.BanRent();
   },
   methods: {
-      async fetchLdleitemsPosts() {
-      //const userId = state.userId; // 确保 state.userId 是可访问的  
-  try {  
-    const overviewResponse = await axios.get(`https://localhost:7218/api/Posts/${this.ldleitemsPostID}`); 
-    console.log(overviewResponse)
-      // 你可以在这里对filteredPosts进行进一步处理  
-     const post=overviewResponse.data;
-     console.log(post)
-      // 第一步：获取 author_id  
-      const authorResponse = await axios.get(`https://localhost:7218/api/Posts/${post.post_id}`);  
-      const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
-  
-      const LdleResponse = await axios.get(`https://localhost:7218/api/LdleitemsPosts/${post.post_id}`);  
-      const item_summary = LdleResponse.data.item_summary; 
-      const condition = LdleResponse.data.condition; 
-      const price = LdleResponse.data.price; 
-
-      const post_2=await axios.get(`https://localhost:7218/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=${authorId}`);
-      const post_mess=post_2.data.filter(post_2 => post_2.post_id ===post.post_id);
-  
-      // 返回一个新的对象，包含原始数据和额外数据  
-      this.ldleitemsPost= {  
-        ...post, // 展开原始帖子对象  
-        ... post_mess,
-        author_id: authorId, // 添加 author_id  
-
-        item_summary:item_summary,
-        condition:condition,
-        price:price,
-
-      };  
-    // 由于 map 返回的是 Promise 数组，我们需要等待所有 Promise 解决  
-    console.log(this.ldleitemsPost); // 输出筛选后的数据  
-  
-  } catch (error) {  
-    console.error('Error fetching overview posts:', error);  
-    // 在这里，你可能想设置 this.ldleitemsposts 为空数组或错误消息数组  
-    this.ldleitemsPost = []; // 或 [{ error: 'Failed to fetch posts' }]  
-  }
+      fetchLdleitemsPosts() {
+        axios.get(`https://localhost:7218/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
+        .then(response => {
+          this.ldleitemsPost = response.data;
+          console.log(this.ldleitemsPost)
+        })
+        .catch(error => {
+          console.log(this.ldleitemsPost)
+          console.error('Error fetching products:', error);
+        });
     },
     toggleLike(ldleitemsPost) {
       ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
-      ldleitemsPost.likes = ldleitemsPost.isLiked ? ldleitemsPost.likes + 1 : ldleitemsPost.likes - 1;
+      ldleitemsPost.likes_number = ldleitemsPost.isLiked ? ldleitemsPost.likes_number + 1 : ldleitemsPost.likes_number - 1;
       const likePost = {
         post_id: this.ldleitemsPost.post_id,
         user_id: globalState.userId // 确保在 Vuex store 中有 user.id
@@ -361,23 +332,23 @@ export default {
     handleChange(value) {  
       // 这里是用户更改选择时执行的代码 
       if(value=='仅自己可见')
-          this.ldleitemsPost[0].exhibit_status = 0;
+          this.ldleitemsPost.exhibit_status = 0;
       else
-          this.ldleitemsPost[0].exhibit_status = 1;
+          this.ldleitemsPost.exhibit_status = 1;
 
       const LdlePost={
-        author_id: this.ldleitemsPost[0].author_id,
-        censor_status:this.ldleitemsPost[0].censor_status,
-        content:this.ldleitemsPost[0].content,
-        exhibit_status:this.ldleitemsPost[0].exhibit_status,
-        likes_number:this.ldleitemsPost[0].likes_number,
-        stars_number:this.ldleitemsPost[0].stars_number,
-        post_id:this.ldleitemsPost[0].post_id,
-        post_kind:this.ldleitemsPost[0].post_kind,
-        post_position:this.ldleitemsPost[0].post_position,
-        post_time:this.ldleitemsPost[0].post_time,
-        title:this.ldleitemsPost[0].title,
-        total_floor:this.ldleitemsPost[0].total_floor,
+        author_id: this.ldleitemsPost.author_id,
+        censor_status:this.ldleitemsPost.censor_status,
+        content:this.ldleitemsPost.content,
+        exhibit_status:this.ldleitemsPost.exhibit_status,
+        likes_number:this.ldleitemsPost.likes_number,
+        stars_number:this.ldleitemsPost.stars_number,
+        post_id:this.ldleitemsPost.post_id,
+        post_kind:this.ldleitemsPost.post_kind,
+        post_position:this.ldleitemsPost.post_position,
+        post_time:this.ldleitemsPost.post_time,
+        title:this.ldleitemsPost.title,
+        total_floor:this.ldleitemsPost.total_floor,
 
       }
       axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost[0].post_id}`,LdlePost).then(response => {  
