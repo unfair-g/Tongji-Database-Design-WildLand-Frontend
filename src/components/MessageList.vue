@@ -10,7 +10,6 @@
           <!-- 用户名和消息内容 -->
           <div v-if="message.type === 'follow'" class="message-info">
             <div class="message-header">
-              <span class="username">{{ message.user_name }}</span>
             </div>
             <div class="message-content">
               <p>关注了你</p>
@@ -93,7 +92,6 @@ export default {
     },
     fetchReportMessages() {
       const userId = global.userId;
-
       axios.get(`/api/Users/reportUserViewList/${userId}`).then(response => {
           this.reportMessages = response.data.data;
           this.reportMessages.forEach(item => {
