@@ -16,7 +16,7 @@ export default{
               similarTags:'推荐',
             },
             {id:3,
-              title:'营地推荐',
+              title:'营地',
               image:require('@/assets/flash-1.png'),
               ps:'营地位于上海',
               similarTags:'推荐',
