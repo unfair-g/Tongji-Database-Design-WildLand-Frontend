@@ -29,6 +29,16 @@ const routes = [
                 component: () => import('../views/AdminCamp.vue')
             },
             {
+                path: 'AddCamp',
+                name: 'AddCamp',
+                component: () => import('../views/AddCamp.vue')
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
+                props: true
+            },
+            {
                 path: 'GeekAudit',
                 name: 'GeekAudit',
                 component: () => import('../views/GeekAudit.vue')
@@ -157,11 +167,6 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
-                props: true
-            },
-            {
-                path: 'AdminCampEdit/:campID',
-                component: () => import('../views/AdminCampEdit.vue'),
                 props: true
             },
             {
