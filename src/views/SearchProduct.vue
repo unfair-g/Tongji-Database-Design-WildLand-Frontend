@@ -1,9 +1,9 @@
 <template>
     <div class="product-list">
       <el-row :gutter="80"  justify="center">
-        <el-col :span="7" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
+        <el-col :span="8" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToProductDetail(product)">
-            <img :src="product.product_image" class="image" alt="product image">
+            <img :src="product.item_image" class="image" alt="product image">
             <div style="padding: 14px;">
               <span>{{ product.product_name}}</span>
               <div><span>尺寸：{{ product.size}}</span></div>
@@ -23,62 +23,89 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';  
+  
+export default {  
+  name: 'SearchProduct',  
+  data() {  
+    return {  
+      filteredProducts: []  
+    };  
+  },  
+  watch: {  
+    '$route.query.keyword'(newValue, oldValue) { 
+      console.log('Keyword changed from', oldValue, 'to', newValue);  
+      this.fetchFilteredProduct();  
+    }  
+  },  
+  created() {  
+    this.fetchFilteredProduct(); // 组件创建时立即过滤产品  
+  },  
+  methods: {  
+    /*filterProducts() {  
+      const Keyword = this.$route.query.keyword || '';  
+      axios.get('https://localhost:7218/api/OutdoorProducts/SearchProduct', {  
+        params: {  
+          keyword: Keyword  
+        }  
+      })  
+      .then(response => {  
+        this.filteredProducts = response.data;  
+        console.log(this.filteredProducts);  
+      })  
+      .catch(error => {  
+        console.error('Error fetching products:', error);  
+      });  
+    }, */
+    async fetchFilteredProduct()
+    {
+      try {
+        const Keyword = this.$route.query.keyword || ''; 
+        const productS = await axios.get('https://localhost:7218/api/OutdoorProducts/SearchProduct', {  
+        params: {  
+          keyword: Keyword  
+        }  
+      }); 
+        console.log(productS)
+      // 根据 post_id 从 Posts 接口获取帖子详情
+      const OutDoorPromises = productS.data.map(async product => {
+      //图片问题
+      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=4`)  
+        .catch(error => {  
+        console.error('Error fetching product pics for product_id:', product.product_id, error);  
+       // 你可以选择返回一个默认的对象或null，具体取决于你的应用逻辑  
+       return { item_image: '图片加载失败' };  
+      });
+        console.log('oooook',detailResponse)
 
-export default {
-  name: 'SearchProduct',
-  setup() {
-    const route = useRoute();
-    const router = useRouter();
-    const products = ref([]);
-    const filteredProducts = ref([]);
-
-    const fetchProduct = () => {
-      axios.get('https://localhost:7218/api/OutdoorProducts')
-        .then(response => {
-          products.value = response.data;
-          filterProducts(); // 数据获取后进行过滤
-        })
-        .catch(error => {
+        const item_image=detailResponse.data.length>0?detailResponse.data[0]:'图片';
+            // 将 order_id 添加到每个帖子对象中
+            return { 
+              ...product, 
+              item_image:item_image,
+            };
+      });
+      // 等待所有请求完成
+      this.filteredProducts = await Promise.all(OutDoorPromises);
+      console.log(this.products)
+    }
+      catch(error){
           console.error('Error fetching products:', error);
-        });
-    };
-
-    const filterProducts = () => {
-      const keyword = route.query.keyword || '';
-      if (keyword.trim()) {
-        filteredProducts.value = products.value.filter(product => 
-          product.product_name.toLowerCase().includes(keyword.toLowerCase())
-        );
-      } else {
-        filteredProducts.value = products.value;
-      }
-    };
-
-    onMounted(() => {
-      fetchProduct();
-    });
-
-    watch(() => route.query.keyword, filterProducts);
-
-    const goToProductDetail = (product) => {
-      const productId = product.product_id;
-      // Assuming you have router setup
-      router.push({ path: `/home/product/${productId}` });
-    };
-
-    return { filteredProducts, goToProductDetail };
-  }
-};
+        }
+    } ,
+    goToProductDetail(product) {  
+      const productId = product.product_id;  
+      this.$router.push({ path: `/home/product/${productId}` });  
+    }  
+  }  
+}; 
 </script>
 
 <style scoped>
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start; /* Align items to the left */
+  justify-content:flex-start; /* Align items to the left */
   margin-top: 20px;
 
 }

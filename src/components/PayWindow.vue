@@ -31,7 +31,7 @@
           <el-option
             v-for="order in campOrders"
             :key="order.order_id"
-            :label="`${order.campground_name} —— ${formatDate(order.startDate)}至${formatDate(order.endDate)}`"
+            :label="`${order.campgroundName} —— ${formatDate(order.reservedStartTime)}至${formatDate(order.reservedEndTime)}`"
             :value="order">
           </el-option>
         </el-select>
@@ -39,9 +39,9 @@
       </div>
       <div v-if="filteredCampOrders.length > 0" class="camp-orders">
         <div v-for="order in filteredCampOrders" :key="order.order_id" class="camp-order">
-          <p>营地名称: {{ order.campground_name }}</p>
-          <p>预定时间: {{ formatDate(order.startDate) }} 至 {{ formatDate(order.endDate) }}</p>
-          <p>营位{{ order.selectedCampsiteIds }}</p>
+          <p>营地名称: {{ order.campgroundName }}</p>
+          <p>预定时间: {{ formatDate(order.reservedStartTime) }} 至 {{ formatDate(order.reservedEndTime) }}</p>
+          <p>营位:{{ order.campsiteNumber }}</p>
         </div>
       </div>
       <div v-else>
@@ -83,7 +83,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">租赁成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="button" @click="GoToOrder(product,selectedCampOrder.order_id)">查看订单</el-button>
+            <el-button type="text" class="button" @click="GoToOrder(product,this.order_ID)">查看订单</el-button>
           </div>
         </div>
       </div>
@@ -122,7 +122,9 @@ export default {
       startTime:null,
       endTime:null,
       productID:this.product.product_id,
-      ProductId:null
+      ProductId:null,
+      campOrders:[],
+      order_ID:0
     }
   },
   watch: {
@@ -134,7 +136,8 @@ export default {
     }
   },
   created() {
-    this.fetchProductId()
+    this.fetchProductId();
+    this.CampOrders();
   },
   methods: {
     handleClose() {
@@ -165,8 +168,9 @@ export default {
         user_id: globalState.userId,
         product_id: this.ProductId,
         pick_time: dayjs(this.startTime).format('YYYY-MM-DDTHH:mm:ss'),
-        remark: `营地：${this.selectedCampOrder.campground_name}     营位：${this.selectedCampOrder.selectedCampsiteIds}`,
+        remark: `营地：${this.selectedCampOrder.campsiteName}     营位：${this.selectedCampOrder.campsiteNumber}`,
         back_time: dayjs(this.endTime).format('YYYY-MM-DDTHH:mm:ss'),
+        amount:this.quantity
       };
       console.log('订单上传:', orderData.lease_id);
       console.log('订单上传:', orderData.user_id);
@@ -186,7 +190,8 @@ export default {
         });
     },
     generateOrderId() {
-      return Math.floor(Math.random() * 100000);
+      this.order_ID=Math.floor(Math.random() * 100000);
+      return this.order_ID;
     },
     formatDateToFullDate(dateStr) {
       // 假设 dateStr 是 "YYYY-MM-DD" 格式的日期字符串
@@ -211,8 +216,8 @@ export default {
     filterCampOrders() {
       if (this.selectedCampOrder) {
         this.filteredCampOrders = [this.selectedCampOrder];
-        this.startTime=this.filteredCampOrders[0].startDate;
-        this.endTime=this.filteredCampOrders[0].endDate;
+        this.startTime=this.filteredCampOrders[0].reservedStartTime;
+        this.endTime=this.filteredCampOrders[0].reservedEndTime;
         console.log(this.startTime, this.endTime);
       } else {
         this.filteredCampOrders = [];
@@ -220,6 +225,16 @@ export default {
     },
     formatDate(date) {
       return dayjs(date).format('YYYY-MM-DD');
+    },
+    CampOrders() {
+      axios.get(`https://localhost:7218/api/ReserveOrders/GetReservationDetailsByUserId?orderPersonId=${globalState.userId}`)
+        .then(response => {
+          this.campOrders = response.data;
+          console.log(this.campOrders)
+        })
+        .catch(error => {
+          console.error('Error fetching ldle items posts:', error);
+        });
     }
   },
   computed: {
@@ -234,9 +249,6 @@ export default {
       }
       return 0;
     },
-    campOrders() {
-      return this.$store.state.camp_order.camp_orders;
-    }
   },
 
   setup() {

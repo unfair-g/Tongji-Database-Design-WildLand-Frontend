@@ -9,7 +9,7 @@
             <el-tab-pane label="活动招募贴" name="recruit">
             </el-tab-pane>
         </el-tabs>
-        <Post :view="activeTab"/>
+        <Post :view="activeTab" :user_id="user_id"/>
     </div>
 </template>
 
@@ -20,10 +20,15 @@ export default {
     components: {
         Post
     },
-
+    props: {
+    user_id: {
+      type: Number,
+      required:true
+    }
+    },
     data() {
         return {
-            activeTab:'share'
+            activeTab: 'share',
         }
     }
 }

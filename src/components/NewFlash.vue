@@ -3,7 +3,7 @@
     <el-timeline-item  
       v-for="(flash, index) in flash"  
       :key="index"  
-      :timestamp="flash.timestamp"  
+      :timestamp="flash.flash_date"  
       placement="top"  
       @click="goToDetail(flash)"
     >  
@@ -12,7 +12,7 @@
       </template>  
       <el-card class="flash-item">  
         <div class="flash-info">  
-          <span class="flash-title">{{ flash.title }}</span>  
+          <span class="flash-title">{{ flash.flash_title }}</span>  
           <div class="flex gap-2">  
             <el-tag type="info">{{ flash.tag }}</el-tag>  
           </div>  
@@ -23,18 +23,33 @@
 </template>  
   
 <script>  
+import axios from '@/axios'; // 引入配置好的axios实例
+
 export default {  
   props: ['flashID'],
-  computed: {
-    flash() {
-      return this.$store.state.flash.flashes;
-    },
+  data() {
+    return {
+      flash: []
+    };
+    
   },
   methods: {
+    fetchFlashes() {
+      axios.get('https://localhost:7218/api/Flashes/GetLatestNFlash?n=3')
+        .then(response => {
+          this.flash = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
     goToDetail (flash) {
       const flashId = flash.flash_id
       this.$router.push({ path: `/home/flash/${flashId}` })
     }
+  },
+  created() {
+    this.fetchFlashes();
   }
 }  
 </script>  
