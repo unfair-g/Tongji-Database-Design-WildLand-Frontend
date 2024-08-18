@@ -43,7 +43,7 @@
         </el-col>
         </el-row>
         <el-divider />
-        <Post :user_id=" route.params.userId"/>
+        <Post :user_id="route.params.userId"/>
     </div>
 </template>
 

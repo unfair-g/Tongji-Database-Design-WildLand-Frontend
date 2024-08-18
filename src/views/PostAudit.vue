@@ -51,6 +51,7 @@
 <script>
 import axios from 'axios';
 import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
 import { mapState, mapActions } from 'vuex';
 
 export default {
@@ -93,13 +94,28 @@ export default {
           });
 
           if (response.status === 200) {
-            // Update the status in the store
+            // 删除该行
+            const index = this.postAuditTableData.indexOf(row);
+            if (index !== -1) {
+              this.postAuditTableData.splice(index, 1); // 从数组中移除该行
+            }
+
+            // 显示操作成功的消息
+            const message = action === 'check' ? '已通过帖子审核' : '已拒绝帖子审核';
+            ElMessage({
+              message: message,
+              type: 'success',
+            });
+
+            // 更新状态
             this.updatePostAuditStatus({ id: row.id, status: true });
-            row.isReviewed = true; // Mark the row as reviewed
-            row.action = action; // Save the action state to change button color
           }
         } catch (error) {
           console.error('Failed to update post review status:', error);
+          ElMessage({
+            message: '操作失败，请重试',
+            type: 'error',
+          });
         }
       }
       if (action === 'more') {

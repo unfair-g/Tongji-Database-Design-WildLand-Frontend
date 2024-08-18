@@ -17,33 +17,35 @@ import { ElMessage } from "element-plus";
 export default {
   name: 'CommentInput',
   props: {
-    postId: {
+    postID: {
       type: Number,
       required: true
     },
     parentCommentId: {
       type: Number,
       default: null,
-      required: true
+
     },
-    commentContent: {
-      type: String,
-      required: true
-    }
+    // commentContent: {
+    //   type: String,
+    //   default: null,
+    //   required: true
+    // }
   },
   data() {
     return {
-      localPostId: this.postId,
+      localPostId: this.postID,
       localParentCommentId:this.parentCommentId,
-      localCommentContent: this.commentContent,
+      localCommentContent: '',
+      // localCommentContent: this.commentContent,
       avatarUrl: '', // 新增变量
     };
   },
-  watch: {
-    commentContent(newVal) {
-      this.localCommentContent = newVal;
-    }
-  },
+  // watch: {
+  //   commentContent(newVal) {
+  //     this.localCommentContent = newVal;
+  //   }
+  // },
   methods: {
     async submitComment() {
       if (this.localCommentContent.trim() !== '') {
@@ -52,15 +54,18 @@ export default {
             author_id: state.userId,
             content: this.localCommentContent,
             parent_comment_id: this.parentCommentId,
-            post_id: this.postId
+            post_id: this.localPostId
           });
-          if (response.data.success) {
+          console.log('服务器响应:', response);
+          if (response.data) {
             ElMessage.success('评论提交成功'); // 添加成功提示
-          }
+            this.$emit('comment-submitted'); // 触发事件，通知父组件
+          }          
         }catch (error) {
           this.handleError(error, '评论提交失败');
         }
         this.localCommentContent = ''; // 清空输入框
+        this.$emit('comment-submitted'); // 触发事件，通知父组件
       }
     },
     async fetchData() {

@@ -21,12 +21,22 @@ const routes = [
             {
                 path: 'OutdoorGear',
                 name: 'OutdoorGear',
-                component: () => import('../views/OutdoorGear.vue')
+                component: () => import('../views/OutdoorGear.vue'),
             },
             {
                 path: 'AdminCamp',
                 name: 'AdminCamp',
                 component: () => import('../views/AdminCamp.vue')
+            },
+            {
+                path: 'AddCamp',
+                name: 'AddCamp',
+                component: () => import('../views/AddCamp.vue')
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
+                props: true
             },
             {
                 path: 'GeekAudit',
@@ -101,6 +111,11 @@ const routes = [
                 props: true
             },
             {
+                path:'OutdoorGear/AddProduct',
+                name:'AddProduct',
+                component: () => import('../views/AddOutProduct.vue')
+            },
+            {
                 path: '/home/product/edit/:productId',
                 component: () => import('../views/AdminProductEdit.vue'),
                 props: true
@@ -162,11 +177,6 @@ const routes = [
             {
                 path: "campdetail/:campID",
                 component: () => import('../views/CampDetailView.vue'),
-                props: true
-            },
-            {
-                path: 'AdminCampEdit/:campID',
-                component: () => import('../views/AdminCampEdit.vue'),
                 props: true
             },
             {
