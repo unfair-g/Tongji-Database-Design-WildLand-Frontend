@@ -28,7 +28,6 @@ export default {
     return {
       flash: []
     };
-    
   },
   methods: {
     goToDetail (flash) {

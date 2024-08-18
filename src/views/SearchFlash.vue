@@ -20,8 +20,8 @@
 
 <script>
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   name: 'SearchFlash',

@@ -20,6 +20,15 @@
           </div>
             <!-- 右侧资讯面板 -->
             <div class="right-panel">
+              <div class="searchbox">
+                <el-input
+                  v-model="input"
+                  style="height:50px;margin-bottom: 5%;margin-top: 1%;"
+                  placeholder="Please input"
+                  clearable
+              />
+              <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px;margin-bottom: 5%;margin-top: 1%;" @click="searchFlash">搜索</el-button>
+              </div>
               <newflash />
               <hotflash />
             </div>
@@ -45,6 +54,12 @@ function searchFlash() {
   if (input.value.trim()) {
     router.push({ path: '/home/searchFlash', query: { keyword: input.value } })
   }
+}
+
+components: {
+  mainflash,
+  hotflash,
+  newflash
 }
 </script>
 
