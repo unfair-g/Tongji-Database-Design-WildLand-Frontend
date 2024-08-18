@@ -42,7 +42,7 @@ export default {
     },
     goToPostDetail(post) {
       const postID = post.post_id;
-      const postKind ='';
+      const postKind =post.post_kind;
       this.$router.push({ path: `/home/forum/post/${postKind}/${postID}` }); 
     }
   },

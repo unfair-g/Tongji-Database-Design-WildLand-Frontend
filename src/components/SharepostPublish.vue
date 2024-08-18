@@ -18,7 +18,7 @@
               type="textarea" 
               v-model="postForm.content"
               placeholder="请输入帖子内容"
-              rows="5"
+              :rows=5
             />
           </el-form-item>
           
