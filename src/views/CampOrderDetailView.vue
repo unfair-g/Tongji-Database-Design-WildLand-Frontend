@@ -1,4 +1,5 @@
 <template>
+<<<<<<< Updated upstream
     <div class="order">
       <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
 
@@ -12,36 +13,85 @@
           <p>预约人备注：{{ camporder.remark }}</p>
 
         </div>
+=======
+  <div class="order">
+    <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
+      <div class="product-img">
+        <img :src="camporder.map_picture" alt="campground image">
+>>>>>>> Stashed changes
       </div>
-        <div class="order_2">
-          <div style="margin:10px;"><h3>开始时间</h3></div>
-          <div style="text-align:center;"><p> {{ camporder.startDate }}</p></div>
-        </div>
-        <div class="order_2">
-          <div style="margin:10px;"><h3>结束时间</h3></div>
-          <div style="text-align:center;"><p>{{ camporder.endDate }}</p></div>
-        </div>
-        <div class="order_2">
-          <div style="margin:10px;"><h3>预定营位</h3></div>
-          <div style="text-align:center;"><p>{{ camporder.selectedCampsiteIds.join(', ') }}</p></div>
-        </div>
-        <div class="order_3">
-          <el-button class="pay">申请退款</el-button>
-        </div>
+      <div style="flex:2;position:relative;">
+        <h2>预约营地：{{ camporder.campground_name }}</h2>
+        <div class="price-tag">￥{{ camporder.total_price }}</div>
+        <p>订单创建时间：{{ formatDateTime(camporder.order_created_time) }}</p>
+        <p>预约人姓名：{{ camporder.order_person_name }}</p>
+        <p>预约人电话：{{ camporder.order_person_phone_number }}</p>
+        <p>预约人身份证：{{ camporder.order_idcard }}</p>
+        <p>备注：{{ camporder.remark }}</p>
       </div>
-      </template>
-      
-      <script>
-      export default {
-        name: 'CampOrderDetailView',
-        props: ['id'],
-        computed: {
-            camporder() {
-              return this.$store.state.camp_order.camp_orders.find(camporder => camporder.order_id === parseInt(this.id));
-        },
-          }
-        }
-      </script>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h3>营地地址</h3></div>
+      <div style="text-align:center;"><p>{{ camporder.address || '暂无数据' }}</p></div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h3>开始时间</h3></div>
+      <div style="text-align:center;"><p>{{ formatDate(camporder.reserved_start_time) || '暂无数据' }}</p></div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h3>结束时间</h3></div>
+      <div style="text-align:center;"><p>{{ formatDate(camporder.reserved_end_time) || '暂无数据' }}</p></div>
+    </div>
+    <div class="order_2">
+      <div style="margin:10px;"><h3>预定营位</h3></div>
+      <div style="text-align:center;"><p>{{ camporder.campsite_numbers && camporder.campsite_numbers.length > 0 ? camporder.campsite_numbers.join(', ') : '暂无数据' }}</p></div>
+    </div>
+    <div class="order_3">
+      <el-button class="pay">申请退款</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from '@/axios'; // 引入配置好的axios实例
+import dayjs from 'dayjs';
+
+export default {
+  name: 'CampOrderDetailView',
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      camporder: {}, // 保存订单详情数据
+    };
+  },
+  created() {
+    this.fetchOrderDetails();
+  },
+  methods: {
+    //调用接口：获取该订单具体信息
+    async fetchOrderDetails() {
+      try {
+        const response = await axios.get(`api/ReserveOrders/GetOrderDetailsByOrderId/${this.id}`);
+        this.camporder = response.data;
+      } catch (error) {
+        console.error('获取订单详情失败', error);
+      }
+    },
+    formatDateTime(dateTime) {
+      return dayjs(dateTime).format('YYYY年MM月DD日 HH:mm');
+    },
+    formatDate(date) {
+      return dayjs(date).format('YYYY年MM月DD日');
+    }
+  }
+};
+</script>
+
       
       <style scoped>
       .order {
