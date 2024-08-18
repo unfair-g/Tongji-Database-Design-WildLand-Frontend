@@ -87,15 +87,33 @@ export default {
     goToProductEdit(product) {
       const productId = product.product_id;
       this.$router.push({ path: `/home/product/edit/${productId}` });
+      this.$alert('修改成功！', '提示', {  
+        confirmButtonText: '确定',  
+        type: 'success',  
+        callback: () => {  
+          location.reload(); // 刷新页面  
+        } 
+      });
     },
     deleteProduct(product) {
       // 提交删除请求
       axios.delete(` https://localhost:7218/api/OutdoorProducts/${product.product_id}` )
         .then(response => {
           console.log('0k',response.data);
+          this.$alert('删除成功！', '提示', {  
+        confirmButtonText: '确定',  
+        type: 'success',  
+        callback: () => {  
+          location.reload(); // 刷新页面  
+        } 
+      });
         })
         .catch(error => {
           console.error('Error fetching products:', error);
+          this.$alert('删除失败！', '错误', {  
+        confirmButtonText: '确定',  
+        type: 'error'  
+      }); 
         });
     },
     handleUpload()

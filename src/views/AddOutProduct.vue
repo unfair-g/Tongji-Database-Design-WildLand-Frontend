@@ -84,7 +84,8 @@
       ] ,
       product_name: '',
       selectedFile: null,  
-      uploadUrl: 'https://localhost:7218/api/OutdoorProductPics/UploadOutdoorProductPic'
+      uploadUrl: 'https://localhost:7218/api/OutdoorProductPics/UploadOutdoorProductPic',
+      productId:0
       };
     },
     methods: {
@@ -103,9 +104,7 @@
         stock_quantity: this.product.stock_quantity,  
         //product_image: this.product.product_image, // 假设这是图片的URL或Base64编码的字符串  
         introduction: this.product.introduction  
-      };  
-  
-      // 发送 POST 请求到 /api/OutdoorProducts  
+      };   
       axios.post('https://localhost:7218/api/OutdoorProducts', productData, {  
         headers: {  
             'accept': 'text/plain' ,
@@ -113,17 +112,12 @@
         }  
       })  
       .then(response => {  
-        // 处理成功响应  
         console.log('Product saved successfully', response.data);  
-        // 可以在这里添加额外的逻辑，比如重置表单或显示成功消息  
-        
-
+        this.productId=response.data.product_id;
       })  
       .catch(error => {  
-        // 处理错误  
         console.log(this.product);
         console.error('Error saving product:', error);  
-        // 可以在这里添加错误处理逻辑，比如显示错误消息  
       }); 
     },  
     cancelEdit() {  
@@ -145,33 +139,34 @@
       this.selectedFile = event.target.files[0];  
     },  
     submitUpload() {  
-      if (!this.selectedFile) {  
-        this.$message.error('请先选择文件！');  
-        return;  
-      }  
+  if (!this.selectedFile) {  
+    this.$message.error('请先选择文件！');  
+    return;  
+  }  
   
-      const formData = new FormData();  
-      formData.append('file', this.selectedFile);  
-      formData.append('productId', 2968);  
-      console.log(formData)
+  const formData = new FormData();  
+  formData.append('file', this.selectedFile);  
   
-      // 使用axios或其他HTTP客户端发送请求  
-      axios.post(this.uploadUrl, formData, {  
-        headers: {  
-          'Content-Type': 'multipart/form-data'  
-        }  
-      })  
-      .then(response => {  
-        console.log(response.data)
-        // 处理成功响应  
-        this.$message.success('文件上传成功！');  
-        this.$router.push({ path: `/administrator/OutdoorGear` });
-      })  
-      .catch(error => {  
-        // 处理错误  
-        this.$message.error('文件上传失败！',error);  
-      });  
-    }
+  // 构造带有 query 参数的 URL  
+  const uploadUrlWithProductId = `${this.uploadUrl}?productId=${this.productId}`;  
+  
+  // 使用axios或其他HTTP客户端发送请求  
+  axios.post(uploadUrlWithProductId, formData, {  
+    headers: {  
+      'Content-Type': 'multipart/form-data'  
+    }  
+  })  
+  .then(response => {  
+    console.log(response.data);  
+    // 处理成功响应  
+    this.$message.success('文件上传成功！');  
+    this.$router.push({ path: `/administrator/OutdoorGear` });  
+  })  
+  .catch(error => {  
+    // 处理错误  
+    this.$message.error('文件上传失败！', error);  
+  });  
+}
     // 其他方法...  
   },
     created() {

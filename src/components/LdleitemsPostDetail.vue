@@ -502,6 +502,7 @@ export default {
   border: 1px solid #1D5B5E;
   width:100%;
   height:240px;
+  
   align-items: center;
   align-content: center;
   overflow: hidden;
@@ -511,6 +512,8 @@ export default {
   max-width: 100%; /* 调整宽度适应容器 */
   max-height: 100%; /* 调整高度适应容器 */
   object-fit: contain;
+  display: block;
+  margin: auto; /* 居中对齐图片 */
 }
 
 .dashed-line {

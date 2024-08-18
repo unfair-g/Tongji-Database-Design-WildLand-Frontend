@@ -57,16 +57,7 @@
         const productId = this.product.product_id; // 确保这个值已经被正确设置   
     const updatedProduct = {  
       ...this.product,  
-      // 如果 product_tag 是必需的但你不想改变它，你可以这样设置  
-      // product_tag: this.product.product_tag || '',  
-      // 如果 product_image 需要处理，你可能需要将其添加到 FormData 对象中  
-      // 但在这个例子中，我们假设它不包含文件上传  
     };  
-  
-    // 删除不需要发送到服务器的属性（例如，如果后端不需要 product_id）  
-    // delete updatedProduct.product_id; // 根据你的 API 要求来决定是否保留这个字段  
-  
-    // 发送 PUT 请求  
     axios.put(`https://localhost:7218/api/OutdoorProducts/${productId}`, updatedProduct)  
       .then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  

@@ -130,16 +130,7 @@
         this.createOrderAndUpload();
         this.changeState();
 
-        //添加支付成功逻辑
-        const paymentSuccessMessage = {  
-          id: this.ldleitemsPost.post_id, // 假设post_id作为消息的ID  
-          type: 'rent', // 消息类型  
-          username: this.ldleitemsPost.user_name, // 发送者用户名  
-          timestamp: new Date().toLocaleString(), // 时间戳  
-          content: this.ldleitemsPost.content, // 消息内容  
-          avatarUrl: this.ldleitemsPost.portrait // 头像URL，可以是默认的  
-        };  
-        this.$store.message.commit('addPaymentSuccessMessage', paymentSuccessMessage);  
+        //添加支付成功逻辑 
         // 切换支付成功弹窗
       },
     createOrderAndUpload() {
