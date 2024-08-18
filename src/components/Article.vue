@@ -35,7 +35,7 @@
       <el-card class="post-item">
         <template #header>
           <div class="post-header">
-            <img :src="recruitpost.avatar" alt="avatar" class="avatar">
+            <img :src="recruitpost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(recruitpost.author_id)">
           <div class="post-details">
             <div class="post-info">
                 <span class="username">{{ recruitpost.username }}</span>
@@ -169,7 +169,6 @@ export default {
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
-              views: 0, // Assuming views is not available in the API response
               isLiked: post.isLiked,
               isStarred: post.isStarred,
             }));
@@ -182,9 +181,9 @@ export default {
           });
       }
       else {
-        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/0`)
+        axios.get(`/api/Posts/GetUserPosts/${state.userId}/${this.user_id}/0`)
           .then(response => {
-            this.shareposts = response.data.map(post => ({
+            this.shareposts = response.data.data.map(post => ({
               post_id: post.post_id,
               username: post.author_name,
               author_id:this.user_id,
@@ -194,7 +193,6 @@ export default {
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
-              views: 0, // Assuming views is not available in the API response
               isLiked: post.isLiked,
               isStarred: post.isStarred,
             }));
@@ -227,6 +225,7 @@ export default {
         .then(response => {
           this.recruitposts = response.data.map(post => ({
             post_id: post.post_id,
+            author_id: post.author_id,
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
@@ -234,7 +233,6 @@ export default {
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
             activity_time: post.activity_time,
@@ -251,10 +249,11 @@ export default {
         }); 
       }
       else {
-        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/2`)
+        axios.get(`/api/RecruitmentPosts/GetRecruitmentPostByAuthor/${this.user_id}/${state.userId}`)
         .then(response => {
-          this.recruitposts = response.data.map(post => ({
+          this.recruitposts = response.data.data.map(post => ({
             post_id: post.post_id,
+            author_id: post.author_id,
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
@@ -262,7 +261,6 @@ export default {
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
             activity_time: post.activity_time,
@@ -271,7 +269,7 @@ export default {
             intro:post.short_activity_summary,
           }));
         })
-        .catch(error => {
+          .catch(error => {
           console.error('Error fetching recruit posts:', error);
           this.handleError(error, '获取招募贴失败');
         }); 
