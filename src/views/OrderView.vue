@@ -17,20 +17,20 @@
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;justify-content:center;"><p>{{ camp_order.startDate }}</p></div>
+      <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(camp_order.pick_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ camp_order.endDate }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ this.formatDate(camp_order.back_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;营地：{{ camp_order.campground_name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 营位：{{ camp_order.selectedCampsiteIds }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ camp_order.remark }}</p></div>
     </div>
-    <div class="order_2">
+    <!--<div class="order_2">
       <div style="margin:10px;"><h2>物流详情</h2></div>
       <div style="text-align:center;justify-content: center; "><p>现处于上海市/嘉定区</p></div>
-    </div>
+    </div>-->
     <div class="order_3">
       <el-button class="pay">申请退款</el-button>
     </div>
@@ -38,6 +38,7 @@
   </template>
   
   <script>
+  import axios from '@/axios';
 
   export default {
     name: 'OrderView',
@@ -49,8 +50,11 @@
       },
       data() {
         return {
-          productId: null,
           Lquantity:this.quantity,
+
+          product: {},
+          camp_order: {},
+
           startTime:null,
           endTime:null,
           time:"2024年4月23日",
@@ -59,23 +63,28 @@
           orderId:null
         }
       },
-    created() {  
-    // 在组件创建时，你可以从$route.query中获取查询参数  
-    this.productId = this.$route.query.productId;  
-    this.startTime = this.$route.query.startDate||this.time;
-    this.endTime = this.$route.query.endDate||this.time2;
-    this.Lquantity = parseInt(this.$route.query.quantity) || this.quantity;  
-    this.Command = this.$route.query.command||this.Command;
-    this.orderId = this.$route.query.orderID
-    },
+      async created() {  
+    this.orderId = this.$route.query.orderID;
+
+    // 获取订单详情
+    try {
+      const orderResponse = await axios.get(`/api/Leases/${this.orderId}`);
+      const order = orderResponse.data;
+
+      // 更新订单数据
+      this.camp_order = order;
+      this.Lquantity = parseInt(this.$route.query.quantity) || this.quantity;
+
+      // 获取产品详情
+      const productId = order.product_id;
+      const productResponse = await axios.get(`/api/OutdoorProducts/${productId}`);
+      this.product = productResponse.data;
+      
+    } catch (error) {
+      console.error('Error fetching order or product details:', error);
+    }
+  },
       computed: {
-        product() {
-          return this.$store.state.product.products.find(product => product.product_id === parseInt(this.productId));
-    },
-    camp_order()
-    {
-      return this.$store.state.camp_order.camp_orders.find(camp_order => camp_order.order_id === parseInt(this.orderId));
-    },
         TotalPrice(){
           if (this.product && this.product.price && !isNaN(this.Lquantity)) {
             // 确保 product.price 是一个数字
@@ -85,6 +94,21 @@
           }
           return 0;
         }
+    },
+    methods: {
+      formatDate(dateTimeString) {  
+      // 创建一个Date对象  
+      const date = new Date(dateTimeString);  
+  
+      // 使用getFullYear(), getMonth() + 1, 和 getDate() 方法来获取年、月和日  
+      // 注意：getMonth() 返回的是从0开始的月份，所以需要加1  
+      const year = date.getFullYear();  
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 使用padStart确保月份是两位数  
+      const day = date.getDate().toString().padStart(2, '0'); // 使用padStart确保日期是两位数  
+  
+      // 返回格式化的日期字符串  
+      return `${year}-${month}-${day}`;   
+      }, 
     }
   }
   </script>

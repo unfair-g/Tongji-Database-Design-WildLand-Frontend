@@ -21,12 +21,22 @@ const routes = [
             {
                 path: 'OutdoorGear',
                 name: 'OutdoorGear',
-                component: () => import('../views/OutdoorGear.vue')
+                component: () => import('../views/OutdoorGear.vue'),
             },
             {
                 path: 'AdminCamp',
                 name: 'AdminCamp',
                 component: () => import('../views/AdminCamp.vue')
+            },
+            {
+                path: 'AddCamp',
+                name: 'AddCamp',
+                component: () => import('../views/AddCamp.vue')
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
+                props: true
             },
             {
                 path: 'GeekAudit',
@@ -96,6 +106,11 @@ const routes = [
                 props: true
             },
             {
+                path:'OutdoorGear/AddProduct',
+                name:'AddProduct',
+                component: () => import('../views/AddOutProduct.vue')
+            },
+            {
                 path: '/home/product/edit/:productId',
                 component: () => import('../views/AdminProductEdit.vue'),
                 props: true
@@ -160,11 +175,6 @@ const routes = [
                 props: true
             },
             {
-                path: 'AdminCampEdit/:campID',
-                component: () => import('../views/AdminCampEdit.vue'),
-                props: true
-            },
-            {
                 path: "campbooking/:campID",
                 component: () => import('../views/CampBookingView.vue'),
                 props: true
@@ -219,8 +229,18 @@ const routes = [
                 props: true
             },
             {
-                path: `searchProduct`,
-                component: () => import('../views/SearchProduct.vue'),
+                path: `userspace/:userId`,
+                component: () => import('../views/OtherUserSpace.vue'),
+                props: true
+            },
+            {
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
+                props: true
+            },
+            {
+                path: `searchFlash`,
+                component: () => import('../views/SearchFlash.vue'),
                 props: true
             }
         ]
