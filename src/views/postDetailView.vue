@@ -14,6 +14,7 @@
               placeholder="修改帖子可见状态"
               size="large"
               style="width: 240px"
+              @change="updateExhibitStatus"
             >
             <!-- v-model="post.exhibit_status" -->
               <el-option
@@ -52,7 +53,7 @@
             
             <div class="post-location">
           <el-icon><Location /></el-icon> {{ post.post_position }}
-          <span  v-if="!isPostOwner" class="delete-button" @click="openDeleteDialog">删除</span>
+          <span  v-if="isPostOwner" class="delete-button" @click="openDeleteDialog">删除</span>
         </div>
         <el-dialog
           v-model="deleteDialogVisible"
@@ -70,17 +71,20 @@
           <div class="post-stats">
             <el-button class="stat-item" @click="toggleLike(post)">
               <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !post.isLiked, 'icon-dianzanxuanzhong': post.isLiked}"></i>
-              <span>点赞</span>
               <span>{{ post.likes_number }}</span>
+              <span style="margin-left: 10px;">{{ post.isLiked ? '已点赞' : '点赞' }}</span>
               
             </el-button>
             <el-button class="stat-item" @click="toggleStar(post)">
               <el-icon v-if="!post.isStarred"><Star /></el-icon>
               <el-icon v-else><StarFilled /></el-icon>
-              收藏
+              <span>{{ post.isStarred ? '已收藏' : '收藏' }}</span>
             </el-button>
             <el-button class="stat-item">
-              <el-icon><ChatLineSquare /></el-icon> 评论{{ post.total_floor }}</el-button>
+              <el-icon><ChatLineSquare /></el-icon>
+              <span>{{post.total_floor }}</span>
+              <span style="margin-left: 10px;">评论</span> 
+            </el-button>
             <el-button class="stat-item"  @click="goToReportPostWindow">
               <el-icon><Bell/></el-icon>举报
             </el-button>
@@ -88,14 +92,28 @@
 
           <div class="comments-section">
             <CommentInput
-              v-model:commentContent="comment"
-              :postId="this.postID"
+              :postID="Number(this.postID)"
+              @comment-submitted="fetchPosts"
             />
-            <!-- 这里的评论回复的是帖子 -->
-            <div >
+            <!-- 展示直接评论帖子的评论 -->
+            <div v-for="comment in directComments" :key="comment.comment_id">
               <CommentItem
-                :postId="this.postID"
+                :postID="Number(this.postID)"
+                :comment="comment"
+                :isReply="false"
+                @reply-submitted="fetchPosts"
+                @comment-deleted="fetchPosts"
               />
+              <!-- 显示相同 floor_number 的其他评论 -->
+              <div v-for="reply in getSameFloorComments(comment.floor_number, comment.comment_id)" :key="reply.comment_id" class="reply-comment">
+                <CommentItem
+                  :postID="Number(this.postID)"
+                  :comment="reply"
+                  :isReply="true"
+                  @reply-submitted="fetchPosts"
+                  @comment-deleted="fetchPosts"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -222,14 +240,8 @@ export default {
       currentIndex: 0,
       isStarSolid: true,
       value: '',
-      comment: '',
+      comments: [],//存储所有评论
       signup:'',
-    
-      deleteType: '', // 删除类型（帖子或评论或报名）
-      deleteComment: null, // 要删除的评论
-      deleteReply: null, // 要删除的回复
-      deleteSignup:null, // 要删除的报名
-      parentComment: null, // 回复的父评论
       isReportPostWindowVisible:false,//举报弹窗显示
       showSignUpInput: false, // 控制SignUpInput显示
       options: [
@@ -247,6 +259,9 @@ export default {
     }
   },
   computed: {
+    directComments() {
+      return this.comments.filter(comment => !comment.parent_comment_id);
+    },
     imageRows() {
       if (!this.post || !this.post.post_pics) return [];
       let rows = [];
@@ -276,16 +291,71 @@ export default {
   },
   mounted() {
     this.fetchData();
+    this.fetchComments();
   },
   methods: {
     async fetchData() {
+      if (this.type === 'share') {
+        try {
+          const user_id = state.userId;
+          
+          // 使用 Promise.all 并行执行两个请求
+          const postResponse = await axios.get(`/api/Posts/GetPostDetail/${this.postID}/${user_id}`);
+
+          // 分别处理两个请求的响应
+          this.post = postResponse.data;
+          this.value=this.post.exhibit_status
+          
+
+          console.log('帖子数据获取成功:', this.post, this.comments);
+        } catch (error) {
+          console.error('Error fetching post or comments data:', error);
+          ElMessage.error('获取帖子失败');
+        }
+      }
+      // else if (this.type === 'recruit') {
+        
+      // }
+    },
+    async fetchComments() {
       try {
         const user_id = state.userId;
-        const response = await axios.get(`/api/Posts/GetPostDetail/${this.postID}/${user_id}`);
-        this.post = response.data;
+        console.log('Fetching comments for postID:', this.postID);
+        const commentsResponse = await axios.get(`/api/Comments/GetComment/${this.postID}/${user_id}`);
+          this.comments = commentsResponse.data.sort((a, b) => {
+            return new Date(a.comment_time) - new Date(b.comment_time);
+          }) || [];
+
+        // 如果 comments 为空，且没有其他错误，避免弹窗
+        if (this.comments.length === 0) {
+          console.log('No comments found.');
+          return;
+        }
+
+        console.log('Comments fetched successfully:', this.comments);
       } catch (error) {
-        console.error('Error fetching post data:', error);
+        if (error.response && error.response.data) {
+          // 处理响应数据中包含的错误信息
+        
+        } else {
+          // 处理技术错误，如连接问题
+          this.handleError(error, '获取评论失败');
+        }
       }
+    },
+    async updateExhibitStatus(newValue) {
+      try {
+        const response = await axios.put(`api/Posts/UpdateExhibitStatus/${this.postID}/${newValue}`);
+        if (response.data != null) {
+          ElMessage.success('帖子可见状态已更新');
+        }
+      }catch (error) {
+        this.handleError(error, '更新失败：');
+      }
+    },
+    fetchPosts(){
+      this.fetchData();
+      this.fetchComments();
     },
     handleError(error, message) {
       if (error.response) {
@@ -314,6 +384,7 @@ export default {
         console.error('Error toggling like:', error);
         this.handleError(error, '点赞操作失败');
       });
+      this.fetchPosts();
     },
     toggleStar(post) {
       post.isStarred = !post.isStarred;
@@ -335,6 +406,7 @@ export default {
         console.error('Error toggling star:', error);
         this.handleError(error, '收藏操作失败');
       });
+      this.fetchPosts();
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
@@ -343,28 +415,23 @@ export default {
       this.deleteDialogVisible = true;
     },
     confirmDelete() {
-      if (this.deleteType === 'post') {
-        // 这里处理帖子删除操作
-      } else if (this.deleteType === 'comment' && this.deleteComment) {
-        const index = this.post.comments_details.indexOf(this.deleteComment);
-        if (index !== -1) {
-          this.post.comments_details.splice(index, 1);
-        }
-      } else if (this.deleteType === 'reply' && this.deleteReply && this.parentComment) {
-        const index = this.parentComment.replies.indexOf(this.deleteReply);
-        if (index !== -1) {
-          this.parentComment.replies.splice(index, 1);
-        }
-      } else if (this.deleteType === 'signup' && this.deleteSignup) {
-        const index = this.post.signups_details.indexOf(this.deleteSignup);
-        if (index !== -1) {
-          this.post.signups_details.splice(index, 1);
-        }
-      }
       this.deleteDialogVisible = false;
+      axios.delete(`api/Posts/${this.postID}`)
+        .then(response => {
+          if (response.data !=null) {
+            this.goBackToForumView();          
+          }
+      })
+      .catch(error => {
+        this.handleError(error, '删除帖子失败');
+        this.fetchPosts();
+
+      })    
     },
     cancelDelete() {
       this.deleteDialogVisible = false;
+      this.fetchPosts();
+
     },
     addSignUp(newSignUp) {
       this.post.signups_details.push(newSignUp);
@@ -377,6 +444,12 @@ export default {
     toggleSignUpInput() {
       this.showSignUpInput = !this.showSignUpInput;
     },
+    // addComment(newComment) {
+
+    // }
+    getReplies(parentCommentId) {
+      return this.comments.filter(comment => comment.parent_comment_id === parentCommentId);
+    },
     goToUserSpace(author_id) {
       if (author_id == state.userId) {
         this.$router.push({
@@ -388,7 +461,15 @@ export default {
           path: `/home/userspace/${author_id}`
         })
       }
-    }
+    },
+    // 获取与当前 comment 具有相同 floor_number 的其他评论
+    getSameFloorComments(floor_number, excludeCommentId) {
+      return this.comments.filter(
+        comment => comment.floor_number === floor_number && comment.comment_id !== excludeCommentId
+      ).sort((a, b) => {
+        return new Date(a.comment_time) - new Date(b.comment_time);
+      });
+    },
   }
 };
 </script>
@@ -548,5 +629,10 @@ export default {
   flex-direction: flex-start;
   gap:300px;
 }
-
+.reply-comment {
+  margin-left: 40px; /* 为回复添加缩进 */
+  border-left: 2px solid #e0e0e0; /* 可选的左侧边框样式 */
+  padding-left: 20px;
+  margin-top: 10px;
+}
 </style>

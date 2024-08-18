@@ -48,6 +48,7 @@
 
 <script>
 import { CircleCheck, CircleClose } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
 import { mapState, mapActions } from 'vuex';
 import axios from 'axios';
 
@@ -84,11 +85,33 @@ export default {
           status: status
         });
 
-        if (!response.data.success) {
+        if (response.status === 200 && response.data.message == "success") {
+          // 删除该行
+          const index = this.geekAuditTableData.indexOf(row);
+          if (index !== -1) {
+            this.geekAuditTableData.splice(index, 1);
+          }
+
+          // 显示操作成功的消息
+          const message = action === 'approve' ? '已通过达人申请' : '已拒绝达人申请';
+          ElMessage({
+            message: message,
+            type: 'success',
+          });
+        } else {
           console.error('Failed to update the status:', response.data.message);
+          ElMessage({
+            message: '操作失败，请重试',
+            type: 'error',
+          });
         }
       } catch (error) {
-        console.error('Error updating the status:', error);
+        // 打印详细的错误信息
+        console.error('Error updating the status:', error.response ? error.response.data : error.message);
+        ElMessage({
+          message: '操作失败，请重试',
+          type: 'error',
+        });
       }
     }
   }

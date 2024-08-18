@@ -26,6 +26,13 @@
             <span class="report-pass" v-if="postReportDetail.audits==='pending'" style="font-weight: bold;">待审核</span>
           </div>
         </div>
+
+        <div v-if="postReportDetail.post_portrait && postReportDetail.post_portrait.length" class="post-images">
+          <div v-for="(image, index) in postReportDetail.post_portrait" :key="index" class="post-image">
+            <img :src="image" alt="Post Image" />
+          </div>
+        </div>
+
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
     </div>
@@ -59,7 +66,7 @@ export default {
     confirmAction() {
       console.log('举报处理完成')
       this.$router.push({ name: 'ReportReview' })
-    }
+    },
   },
   components: {
     Close
@@ -166,4 +173,25 @@ hr {
   background-color: #1D5B5E;
   color: white;
 }
+
+.post-images {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.post-image {
+  width: calc(33.333% - 10px);
+  margin-right: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.post-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
 </style>
