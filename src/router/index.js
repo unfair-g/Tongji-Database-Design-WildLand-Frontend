@@ -79,6 +79,11 @@ const routes = [
                 props: true
             },
             {
+                path: "flashaudit/:flashID",
+                component: () => import('../views/FlashAdd.vue'),
+                props: true
+            },
+            {
                 path: 'flashaudit',
                 name: 'FlashAudit',
                 component: () => import('../views/FlashAudit.vue')

@@ -1,7 +1,9 @@
 <template>
   <div class="table-wrapper">
     <el-button 
-            @click="addnewflash()">添加新资讯
+            type="primary" 
+            @click="addnewflash()">
+            <More />添加新资讯
           </el-button>
     <el-table :data="filteredProducts" style="width: 100%">
       <el-table-column prop="flashTitle" label="资讯标题" width="300" align="center" />
@@ -106,7 +108,8 @@ export default {
       }  
     },
     addnewflash(){
-      this.$router.push({ path: `/administrator/flashnew` })
+      const flashId = 99999
+      this.$router.push({ path: `/administrator/flashaudit/${flashId}` })
     }
   },
   created() {

@@ -90,6 +90,11 @@ export default {
         flash_content: this.flash.flash_content,  
         // 如果需要更新其他字段，也可以在这里添加  
       })  
+      .then(response => {  
+        this.$message.success('资讯更新成功！');  
+        console.log(response)
+        // 这里可以添加额外的逻辑，比如重新获取数据或关闭对话框  
+      })  
       .catch(error => {  
         console.error('Error updating flash:', error);  
         this.$message.error('资讯更新失败，请重试！');  
