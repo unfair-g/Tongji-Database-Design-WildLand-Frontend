@@ -3,11 +3,6 @@
           <div v-for="camporder in camporders" :key="camporder.order_id" justify="center" >
               <el-card :body-style="{ padding: '5px' }" shadow="hover" class="camporder-card" @click="goToCampOrderDetail(camporder)">
                 <div class="content">
-<<<<<<< Updated upstream
-                <div style="padding: 14px;flex:1;">
-                  
-                  <div><span>订单创建时间：{{ camporder.order_created_time}}</span></div>
-=======
                   <img :src="camporder.camp_showpic" class="image" alt="order image">
                   <div style="padding: 14px;flex:1;">
                    <div><h3>{{ camporder.campground_name }}</h3></div>
@@ -20,8 +15,6 @@
                     <span v-else-if="camporder.order_status == 2">订单状态：<span style="color:blue;">待支付</span></span>
                    <span v-else>订单状态：未知状态</span>
                    </div>
-
->>>>>>> Stashed changes
                   <div class="bottom clearfix">
                     <span class="price">总价：¥{{ camporder.total_price }}</span>
                     <el-button type="text" class="button" @click="goToCampOrderDetail(camporder)">查看详情</el-button>

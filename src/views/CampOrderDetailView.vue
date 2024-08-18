@@ -1,24 +1,7 @@
 <template>
-<<<<<<< Updated upstream
-    <div class="order">
-      <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
-
-        <div style="flex:2;position:relative;">
-          <h2>预约营地：{{ camporder.campground_name }}</h2>
-
-          <div class="price-tag">￥{{ camporder.total_price }}</div>
-          <p>预约人姓名：{{ camporder.order_person_name }}</p>
-          <p>预约人电话：{{ camporder.order_person_phone_number }}</p>
-          <p>预约人身份证：{{ camporder.order_person_id }}</p>
-          <p>预约人备注：{{ camporder.remark }}</p>
-
-        </div>
-=======
   <div class="order">
     <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
       <div class="product-img">
-        <img :src="camporder.map_picture" alt="campground image">
->>>>>>> Stashed changes
       </div>
       <div style="flex:2;position:relative;">
         <h2>预约营地：{{ camporder.campground_name }}</h2>
