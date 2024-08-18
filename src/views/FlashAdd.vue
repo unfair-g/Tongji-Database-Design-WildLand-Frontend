@@ -46,9 +46,7 @@
 <script>
 //import { ref } from 'vue'
 import { Close } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
 import { mapState, mapMutations } from 'vuex'  
-import { onMounted, ref, reactive } from 'vue'
 import axios from '@/axios'; // 引入配置好的axios实例
 
 export default {
@@ -94,6 +92,7 @@ export default {
       })  
       .then(response => {  
         this.$message.success('资讯更新成功！');  
+        console.log(response)
         // 这里可以添加额外的逻辑，比如重新获取数据或关闭对话框  
       })  
       .catch(error => {  

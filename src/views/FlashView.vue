@@ -55,12 +55,6 @@ function searchFlash() {
     router.push({ path: '/home/searchFlash', query: { keyword: input.value } })
   }
 }
-
-components: {
-  mainflash,
-  hotflash,
-  newflash
-}
 </script>
 
 <style scoped>
