@@ -67,17 +67,13 @@
     </script>
     
     <style scoped>
-    html, body {
-  height: 100%;
-  line-height: 2; /* 调整为你需要的行间距 */
-  margin: 0;
-}
     .camporder-card {
       width: 100%; /* 固定宽度 */
       height:30%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      padding:10px;
     }
     
     .content {
@@ -87,8 +83,8 @@
     }
     
     .image {
-      width: 200px; /* 固定图片宽度 */
-      height: 200px; /* 固定图片高度 */
+      width: 300px; /* 固定图片宽度 */
+      height: 160px; /* 固定图片高度 */
       object-fit: cover;
       margin-right: 60px;
     }
@@ -103,4 +99,3 @@
       padding: 0;
     }
     </style>
-    

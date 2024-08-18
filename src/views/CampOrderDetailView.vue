@@ -2,6 +2,7 @@
   <div class="order">
     <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
       <div class="product-img">
+        <img :src="camporder.map_picture" class="image" alt="product image">
       </div>
       <div style="flex:2;position:relative;">
         <h2>预约营地：{{ camporder.campground_name }}</h2>
@@ -123,16 +124,14 @@ export default {
       
       .product-img {
         flex: 1;
-        width: 200px;
-        height: 250px;
-        padding: 10px;
+        width:700px;
+
         margin-right: 50px;
         display: flex; /* 使用flex布局 */ 
         justify-content: center; /* 水平居中 */
         align-items: center; /* 垂直居中 */
         background-color: #fff;
         border: 1px solid #ddd;
-        border-radius: 5px;
         overflow: hidden;
       }
       
