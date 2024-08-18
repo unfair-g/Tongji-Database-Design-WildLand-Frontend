@@ -59,9 +59,9 @@ const routes = [
                 component: () => import('../views/CommentReportDetail.vue')
             },
             {
-                path: 'flashadd',
-                name: 'FlashAdd',
-                component: () => import('../views/FlashAdd.vue')
+                path: 'flashnew',
+                name: 'FlashNew',
+                component: () => import('../views/FlashNew.vue')
             },
             {
                 path: "flashaudit/:flashID",
@@ -82,6 +82,11 @@ const routes = [
                 path: 'tagaudit',
                 name: 'TagAudit',
                 component: () => import('../views/TagAudit.vue')
+            },
+            {
+                path: 'tagaudit/:tagID',
+                component: () => import('../views/TagChange.vue'),
+                props: true
             }
         ]
     },

@@ -47,11 +47,11 @@ function searchFlash() {
   }
 }
 
-components: {
+
   mainflash,
   hotflash,
   newflash
-}
+
 </script>
 
 <style scoped>

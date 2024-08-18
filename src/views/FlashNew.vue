@@ -9,7 +9,7 @@
           ref="UserformRef"
           >
       <div class="post-detail-header">
-        资讯编辑
+        资讯添加
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
@@ -46,41 +46,42 @@
 <script>
 //import { ref } from 'vue'
 import { Close } from '@element-plus/icons-vue'
-import { mapState, mapMutations } from 'vuex'  
 import axios from '@/axios'; // 引入配置好的axios实例
 
 export default {
   props: ['flashID'],
   data() {
     return {
-      flash: [],
+      flash: {
+        collection_number:  0,
+        views_number:  0,
+        flash_title: '',  
+        flash_content: '',  
+        flash_id: 111110,
+        user_id: 10,
+        flash_date: '2024-08-18T06:54:43.744Z',
+        flash_image: 'string',
+      },
       tag:[]
     };
   },
-
   components: {
     Close
   },
-  computed: {  
-    ...mapState([  
-      'tags', // 将state中的tags映射到组件的computed属性  
-      'selectedTags' // 将state中的selectedTags映射到组件的v-model上
-    ])  ,
-  },  
   methods: {  
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })
     },
     updateFlash() {  
       // 确保 flash 对象中有需要更新的数据  
-      if (!this.flash.flash_id || !this.flash.flash_title || !this.flash.flash_content) {  
+      console.log(this.flash);
+      if (!this.flash.flash_title || !this.flash.flash_content) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
-
       // 发送 PUT 请求来更新 Flash  
-      axios.put(`https://localhost:7218/api/Flashes/${this.flashID}`, {  
-        flash_id:  this.flashID,
+      axios.post(`https://localhost:7218/api/Flashes`, {  
+        flash_id:  this.flash.user_id,
         user_id: this.flash.user_id,
         flash_date:  this.flash.flash_date,
         flash_image:  this.flash.flash_image,
@@ -94,39 +95,8 @@ export default {
         console.error('Error updating flash:', error);  
         this.$message.error('资讯更新失败，请重试！');  
       });  
-    },  
-    fetchFlashes() {
-      axios.get(`https://localhost:7218/api/Flashes/${this.flashID}`)
-        .then(response => {
-          this.flash = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
-    },
-    fetchTags() {
-      axios.get(`https://localhost:7218/api/FlashTags`)
-        .then(response => {
-          this.tag = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
-    },
-    getImageUrl(tag) {  
-      // 这里返回一个基于tag的图片URL，你可能需要根据实际情况来实现这个函数  
-      return tag.image// 示例URL  
-    },
-    ...mapMutations([  
-      'toggleTag' // 映射mutation到methods，但在这个例子中，我们实际上不需要直接调用它  
-      // 因为我们使用了v-model和Element UI的el-checkbox-group，它会自动处理选中状态  
-    ])    
+    },   
   }  ,
-  created() {
-    // 在组件创建时，从查询参数中获取flashId、title、content和tagName  
-    this.fetchFlashes();
-    this.fetchTags();
-  }
 }
 </script>
 

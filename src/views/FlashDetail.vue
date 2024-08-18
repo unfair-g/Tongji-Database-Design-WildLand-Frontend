@@ -5,7 +5,6 @@
             <div class="flash-like" @click="toggleStar(flashId)">  
               <strong>收藏</strong>  
               <el-icon v-if="!flash.isSolid"><Star /></el-icon>
-              <el-icon v-else><StarFilled /></el-icon>
             </div>  
             <div class="flash-like">
               <span>{{ flash.favorite }}</span>
@@ -37,6 +36,7 @@
 </template>
 
 <script>
+import axios from '@/axios'; // 引入配置好的axios实例
 
 export default {
 name: 'R_Flash',
@@ -48,10 +48,9 @@ flash() {
 }
 },
 methods: {  
+  
   toggleStar(flashId) {  
-    const flash1 = this.$store.state.flash.flashes.find(f => f.id === flashId);  
-    flash1.isSolid = !flash1.isSolid;  
-    this.$store.commit('flash/toggleFlashSolid', flashId); 
+    axios.post(`https://localhost:7218/api/StarFlashes/PostStarFlash?userId=1&flashId=${flashId}`)  
   }  
   },  
 }
