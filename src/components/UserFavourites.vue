@@ -28,10 +28,10 @@
   <el-row :gutter="25" v-else-if="componentTab==='product'">
         <el-col :span="8" v-for="product in starproduct" :key="product.product_id">
             <el-card  style="margin-bottom:8%" @click="goToProductDetail(product)">
-                <img :src="product.product_image" alt="product_img" style="width:100%;height:300px"/>
+                <img :src="product.picUrl[0]" alt="product_img" style="width:100%;height:300px"/>
                 <template #footer>
-                    <h3>{{ product.product_name }}</h3>
-                    <div style="margin-top:3%">{{ product.introduction }}</div>
+                    <h3>{{ product.product.product_name }}</h3>
+                    <div style="margin-top:3%">{{ product.product.introduction }}</div>
                 </template>
             </el-card>
         </el-col>
@@ -49,9 +49,7 @@
   </el-row>
   <div v-else v-loading="loading" element-loading-text="Loading...">
     <div v-for="post in starpost" :key="post.post_id">
-    <Post v-if="post.post_kind===0" view="share" :post_id="post.post_id" star=true />
-    <Post v-else-if="post.post_kind===1" view="lease" :post_id="post.post_id" star=true />
-    <Post v-else view="recruit" :post_id="post.post_id" star=true />
+    <Post :view="post.post_kind" :post_id="post.post_id" star=true />
     </div>
   </div>
 </div>
@@ -88,7 +86,7 @@ const fetchStarCamps = async () => {
 const fetchStarProducts = async () => {
     try {
         const response =await axios.get(`/api/Users/getStarOutdoorProduct/${global.userId}`)
-        starproduct.value = response.data.data
+        starproduct.value = response.data.data       
     } catch (error) {
         if (error.response.code == 404)
             tips.value = '暂无收藏户外用品'

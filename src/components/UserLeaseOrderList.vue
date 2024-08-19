@@ -7,8 +7,8 @@
       <img :src="ldleitemspost.image" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
             <h1>{{ ldleitemspost.item_name}}</h1>
-              <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
-              <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
+              <div><span>简介: {{ ldleitemspost.item_summary}}</span></div>
+              <div><span>新旧程度：{{ ldleitemspost.condition}}</span></div>
               <div class="bottom clearfix">
                 <span class="price">¥{{ ldleitemspost.price }}</span>
                 <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
@@ -20,9 +20,8 @@
   </div>
 </template>
     
-    <script>
-import { ref } from 'vue';
-import axios from 'axios';
+<script>
+import axios from '@/axios';
 import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
 
     export default ({
@@ -42,21 +41,18 @@ import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
         async fetchPosts() {
           try {
       // 从 Purchase 接口获取所有订单的 post_id 和 order_id
-      const purchaseResponse = await axios.get(`https://localhost:7218/api/Purchases`);
-      const purchaseData = purchaseResponse.data.filter(order => order.user_id === globalState.userId);  
+      const purchaseResponse = await axios.get(`/api/Purchases/GetPurchasesByUserId?user_id=${globalState.userId}`);
+      const purchaseData = purchaseResponse.data;  
       console.log(purchaseData); // 输出筛选后的数据  
 
       // 根据 post_id 从 Posts 接口获取帖子详情
       const ldleitemspostsPromises = purchaseData.map(async order => {
-        const detailResponse = await axios.get(`https://localhost:7218/api/LdleitemsPosts/${order.post_id}`);
+        const detailResponse = await axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${order.post_id}`);
         const item_name=detailResponse.data.item_name;
         const condition=detailResponse.data.condition;
         const price=detailResponse.data.price;
         const item_summary=detailResponse.data.item_summary;
-
-        const pics= await axios.get('https://localhost:7218/api/LdleitemsPosts/GetLdleitemsPosts');
-        const image = pics.data.filter(order2 => order2.postId === order.post_id).picUrl; 
-        console.log(image)
+        const pics= detailResponse.data.post_pics;
 
             // 将 order_id 添加到每个帖子对象中
             return { 
@@ -66,7 +62,7 @@ import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
               item_summary:item_summary,
               condition:condition,
               price:price,
-              image:image
+              image:pics
             };
       });
       // 等待所有请求完成
@@ -97,28 +93,8 @@ import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
         this.$message.error(`${message} - 错误信息: ${error.message}`);
       }
     }
-      },
-      setup() {
-    const isLiked = ref(false);
-    const isStarred = ref(false);
-
-    const toggleLike = () => {
-      isLiked.value = !isLiked.value;
-      this.recruitmentpost.likes.value = isLiked.value ? this.recruitmentpost.likes.value + 1 : this.recruitmentpost.likes.value - 1;
-    };
-
-    const toggleStar = () => {
-      isStarred.value = !isStarred.value;
-    };
-
-    return {
-      isLiked,
-      toggleLike,
-      isStarred,
-      toggleStar
-    };
-  }
     }
+  }
     )
     </script>
     

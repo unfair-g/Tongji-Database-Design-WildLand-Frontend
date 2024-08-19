@@ -35,7 +35,7 @@
       <el-card class="post-item">
         <template #header>
           <div class="post-header">
-            <img :src="recruitpost.avatar" alt="avatar" class="avatar">
+            <img :src="recruitpost.avatar" alt="avatar" class="avatar" @click="goToUserSpace(recruitpost.author_id)">
           <div class="post-details">
             <div class="post-info">
                 <span class="username">{{ recruitpost.username }}</span>
@@ -57,7 +57,12 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍:{{ recruitpost.intro }}</p></div>
+          <div class="post-text">
+            <span class="post-fix">活动时间：</span><span>{{recruitpost.activity_time}}；</span>
+            <span class="post-fix">活动地点：</span><span>{{recruitpost.activity_address  }}；</span>
+            <span class="post-fix">计划招募人数：</span><span>{{ recruitpost.total_recruit }}；</span>
+            <span class="post-fix">活动介绍: </span><span>{{ recruitpost.intro }}</span>
+          </div>
         </div>
 
       </el-card>
@@ -169,7 +174,6 @@ export default {
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
-              views: 0, // Assuming views is not available in the API response
               isLiked: post.isLiked,
               isStarred: post.isStarred,
             }));
@@ -182,9 +186,9 @@ export default {
           });
       }
       else {
-        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/0`)
+        axios.get(`/api/Posts/GetUserPosts/${state.userId}/${this.user_id}/0`)
           .then(response => {
-            this.shareposts = response.data.map(post => ({
+            this.shareposts = response.data.data.map(post => ({
               post_id: post.post_id,
               username: post.author_name,
               author_id:this.user_id,
@@ -194,7 +198,6 @@ export default {
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
-              views: 0, // Assuming views is not available in the API response
               isLiked: post.isLiked,
               isStarred: post.isStarred,
             }));
@@ -206,17 +209,14 @@ export default {
       }
     },
     fetchLdlePosts() {
-      //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
-      axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
+      //const userId = state.userId
+      axios.get(`/api/LdleitemsPosts/GetAllLdleitemsPosts`)
         .then(response => {
           this.ldleitemsposts = response.data;
-          if(this.star)
-            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
           console.log(this.ldleitemsposts)
-        }
-        )
+        })
         .catch(error => {
-          console.log(this.products)
+          console.log(this.ldleitemsposts)
           console.error('Error fetching products:', error);
         });
     },
@@ -227,6 +227,7 @@ export default {
         .then(response => {
           this.recruitposts = response.data.map(post => ({
             post_id: post.post_id,
+            author_id: post.author_id,
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
@@ -234,7 +235,6 @@ export default {
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
             activity_time: post.activity_time,
@@ -251,10 +251,11 @@ export default {
         }); 
       }
       else {
-        axios.get(`/api/Posts/GetUserPosts/${this.user_id}/2`)
+        axios.get(`/api/RecruitmentPosts/GetRecruitmentPostByAuthor/${this.user_id}/${state.userId}`)
         .then(response => {
-          this.recruitposts = response.data.map(post => ({
+          this.recruitposts = response.data.data.map(post => ({
             post_id: post.post_id,
+            author_id: post.author_id,
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
@@ -262,7 +263,6 @@ export default {
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
-            //views: 0,
             isLiked: post.isLiked,
             isStarred: post.isStarred,
             activity_time: post.activity_time,
@@ -271,7 +271,7 @@ export default {
             intro:post.short_activity_summary,
           }));
         })
-        .catch(error => {
+          .catch(error => {
           console.error('Error fetching recruit posts:', error);
           this.handleError(error, '获取招募贴失败');
         }); 
@@ -448,6 +448,18 @@ i {
 .post-text:hover {
   text-decoration: underline; /* 添加下划线 */
 }
+
+.post-text span{
+  margin-right: 2%;
+  color: grey;
+}
+
+.post-text .post-fix{
+  margin-right: 0;
+  font-weight: bold;
+  color: rgb(98, 98, 98);
+}
+
 .product-card {
   width: 100%; /* 固定宽度 */
   height:30%;

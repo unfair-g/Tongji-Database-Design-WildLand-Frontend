@@ -1,8 +1,8 @@
 <template>
-<div class="order">
+<div class="order" v-if="this.IsVisible">
   <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
     <div class="product-img">
-      <img :src="product.product_image" alt="product image">
+      <img :src="this.camp_order.pics[0]" alt="product image">
     </div>
     <div style="flex:2;position:relative;">
       <h2>{{ product.product_name }}</h2>
@@ -17,28 +17,29 @@
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(camp_order.pick_time) }}</p></div>
+      <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(camp_order.lease.pick_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ this.formatDate(camp_order.back_time) }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ this.formatDate(camp_order.lease.back_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ camp_order.remark }}</p></div>
+      <div style="text-align:center;justify-content: center; "><p>{{ this.camp_order.lease.remark }}</p></div>
     </div>
     <!--<div class="order_2">
       <div style="margin:10px;"><h2>物流详情</h2></div>
       <div style="text-align:center;justify-content: center; "><p>现处于上海市/嘉定区</p></div>
     </div>-->
-    <div class="order_3">
+    <!--<div class="order_3">
       <el-button class="pay">申请退款</el-button>
-    </div>
+    </div>-->
   </div>
   </template>
   
   <script>
   import axios from '@/axios';
+  import globalState from '../store/global'; 
 
   export default {
     name: 'OrderView',
@@ -54,6 +55,7 @@
 
           product: {},
           camp_order: {},
+          IsVisible:false,
 
           startTime:null,
           endTime:null,
@@ -68,17 +70,19 @@
 
     // 获取订单详情
     try {
-      const orderResponse = await axios.get(`/api/Leases/${this.orderId}`);
+      const orderResponse = await axios.get(`/api/Leases/GetLease2?leaseId=${this.orderId}&userId=${globalState.userId}`);
       const order = orderResponse.data;
 
       // 更新订单数据
       this.camp_order = order;
+      console.log('order',this.camp_order)
       this.Lquantity = parseInt(this.$route.query.quantity) || this.quantity;
 
       // 获取产品详情
-      const productId = order.product_id;
+      const productId = order.lease.product_id;
       const productResponse = await axios.get(`/api/OutdoorProducts/${productId}`);
       this.product = productResponse.data;
+      this.IsVisible=true;
       
     } catch (error) {
       console.error('Error fetching order or product details:', error);

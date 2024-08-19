@@ -10,7 +10,6 @@
           <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
           <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
           <div class="price-tag">￥{{ ldleitemsPost.price }}</div>
-          <!-- 数量输入框 -->
           </div>
         </div>
         <div class="order_2">
@@ -43,14 +42,6 @@
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人电话</h2></div>
           <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
-        </div>
-        <div class="order_2">
-          <div style="margin:10px;"><h2>物流详情</h2></div> 
-          <div style="text-align:center;justify-content:center;"><p>{{ this.state }}</p></div>
-        </div>
-        <div class="order_3">
-          <el-button class="order_buttons" :disabled="isdeliver" color="#1D5B5E">确认收货</el-button>
-          <el-button class="order_buttons" color="#1D5B5E">申请退款</el-button>
         </div>
       </div>
       </template>
@@ -87,10 +78,6 @@ import axios from '@/axios'; // 确保路径是正确的
         .then(response => {
           this.leaseOrder = response.data;
           console.log( this.leaseOrder);
-          if(this.leaseOrder.logistics_status==0)
-              this.state='自提';
-          else
-            this.state = '快递'
           this.leaseOrder.order_date=this.leaseOrder.order_date.substring(0,10)
           this.leaseOrder.status = 2
           if (this.leaseOrder.status > 1)

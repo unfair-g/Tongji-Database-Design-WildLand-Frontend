@@ -6,62 +6,100 @@
         </div>
         </template>
         <div class="hot-post">
-        <el-carousel style="width:100%" height="75vh">
-            <div style="width:90%;display: block;margin:0 auto;">
-                <el-card v-if="user" style="min-height: fit-content;" @click="toPostDetail">
+        <el-carousel style="width:100%" height="75vh" >
+            <el-carousel-item v-for="post in this.postDetails" :key="post.post_id">
+                <div style="width:90%;display: block;margin:0 auto;">
+                <el-card v-if="post" style="min-height: fit-content;" @click="toPostDetail(post)">
                 <template #header>
-                    <h2>{{ post[0].title }}</h2>
+                    <h2>{{ post.title }}</h2>
                 </template>
                 <div style="display: flex;">
                     <div style="width:50%">
                     <el-carousel height="55vh" autoplay>
-                        <el-carousel-item v-for="img in post[0].post_images" :key="img" 
+                        <el-carousel-item v-for="img in post.post_pics" :key="img" 
                         style="height:fit-content;display: flex;justify-content: center;">
                             <img :src="img" style="height:55vh;width:auto"/>
                         </el-carousel-item>
                     </el-carousel>
                     </div>
                     <div style="width:50%">
-                    <p v-for="line in post[0].content" :key="line" style="margin-top:3%">{{ line }}</p>
+                    <p style="margin-top:3%;margin-left:20px;">{{ post.content }}</p>
+
+                    <div style="display: flex; align-items:center;position:absolute;bottom:10px;right:20px;">
+                    <el-avatar :src="post.portrait"></el-avatar>
+                    <p style="height:100%;margin-left: 1%;">{{ post.author_name }}</p>
+                    <p style="margin-left: 25px;">{{ post.post_time }}</p>
+                    </div>
                     </div>
                  </div>
-                 <template #footer>
-                    <div style="display: flex; align-items:center;">
-                    <el-avatar :src="user.avatar"></el-avatar>
-                    <p style="height:100%;margin-left: 1%;">{{ user.name }}</p>
-                    <p style="margin-left: 25px;">{{ post[0].time }}</p>
-                    </div>
-                </template>
+                 
                 </el-card>
             </div>
+            </el-carousel-item>
         </el-carousel>
         </div>
 </el-card>
 </template>
 
 <script>
+import axios from '@/axios'
+import State from '../store/global';
+
 export default{
     data() {
         return {
-            users: [
-                { id: 1, name: 'Alice', avatar: require('../assets/avatar.jpg'), profile: 'Alice的个人简介' },
-                { id: 2, name: 'Bob', avatar: require('../assets/avatar.jpg'), profile: 'Bob的个人简介' },
-                { id: 3, name: 'Charlie', avatar: require('../assets/avatar.jpg'), profile: 'Charlie的个人简介' }
-            ],
-            user: { id: 1, name: 'Alice', avatar: require('../assets/avatar.jpg'), profile: 'Alice的个人简介' }
+            hotPosts: [], // 存储从 API 获取的热帖 ID  
+            postDetails: [], // 存储根据 hotPosts ID 获取的帖子详情 
+            type:''
+
         }
     },
-    computed: {
-        post() {
-             return this.$store.state.post.shareposts
-        }
-    },
+    created() {  
+        this.fetchHotPosts();  
+    },  
     methods: {
-        handleSelect(index){
-            this.user = this.users[index-1];
-        },
-        toPostDetail() {
-            this.$router.push({ path: `/home/forum/post/share/${this.post[0].post_id}` });
+        async fetchHotPosts() {  
+            try {  
+                const response = await axios.get('/api/Posts/TopPosts');  
+                this.hotPosts = response.data; // 假设后端返回包含 post_id 的数组  
+
+                const ldleitemspostsPromises = this.hotPosts.map(async post => {
+                const detailResponse = await axios.get(`/api/Posts/GetPostDetail/${post.post_id}/${State.userId}`);
+                const author_name=detailResponse.data.author_name;
+                const portrait=detailResponse.data.portrait
+                const author_id=detailResponse.data.author_id
+                const post_pics=detailResponse.data.post_pics
+                const content=detailResponse.data.content;
+                const post_time=detailResponse.data.post_time;
+                const post_position=detailResponse.data.post_position;
+
+            // 将 order_id 添加到每个帖子对象中
+            return { 
+              ...post, 
+              author_id:author_id,
+              author_name:author_name,
+              content:content,
+              portrait:portrait,
+              post_pics:post_pics,
+              post_time:post_time,
+              post_position:post_position
+            };
+      });
+      // 等待所有请求完成
+      this.postDetails = await Promise.all(ldleitemspostsPromises);
+      console.log(this.postDetails)
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } 
+        },  
+        toPostDetail(post) {
+            if(post.post_kind==0)
+              this.type='share';
+            else if(post.post_kind==1)
+              this.type='lease';
+            else
+              this.type='recruit'
+            this.$router.push({ path: `/home/forum/post/${this.type}/${post.post_id}` });
         }
     }
 }

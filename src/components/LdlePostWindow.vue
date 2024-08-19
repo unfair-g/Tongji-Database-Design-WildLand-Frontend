@@ -85,7 +85,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">发布成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="Pbutton" @click="GoToOrder(product)">查看帖子</el-button>
+            <el-button type="text" class="Pbutton" @click="GoToOrder()">查看帖子</el-button>
           </div>
         </div>
       </div>
@@ -137,7 +137,9 @@ export default {
       fileList: [],
       locationLoading: false,
       localIsLdlePostDialogVisible: this.isLdlePostDialogVisible,
-      errors: {}
+      errors: {},
+      postId:0,
+      postNew:{}
     };
   },
   watch: {
@@ -178,19 +180,40 @@ export default {
           item_summary: this.postForm.itemDescription,
           price: parseFloat(this.postForm.itemPrice),
         };
-        console.log('订单上传:', postData);
+        console.log('帖子上传:', postData);
       axios.post('https://localhost:7218/api/Posts/PushLdle', postData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
     })
         .then(response => {
-          console.log('订单上传成功:', response.data);
+          console.log('帖子上传成功:', response.data);
+          this.postId=response.data.post_id
+          this.postNew={
+            ...response.data,
+            content:response.data.condition
+          };
+          // 在这里上传图片
+          this.uploadImage();  // 调用上传图片的方法
+        })
+        .catch(error => {
+          console.error('帖子出错:', error);
+        });
+    },
+    AddContent()
+    {
+       axios.put(`https://localhost:7218/api/Posts/${this.postNew.post_id}`, this.postNew,{headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      }
+    })
+    .then(response => {
+          console.log('帖子上传成功:', response.data);
           this.handleClose();
           this.PostSuccess = true;
         })
         .catch(error => {
-          console.error('上传订单时出错:', error);
+          console.error('帖子出错:', error);
         });
     },
     resetForm() {
@@ -234,22 +257,57 @@ export default {
       }
       return true;
     },
-    handleImageSuccess(response) {
-      this.postForm.itemImages.push(response.url);
+    handleImageSuccess(response,file) {
+      if (response && response.message === "success") {
+    const url = URL.createObjectURL(file.raw);
+    this.postForm.itemImages.push(url);
+    ElMessage.success('图片上传成功');
+    // 在这里调用上传图片接口
+    this.uploadImage();  // 调用上传图片的方法
+  } else {
+    console.log('上传图片失败，服务器响应:', response);
+    ElMessage.error('上传图片失败');
+  }
+    },
+    uploadImage() {
+
+      // 创建一个 FormData 对象
+  const formData = new FormData();
+  //formData.append('post_id', this.postId);  // 使用帖子的ID
+
+  // 将所有文件添加到 FormData 对象
+  this.fileList.forEach(file => {
+    formData.append('files', file.raw);  // 绑定图片文件
+  });
+
+  // 发送 POST 请求
+  axios.post(`https://localhost:7218/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  .then(response => {
+    console.log('图片上传成功:', response.data);
+    this.AddContent();  // 上传图片成功后更新帖子内容
+    ElMessage.success('所有图片上传成功');
+  })
+  .catch(error => {
+    this.handleError(error, '上传图片失败');
+  });
     },
     handleFileChange(file, fileList) {
       this.fileList = fileList;
     },
     handlePictureCardPreview(file) {
-      const url = URL.createObjectURL(file.raw);
-      window.open(url);
+      //const url = URL.createObjectURL(file.raw);
+      //window.open(url);
+      console.log(file);
     },
     handleRemove(file, fileList) {
       this.fileList = fileList;
     },
-    GoToOrder(product) {
-      // navigate to order details or handle post success
-      this.$router.push({ path: `/order/${product.id}` });
+    GoToOrder() {
+      this.$router.push({ path: `/home/forum/post/lease/${this.postId}` });
     }
   }
 };
