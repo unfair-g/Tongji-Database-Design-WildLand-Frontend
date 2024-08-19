@@ -1,6 +1,6 @@
 <template>
  <div v-if="view==='share'">
-  <div v-for="sharepost in shareposts" :key="sharepost.post_id" justify="center">
+  <div v-for="sharepost in filteredSharePosts" :key="sharepost.post_id" justify="center">
     <el-card class="post-item">
       <template #header>
         <div class="post-header">
@@ -31,7 +31,7 @@
     </div>  
 </div><!-- end of v-if="view=='share'" -->
   <div v-else-if="view ==='recruit'">
-    <div v-for="recruitpost in recruitposts" :key="recruitpost.post_id" justify="center">
+    <div v-for="recruitpost in filteredRecruitPosts" :key="recruitpost.post_id" justify="center">
       <el-card class="post-item">
         <template #header>
           <div class="post-header">
@@ -138,13 +138,18 @@ export default {
     post_id:{
       type: Number,
       default:null
+    },
+    searchQuery: {
+      type: String,
+      default:null
     }
   },
   data() {
     return {
       shareposts: [],
       ldleitemsposts: [],
-      recruitposts:[],
+      recruitposts: [],
+      localSearchQuery:'',
     };
   },
   mounted() {
@@ -157,6 +162,37 @@ export default {
     if (this.view === 'recruit') {
       this.fetchRecruitPosts();
     }
+  },
+  computed: {
+    filteredSharePosts() {
+      if (!this.searchQuery) {
+        return this.shareposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.shareposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.shortContent.toLowerCase().includes(query) ||
+          post.username.toLowerCase().includes(query) 
+
+      );
+    },
+    filteredRecruitPosts() {
+      if (!this.searchQuery) {
+        return this.recruitposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.recruitposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.intro.toLowerCase().includes(query) ||
+          post.username.toLowerCase().includes(query) ||
+          post.activity_address.toLowerCase().includes(query) ||
+          post.activity_time.toLowerCase().includes(query) 
+          
+      );
+    },
+    
   },
   methods: {
     fetchSharePosts() {
@@ -378,6 +414,9 @@ export default {
       else if (newValue === 'recruit') {
         this.fetchRecruitPosts();
       }
+    },
+    searchQuery(newVal) {
+      this.localSearchQuery = newVal;
     }
   },
   created() {
