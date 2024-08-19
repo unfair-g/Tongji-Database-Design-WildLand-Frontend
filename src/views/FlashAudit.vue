@@ -105,8 +105,7 @@ export default {
       }  
     },
     addnewflash(){
-      const flashId = 99999
-      this.$router.push({ path: `/administrator/flashaudit/${flashId}` })
+      this.$router.push({ path: `/administrator/flashnew` })
     }
   },
   created() {

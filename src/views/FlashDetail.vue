@@ -65,10 +65,25 @@ methods: {
       flash_id: flashId,
       user_id: global.userId
     })
-  }  
+    this.isStarred=1-this.isStarred;
+  }  ,
+  fetchstar(){          
+    console.log(this.flashID);
+    axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByFlashAndUserId?flash_id=${this.flashID}&user_id=${global.userId}`)
+        .then(response => {
+          console.log(response);
+          this.isStarred=1;
+          console.log(this.isStarred);
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+          console.log(this.isStarred);
+        });
+  }
   },  
   created() {
     this.fetchFlashes();
+    this.fetchstar();
   }
 }
 </script>

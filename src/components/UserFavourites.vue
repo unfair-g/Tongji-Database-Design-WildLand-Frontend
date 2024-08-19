@@ -37,12 +37,12 @@
         </el-col>
   </el-row>
   <el-row :gutter="25" v-else-if="componentTab==='flash'">
-        <el-col :span="8" v-for="flash in starflash" :key="flash.flash_id">
+        <el-col :span="8" v-for="flash in starflash" :key="flash.flashId">
             <el-card  style="margin-bottom:8%" @click="goToFlashDetail(flash)">
-                <img :src="flash.image" style="width:100%"/>
+                <img :src="flash.flashImage" style="width:100%"/>
                 <template #footer>
-                    <h3>{{ flash.title }}</h3>
-                    <div style="margin-top:3%">作者：{{ flash.meta }}</div>
+                    <h3>{{ flash.flashTitle }}</h3>
+                    <div style="margin-top:3%">作者：{{ flash.userId }}</div>
                 </template>
             </el-card>
         </el-col>
@@ -61,7 +61,9 @@ import global from '@/store/global'
 import axios from '@/axios'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router';  
 
+const router = useRouter();  
 const componentTab = ref('camp')  
 const starcamp = ref()
 const starflash = ref()
@@ -98,12 +100,12 @@ const fetchStarProducts = async () => {
 
 const fetchStarFlashes = async () => {
     try {
-        const response =await axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByUserId?userId=${global.userId}`)
-        starflash.value = response.data.data
-        ElMessage.success(response.data.data)
+        const response =await axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
+        starflash.value = response.data
+        ElMessage.success(response.data)
     } catch (error) {
-        if (error.response.status == 404) 
-            tips.value = '暂无收藏经验资讯'
+        if (error) 
+            tips.value = ' '
         else
             ElMessage.error(error.message)
     }
@@ -146,8 +148,8 @@ function goToCampDetail (camp) {
 }
 
 function goToFlashDetail (flash) {
-    const flashId = flash.flash_id
-    this.$router.push({ path: `/home/flash/${flashId}` })
+    const flashId = flash.flashId
+    router.push({ path: `/home/flash/${flashId}` })
 }
 
 onMounted(() => {

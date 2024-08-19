@@ -55,12 +55,14 @@ export default {
       flash: {
         collection_number:  0,
         views_number:  0,
-        flash_title: '',  
-        flash_content: '',  
+        flash_title: '填写标题',  
+        flash_content: '填写内容',  
         flash_id: 111110,
         user_id: 10,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
+        tagId: 110,
+        tagName: '填写tag'
       },
       tag:[]
     };
@@ -79,8 +81,10 @@ export default {
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
+     // const formData = new FormData();
+      
       // 发送 PUT 请求来更新 Flash  
-      axios.post(`https://localhost:7218/api/Flashes`, {  
+      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag`, [{  
         flash_id:  this.flash.user_id,
         user_id: this.flash.user_id,
         flash_date:  this.flash.flash_date,
@@ -89,8 +93,10 @@ export default {
         views_number:  this.flash.views_number,
         flash_title: this.flash.flash_title,  
         flash_content: this.flash.flash_content,  
+        tagId: this.flash.tagId,
+        tagName: this.flash.tagName
         // 如果需要更新其他字段，也可以在这里添加  
-      })  
+      }])  
       .catch(error => {  
         console.error('Error updating flash:', error);  
         this.$message.error('资讯更新失败，请重试！');  
