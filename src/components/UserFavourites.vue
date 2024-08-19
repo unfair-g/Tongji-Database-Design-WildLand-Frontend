@@ -98,7 +98,7 @@ const fetchStarProducts = async () => {
 
 const fetchStarFlashes = async () => {
     try {
-        const response =await axios.get(`/api/Users/getStarFlash/${global.userId}`)
+        const response =await axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByUserId?userId=${global.userId}`)
         starflash.value = response.data.data
         ElMessage.success(response.data.data)
     } catch (error) {

@@ -66,9 +66,6 @@ export default {
         .then(response => {
           this.flashes = response.data;
         })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
     },
     handleAction(row, action) {
       if (action === 'more') {
