@@ -27,7 +27,7 @@
             </div>
           </div>
           <!-- 举报消息 -->
-          <div v-else class="message-info">
+          <div v-else-if="message.type==='report'" class="message-info">
             <div class="message-header">
               <span class="username">{{ message.content }}</span>
             </div>
@@ -40,6 +40,19 @@
               <span>举报理由：{{ message.report_reason }}</span>
             </div>
           </div>
+          <!-- 卖出的闲置 -->
+          <div v-else class="message-info" @click="handleClick(message)">  
+            <div class="message-header">  
+              <span class="username">{{ message.title }}</span>
+              <span class="username">{{ message.content }}</span>   
+            </div>  
+            <div class="message-content">  
+              <span  style="color:black">订单状态：</span>
+              <span v-if="message.order_status===1">已支付</span>  
+              <span v-else-if="message.order_state===2" style="color:green">已发货</span>  
+              <span v-else style="color:red">已收货</span>  
+            </div>  
+          </div> 
           <!-- 时间戳 -->
           <div class="message-timestamp">
             <div class="timestamp">
@@ -85,11 +98,22 @@ export default {
     },
   },
   methods: {
-    handleClick() {
+    handleClick(message) {
       if (this.activeTab === 'tip-off') {
-        // this.$router.push({ name: 'myPostReport', params: { id: 1 } });
+        //  this.$router.push({ name: 'myPostReport', params: { id: 1 } });
+      }
+      if (message.type === 'rent') {
+        console.log(message)
+        console.log(message.order_id)
+        this.$router.push({
+          path: `/home/userspace/leaseorder/${message.order_id}`,
+          query: {
+            ldleitemsPostId: message.order_id
+          }
+        })
       }
     },
+
     fetchReportMessages() {
       const userId = global.userId;
       axios.get(`/api/Users/reportUserViewList/${userId}`).then(response => {
@@ -101,6 +125,7 @@ export default {
         console.error('获取举报消息时发生错误:', error);
       });
     },
+
     fetchFollowMessages() {
       const userId = global.userId;
 
@@ -113,16 +138,19 @@ export default {
         console.error('获取关注消息时发生错误:', error);
       });
     },
+
     goToUserSpace(user_id) {
       this.$router.push({
           path: `/home/userspace/${user_id}`
         })
     },
+
     formatDate(dateStr) {
       const date = new Date(dateStr);
       return date.toLocaleString();
     },
   },
+  
   mounted() {
     this.fetchReportMessages();
     this.fetchFollowMessages();

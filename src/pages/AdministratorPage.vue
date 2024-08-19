@@ -42,6 +42,7 @@
           <el-button type="primary" @click="toggleEdit">{{ isEditing ? '保存' : '编辑个人信息' }}</el-button>
         </div>
       </el-header>
+      <el-divider />
       <el-container style="height: calc(100% - 190px)">
         <el-aside class="aside">
           <el-scrollbar>
@@ -346,4 +347,9 @@ export default {
     display: flex;             
     flex-direction: column; 
 }
+
+ .el-divider--horizontal{
+     margin: 0 0;
+     background: 0 0;
+ } 
 </style>

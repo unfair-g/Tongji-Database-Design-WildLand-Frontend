@@ -39,6 +39,11 @@ const routes = [
                 props: true
             },
             {
+                path: 'AdminProductEdit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
+            {
                 path: 'GeekAudit',
                 name: 'GeekAudit',
                 component: () => import('../views/GeekAudit.vue')

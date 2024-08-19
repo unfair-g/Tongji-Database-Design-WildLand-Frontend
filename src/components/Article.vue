@@ -204,17 +204,14 @@ export default {
       }
     },
     fetchLdlePosts() {
-      //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
-      axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
+      //const userId = state.userId
+      axios.get(`/api/LdleitemsPosts/GetAllLdleitemsPosts`)
         .then(response => {
           this.ldleitemsposts = response.data;
-          if(this.star)
-            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
           console.log(this.ldleitemsposts)
-        }
-        )
+        })
         .catch(error => {
-          console.log(this.products)
+          console.log(this.ldleitemsposts)
           console.error('Error fetching products:', error);
         });
     },
