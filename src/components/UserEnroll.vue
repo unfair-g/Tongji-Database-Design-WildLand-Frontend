@@ -46,7 +46,6 @@
       <el-option value="女"/>
     </el-select>
     </el-form-item>
-    <div style="display: flex;">  
     <el-form-item label="生日" prop="birthday">
       <el-date-picker
         v-model="newuser.birthday"
@@ -55,23 +54,10 @@
         :disabled-date="disabledDate"
       />
     </el-form-item>
-    <el-form-item label="IP" style="margin-left: auto;width:40%;" prop="location">
-       <el-select
-          v-model="newuser.location"
-          placeholder="请选择您所在的城市"
-        >
-         <el-option
-            v-for="city in citys"
-            :key="city"
-            :value="city"
-          />
-      </el-select>
-    </el-form-item>
-    </div>
   </el-form>
   <div>
     <el-button class="cancelbutton" @click="toWelcomePage">取消</el-button>
-    <el-button class="checkbutton" v-bind:disabled="loginDisabled" tyype="primary" color="#1D5B5E" @click="onSubmit">登录</el-button>
+    <el-button class="checkbutton" v-bind:disabled="loginDisabled" tyype="primary" color="#1D5B5E" @click="onSubmit">确认</el-button>
     </div>
     </div>
 </div>
@@ -87,14 +73,6 @@ import CryptoJS from 'crypto-js'
 import global,{saveToSessionStorage} from '@/store/global'
 
 const loginDisabled = ref(false)
-
-const citys = ref([
-    '上海',
-    '北京' , 
-    '安徽' ,
-    '内蒙古',
-    '浙江' 
-])
 
 const disabledDate = (time) => {
   return time.getTime() > Date.now()
@@ -165,11 +143,12 @@ const beforeAvatarUpload = (file) => {
       formData.append('file', file);
       ElMessage.success('上传头像成功')
 
-      return false;
+      return true;
 }
 
 const handleFileChange=(file)=> {
       imageUrl.value = URL.createObjectURL(file.raw)
+      newuser.avatar = file;
     }
 
 const onSubmit = () => {

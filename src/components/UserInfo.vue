@@ -141,7 +141,7 @@
             </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button @click="dialogFormVisible = false;">取消</el-button>
         <el-button type="primary" @click="ResetUserInfo" color="#1D5B5E">
           保存
         </el-button>
@@ -182,7 +182,7 @@
         </el-form>
         <template #footer>
         <div class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button @click="dialogVisible = false;expert.image=null">取消</el-button>
             <el-button type="primary" @click="onSubmit" color="#1D5B5E">确认</el-button>
         </div>
         </template>
@@ -230,7 +230,7 @@ export default {
       }
       this.Proof.append('file', file);
       return true;
-    }
+    },
     },
     setup() {
         const dialogFormVisible = ref(false);
@@ -391,7 +391,7 @@ const handleFileChange=(file)=> {
       };
 
     const handleImageChange=(file)=> {
-       expert.image = URL.createObjectURL(file.raw);
+        expert.image = URL.createObjectURL(file.raw); 
       }
     
       const onSubmit = () => {
@@ -409,6 +409,7 @@ const handleFileChange=(file)=> {
                 }
              });
             ElMessage.success('申请成功！');
+            expert.image=null
           } catch (error) {
               ElMessage.error(error.message);
             }
