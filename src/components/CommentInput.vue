@@ -50,7 +50,7 @@ export default {
     async submitComment() {
       if (this.localCommentContent.trim() !== '') {
         try {
-          const response = await axios.post('/api/Comments/PushComment', {
+          const response = await axios.post(`/api/Comments/PushComment`, {
             author_id: state.userId,
             content: this.localCommentContent,
             parent_comment_id: this.parentCommentId,
@@ -65,7 +65,6 @@ export default {
           this.handleError(error, '评论提交失败');
         }
         this.localCommentContent = ''; // 清空输入框
-        this.$emit('comment-submitted'); // 触发事件，通知父组件
       }
     },
     async fetchData() {

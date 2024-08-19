@@ -57,7 +57,12 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍:{{ recruitpost.intro }}</p></div>
+          <div class="post-text">
+            <span class="post-fix">活动时间：</span><span>{{recruitpost.activity_time}}；</span>
+            <span class="post-fix">活动地点：</span><span>{{recruitpost.activity_address  }}；</span>
+            <span class="post-fix">计划招募人数：</span><span>{{ recruitpost.total_recruit }}；</span>
+            <span class="post-fix">活动介绍: </span><span>{{ recruitpost.intro }}</span>
+          </div>
         </div>
 
       </el-card>
@@ -443,6 +448,18 @@ i {
 .post-text:hover {
   text-decoration: underline; /* 添加下划线 */
 }
+
+.post-text span{
+  margin-right: 2%;
+  color: grey;
+}
+
+.post-text .post-fix{
+  margin-right: 0;
+  font-weight: bold;
+  color: rgb(98, 98, 98);
+}
+
 .product-card {
   width: 100%; /* 固定宽度 */
   height:30%;

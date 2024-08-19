@@ -18,7 +18,7 @@
               type="textarea" 
               v-model="postForm.content"
               placeholder="请输入帖子内容"
-              rows="5"
+              :rows=5
             />
           </el-form-item>
           
@@ -205,11 +205,11 @@ export default {
       this.$refs.uploadRef.$el.querySelector('input[type=file]').click();
     },
     beforeImageUpload(file) {
-      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPGorPNG) {
-        ElMessage.error('上传图片只能是 JPG 或 PNG 格式!');
+        ElMessage.error('上传图片只能是 JPG 或 PNG 或 JPEG格式!');
         return false;
       }
       if (!isLt2M) {

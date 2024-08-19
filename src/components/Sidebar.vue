@@ -35,9 +35,7 @@
         </template>
       </el-dropdown>
         </div>
-        <div class="fixed-item hot-users">
-      <HotUsers />
-    </div>
+        
     <div class="fixed-item hot-posts">
       <HotPosts />
     </div>
@@ -51,7 +49,6 @@
 </template>
 
 <script>
-import HotUsers from './HotUsers.vue';
 import HotPosts from './HotPosts.vue';
 import LdlePost from '@/components/LdlePostWindow.vue'
 import SharePublish from '@/components/SharepostPublish.vue'
@@ -60,7 +57,6 @@ import RecruitPublish from '@/components/RecruitPostPublish.vue'
 export default {
   name: 'SidebarContent',
   components: {
-    HotUsers,
     HotPosts,
     LdlePost,
     SharePublish,
@@ -140,11 +136,8 @@ const popoverRef = ref(null)
 .post-status {
   top: 110px;
 }
-.hot-users {
-  top: 160px; /* 调整距离顶部的距离，根据需要设置 */
-}
 .hot-posts {
-  top: 550px; /* 调整距离顶部的距离，根据需要设置 */
+  top: 160px; /* 调整距离顶部的距离，根据需要设置 */
 }
 .post-status,
 .hot-users,
