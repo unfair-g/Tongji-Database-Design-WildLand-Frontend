@@ -1,12 +1,15 @@
 const state = {
     Login: false,
+    mute_statue:false,
     userId: 0,
+
 };
 
 // 保存数据到 sessionStorage
-export function saveToSessionStorage(state, Id) {
+export function saveToSessionStorage(state, Id,mute) {
     sessionStorage.setItem('state', JSON.stringify(state));
     sessionStorage.setItem('userId', JSON.stringify(Id));
+    sessionStorage.setItem('mute', JSON.stringify(mute));
     console.log('保存成功');
 }
 
@@ -17,7 +20,8 @@ export function loadFromSessionStorage() {
         state.Login = true;
         const id = sessionStorage.getItem('userId')
         state.userId = JSON.parse(id);
-        console.log('从storage中读取',state.Login,state.userId);
+        console.log('从storage中读取', state.Login, state.userId);
+        state.mute_statue = JSON.parse(sessionStorage.getItem('mute'));
     }
     else {
         console.log('读取失败');

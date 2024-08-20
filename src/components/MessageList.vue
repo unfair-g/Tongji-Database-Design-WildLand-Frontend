@@ -43,20 +43,20 @@
           <!-- 卖出的闲置 -->
           <div v-else class="message-info" @click="handleClick(message)">  
             <div class="message-header">  
-              <span class="username">{{ message.title }}</span>
-              <span class="username">{{ message.content }}</span>   
+              <span>{{ message.post.title }}&nbsp;&nbsp;&nbsp;&nbsp;￥{{ message.price }}</span>
             </div>  
             <div class="message-content">  
               <span  style="color:black">订单状态：</span>
               <span v-if="message.order_status===1">已支付</span>  
-              <span v-else-if="message.order_state===2" style="color:green">已发货</span>  
-              <span v-else style="color:red">已收货</span>  
+              <span v-else-if="message.order_state===2" style="color:red">已发货</span>  
+              <span v-else style="color:#00B146">已收货</span>  
             </div>  
           </div> 
           <!-- 时间戳 -->
           <div class="message-timestamp">
             <div class="timestamp">
               <span v-if="message.type==='follow'">{{ formatDate(message.follow_time) }}</span>
+              <span v-else-if="message.type==='purchased'">{{ formatDate(message.post.post_time) }}</span>
               <span v-else>{{ formatDate(message.update_time) }}</span>
             </div>
             <el-link v-if="message.type === 'report' || message.type === 'activity'" type="primary">查看详情</el-link>
@@ -77,7 +77,8 @@ export default {
   data() {
     return {
       reportMessages: [],
-      followMessages:[]
+      followMessages: [],
+      purchasesMessages:[]
     }
   },
   props: {
@@ -85,7 +86,7 @@ export default {
   },
   computed: {
     filteredMessages() {
-      const allMessages = this.reportMessages.concat(this.followMessages);
+      const allMessages = this.reportMessages.concat(this.followMessages).concat(this.purchasesMessages);
 
       if (this.activeTab === 'all') {
         return allMessages;
@@ -102,9 +103,7 @@ export default {
       if (this.activeTab === 'tip-off') {
         //  this.$router.push({ name: 'myPostReport', params: { id: 1 } });
       }
-      if (message.type === 'rent') {
-        console.log(message)
-        console.log(message.order_id)
+      if (message.type === 'purchased') {
         this.$router.push({
           path: `/home/userspace/leaseorder/${message.order_id}`,
           query: {
@@ -139,6 +138,18 @@ export default {
       });
     },
 
+    async fetchRentMessages() {  
+    try {  
+    const response = await axios.get(`/api/Purchases/GetSellerItems?user_id=${global.userId}`);  
+    this.purchasesMessages = response.data.soldItems;
+    this.purchasesMessages.forEach(item => {
+      item.type='purchased'
+    })
+  } catch (error) {  
+    console.error('Error fetching purchases:', error);  
+  }
+  },  
+
     goToUserSpace(user_id) {
       this.$router.push({
           path: `/home/userspace/${user_id}`
@@ -154,6 +165,7 @@ export default {
   mounted() {
     this.fetchReportMessages();
     this.fetchFollowMessages();
+    this.fetchRentMessages();
   }
 }
 </script>
@@ -193,6 +205,10 @@ export default {
 .message-content {
   font-size: large;
   color: gray;
+}
+
+.username{
+  margin-left:30px;
 }
 
 .message-timestamp {

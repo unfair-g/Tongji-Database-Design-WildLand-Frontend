@@ -183,7 +183,7 @@
         <template #footer>
         <div class="dialog-footer">
             <el-button @click="dialogVisible = false;expert.image=null">取消</el-button>
-            <el-button type="primary" @click="onSubmit" color="#1D5B5E">确认</el-button>
+            <el-button type="primary" @click="onSubmit; dialogVisible = false" color="#1D5B5E">确认</el-button>
         </div>
         </template>
     </el-dialog>
@@ -280,7 +280,7 @@ const TalentStatus=ref(false)
     const fetchUser = async () => {
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
-        userInfo.value = response.data.data.user;
+        userInfo.value = response.data.data.userInfo;
         console.log('用户信息',userInfo.value)
         if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
@@ -299,16 +299,6 @@ const TalentStatus=ref(false)
           userInfo.value.fans = response.data.data.followerCount;
       } catch (error) {
         ElMessage.error(error.message);
-      }
-      if (userInfo.value.outdoor_master_title == '0') {
-        try {
-          const TalentCertification = await axios.get(`/api/CertificationReviews/${global.userId}`);
-          if (TalentCertification.data.status == '2') {
-            TalentStatus.value = true;
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
       }
       }
 

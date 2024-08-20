@@ -22,13 +22,13 @@
     
 <script>
 import axios from '@/axios';
-import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
+import  global  from '@/store/global.js'; // 引入 global.js 中的状态
 
     export default ({
       name: 'LeaseView',
       data() {
         return {
-          ldleitemsposts: [],
+          purchase: [],
         };
       },
       create(){
@@ -37,42 +37,22 @@ import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
     mounted(){
      this.fetchPosts();
     },
-      methods: {
-        async fetchPosts() {
-          try {
-      // 从 Purchase 接口获取所有订单的 post_id 和 order_id
-      const purchaseResponse = await axios.get(`/api/Purchases/GetPurchasesByUserId?user_id=${globalState.userId}`);
-      const purchaseData = purchaseResponse.data;  
-      console.log(purchaseData); // 输出筛选后的数据  
+  methods: {
 
-      // 根据 post_id 从 Posts 接口获取帖子详情
-      const ldleitemspostsPromises = purchaseData.map(async order => {
-        const detailResponse = await axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${order.post_id}`);
-        const item_name=detailResponse.data.item_name;
-        const condition=detailResponse.data.condition;
-        const price=detailResponse.data.price;
-        const item_summary=detailResponse.data.item_summary;
-        const pics= detailResponse.data.post_pics;
-
-            // 将 order_id 添加到每个帖子对象中
-            return { 
-              ...order, 
-              order_id: order.order_id ,
-              item_name:item_name,
-              item_summary:item_summary,
-              condition:condition,
-              price:price,
-              image:pics
-            };
-      });
-      // 等待所有请求完成
-      this.ldleitemsposts = await Promise.all(ldleitemspostsPromises);
-      console.log(this.ldleitemsposts)
-      } catch (error) {
-        console.error('Error fetching ldleitemsposts:', error);
-        this.handleError(error, '获取闲置帖失败');
+    async fetchPurchase() {
+      try {
+        const response=await axios.get('/api/Purchases/GetSellerItems', {
+          params: {
+            user_id:global.userId
+          }
+        })
+        this.purchase=response.data.data
+      }
+      catch (error) {
+        console.error(error)
       }
     },
+        
         goToPostDetail (ldleitemspost) {
           const ldleitemsPostId = ldleitemspost.order_id
 

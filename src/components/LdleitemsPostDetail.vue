@@ -135,7 +135,6 @@
       </div>
 
     </div>
-    <div v-else>加载中......</div>
   </el-card>
 
   <ReportPost
@@ -150,7 +149,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
 import ReportPost from '@/components/ReportPostWindow.vue'
 import  globalState  from '../store/global'; // 引入 global.js 中的状态
@@ -199,11 +198,10 @@ export default {
   },
   created() {
     this.fetchLdleitemsPosts();
-    this.BanRent();
   },
   methods: {
       fetchLdleitemsPosts() {
-        axios.get(`https://localhost:7218/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
+        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
         .then(response => {
           this.ldleitemsPost = response.data;
           console.log(this.ldleitemsPost)
@@ -222,7 +220,7 @@ export default {
       };
       console.log('点赞上传:', likePost.post_id);
       console.log('点赞上传:', likePost.user_id);
-      axios.post('https://localhost:7218/api/LikePosts', likePost,{headers: {
+      axios.post('/api/LikePosts', likePost,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -244,7 +242,7 @@ export default {
       };
       console.log('点赞上传:', starPost.post_id);
       console.log('点赞上传:', starPost.user_id);
-      axios.post('https://localhost:7218/api/StarPosts', starPost,{headers: {
+      axios.post('/api/StarPosts', starPost,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -292,27 +290,6 @@ export default {
     Rent_Success(){
       this.RentdialogVisible= true;
     },
-    async BanRent()
-    {
-      try {  
-    const response = await axios.get(`https://localhost:7218/api/Purchases`);  
-    if (!Array.isArray(response.data)) {  
-      throw new Error('Expected an array from the server, but got something else.');  
-    }  
-    console.log(response.data)
-    console.log(this.ldleitemsPostID)
-    //console.log(response.data.filter(order => order.post_id === this.ldleitemsPostID))
-    this.rent = response.data.filter(order => order.post_id === Number(this.ldleitemsPostID));  
-    this.isButtonDisabled = this.rent.length === 0;  
-  
-    console.log('oooooo', this.rent);  
-    console.log('kkkkkk', this.isButtonDisabled);  
-  } catch (error) {  
-    console.error('Failed to fetch rental data:', error);  
-    // 可以在这里添加额外的错误处理逻辑，比如设置 isButtonDisabled 为 true  
-    this.isButtonDisabled = true;  
-  } 
-    },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
       console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
@@ -351,7 +328,7 @@ export default {
         total_floor:this.ldleitemsPost.total_floor,
 
       }
-      axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost[0].post_id}`,LdlePost).then(response => {  
+      axios.put(`/api/Posts/${this.ldleitemsPost[0].post_id}`,LdlePost).then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
         console.log(LdlePost);
