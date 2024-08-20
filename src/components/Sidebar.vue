@@ -11,7 +11,7 @@
     >
       <el-alert
         v-if="isAlertVisible"
-        title="您已被禁言不可发帖至2024年9月28日14:30"
+        title="您已被禁言不可发帖"
         type="error"
         show-icon
         class="custom-alert"
@@ -25,14 +25,14 @@
             <div class="icon-container">
               <el-icon style="font-size: 20px; color: #1D5B5E;"><Document /></el-icon>
             </div>
-            <el-button type="primary" color="#1D5B5E" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">
+            <el-button type="primary" color="#1D5B5E" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside" @click="handleButtonClick">
               点击发布帖子
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
           </el-card>
           
         </template>
-        <template v-slot:dropdown>
+        <template v-slot:dropdown v-if="!BeSilenced">
           <el-dropdown-menu>
             <el-dropdown-item command="share" class="dropdown-item" style="font-size: 20px; ">分享贴</el-dropdown-item>
             <el-dropdown-item command="rent" class="dropdown-item" style="font-size: 20px;">闲置贴</el-dropdown-item>
@@ -59,6 +59,7 @@ import HotPosts from './HotPosts.vue';
 import LdlePost from '@/components/LdlePostWindow.vue'
 import SharePublish from '@/components/SharepostPublish.vue'
 import RecruitPublish from '@/components/RecruitPostPublish.vue'
+import state from '@/store/global'
 
 export default {
   name: 'SidebarContent',
@@ -74,7 +75,7 @@ export default {
       isLdlePostDialogVisible: false,
       isSharePostDialogVisible: false,
       isRecruitPostDialogVisible:false,
-      BeSilenced: false // 默认为 false
+      BeSilenced: state.mute_status // 根据state.mute_status来确定
     };
   },
   methods: {
