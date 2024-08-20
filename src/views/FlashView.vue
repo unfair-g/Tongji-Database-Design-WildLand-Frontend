@@ -5,15 +5,6 @@
     <container>
       <el-aside width="200px"></el-aside>
       <main>
-        <div class="searchbox">
-      <el-input
-        v-model="input"
-        style="width: 73%;height:50px;margin-left: 10%;margin-top: 1%;"
-        placeholder="Please input"
-        clearable
-    />
-    <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px;margin-top: 1%;" @click="searchFlash">搜索</el-button>
-    </div>
         <el-container>
           <div class="left-panel">
             <mainflash />
@@ -55,6 +46,12 @@ function searchFlash() {
     router.push({ path: '/home/searchFlash', query: { keyword: input.value } })
   }
 }
+
+
+  mainflash,
+  hotflash,
+  newflash
+
 </script>
 
 <style scoped>
