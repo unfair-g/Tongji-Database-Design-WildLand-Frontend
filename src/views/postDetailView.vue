@@ -168,9 +168,10 @@
           <div v-if="!isPostOwner">
             <div v-if="post.recruit_status === 1">
               <!-- 此时正在招募 -->
-              <el-button v-if="!post.isApplied" class="sign-up"  @click="toggleSignUpInput" ref="buttonRef" >
+              <el-button v-if="!post.isApplied" class="sign-up" v-click-outside="onClickOutside" @click="toggleSignUpInput" ref="buttonRef" >
                 参与报名
               </el-button>
+              
               <el-button v-if="post.isApplied" class="sign-up" :disabled="true" ref="buttonRef" >
                 已报名，等待审核
               </el-button>
@@ -182,7 +183,24 @@
               </el-button>
             </div>
           </div>
-            
+            <el-popover
+                v-if="isAlertVisible"
+                ref="popoverRef"
+                :virtual-ref="buttonRef"
+                trigger="click"
+                virtual-triggering
+                width="400"
+                @hide="onPopoverHide"
+              >
+                <el-alert
+                  v-if="isAlertVisible"
+                  title="您已被禁言不可参与报名"
+                  type="error"
+                  show-icon
+                  class="custom-alert"
+                  @close="onAlertClose"
+                />
+              </el-popover>
 
             
           
@@ -282,7 +300,14 @@
     
   </el-card>
 </template>
+<script setup>
+import { ref } from 'vue'
+import { ClickOutside as vClickOutside } from 'element-plus'
 
+const buttonRef = ref(null)
+const popoverRef = ref(null)
+
+</script>
 <script>
 import CommentInput from '@/components/CommentInput.vue';
 import CommentItem from '@/components/CommentItem.vue';
@@ -320,6 +345,8 @@ export default {
         { label: '所有人可见', value: 1 }
       ],
       post: null,
+      BeSilenced: state.mute_status, // 根据state.mute_status来确定
+      isAlertVisible: false,
       
     };
   },
@@ -569,6 +596,11 @@ export default {
       console.log('Dialog Visible:', this.isReportPostWindowVisible);
     },
     toggleSignUpInput() {
+      if (this.BeSilenced) {
+        this.isAlertVisible = true;
+        // console.log('已点击',this.isAlertVisible);
+        return;
+      }
       this.showSignUpInput = !this.showSignUpInput;
     },
     // addComment(newComment) {
@@ -596,6 +628,21 @@ export default {
       ).sort((a, b) => {
         return new Date(a.comment_time) - new Date(b.comment_time);
       });
+    },
+    onClickOutside() {
+      if (this.$refs.popoverRef && this.$refs.popoverRef.popperRef) {
+        this.$refs.popoverRef.popperRef.delayHide?.();
+      }
+    },
+    onAlertClose() {
+      this.isAlertVisible = false;
+      if (this.popoverRef && this.popoverRef.popperRef) {
+        this.popoverRef.popperRef.hide();
+      }
+    },
+    onPopoverHide() {
+      // 每次隐藏 popover 时重置 alert 的显示状态
+      this.isAlertVisible = true;
     },
   }
 };
