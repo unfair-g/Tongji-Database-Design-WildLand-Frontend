@@ -33,7 +33,8 @@
             <el-input
               v-model="flash.flash_content"
               style="width: 1000px"
-              :rows="5"
+              :rows="10"
+              type="textarea"
             />
           </div>
         </div>

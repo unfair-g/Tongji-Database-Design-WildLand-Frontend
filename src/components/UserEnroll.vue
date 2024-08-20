@@ -171,7 +171,8 @@ const beforeAvatarUpload = (file) => {
 const handleFileChange=(file)=> {
       imageUrl.value = URL.createObjectURL(file.raw)
     }
-
+ 
+    
 const onSubmit = () => {
       loginDisabled.value=true
       formRef.value.validate(async (valid) => {
