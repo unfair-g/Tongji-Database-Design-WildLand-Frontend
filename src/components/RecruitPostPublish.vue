@@ -106,7 +106,8 @@ export default {
       },
       rules: {
         myTitle: [
-          { required: true, message: '请输入帖子标题', trigger: 'blur' }
+          { required: true, message: '请输入帖子标题', trigger: 'blur' },
+          { min: 1, max: 40, message: '标题长度不能超过 40 个字符', trigger: 'blur' }
         ],
         time: [
           { required: true, message: '请选择时间', trigger: 'blur' }
