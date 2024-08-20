@@ -7,7 +7,7 @@
     <el-tab-pane label="关注" name="follow"></el-tab-pane>
     <el-tab-pane label="活动" name="activity"></el-tab-pane>
     <el-tab-pane label="举报" name="report"></el-tab-pane>
-    <el-tab-pane label="我卖出的闲置" name="rent"></el-tab-pane>
+    <el-tab-pane label="我卖出的闲置" name="purchased"></el-tab-pane>
     </el-tabs>
     <MessageList :activeTab="activeTab"/>  
   </div>  

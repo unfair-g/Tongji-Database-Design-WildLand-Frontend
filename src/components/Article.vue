@@ -245,16 +245,33 @@ export default {
       }
     },
     fetchLdlePosts() {
-      //const userId = state.userId
-      axios.get(`/api/LdleitemsPosts/GetAllLdleitemsPosts`)
-        .then(response => {
-          this.ldleitemsposts = response.data;
-          console.log(this.ldleitemsposts)
+      if (this.user_id == null) {
+        axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
+          .then(response => {
+            this.ldleitemsposts = response.data.filter(post => post.post_kind === 1);
+            if(this.star)
+              this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)            
+          })
+          .catch(error => {
+            console.log(this.ldleitemsposts)
+            console.error('Error fetching products:', error);
+          });
+      }
+      else {
+        axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByAuthorAndUserId`, {
+          params: {
+            author_id: this.user_id,
+            user_id:state.userId
+          }
         })
-        .catch(error => {
-          console.log(this.ldleitemsposts)
-          console.error('Error fetching products:', error);
-        });
+          .then(response => {
+           this.ldleitemsposts = response.data
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
     },
     async fetchRecruitPosts() {
       if (this.user_id == null) {

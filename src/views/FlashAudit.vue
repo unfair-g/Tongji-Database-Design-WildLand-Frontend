@@ -66,9 +66,6 @@ export default {
         .then(response => {
           this.flashes = response.data;
         })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
     },
     handleAction(row, action) {
       if (action === 'more') {
@@ -108,8 +105,7 @@ export default {
       }  
     },
     addnewflash(){
-      const flashId = 99999
-      this.$router.push({ path: `/administrator/flashaudit/${flashId}` })
+      this.$router.push({ path: `/administrator/flashnew` })
     }
   },
   created() {

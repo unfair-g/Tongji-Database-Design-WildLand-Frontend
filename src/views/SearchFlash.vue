@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     goToDetail (flash) {
-      const flashId = flash.flashId;
+      const flashId = flash.flash_id;
       this.$router.push({ path: `/home/flash/${flashId}` })
     },
   }
