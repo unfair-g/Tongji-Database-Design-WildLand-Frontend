@@ -58,11 +58,11 @@ export default {
         flash_title: '填写标题',  
         flash_content: '填写内容',  
         flash_id: 111110,
-        user_id: 10,
+        user_id: 123,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
-        tagId: 110,
-        tagName: '填写tag'
+        tagId: 123,
+        tagName: '营地'
       },
       tag:[]
     };
@@ -85,14 +85,14 @@ export default {
       
       // 发送 PUT 请求来更新 Flash  
       axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag`, [{  
-        flash_id:  this.flash.user_id,
-        user_id: this.flash.user_id,
-        flash_date:  this.flash.flash_date,
-        flash_image:  this.flash.flash_image,
-        collection_number:  this.flash.collection_number,
-        views_number:  this.flash.views_number,
-        flash_title: this.flash.flash_title,  
-        flash_content: this.flash.flash_content,  
+        flashId:  this.flash.flash_id,
+        userId: this.flash.user_id,
+        flashTitle: this.flash.flash_title,  
+        flashDate:  this.flash.flash_date,
+        flashContent: this.flash.flash_content,  
+        flashImage:  this.flash.flash_image,
+        collectionNumber:  this.flash.collection_number,
+        viewsNumber:  this.flash.views_number,
         tagId: this.flash.tagId,
         tagName: this.flash.tagName
         // 如果需要更新其他字段，也可以在这里添加  
