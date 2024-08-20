@@ -210,7 +210,7 @@ function toWelcomePage() {
     left:0;
     height:100%;
     width:55%;
-    position: fixed;
+    position:absolute;
 }
 
 .form-container{
