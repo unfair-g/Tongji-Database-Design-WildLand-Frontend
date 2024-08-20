@@ -37,6 +37,15 @@
               type="textarea"
             />
           </div>
+          <el-upload
+            class="avatar-uploader"
+            :show-file-list="false"
+            :before-upload="beforeAvatarUpload"
+            @change="handleFileChange"
+          >
+            <el-avatar v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            </el-upload>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
@@ -48,6 +57,7 @@
 //import { ref } from 'vue'
 import { Close } from '@element-plus/icons-vue'
 import axios from '@/axios'; // 引入配置好的axios实例
+import { ref} from 'vue'
 
 export default {
   props: ['flashID'],
@@ -67,6 +77,7 @@ export default {
       },
       tag:[],
       formData: new FormData(),  
+      imageUrl: ref('')
     };
   },
   components: {
@@ -98,7 +109,7 @@ export default {
       return true;  
     },  
     handleFileChange(file){
-      imageUrl.value = URL.createObjectURL(file.raw)
+      this.imageUrl.value = URL.createObjectURL(file.raw)
     },
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })

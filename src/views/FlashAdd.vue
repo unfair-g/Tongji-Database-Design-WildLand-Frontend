@@ -25,13 +25,13 @@
         <div class="post-info">
           <div class="post-title">资讯标题: 
             <el-input
-              v-model="flash.flash_title"
+              v-model="flash.flashTitle"
               style="width: 240px"
             />
           </div>
           <div class="post-body">资讯内容: 
             <el-input
-              v-model="flash.flash_content"
+              v-model="flash.flashContent"
               style="width: 1000px"
               :rows="10"
               type="textarea"
@@ -74,7 +74,7 @@ export default {
     },
     updateFlash() {  
       // 确保 flash 对象中有需要更新的数据  
-      if (!this.flash.flash_id || !this.flash.flash_title || !this.flash.flash_content) {  
+      if (!this.flash.flashId || !this.flash.flashTitle || !this.flash.flashContent) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
@@ -83,12 +83,12 @@ export default {
       axios.put(`https://localhost:7218/api/Flashes/${this.flashID}`, {  
         flash_id:  this.flashID,
         user_id: this.flash.user_id,
-        flash_date:  this.flash.flash_date,
-        flash_image:  this.flash.flash_image,
-        collection_number:  this.flash.collection_number,
-        views_number:  this.flash.views_number,
-        flash_title: this.flash.flash_title,  
-        flash_content: this.flash.flash_content,  
+        flash_date:  this.flash.flashDate,
+        flash_image:  this.flash.flashImage,
+        collection_number:  this.flash.collectioNumber,
+        views_number:  this.flash.viewsNumber,
+        flash_title: this.flash.flashTitle,  
+        flash_content: this.flash.flashContent,  
         // 如果需要更新其他字段，也可以在这里添加  
       })  
       .then(response => {  
@@ -102,7 +102,7 @@ export default {
       });  
     },  
     fetchFlashes() {
-      axios.get(`https://localhost:7218/api/Flashes/${this.flashID}`)
+      axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
         })
