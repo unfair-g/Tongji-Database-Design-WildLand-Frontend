@@ -1,7 +1,7 @@
 <template>
     <div class="product-list">
       <el-row :gutter="80"  justify="center">
-        <el-col :span="7" v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
+        <el-col :span="filteredProducts.length < 3 ? 11 : 7"  v-for="product in filteredProducts" :key="product.product_id" style="margin-bottom:25px;">
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToProductDetail(product)">
             <img :src="product.item_image" class="image" alt="product image">
             <div style="padding: 14px;">
@@ -52,7 +52,7 @@ export default {
       // 根据 post_id 从 Posts 接口获取帖子详情
       const OutDoorPromises = productS.data.map(async product => {
       //图片问题
-      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=4`)  
+      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${product.product_id}`)  
         .catch(error => {  
         console.error('Error fetching product pics for product_id:', product.product_id, error);  
        // 你可以选择返回一个默认的对象或null，具体取决于你的应用逻辑  
@@ -76,17 +76,6 @@ export default {
           console.error('Error fetching products:', error);
         }
     },
-    /*fetchProduct_no_url()
-    {
-      axios.get('https://localhost:7218/api/OutdoorProducts')
-        .then(response => {
-          this.products = response.data;
-          this.filterProducts(); // 获取数据后进行筛选
-        })
-        .catch(error => {
-          console.error('Error fetching products:', error);
-        });
-    },*/
     filterProducts() {
       if (this.activeTab === 'all') {
         this.filteredProducts = this.products;
@@ -108,7 +97,7 @@ export default {
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content:flex-start;
+  justify-content:space-between;
 }
 
 .product-card {
@@ -117,6 +106,12 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+}
+
+/* 清除最后一行的右侧间距 */
+.product-card:nth-child(3n) {
+  margin-right: 0;
 }
 
 .image {
@@ -133,5 +128,18 @@ export default {
 .button {
   float: right;
   padding: 0;
+}
+
+/* 媒体查询，适应不同屏幕尺寸 */
+@media (max-width: 768px) {
+  .product-card {
+    width: 45%; /* 中小屏幕时每行显示两个 */
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card {
+    width: 100%; /* 小屏幕时每行显示一个 */
+  }
 }
 </style>

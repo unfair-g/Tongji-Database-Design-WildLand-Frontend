@@ -5,38 +5,44 @@
       :key="index"  
     >  
       <div class="tag-container">  
-        <el-tag :color="tag.color">{{ tag.title }}</el-tag>  
+        <el-tag :color="tag.color">{{ tag.tag_id }}</el-tag>  
       </div>  
-      <div class="detail">{{ tag.ps || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
-      <h3 class="heading">相似标签</h3>  
-      <div class="tag-group">  
-        <el-tag  
-          type="info"  
-          class="tag-item"  
-        >  
-          {{ tag.similarTags }}  
-        </el-tag>  
-      </div>  
+      <div class="detail">{{ tag.tag_name || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
-        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail()">更新标签</el-button>  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
       </div>  
     </el-card>  
   </div>
 </template>  
   
 <script>  
+import axios from '@/axios'; // 引入配置好的axios实例
+
 export default {  
   name: 'HotPosts',
-  computed: {
-    tag() {
-      return this.$store.state.tag.tags;
-    },
+  data() {
+    return {
+      tag:[]
+    };
   },
   methods: {
-    goToDetail () {
-      this.$router.push({ path: `/administrator/tagaudit/tagchange` })
+    fetchTags() {
+      axios.get(`https://localhost:7218/api/FlashTags`)
+        .then(response => {
+          this.tag = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
+    goToDetail (tag) {
+      const tagId = tag.tag_id
+      this.$router.push({ path: `/administrator/tagaudit/${tagId}` })
     }
-    }
+  },
+  created() {
+    this.fetchTags();
+  }
 }  
 </script>  
   

@@ -27,7 +27,7 @@
             </div>
           </div>
           <!-- 举报消息 -->
-          <div v-else class="message-info">
+          <div v-else-if="message.type==='report'" class="message-info">
             <div class="message-header">
               <span class="username">{{ message.content }}</span>
             </div>
@@ -40,10 +40,23 @@
               <span>举报理由：{{ message.report_reason }}</span>
             </div>
           </div>
+          <!-- 卖出的闲置 -->
+          <div v-else class="message-info" @click="handleClick(message)">  
+            <div class="message-header">  
+              <span>{{ message.post.title }}&nbsp;&nbsp;&nbsp;&nbsp;￥{{ message.price }}</span>
+            </div>  
+            <div class="message-content">  
+              <span  style="color:black">订单状态：</span>
+              <span v-if="message.order_status===1">已支付</span>  
+              <span v-else-if="message.order_state===2" style="color:red">已发货</span>  
+              <span v-else style="color:#00B146">已收货</span>  
+            </div>  
+          </div> 
           <!-- 时间戳 -->
           <div class="message-timestamp">
             <div class="timestamp">
               <span v-if="message.type==='follow'">{{ formatDate(message.follow_time) }}</span>
+              <span v-else-if="message.type==='purchased'">{{ formatDate(message.post.post_time) }}</span>
               <span v-else>{{ formatDate(message.update_time) }}</span>
             </div>
             <el-link v-if="message.type === 'report' || message.type === 'activity'" type="primary">查看详情</el-link>
@@ -64,7 +77,8 @@ export default {
   data() {
     return {
       reportMessages: [],
-      followMessages:[]
+      followMessages: [],
+      purchasesMessages:[]
     }
   },
   props: {
@@ -72,7 +86,7 @@ export default {
   },
   computed: {
     filteredMessages() {
-      const allMessages = this.reportMessages.concat(this.followMessages);
+      const allMessages = this.reportMessages.concat(this.followMessages).concat(this.purchasesMessages);
 
       if (this.activeTab === 'all') {
         return allMessages;
@@ -85,11 +99,20 @@ export default {
     },
   },
   methods: {
-    handleClick() {
+    handleClick(message) {
       if (this.activeTab === 'tip-off') {
-        // this.$router.push({ name: 'myPostReport', params: { id: 1 } });
+        //  this.$router.push({ name: 'myPostReport', params: { id: 1 } });
+      }
+      if (message.type === 'purchased') {
+        this.$router.push({
+          path: `/home/userspace/leaseorder/${message.order_id}`,
+          query: {
+            ldleitemsPostId: message.order_id
+          }
+        })
       }
     },
+
     fetchReportMessages() {
       const userId = global.userId;
       axios.get(`/api/Users/reportUserViewList/${userId}`).then(response => {
@@ -101,6 +124,7 @@ export default {
         console.error('获取举报消息时发生错误:', error);
       });
     },
+
     fetchFollowMessages() {
       const userId = global.userId;
 
@@ -113,19 +137,35 @@ export default {
         console.error('获取关注消息时发生错误:', error);
       });
     },
+
+    async fetchRentMessages() {  
+    try {  
+    const response = await axios.get(`/api/Purchases/GetSellerItems?user_id=${global.userId}`);  
+    this.purchasesMessages = response.data.soldItems;
+    this.purchasesMessages.forEach(item => {
+      item.type='purchased'
+    })
+  } catch (error) {  
+    console.error('Error fetching purchases:', error);  
+  }
+  },  
+
     goToUserSpace(user_id) {
       this.$router.push({
           path: `/home/userspace/${user_id}`
         })
     },
+
     formatDate(dateStr) {
       const date = new Date(dateStr);
       return date.toLocaleString();
     },
   },
+  
   mounted() {
     this.fetchReportMessages();
     this.fetchFollowMessages();
+    this.fetchRentMessages();
   }
 }
 </script>
@@ -165,6 +205,10 @@ export default {
 .message-content {
   font-size: large;
   color: gray;
+}
+
+.username{
+  margin-left:30px;
 }
 
 .message-timestamp {

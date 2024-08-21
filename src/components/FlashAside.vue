@@ -11,7 +11,7 @@
         :default-active="activeIndex"
   :key="index"  
   :index="tag"  
-  @click="handleMenuSelect(index)" 
+  @click="handleMenuSelect(tag.tag_name)" 
   class="menuitem"  
       >
         {{ tag }}

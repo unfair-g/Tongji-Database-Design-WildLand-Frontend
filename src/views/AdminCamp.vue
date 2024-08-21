@@ -7,7 +7,6 @@
 
     <!-- 营地信息表格 -->
     <el-table :data="camps" style="width: 100%; margin-top: 20px;">
-      
       <el-table-column prop="campground_name" label="营地名称" width="300" align="center" />
       <el-table-column label="联系方法" width="300" align="center">
         <template v-slot="scope">

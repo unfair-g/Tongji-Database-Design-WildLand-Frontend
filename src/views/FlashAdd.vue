@@ -1,63 +1,63 @@
 <template>
   <div class="post-detail-wrapper">
-    <div class="post-detail-box">
+    <el-form
+          label-position="top"
+          label-width="auto"
+          :model="flash"
+          :rules="rules"
+          :class="'post-detail-box'"
+          ref="UserformRef"
+          >
       <div class="post-detail-header">
-        创建新资讯
+        资讯编辑
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
       </div>
       <hr />
       <div class="post-detail-content">
-        <el-checkbox-group v-model="selectedTags" class="checkbox-group-with-images">
-          <div v-for="tag in tag" :key="tag" class="checkbox-with-image">
-            <img :src="getImageUrl(tag)" alt="" class="checkbox-image">  
-            <el-checkbox :label="tag">{{ tag.title }}</el-checkbox>  
-          </div>  
-        </el-checkbox-group>  
+        <div class="post-title">资讯标签: 
+            <el-input
+              v-model="flash.tagName"
+              style="width: 240px"
+            />
+        </div>
         <div class="post-info">
           <div class="post-title">资讯标题: 
             <el-input
-              v-model="textarea1"
+              v-model="flash.flash_title"
               style="width: 240px"
-              autosize
-              type="textarea"
-              placeholder="Please input"
             />
           </div>
           <div class="post-body">资讯内容: 
             <el-input
-              v-model="textarea"
+              v-model="flash.flash_content"
               style="width: 1000px"
               :rows="5"
-              type="textarea"
-              placeholder="Please input"
             />
           </div>
         </div>
-        <el-button class="confirm-button" @click="confirmAction">确认</el-button>
+        <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
-    </div>
+    </el-form>
   </div>
 </template>
 
 <script>
 //import { ref } from 'vue'
 import { Close } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
 import { mapState, mapMutations } from 'vuex'  
+import axios from '@/axios'; // 引入配置好的axios实例
 
 export default {
-  setup() {
-    const router = useRouter()
-    const closeDetail = () => {
-      router.push({ name: 'PostAudit' })
-    }
-
+  props: ['flashID'],
+  data() {
     return {
-      closeDetail
-    }
+      flash: [],
+      tag:[]
+    };
   },
+
   components: {
     Close
   },
@@ -66,11 +66,58 @@ export default {
       'tags', // 将state中的tags映射到组件的computed属性  
       'selectedTags' // 将state中的selectedTags映射到组件的v-model上
     ])  ,
-    tag() {
-      return this.$store.state.tag.tags;
-    },
   },  
   methods: {  
+    closeDetail(){
+      this.$router.push({ path: `/administrator/flashaudit` })
+    },
+    updateFlash() {  
+      // 确保 flash 对象中有需要更新的数据  
+      if (!this.flash.flash_id || !this.flash.flash_title || !this.flash.flash_content) {  
+        this.$message.error('缺少必要的更新信息');  
+        return;  
+      }  
+
+      // 发送 PUT 请求来更新 Flash  
+      axios.put(`https://localhost:7218/api/Flashes/${this.flashID}`, {  
+        flash_id:  this.flashID,
+        user_id: this.flash.user_id,
+        flash_date:  this.flash.flash_date,
+        flash_image:  this.flash.flash_image,
+        collection_number:  this.flash.collection_number,
+        views_number:  this.flash.views_number,
+        flash_title: this.flash.flash_title,  
+        flash_content: this.flash.flash_content,  
+        // 如果需要更新其他字段，也可以在这里添加  
+      })  
+      .then(response => {  
+        this.$message.success('资讯更新成功！');  
+        console.log(response)
+        // 这里可以添加额外的逻辑，比如重新获取数据或关闭对话框  
+      })  
+      .catch(error => {  
+        console.error('Error updating flash:', error);  
+        this.$message.error('资讯更新失败，请重试！');  
+      });  
+    },  
+    fetchFlashes() {
+      axios.get(`https://localhost:7218/api/Flashes/${this.flashID}`)
+        .then(response => {
+          this.flash = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
+    fetchTags() {
+      axios.get(`https://localhost:7218/api/FlashTags`)
+        .then(response => {
+          this.tag = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
     getImageUrl(tag) {  
       // 这里返回一个基于tag的图片URL，你可能需要根据实际情况来实现这个函数  
       return tag.image// 示例URL  
@@ -79,7 +126,12 @@ export default {
       'toggleTag' // 映射mutation到methods，但在这个例子中，我们实际上不需要直接调用它  
       // 因为我们使用了v-model和Element UI的el-checkbox-group，它会自动处理选中状态  
     ])    
-  }  
+  }  ,
+  created() {
+    // 在组件创建时，从查询参数中获取flashId、title、content和tagName  
+    this.fetchFlashes();
+    this.fetchTags();
+  }
 }
 </script>
 

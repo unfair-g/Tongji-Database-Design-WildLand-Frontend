@@ -39,6 +39,11 @@ const routes = [
                 props: true
             },
             {
+                path: 'AdminProductEdit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
+            {
                 path: 'GeekAudit',
                 name: 'GeekAudit',
                 component: () => import('../views/GeekAudit.vue')
@@ -69,9 +74,19 @@ const routes = [
                 component: () => import('../views/CommentReportDetail.vue')
             },
             {
-                path: 'flashadd',
-                name: 'FlashAdd',
-                component: () => import('../views/FlashAdd.vue')
+                path: 'flashnew',
+                name: 'FlashNew',
+                component: () => import('../views/FlashNew.vue')
+            },
+            {
+                path: "flashaudit/:flashID",
+                component: () => import('../views/FlashAdd.vue'),
+                props: true
+            },
+            {
+                path: "flashaudit/:flashID",
+                component: () => import('../views/FlashAdd.vue'),
+                props: true
             },
             {
                 path: 'flashaudit',
@@ -87,6 +102,11 @@ const routes = [
                 path: 'tagaudit',
                 name: 'TagAudit',
                 component: () => import('../views/TagAudit.vue')
+            },
+            {
+                path: 'tagaudit/:tagID',
+                component: () => import('../views/TagChange.vue'),
+                props: true
             }
         ]
     },

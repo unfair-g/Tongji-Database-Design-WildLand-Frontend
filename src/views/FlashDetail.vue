@@ -1,185 +1,178 @@
-<template>
-    <div class="container">
-      <div class="left-panel">
-        <div class="flash-item">
-            <div class="flash-like" @click="toggleStar(flashId)">  
-              <strong>收藏</strong>  
-              <el-icon v-if="!flash.isSolid"><Star /></el-icon>
-              <el-icon v-else><StarFilled /></el-icon>
-            </div>  
-            <div class="flash-like">
-              <span>{{ flash.favorite }}</span>
-            </div>
-            <span class="flash-title">{{ flash.title }}</span>
-            <span class="flash-meta">{{ flash.meta }}</span>
-            <div>
-              <el-tag type="info" class="custom-tag">{{ flash.tag }}</el-tag>  
-            </div>
-            <span class="flash-content">{{ flash.content }}</span>
-            <img :src="flash.image" width="730" style="border-radius: 10px; margin-right: 10px;">
-        </div>
+<template>  
+  <div class="container">  
+    <div class="left-panel">  
+      <div class="flash-item">  
+        <h2 class="flash-title">{{ flash.flashTitle }}</h2> 
+        <h2 class="flash-meta">{{ flash.user_id }}</h2>
+        <el-tag type="info" class="flash-tag">{{ flash.tagName }}</el-tag>  
+        <div class="flash-like">
+        <el-button class="flash-like" @click="toggleStar(flash.flashId)">
+          <el-icon v-if="!this.isStarred"><Star /></el-icon>
+          <el-icon v-else><StarFilled /></el-icon>
+          <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
+        </el-button>
       </div>
-      <div class="right-panel">  
+        <p class="flash-content">{{ flash.flashContent }}</p>  
+        <img :src="flash.flashImage" :alt="flash.flashTitle" class="flash-image" />  
+      </div>  
+    </div>  
+    <div class="right-panel">  
+      <section>  
         <h2>收藏量</h2>  
-        <div>  
-          <span class="flash-view"> {{ flash.like || '未知' }}</span>  
-          <div class="like-item" v-for="(user, userIndex) in flash.like_users" :key="`${flash.flash_id}-${userIndex}`">  
+        <p class="flash-view">{{ flash.collectionNumber || 0 }}</p>  
+        <div class="like-users">  
+          <div class="like-item" v-for="(user, index) in flash.like_users" :key="index">  
             <el-avatar :src="user.avatar" alt="用户头像" class="avatar" />  
             <span class="name">{{ user.name }}</span>  
           </div>  
         </div>  
+      </section>  
+      <section>  
         <h2>浏览量</h2>  
-        <div>  
-          <span class="flash-view"> {{ flash.view || '未知' }}</span>  
-        </div>  
-      </div>  
-    </div>
-</template>
+        <p class="flash-view">{{ flash.viewsNumber || 0 }}</p>  
+      </section>  
+    </div>  
+  </div>  
+</template>  
+  
 
 <script>
+import axios from '@/axios'; // 引入配置好的axios实例
+import global from '@/store/global'
 
 export default {
 name: 'R_Flash',
 props: ['flashID'],
-computed: {
-flash() {
-  const flashId = this.flashID;
-  return this.$store.state.flash.flashes.find(flash => flash.flash_id === parseInt(flashId));
-}
-},
+data() {
+    return {
+      flash: [],
+      isStarred:0
+    };
+  },
 methods: {  
+  fetchFlashes() {
+      axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
+        .then(response => {
+          this.flash = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
   toggleStar(flashId) {  
-    const flash1 = this.$store.state.flash.flashes.find(f => f.id === flashId);  
-    flash1.isSolid = !flash1.isSolid;  
-    this.$store.commit('flash/toggleFlashSolid', flashId); 
-  }  
+    console.log("Hello, Console!",global.userId);  
+    axios.post(`https://localhost:7218/api/StarFlashes/PostStarFlash?userId=${global.userId}&flashId=${flashId}`,{
+      flash_id: flashId,
+      user_id: global.userId
+    })
+    this.isStarred=1-this.isStarred;
+  }  ,
+  fetchstar(){          
+    console.log(this.flashID);
+    axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByFlashAndUserId?flash_id=${this.flashID}&user_id=${global.userId}`)
+        .then(response => {
+          console.log(response);
+          this.isStarred=1;
+          console.log(this.isStarred);
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+          console.log(this.isStarred);
+        });
+  }
   },  
+  created() {
+    this.fetchFlashes();
+    this.fetchstar();
+  }
 }
 </script>
 
-<style scoped>
-.container {
-display: flex;
-height: 100%;
-margin-top: 2%;
-}
-.flash-info {
-  margin: 3%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.flash-title {
-  color:#333;
-      font-size: 37px;
-      overflow:hidden;
-}
-.flash-meta {
-  color: #999;
-  font-size: 0.9em;
-  margin-left: 1%;
-}
-.flash-view {
-  padding: 3%;
-  margin:3%;
-  color: #636363;
-  font-size: 25px;
-}
-.flash-like {
-  padding: 1%;
-  font-size: 25px;
-  margin-top: 16px;
-      height:24px;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: #636363;
-      float:right;
-}
-.comment-container {  
-  margin-bottom: 20px;  
-  border-bottom: 1px solid #ccc;  
-  padding-bottom: 10px;  
-}  
   
-.comment p {  
-  font-weight: bold;  
-}  
-  
-.replies p {  
-  margin-left: 20px;  
-  font-size: 0.9em;  
-} 
-.comment-content {  
+<style scoped>  
+.container {  
   display: flex;  
-  flex-direction: column;  
-  margin: 10px; /* 与头像保持一些间距 */  
+  height: 100%;  
+  padding: 20px;  
 }  
+  
+.flash-header {  
+  display: flex;  
+  justify-content: space-between; /* 保持其他内容的布局 */  
+  align-items: center;  
+  margin-bottom: 10px;  
+  
+}  
+  
+.flash-title {  
+  font-size: 37px;  
+  margin: 0;  
+  display:inline-block;
+}  
+  
 .flash-content {  
+  font-size: 16px;  
+  color: #666;  
+  margin: 1%;
   display: flex;  
-  flex-direction: column;  
-  margin: 2%; /* 与头像保持一些间距 */  
-  font-size: 20px;
-  line-height: 1.6; 
+}  
+.flash-tag{
+  display: flex;  
+  width:9%
+}
+
+.flash-meta {  
+  font-size: 16px;  
+  color: #666;  
+  display:inline-block;
+  margin-left: 3%;
 }  
   
-.replies {  
+.flash-image {  
+  width: 100%;  
+  height: auto;  
+  max-width: 730px;  
+  border-radius: 10px;  
+  margin-bottom: 20px;  
+}  
+  
+.left-panel, .right-panel {  
+  padding: 20px;  
+  overflow-y: auto;  
+}  
+  
+.left-panel {  
+  flex: 1; /* 使用 flex: 1 让其占据剩余空间 */  
+  background-color: rgba(255, 255, 255, 0.8);  
+  margin-right: 20px;  
+}  
+  
+.right-panel {  
+  flex: 0 0 30%; /* 固定宽度为 30% */  
+  border-left: 1px solid #ddd;  
+}  
+  
+.flash-stats, .flash-like {  
+  font-size: 18px;  
+  color: #666;  
+  justify-content: flex-end;
+  display:flex;
+}  
+  
+.like-users {  
+  display: flex;  
+  flex-wrap: wrap;  
   margin-top: 10px;  
 }  
-  
-.inner-timeline {  
-  /* 可能需要一些额外的样式来确保内部时间线看起来更紧凑或与其他部分协调 */  
-  margin: 0;  
-  padding: 0;  
-}  
-.left-panel, .right-panel {
-  display: flex;  
-overflow-y: auto;
-padding: 20px;
-flex-direction:row;
-}
-.left-panel {
-  background-color: rgb(255,255,255,80%);
-  margin-top: 1%;
-  margin-left: 6%;
-  margin-bottom: 1%;
-  flex: 70%;
-}
-.right-panel {
-flex: 30%;
-display: flex;
-flex-direction: column;
-}
-.like-list {
-  display: flex;  
-  flex-direction: column;  
-  align-items: flex-start;  
-  padding: 10px;  
-}  
-  
 .like-item {  
   display: flex;  
   align-items: center;  
   margin-bottom: 10px;  
-}  
-  
+}   
 .avatar {  
   width: 50px;  
   height: 50px;  
   border-radius: 50%;  
   margin-right: 10px;  
-}  
-.custom-tag {  
-  /* 增大标签的字体大小和padding来使标签看起来更大 */  
-  font-size: 20px; /* 或者你需要的任何大小 */  
-  padding: 15px 15px; /* 增大padding以匹配字体大小 */  
-  
-  /* 减小与上方元素的间距 */  
-  margin-top: 1%; /* 根据需要调整 */  
-  /* 如果需要，还可以调整其他样式 */  
-}  
-  
-.name {  
-  font-size: 16px;  
 }  
 </style>
