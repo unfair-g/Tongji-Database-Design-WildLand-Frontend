@@ -11,6 +11,10 @@
       <div class="update-tag">  
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
       </div>  
+      <div class="detail">{{ tag.tag_name || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
+      <div class="update-tag">  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
+      </div>  
     </el-card>  
   </div>
 </template>  
@@ -26,6 +30,26 @@ export default {
     };
   },
   methods: {
+    deleteTag(tag) {  
+      // 弹出确认窗口  
+      if (confirm('你确定要删除这个Flash吗？')) {  
+        // 用户点击了确定，提交删除请求  
+        axios.delete(`https://localhost:7218/api/FlashTags/${tag.tag_id}`)  
+          .then(() => {  
+            // 删除成功的处理逻辑，例如提示用户或刷新页面  
+            alert('tag删除成功！');  
+            // 这里可以添加其他逻辑，比如从前端列表中移除该Flash  
+          })  
+          .catch(error => {  
+            // 删除失败的处理逻辑  
+            console.error('Error deleting flash:', error);  
+            alert('删除Flash时发生错误，请稍后再试！');  
+          });  
+      } else {  
+        // 用户点击了取消，不执行任何操作  
+        alert('删除已取消！');  
+      }  
+    },
     fetchTags() {
       axios.get(`https://localhost:7218/api/FlashTags`)
         .then(response => {
@@ -80,6 +104,6 @@ export default {
 }  
   
 .update-tag {  
-  margin-top: 20px; /* 增加与上方内容的间隔 */  
+  margin-top: 10px; /* 增加与上方内容的间隔 */  
 }  
 </style>
