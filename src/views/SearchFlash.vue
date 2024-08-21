@@ -20,8 +20,8 @@
 
 <script>
 import axios from 'axios';
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'SearchFlash',
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     goToDetail (flash) {
-      const flashId = flash.flashId;
+      const flashId = flash.flash_id;
       this.$router.push({ path: `/home/flash/${flashId}` })
     },
   }

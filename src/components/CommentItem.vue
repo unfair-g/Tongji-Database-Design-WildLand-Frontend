@@ -1,127 +1,45 @@
 <template>
   <div>
-    <div v-for="comment in comments.filter(comment => comment.parent_comment_id === null)" :key="comment.comment_id" class="comment-item">
-      <img :src="comment.portrait" alt="avatar" class="avatar">
+    <div class="comment-item">
+      <img :src="this.localComment.portrait" alt="avatar" class="avatar"  @click="goToUserSpace(this.localComment.author_id)">
       <div class="comment-details">
         <div class="one-comment">
           <div class="comment-info">
             <div class="comment-header">
-              <span class="comment-username">{{ comment.author_name }}</span>
+              <span class="comment-username" @click="goToUserSpace(this.localComment.author_id)">{{ this.localComment.author_name }}</span>
+              <span v-if="isReply" class="comment-username">回复</span>
+              <span v-if="isReply" class="comment-username">{{ this.localComment.reply_name }}</span>
             </div>
-            <div class="comment-content">{{ comment.content }}</div>
+            <div class="comment-content">{{ this.localComment.content }}</div>
             <div class="comment-footer">
-              <span class="timestamp">{{ comment.comment_time }}</span>
+              <span class="timestamp">{{ this.localComment.comment_time }}</span>
               <span v-if="isCommentOwner" type="text" class="delete-comment-button" @click="openDeleteDialog">删除</span>
               <span v-if="!isCommentOwner" type="text" class="delete-comment-button" @click="goToReportPostWindow"><el-icon><Bell/></el-icon>举报</span>
             </div>
           </div>
           <div class="comment-stats">
-            <span class="stat-item" @click="toggleLike(comment)">
-              <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !comment.isLiked, 'icon-dianzanxuanzhong': comment.isLiked}"></i>{{ comment.likes_number }}
+             <span class="stat-item" @click="toggleLike">
+              <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !this.localComment.isLiked, 'icon-dianzanxuanzhong': this.localComment.isLiked}"></i>{{ this.localComment.likes_number }}
             </span>
             <span class="stat-item" @click="toggleReplyInput">
-              <el-icon><ChatLineSquare /></el-icon> {{ getReplies(comment.comment_id).length }}
+              <el-icon><ChatLineSquare /></el-icon>点击评论
             </span>
           </div>
-          
+
         </div>
-        <!-- 仅在当前评论 ID 匹配时显示回复输入框 -->
-        <div v-if="activeReplyInputId === comment.comment_id" class="reply-input">
+       
+        <!-- 根据 showReplyInput 的值控制显示与隐藏 -->
+        <div v-if="showReplyInput" class="reply-input">
           <CommentInput
             v-model:commentContent="replyContent"
-            :postId="this.postID"
-            :parentCommentId="comment.comment_id"
+            :postID="this.localPostId"
+            :parentCommentId="this.localComment.comment_id"
+            @comment-submitted="hideReplyInput"
           />
         </div>
-        
-        <div v-if="getReplies(comment.comment_id).length > 0" class="replies-section">
-          <div v-for="reply in getReplies(comment.comment_id)" :key="reply.comment_id" >
-            <div class="comment-item reply">
-              <img :src="reply.portrait" alt="avatar" class="avatar">
-              <div class="comment-details">
-                <div class="one-comment">
-                  <div class="comment-info">
-                    <div class="comment-header">
-                      <span class="comment-username">{{ subReply.author_name }}</span>
-                      <span class="comment-username">回复</span>
-                      <span class="comment-username">{{ subReply.reply_name }}</span>
-                    </div>
-                    <div class="comment-content">{{ reply.content }}</div>
-                    <div class="comment-footer">
-                      <span class="timestamp">{{ reply.comment_time }}</span>
-                      <span v-if="isCommentOwner" type="text" class="delete-comment-button" @click="openDeleteDialog(reply)">删除</span>
-                    </div>
-                  </div><!-- end of comment-info -->
-                  <div class="comment-stats">
-                    <span class="stat-item" @click="toggleLike(reply)">
-                      <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !reply.isLiked, 'icon-dianzanxuanzhong': reply.isLiked}"></i>{{ reply.likes_number }}
-                    </span>
-                    <span class="stat-item" @click="toggleReplyInput">
-                      <el-icon><ChatLineSquare /></el-icon> {{getReplies(reply.comment_id).length}}
-                    </span>
-                  </div><!-- end of comment-stats -->
-                </div><!-- end of one-comment -->
-              </div><!-- end of comment-details -->
-
-            </div><!-- end of comment-item reply -->
-            
-            <div v-if="activeReplyInputId === reply.comment_id" class="reply-input">
-              <CommentInput
-                v-model:commentContent="replyContent"
-                :postId="this.postID"
-                :parentCommentId="reply.comment_id"
-              />
-            </div>
-            
-            <div v-if="getReplies(reply.comment_id).length > 0" class="replies-section">
-              <div v-for="subReply in getReplies(reply.comment_id)" :key="subReply.comment_id">
-                <div class="comment-item sub-reply">
-                  <img :src="subReply.portrait" alt="avatar" class="avatar">
-                  <div class="comment-details">
-                    <div class="one-comment">
-                      <div class="comment-info">
-                        <div class="comment-header">
-                          <span class="comment-username">{{ subReply.author_name }}</span>
-                          <span class="comment-username">回复</span>
-                          <span class="comment-username">{{ subReply.reply_name }}</span>
-                        </div>
-                        <div class="comment-content">{{ subReply.content }}</div>
-                        <div class="comment-footer">
-                          <span class="timestamp">{{ subReply.comment_time }}</span>
-                          <span v-if="isCommentOwner" type="text" class="delete-comment-button" @click="openDeleteDialog(subReply)">删除</span>
-                        </div>
-                      </div><!-- end of comment-info -->
-                      <div class="comment-stats">
-                        <span class="stat-item" @click="toggleLike(subReply)">
-                          <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !subReply.isLiked, 'icon-dianzanxuanzhong': subReply.isLiked}"></i>{{ subReply.likes_number }}
-                        </span>
-                        <span class="stat-item" @click="toggleReplyInput">
-                          <el-icon><ChatLineSquare /></el-icon> {{ subReply.floor_number }}
-                        </span>
-                      </div><!-- end of comment-stats -->
-                    </div><!-- end of one-comment -->
-                  </div><!-- end of comment-details -->
-                </div>
-                <div v-if="activeReplyInputId === subReply.comment_id" class="reply-input">
-                  <CommentInput
-                    v-model:commentContent="replyContent"
-                    :postId="this.postID"
-                    :parentCommentId="subReply.comment_id"
-                  />
-                </div>
-              </div><!-- end of subReply -->
-            </div><!-- end of subReply -->
-            
-          </div><!-- end of Reply -->
-        </div><!-- end of Reply -->
-
-
-      </div><!-- end of root comment-details -->
-
-      
-      
-
-    </div><!-- end of a root comment -->
+      </div>
+    </div>
+    <!-- 删除确认对话框 -->
     <el-dialog
       v-model="deleteDialogVisible"
       title="确认删除"
@@ -133,112 +51,133 @@
         <el-button type="primary" @click="confirmDelete">是</el-button>
       </template>
     </el-dialog>
-    <!-- <ReportPost
+    <ReportWindow
       v-model:isReportDialogVisible="isReportPostWindowVisible"
-      :isDetailShow="false"
-      :thisPostId="this.postID"
-      :post="post"
-      @closeDialog="isReportPostWindowVisible=false"
-    />   -->
+      :reportID="Number(comment.comment_id)"
+      :isReportPost="false"      
+    />  
+    <!-- 用于举报评论 -->
   </div>
 </template>
 
 <script>
 import CommentInput from '@/components/CommentInput.vue';
-// import ReportPost from '@/components/ReportPostWindow.vue'
-import axios from '@/axios'; // 确保路径是正确的
-import state from '@/store/global.js'; // 引入映射表
-import { ElMessage } from "element-plus";
+import ReportWindow from '@/components/ReportPostWindow.vue'
+import axios from '@/axios';
+import state from '@/store/global.js';
+import { ElMessage } from 'element-plus';
+
 
 export default {
   name: 'CommentItem',
   components: {
     CommentInput,
-    // ReportPost
+    ReportWindow,
   },
   props: {
-    postId: {
+    postID: {
       type: Number,
       required: true
+    },
+    comment: {
+      type: Object,
+      required: true
+    },
+    isReply: {
+      type: Boolean,
+      required:true,
     }
   },
   data() {
     return {
-      comments: [], // 存储所有评论
-      activeReplyInputId: null, // 当前显示回复输入框的评论ID
-      showReplyInput: false,
+      localPostId: this.postID,
       replyContent: '',
-      parentComment: null,
       deleteDialogVisible: false,
       isReportPostWindowVisible:false,//举报弹窗显示
+      localComment: { ...this.comment },
+      showReplyInput: false, // 控制回复输入框显示与隐藏
     };
   },
-  created() {
-    this.fetchComments(); // 获取评论数据
-    // this.fetchUsername();
-  },
-  computed:{
-    isCommentOwner(comment){
-      return comment && comment.author_id===state.userId;
+  computed: {
+    isCommentOwner() {
+      return this.localComment && this.localComment.author_id === state.userId;
     }
   },
   methods: {
-    async fetchComments() {
-      const myUserId = state.userId;
-      const myPostId = this.postId;
-      try {
-        const response = await axios.get(`/api/Comments/GetComment/${myPostId}/${myUserId}`);
-        this.comments = response.data; // 假设返回的数据结构是一个数组
-        console.log('评论获取成功:',this.comments)
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-        ElMessage.error('获取评论失败');
-      }
-    },
-    toggleLike(comment) {
-      comment.isLiked = !comment.isLiked;
-      comment.likes_number = comment.isLiked ? comment.likes_number + 1 : comment.likes_number - 1;
+    toggleLike() {
+      this.localComment.isLiked = !this.localComment.isLiked;
+      this.localComment.likes_number = this.localComment.isLiked ? this.localComment.likes_number + 1 : this.localComment.likes_number - 1;
       axios.post('/api/LikeComments/commentlike', {
-        comment_id: comment.comment_id,
+        comment_id: this.localComment.comment_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked=comment.isLiked;
-        response.data.likesCount=comment.likes_number;
+        response.data.isLiked = this.localComment.isLiked;
+        response.data.likesCount = this.localComment.likes_number;
       })
       .catch(error => {
         console.error('Error toggling like:', error);
         this.handleError(error, '点赞操作失败');
       });
     },
-    toggleReplyInput(commentId) {
-      // 如果当前显示的输入框是点击的同一个评论，则隐藏它；否则，显示对应的输入框
-      this.activeReplyInputId = this.activeReplyInputId === commentId ? null : commentId;
+    toggleReplyInput() {
+      this.showReplyInput = !this.showReplyInput;
     },
-    submitReply() {
+    goToReportPostWindow() {
+      this.isReportPostWindowVisible = true;
+    },
+    hideReplyInput() {
       this.showReplyInput = false;
+      this.$emit('reply-submitted'); // 触发事件，通知父组件
+      
     },
-    openDeleteDialog(parentComment = null) {
-      this.parentComment = parentComment;
+    goToUserSpace(author_id) {
+      if (author_id == state.userId) {
+        this.$router.push({
+          path: `/home/userspace`
+        })
+      }
+      else {
+        this.$router.push({
+          path: `/home/userspace/${author_id}`
+        })
+      }
+    },
+    openDeleteDialog() {
       this.deleteDialogVisible = true;
     },
     cancelDelete() {
       this.deleteDialogVisible = false;
     },
     confirmDelete() {
-      //删除评论逻辑
+      this.deleteDialogVisible = false;
+      axios.delete(`api/Comments/${this.localComment.comment_id}`)
+        .then(response => {
+          if (response.data!=null) {
+            this.$emit('comment-deleted'); // 触发事件，通知父组件
+          }
+      })
+      .catch(error => {
+        this.handleError(error, '删除评论失败');
+      })
+      
     },
-    getReplies(parentCommentId) {
-      return this.comments.filter(comment => comment.parent_comment_id === parentCommentId) || [];
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
+      }
     },
-    goToReportPostWindow() {
-      this.isReportPostWindowVisible = true;
-      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
-    },
-    
   }
 };
 </script>
+
 
 <style scoped>
 .avatar {

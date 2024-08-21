@@ -28,29 +28,29 @@
   <el-row :gutter="25" v-else-if="componentTab==='product'">
         <el-col :span="8" v-for="product in starproduct" :key="product.product_id">
             <el-card  style="margin-bottom:8%" @click="goToProductDetail(product)">
-                <img :src="product.product_image" style="width:100%;height:300px"/>
+                <img :src="product.picUrl[0]" alt="product_img" style="width:100%;height:300px"/>
                 <template #footer>
-                    <h3>{{ product.product_name }}</h3>
-                    <div style="margin-top:3%">{{ product.introduction }}</div>
+                    <h3>{{ product.product.product_name }}</h3>
+                    <div style="margin-top:3%">{{ product.product.introduction }}</div>
                 </template>
             </el-card>
         </el-col>
   </el-row>
   <el-row :gutter="25" v-else-if="componentTab==='flash'">
-        <el-col :span="8" v-for="flash in starflash" :key="flash.flash_id">
+        <el-col :span="8" v-for="flash in starflash" :key="flash.flashId">
             <el-card  style="margin-bottom:8%" @click="goToFlashDetail(flash)">
-                <img :src="flash.image" style="width:100%"/>
+                <img :src="flash.flashImage" style="width:100%"/>
                 <template #footer>
-                    <h3>{{ flash.title }}</h3>
-                    <div style="margin-top:3%">作者：{{ flash.meta }}</div>
+                    <h3>{{ flash.flashTitle }}</h3>
+                    <div style="margin-top:3%">作者：{{ flash.userId }}</div>
                 </template>
             </el-card>
         </el-col>
   </el-row>
-  <div v-else>
-    <Post v-for="post in starpost" :key="post.post_id" :view=post.post_kind />
-    <Post view="recruit" />
-    <Post view="lease" />
+  <div v-else v-loading="loading" element-loading-text="Loading...">
+    <div v-for="post in starpost" :key="post.post_id">
+    <Post :view="post.post_kind" :post_id="post.post_id" star=true />
+    </div>
   </div>
 </div>
 </template>
@@ -61,13 +61,16 @@ import global from '@/store/global'
 import axios from '@/axios'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router';  
 
+const router = useRouter();  
 const componentTab = ref('camp')  
 const starcamp = ref()
 const starflash = ref()
 const starproduct = ref()
 const starpost=ref()
-const tips=ref('')
+const tips = ref('')
+const loading=ref(true)
 
 const fetchStarCamps = async () => {
     try {
@@ -85,7 +88,7 @@ const fetchStarCamps = async () => {
 const fetchStarProducts = async () => {
     try {
         const response =await axios.get(`/api/Users/getStarOutdoorProduct/${global.userId}`)
-        starproduct.value = response.data.data
+        starproduct.value = response.data.data       
     } catch (error) {
         if (error.response.code == 404)
             tips.value = '暂无收藏户外用品'
@@ -97,12 +100,12 @@ const fetchStarProducts = async () => {
 
 const fetchStarFlashes = async () => {
     try {
-        const response =await axios.get(`/api/Users/getStarFlash/${global.userId}`)
-        starflash.value = response.data.data
-        ElMessage.success(response.data.data)
+        const response =await axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
+        starflash.value = response.data
+        ElMessage.success(response.data)
     } catch (error) {
-        if (error.response.status == 404) 
-            tips.value = '暂无收藏经验资讯'
+        if (error) 
+            tips.value = ' '
         else
             ElMessage.error(error.message)
     }
@@ -110,27 +113,29 @@ const fetchStarFlashes = async () => {
 
 const fetchStarPosts = async () => {
     try {
-        const response =await axios.get(`/api/Users/getStarFlash/${global.userId}`)
-        starflash.value = response.data.data
-        ElMessage.success(response.data.data)
+        const response =await axios.get(`/api/Users/getStarPost/${global.userId}`)
+        starpost.value = response.data.data
     } catch (error) {
         if (error.response.status == 404) 
-            tips.value = '暂无收藏经验资讯'
+            tips.value = '暂无收藏帖子'
         else
             ElMessage.error(error.message)
     }
 }
 
-function handleClick(tab) {
+const handleClick = async (tab) => {
     if (tab.props.name == 'camp')
         fetchStarCamps();
     else if (tab.props.name == 'product')
         fetchStarProducts();
-    else if (tab.props.name == 'post')
+    else if (tab.props.name == 'post') {
         fetchStarPosts();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        loading.value = false
+    }
     else
         fetchStarFlashes();
-    tips.value=''
+    tips.value = ''
 }
 
 function goToProductDetail (product) {
@@ -143,8 +148,8 @@ function goToCampDetail (camp) {
 }
 
 function goToFlashDetail (flash) {
-    const flashId = flash.flash_id
-    this.$router.push({ path: `/home/flash/${flashId}` })
+    const flashId = flash.flashId
+    router.push({ path: `/home/flash/${flashId}` })
 }
 
 onMounted(() => {

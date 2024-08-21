@@ -11,7 +11,7 @@
     >
       <el-alert
         v-if="isAlertVisible"
-        title="您已被禁言不可发帖至2024年9月28日14:30"
+        title="您已被禁言不可发帖"
         type="error"
         show-icon
         class="custom-alert"
@@ -21,12 +21,18 @@
     <div class="fixed-item post-status">
        <el-dropdown @command="handleCommand">
         <template v-slot:default>
-          <el-button type="primary" color="#1D5B5E" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside">
-            点击发布帖子
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
+          <el-card class="post-card">
+            <div class="icon-container">
+              <el-icon style="font-size: 20px; color: #1D5B5E;"><Document /></el-icon>
+            </div>
+            <el-button type="primary" color="#1D5B5E" class="post-status-button" ref="buttonRef" v-click-outside="onClickOutside" @click="handleButtonClick">
+              点击发布帖子
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+          </el-card>
+          
         </template>
-        <template v-slot:dropdown>
+        <template v-slot:dropdown v-if="!BeSilenced">
           <el-dropdown-menu>
             <el-dropdown-item command="share" class="dropdown-item" style="font-size: 20px; ">分享贴</el-dropdown-item>
             <el-dropdown-item command="rent" class="dropdown-item" style="font-size: 20px;">闲置贴</el-dropdown-item>
@@ -35,9 +41,7 @@
         </template>
       </el-dropdown>
         </div>
-        <div class="fixed-item hot-users">
-      <HotUsers />
-    </div>
+        
     <div class="fixed-item hot-posts">
       <HotPosts />
     </div>
@@ -51,16 +55,15 @@
 </template>
 
 <script>
-import HotUsers from './HotUsers.vue';
 import HotPosts from './HotPosts.vue';
 import LdlePost from '@/components/LdlePostWindow.vue'
 import SharePublish from '@/components/SharepostPublish.vue'
 import RecruitPublish from '@/components/RecruitPostPublish.vue'
+import state from '@/store/global'
 
 export default {
   name: 'SidebarContent',
   components: {
-    HotUsers,
     HotPosts,
     LdlePost,
     SharePublish,
@@ -72,7 +75,7 @@ export default {
       isLdlePostDialogVisible: false,
       isSharePostDialogVisible: false,
       isRecruitPostDialogVisible:false,
-      BeSilenced: false // 默认为 false
+      BeSilenced: state.mute_status // 根据state.mute_status来确定
     };
   },
   methods: {
@@ -140,11 +143,8 @@ const popoverRef = ref(null)
 .post-status {
   top: 110px;
 }
-.hot-users {
-  top: 160px; /* 调整距离顶部的距离，根据需要设置 */
-}
 .hot-posts {
-  top: 550px; /* 调整距离顶部的距离，根据需要设置 */
+  top: 250px; /* 调整距离顶部的距离，根据需要设置 */
 }
 .post-status,
 .hot-users,
@@ -152,14 +152,28 @@ const popoverRef = ref(null)
   margin-bottom: 20px;
 }
 .post-status-button {
-  width: 300px;
+  width: 260px;
   border-radius: 10px; /* 修改边框圆角 */
   font-size: 16px; /* 修改字体大小 */
   padding: 10px 20px; /* 修改内边距 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 添加阴影 */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* 添加文字阴影 */
 }
-
+.post-card{
+  height: 100px;
+  width: 300px;
+  display: flex;
+  justify-content: center;
+  border-color: #1D5B5E;
+  border-radius: 8px;
+}
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* 容器宽度 */
+  margin-bottom: 10px; /* 与按钮的间距 */
+}
 ::v-deep.dropdown-item {
   font-size: 28px;
    font-weight: bold; /* 设置选项字体加粗 */

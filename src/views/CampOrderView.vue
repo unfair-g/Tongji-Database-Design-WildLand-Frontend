@@ -102,7 +102,7 @@
       async fetchCampDetails() {
       const campId = this.$route.query.campID;
       try {
-        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}`);
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}/${global.userId}`);
           this.camp = response.data;
       } catch (error) {
         console.error('获取营地信息失败:', error);

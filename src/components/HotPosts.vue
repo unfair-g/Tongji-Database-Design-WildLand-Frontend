@@ -4,13 +4,13 @@
       <div class="hot-posts-header"><el-icon><List /></el-icon>热门帖子</div>
     </template>
     <div class="post-list">
-      <div class="post-item" v-for="(post, index) in hotPosts" :key="post.title">
+      <div class="post-item" v-for="(post, index) in hotPosts" :key="post.post_id" @click="goToPostDetail(post)">
         <span class="post-rank" :class="'rank-' + (index + 1)">{{ index + 1 }}</span>
         <div class="post-info">
           <span class="post-title">{{ post.title }}</span>
-          <span class="post-meta">{{ post.meta }}</span>
+          <span class="post-meta">作者：{{ post.author_name }}</span>
         </div>
-        <span class="post-views">{{ post.views }}</span>
+        <span class="post-stars">收藏量{{ post.stars_number }}</span>
       </div>
     </div>
   </el-card>
@@ -18,6 +18,7 @@
 
 <script>
 import { List } from '@element-plus/icons-vue';
+import axios from '@/axios'; // 确保路径是正确的
 
 export default {
   name: 'HotPosts',
@@ -26,14 +27,27 @@ export default {
   },
   data() {
     return {
-      hotPosts: [
-        { title: '在野外不被死的99种方法', meta: '作者: 重生之我是贝爷', views: '1w+ 浏览' },
-        { title: '在野外不冷死的99种方法', meta: '作者: 重生之我是贝爷2', views: '9k+ 浏览' },
-        { title: '帖子标题', meta: '作者: 帖子作者', views: '浏览量' },
-        { title: '帖子标题', meta: '作者: 帖子作者', views: '浏览量' },
-        { title: '帖子标题', meta: '作者: 帖子作者', views: '浏览量' }
-      ]
+      hotPosts:[],
     };
+  },
+  methods: {
+    async fetchHotPosts() {
+      try {
+        const response = await axios.get('/api/Posts/TopPosts');
+        this.hotPosts = response.data;  // 将返回的数据赋值给 hotPosts
+      } catch (error) {
+        console.error('获取热门帖子失败:', error);
+        this.$message.error('获取热门帖子失败，请稍后再试');
+      }
+    },
+    goToPostDetail(post) {
+      const postID = post.post_id;
+      const postKind =post.post_kind;
+      this.$router.push({ path: `/home/forum/post/${postKind}/${postID}` }); 
+    }
+  },
+  mounted() {
+    this.fetchHotPosts();
   }
 }
 </script>
@@ -93,7 +107,7 @@ export default {
   color: #999;
   font-size: 0.9em;
 }
-.post-views {
+.post-stars {
   margin-left: 10px;
   color: #999;
   font-size: 0.9em;

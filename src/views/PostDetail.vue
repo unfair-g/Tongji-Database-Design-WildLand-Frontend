@@ -20,11 +20,20 @@
           <div class="post-body">帖子内容: <span class="post-content post-body-content">{{ postDetail.content || '无内容' }}</span></div>
           <div class="post-publisher">发布者名称: <span class="post-content">{{ postDetail.author_name }}</span></div>
         </div>
+
+        <!-- 图片展示 -->
+        <div v-if="postDetail.post_portrait && postDetail.post_portrait.length" class="post-images">
+          <div v-for="(image, index) in postDetail.post_portrait" :key="index" class="post-image">
+            <img :src="image" alt="Post Image" />
+          </div>
+        </div>
+
         <el-button class="confirm-button" @click="confirmAction">确认</el-button>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import { mapState, mapActions } from 'vuex'
@@ -164,5 +173,25 @@ export default {
   right: 20px;
   background-color: #1D5B5E;
   color: white;
+}
+
+.post-images {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.post-image {
+  width: calc(33.333% - 10px);
+  margin-right: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.post-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  object-fit: cover;
 }
 </style>
