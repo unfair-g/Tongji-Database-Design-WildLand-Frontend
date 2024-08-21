@@ -37,15 +37,17 @@
               type="textarea"
             />
           </div>
+          <div class="post-body">上传图片:
           <el-upload
-            class="avatar-uploader"
+            style="margin-left: 150px;"
             :show-file-list="false"
             :before-upload="beforeAvatarUpload"
             @change="handleFileChange"
           >
-            <el-avatar v-if="imageUrl" :src="imageUrl" class="avatar" />
-            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            <el-avatar v-if="imageUrl" :src="imageUrl" />
+            <el-icon v-else><Plus /></el-icon>
             </el-upload>
+          </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
@@ -54,10 +56,11 @@
 </template>
 
 <script>
-//import { ref } from 'vue'
 import { Close } from '@element-plus/icons-vue'
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
+import { Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus' // 导入 ElMessage
 
 export default {
   props: ['flashID'],
@@ -76,45 +79,62 @@ export default {
         tagName: '营地'
       },
       tag:[],
-      formData: new FormData(),  
-      imageUrl: ref('')
+      imageUrl: ref(''),
+      currentDateTime : ref(new Date().toLocaleString())
     };
   },
   components: {
-    Close
+    Close,
+    Plus
+  },
+  setup() {
+    const admin_id = ref(global.userId)
+    const avatarSrc = ref('') // 用于存储头像 URL
+
+    const beforeAvatarUpload = (file) => {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传头像图片大小不能超过 2MB!')
+        return false
+      }
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      axios.post(`https://localhost:7218/api/FlashPics/UploadFlashPic?flashId=${admin_id.value}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      ElMessage.success('头像上传成功')
+      .catch(error => {
+        ElMessage.error(error.message)
+      });
+
+      return false;
+    }
+
+    const handleFileChange = (file) => {
+      avatarSrc.value = URL.createObjectURL(file.raw)
+    }
+
+    return {
+      avatarSrc,
+      beforeAvatarUpload,
+      handleFileChange,
+      ElMessage,
+    }
   },
   methods: {  
-     beforeAvatarUpload(file) {  
-      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';  
-      const isLt2M = file.size / 1024 / 1024 < 2;  
-  
-      if (!isJPGorPNG) {  
-        this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!');  
-        return false;  
-      }  
-      if (!isLt2M) {  
-        this.$message.error('上传头像图片大小不能超过 2MB!');  
-        return false;  
-      }  
-  
-      // 清除 formData 中可能存在的旧文件  
-      this.formData = new FormData();  
-      this.formData.append('file', file);  
-  
-      // 这里通常不会直接显示成功消息，因为文件还没有上传  
-      // 你可以调用一个上传函数，并在那里处理成功或失败的逻辑  
-      // this.uploadAvatar(this.formData);  
-  
-      // 假设只是示例，我们返回 true 表示文件通过验证  
-      return true;  
-    },  
-    handleFileChange(file){
-      this.imageUrl.value = URL.createObjectURL(file.raw)
-    },
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })
     },
-    updateFlash() {  
+    updateFlash() {   
       // 确保 flash 对象中有需要更新的数据  
       console.log(this.flash);
       if (!this.flash.flash_title || !this.flash.flash_content) {  
@@ -124,7 +144,8 @@ export default {
      // const formData = new FormData();
       
       // 发送 PUT 请求来更新 Flash  
-      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag`, [{  
+      this.currentDateTime.value = new Date().toLocaleString(); // 更新为新的日期和时间  
+      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=1${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=${this.flash.flash_image}&TagName=${this.flash.tagName}`, [{  
         userId: this.flash.user_id,
         flashTitle: this.flash.flash_title,  
         flashDate:  this.flash.flash_date,
@@ -146,6 +167,12 @@ export default {
 </script>
 
 <style scoped>
+.avatar-uploader .avatar {
+  width: 120px;
+  height: 120px;
+  display:inline-block;
+}
+
 .checkbox-group-with-images {  
   display: flex; /* 使用Flexbox布局 */  
   flex-wrap: wrap; /* 如果需要，允许换行（但在这个场景下可能不需要） */  
