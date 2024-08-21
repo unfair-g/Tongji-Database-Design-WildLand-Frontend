@@ -102,18 +102,7 @@ export default {
     },
     goToProductEdit(product) {
       const productId = product.product_id;
-<<<<<<< Updated upstream
-      this.$router.push({ path: `/home/product/edit/${productId}` });
-      this.$alert('修改成功！', '提示', {  
-        confirmButtonText: '确定',  
-        type: 'success',  
-        callback: () => {  
-          location.reload(); // 刷新页面  
-        } 
-      });
-=======
       this.$router.push({ path: `/administrator/admin_product_edit/${productId}` });
->>>>>>> Stashed changes
     },
     deleteProduct(product) {
       // 提交删除请求

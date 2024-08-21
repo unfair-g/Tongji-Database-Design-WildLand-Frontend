@@ -54,31 +54,6 @@ export default {
       .then(response=>{
         this.filteredProducts=response.data;
       }); 
-<<<<<<< Updated upstream
-        console.log(productS)
-      // 根据 post_id 从 Posts 接口获取帖子详情
-      const OutDoorPromises = productS.data.map(async product => {
-      //图片问题
-      const detailResponse = await axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${product.product_id}`)  
-        .catch(error => {  
-        console.error('Error fetching product pics for product_id:', product.product_id, error);  
-       // 你可以选择返回一个默认的对象或null，具体取决于你的应用逻辑  
-       return { item_image: '图片加载失败' };  
-      });
-        console.log('oooook',detailResponse)
-
-        const item_image=detailResponse.data.length>0?detailResponse.data[0]:'图片';
-            // 将 order_id 添加到每个帖子对象中
-            return { 
-              ...product, 
-              item_image:item_image,
-            };
-      });
-      // 等待所有请求完成
-      this.filteredProducts = await Promise.all(OutDoorPromises);
-      console.log(this.products)
-=======
->>>>>>> Stashed changes
     }
       catch(error){
           console.error('Error fetching products:', error);

@@ -8,11 +8,7 @@
     @close="handleClose">
     <div class="product-info-header" style="display:flex;" shadow="hover">
       <div class="product-img">
-<<<<<<< Updated upstream
-        <img :src="this.image" alt="product image"> 
-=======
         <img :src="product.pics[0]" alt="product image"> 
->>>>>>> Stashed changes
       </div>
       <div style="flex:2;">
         <h2>{{ product.product.product_name }}</h2>
@@ -166,11 +162,7 @@ export default {
         .catch(error => {
           console.error('Error fetching ldle items posts:', error);
         });
-<<<<<<< Updated upstream
-        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product_id}`)
-=======
         axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product.product_id}`)
->>>>>>> Stashed changes
         .then(response =>{
            this.image=response.data?.length>0?response.data[0]:'图片'
            console.log('kkkk',this.image)

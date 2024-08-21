@@ -64,27 +64,7 @@ export default {
           console.log(this.product)
         })
         .catch(error => {
-<<<<<<< Updated upstream
-          console.error('Error fetching product:', error);
-        });
-        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.productID}`)
-        .then(response =>{
-           this.image=response.data?.length>0?response.data[0]:'图片'
-        })
-    },
-    checkIfFavorited() {
-      // Check if the product is already in the favorites on the backend
-      axios.get(`https://localhost:7218/api/StarProducts`)
-        .then(response => {
-          const favoriteProducts = response.data;
-          // 检查当前商品是否在收藏列表中
-          this.isStarSolid = !(favoriteProducts.some(favorite => favorite.product_id === this.product.product_id&&favorite.user_id === this.thisUserId));
-        })
-        .catch(error => {
-          console.error('Error checking if product is favorited:', error);
-=======
           console.error('hhhhhh Error fetching product:', error);
->>>>>>> Stashed changes
         });
     },
     toggleStarColor() {     

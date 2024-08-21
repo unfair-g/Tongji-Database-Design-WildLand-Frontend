@@ -15,11 +15,7 @@
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单状态</h2></div>
-<<<<<<< Updated upstream
-          <div style="text-align:center;justify-content:center;"><p>已支付</p></div>
-=======
           <div style="text-align:center;justify-content:center;"><p>{{ this.Status(ldleitemsPost.order_status) }}</p></div>
->>>>>>> Stashed changes
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单创建时间</h2></div>
@@ -35,20 +31,8 @@
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人电话</h2></div>
-<<<<<<< Updated upstream
-          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
-        </div>
-        <!--<div class="order_2">
-          <div style="margin:10px;"><h2>物流详情</h2></div> 
-          <div style="text-align:center;justify-content:center;"><p>{{ this.state }}</p></div>
-        </div>-->
-        <!--<div class="order_3">
-          <el-button class="pay">申请退款</el-button>
-        </div>-->
-=======
           <div style="text-align:center;justify-content:center;"><p>{{ ldleitemsPost.recipient_phone }}</p></div>
         </div>
->>>>>>> Stashed changes
       </div>
       </template>
       
@@ -83,14 +67,6 @@ import axios from '@/axios'; // 确保路径是正确的
         .then(response => {
           this.ldleitemsPost = response.data;
           console.log( this.leaseOrder);
-<<<<<<< Updated upstream
-          if(this.leaseOrder.logistics_status==0)
-              this.state='自提';
-          else
-            this.state='快递'
-
-=======
->>>>>>> Stashed changes
         })
         .catch(error => {
           console.error('Error fetching lease order:', this.ldleitemsPostId);

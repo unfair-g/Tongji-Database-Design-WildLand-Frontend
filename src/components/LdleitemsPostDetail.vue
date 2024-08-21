@@ -217,32 +217,6 @@ export default {
   methods: {
       fetchLdleitemsPosts() {
         axios.get(`https://localhost:7218/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
-<<<<<<< Updated upstream
-        .then(response => {
-          this.ldleitemsPost = response.data;
-          console.log(this.ldleitemsPost)
-        })
-        .catch(error => {
-          console.log(this.ldleitemsPost)
-          console.error('Error fetching products:', error);
-        });
-    },
-    toggleLike(ldleitemsPost) {
-      ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
-      ldleitemsPost.likes_number = ldleitemsPost.isLiked ? ldleitemsPost.likes_number + 1 : ldleitemsPost.likes_number - 1;
-      const likePost = {
-        post_id: this.ldleitemsPost.post_id,
-        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
-      };
-      console.log('点赞上传:', likePost.post_id);
-      console.log('点赞上传:', likePost.user_id);
-      axios.post('https://localhost:7218/api/LikePosts', likePost,{headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain'
-      }
-    })
-=======
->>>>>>> Stashed changes
         .then(response => {
           this.ldleitemsPost = response.data;
           console.log(this.ldleitemsPost)
