@@ -42,6 +42,7 @@
           <el-button type="primary" @click="toggleEdit">{{ isEditing ? '保存' : '编辑个人信息' }}</el-button>
         </div>
       </el-header>
+      <el-divider />
       <el-container style="height: calc(100% - 190px)">
         <el-aside class="aside">
           <el-scrollbar>
@@ -239,17 +240,18 @@ export default {
   flex-direction: column;
 }
 
-.header, .aside, .el-main {
+.aside, .el-main {
   background-color: rgba(255, 255, 255, 0.8);
 }
 
 .header {
-  height: 190px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加外阴影 */
 }
 
 .logo {
@@ -346,4 +348,9 @@ export default {
     display: flex;             
     flex-direction: column; 
 }
+
+ .el-divider--horizontal{
+     margin: 0 0;
+     background: 0 0;
+ } 
 </style>

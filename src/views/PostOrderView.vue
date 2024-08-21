@@ -1,16 +1,15 @@
 <template>
-    <div class="order" v-if="ldleitemsPost">
+    <div class="order">
       <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
         <div class="product-img">
           <img  alt="product image">
         </div>
         <div style="flex:2;position:relative;">
-          <h2>{{ ldleitemsPost.item_name }}-十分好用，安利</h2>
-          <p>商品提供者: {{ ldleitemsPost.username }}</p>
-          <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
-          <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
-          <div class="price-tag">￥{{ ldleitemsPost.price }}</div>
-          <!-- 数量输入框 -->
+          <h2>{{ leaseOrder.item_name }}-十分好用，安利</h2>
+          <p>商品提供者: {{ leaseOrder.username }}</p>
+          <p>商品简介: {{ leaseOrder.item_summary }}</p>
+          <p>商品新旧程度: {{ leaseOrder.condition }}</p>
+          <div class="price-tag">￥{{ leaseOrder.price }}</div>
           </div>
         </div>
         <div class="order_2">
@@ -44,74 +43,39 @@
           <div style="margin:10px;"><h2>收件人电话</h2></div>
           <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
         </div>
-        <div class="order_2">
-          <div style="margin:10px;"><h2>物流详情</h2></div> 
-          <div style="text-align:center;justify-content:center;"><p>{{ this.state }}</p></div>
-        </div>
-        <div class="order_3">
-          <el-button class="order_buttons" :disabled="isdeliver" color="#1D5B5E">确认收货</el-button>
-          <el-button class="order_buttons" color="#1D5B5E">申请退款</el-button>
-        </div>
       </div>
       </template>
       
-      <script>
+<script>
 import axios from '@/axios'; // 确保路径是正确的
-//import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
   export default {
     name: 'PostOrderView',
     data() {
     return {
-      ldleitemsPostId: null,
-      ldleitemsPost: [],
-      leaseOrder: [],
-      state: '',
-      isdeliver:true
+      leaseOrder: null,
+      order_id:null
     };
   },
   created() {
-    this.ldleitemsPostId = this.$route.query.ldleitemsPostId;
-    this.fetchLeaseOrder();
-  },
-  watch: {
-    leaseOrder(newLeaseOrder) {
-      if (newLeaseOrder && newLeaseOrder.post_id) {
-        this.fetchLdleitemsPost(newLeaseOrder.post_id);
-      }
-    }
+    this.order_id = this.$route.query.ldleitemsPostId;
+    this.fetchLeaseOrder(this.order_id);
   },
   methods: {
-    fetchLeaseOrder() {
-      axios.get(`/api/Purchases/${this.ldleitemsPostId}`)
-        .then(response => {
-          this.leaseOrder = response.data;
-          console.log( this.leaseOrder);
-          if(this.leaseOrder.logistics_status==0)
-              this.state='自提';
-          else
-            this.state = '快递'
-          this.leaseOrder.order_date=this.leaseOrder.order_date.substring(0,10)
-          this.leaseOrder.status = 2
-          if (this.leaseOrder.status > 1)
-            this.isdeliver=false
+
+    async fetchLeaseOrder(order_id) {
+      try {
+        const response = await axios.get('/api/Purchases/GetPurchaseByPurchaseId', {
+           params: {
+            id:order_id
+          }
         })
-        .catch(error => {
-          console.error('Error fetching lease order:', this.ldleitemsPostId);
-          console.error('Error fetching lease order:', this.leaseOrder);
-          this.handleError(error, '获取订单信息失败');
-        });
+        this.leaseOrder=response.data
+      }catch(error){
+        this.handleError(error,'获取订单失败')
+      }
     },
-    fetchLdleitemsPost(postId) {
-      axios.get(`/api/LdleitemsPosts/${postId}`)
-        .then(response => {
-          this.ldleitemsPost = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching item post:', this.postId);
-          this.handleError(error, '获取商品信息失败');
-        });
-    },
+    
     handleError(error, message) {
       if (error.response) {
         console.error(`${message}:`, error.response.data);

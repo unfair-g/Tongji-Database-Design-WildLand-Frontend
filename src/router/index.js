@@ -39,6 +39,11 @@ const routes = [
                 props: true
             },
             {
+                path: 'AdminProductEdit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
+            {
                 path: 'GeekAudit',
                 name: 'GeekAudit',
                 component: () => import('../views/GeekAudit.vue')
@@ -246,11 +251,6 @@ const routes = [
             {
                 path: `userspace/:userId`,
                 component: () => import('../views/OtherUserSpace.vue'),
-                props: true
-            },
-            {
-                path: `searchFlash`,
-                component: () => import('../views/SearchFlash.vue'),
                 props: true
             },
             {

@@ -18,7 +18,7 @@
               type="textarea" 
               v-model="postForm.content"
               placeholder="请输入帖子内容"
-              rows="5"
+              :rows=5
             />
           </el-form-item>
           
@@ -30,7 +30,7 @@
                   您的IP获取成功，IP所在地：{{ postForm.post_position }}
                 </div>
               </el-form-item>
-              <div class="map-container"></div>
+              <!-- <div class="map-container"></div> -->
             </div>
 
             <div class="right-side">
@@ -54,6 +54,9 @@
               </el-form-item>
             </div>
           </div>
+
+          <!-- <div> <MyMap /></div> -->
+
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
             <el-button type="primary" color="#1D5B5E" native-type="submit">立即发布</el-button>
@@ -69,6 +72,7 @@ import { ElMessage } from "element-plus";
 import axios from '@/axios';
 import { provinceMap } from '@/store/global';
 import state from '@/store/global'; // 引入state
+// import MyMap from '@/components/MapCard.vue';
 
 export default {
   name: 'SharePublish',
@@ -78,6 +82,9 @@ export default {
       default: false,
     },
   },
+  // components: {
+  //   MyMap
+  // },
   data() {
     return {
       postForm: {
@@ -88,7 +95,8 @@ export default {
       },
       rules: {
         title: [
-          { required: true, message: '请输入帖子标题', trigger: 'blur' }
+          { required: true, message: '请输入帖子标题', trigger: 'blur' },
+          { min: 1, max: 40, message: '标题长度不能超过 40 个字符', trigger: 'blur' }
         ],
         content: [
           { required: true, message: '请输入帖子内容', trigger: 'blur' }
@@ -205,11 +213,11 @@ export default {
       this.$refs.uploadRef.$el.querySelector('input[type=file]').click();
     },
     beforeImageUpload(file) {
-      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPGorPNG) {
-        ElMessage.error('上传图片只能是 JPG 或 PNG 格式!');
+        ElMessage.error('上传图片只能是 JPG 或 PNG 或 JPEG格式!');
         return false;
       }
       if (!isLt2M) {

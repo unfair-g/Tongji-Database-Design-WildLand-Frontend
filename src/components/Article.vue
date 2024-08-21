@@ -1,6 +1,6 @@
 <template>
  <div v-if="view==='share'">
-  <div v-for="sharepost in shareposts" :key="sharepost.post_id" justify="center">
+  <div v-for="sharepost in filteredSharePosts" :key="sharepost.post_id" justify="center">
     <el-card class="post-item">
       <template #header>
         <div class="post-header">
@@ -31,7 +31,7 @@
     </div>  
 </div><!-- end of v-if="view=='share'" -->
   <div v-else-if="view ==='recruit'">
-    <div v-for="recruitpost in recruitposts" :key="recruitpost.post_id" justify="center">
+    <div v-for="recruitpost in filteredRecruitPosts" :key="recruitpost.post_id" justify="center">
       <el-card class="post-item">
         <template #header>
           <div class="post-header">
@@ -57,7 +57,12 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍:{{ recruitpost.intro }}</p></div>
+          <div class="post-text">
+            <span class="post-fix">活动时间：</span><span>{{recruitpost.activity_time}}；</span>
+            <span class="post-fix">活动地点：</span><span>{{recruitpost.activity_address  }}；</span>
+            <span class="post-fix">计划招募人数：</span><span>{{ recruitpost.total_recruit }}；</span>
+            <span class="post-fix">活动介绍: </span><span>{{ recruitpost.intro }}</span>
+          </div>
         </div>
 
       </el-card>
@@ -133,13 +138,18 @@ export default {
     post_id:{
       type: Number,
       default:null
+    },
+    searchQuery: {
+      type: String,
+      default:null
     }
   },
   data() {
     return {
       shareposts: [],
       ldleitemsposts: [],
-      recruitposts:[],
+      recruitposts: [],
+      localSearchQuery:'',
     };
   },
   mounted() {
@@ -152,6 +162,37 @@ export default {
     if (this.view === 'recruit') {
       this.fetchRecruitPosts();
     }
+  },
+  computed: {
+    filteredSharePosts() {
+      if (!this.searchQuery) {
+        return this.shareposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.shareposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.shortContent.toLowerCase().includes(query) ||
+          post.username.toLowerCase().includes(query) 
+
+      );
+    },
+    filteredRecruitPosts() {
+      if (!this.searchQuery) {
+        return this.recruitposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.recruitposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.intro.toLowerCase().includes(query) ||
+          post.username.toLowerCase().includes(query) ||
+          post.activity_address.toLowerCase().includes(query) ||
+          post.activity_time.toLowerCase().includes(query) 
+          
+      );
+    },
+    
   },
   methods: {
     fetchSharePosts() {
@@ -204,19 +245,33 @@ export default {
       }
     },
     fetchLdlePosts() {
-      //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
-      axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
-        .then(response => {
-          this.ldleitemsposts = response.data;
-          if(this.star)
-            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
-          console.log(this.ldleitemsposts)
-        }
-        )
-        .catch(error => {
-          console.log(this.products)
-          console.error('Error fetching products:', error);
-        });
+      if (this.user_id == null) {
+        axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
+          .then(response => {
+            this.ldleitemsposts = response.data.filter(post => post.post_kind === 1);
+            if(this.star)
+              this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)            
+          })
+          .catch(error => {
+            console.log(this.ldleitemsposts)
+            console.error('Error fetching products:', error);
+          });
+      }
+      else {
+        axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByAuthorAndUserId`, {
+          params: {
+            author_id: this.user_id,
+            user_id:state.userId
+          }
+        })
+          .then(response => {
+           this.ldleitemsposts = response.data
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取分享贴失败');
+          });
+      }
     },
     async fetchRecruitPosts() {
       if (this.user_id == null) {
@@ -376,6 +431,9 @@ export default {
       else if (newValue === 'recruit') {
         this.fetchRecruitPosts();
       }
+    },
+    searchQuery(newVal) {
+      this.localSearchQuery = newVal;
     }
   },
   created() {
@@ -446,6 +504,18 @@ i {
 .post-text:hover {
   text-decoration: underline; /* 添加下划线 */
 }
+
+.post-text span{
+  margin-right: 2%;
+  color: grey;
+}
+
+.post-text .post-fix{
+  margin-right: 0;
+  font-weight: bold;
+  color: rgb(98, 98, 98);
+}
+
 .product-card {
   width: 100%; /* 固定宽度 */
   height:30%;
