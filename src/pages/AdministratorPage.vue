@@ -239,17 +239,19 @@ export default {
   flex-direction: column;
 }
 
-.header, .aside, .el-main {
+.aside, .el-main {
   background-color: rgba(255, 255, 255, 0.8);
 }
 
 .header {
-  height: 190px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   position: relative;
+  background-color: rgb(184, 222, 209);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加外阴影 */
 }
 
 .logo {
