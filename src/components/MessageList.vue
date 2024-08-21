@@ -9,27 +9,27 @@
           </div>
           <!-- 用户名和消息内容 -->
           <div v-if="message.type === 'follow'" class="message-info">
-            <div class="message-header">
-            </div>
+            <div class="message-header">{{message.user_name}}</div>
             <div class="message-content">
               <p>关注了你</p>
             </div>
           </div>
-          <div v-else-if="message.type === 'activity'" class="message-info" @click="handleClick">
+          <!-- 活动招募消息 -->
+          <div v-else-if="message.type === 'activity'" class="message-info" @click="handleClick(message)">
             <div class="message-header">
-              <span class="username">{{ message.title }}</span>
+              <span>{{ message.recruitmentPost.title }}</span>
             </div>
             <div class="message-content">
               <span style="color:black">报名状态：</span>
-              <span v-if="message.state === '待审核'">{{ message.state }}</span>
-              <span v-else-if="message.state === '审核通过'" style="color:green">{{ message.state }}</span>
-              <span v-else style="color:red">{{ message.state }}</span>
+              <span v-if="message.activity.review_status === 2">待审核</span>
+              <span v-else-if="message.activity.review_status === 1" style="color:green">通过</span>
+              <span v-else style="color:red">不通过</span>
             </div>
           </div>
           <!-- 举报消息 -->
           <div v-else-if="message.type==='report'" class="message-info">
             <div class="message-header">
-              <span class="username">{{ message.content }}</span>
+              <span>{{ message.content }}</span>
             </div>
             <div class="message-content">
               <span style="color:black">举报状态：</span>
@@ -57,9 +57,10 @@
             <div class="timestamp">
               <span v-if="message.type==='follow'">{{ formatDate(message.follow_time) }}</span>
               <span v-else-if="message.type==='purchased'">{{ formatDate(message.post.post_time) }}</span>
+              <span v-else-if="message.type==='activity'">{{ formatDate(message.activity.application_time) }}</span>
               <span v-else>{{ formatDate(message.update_time) }}</span>
             </div>
-            <el-link v-if="message.type === 'report' || message.type === 'activity'" type="primary">查看详情</el-link>
+            <el-link v-if="message.type === 'activity'" type="primary" @click="handleClick(message)">查看详情</el-link>
           </div>
         </div>
         <el-divider />
@@ -78,7 +79,8 @@ export default {
     return {
       reportMessages: [],
       followMessages: [],
-      purchasesMessages:[]
+      purchasesMessages: [],
+      activityMessages:[]
     }
   },
   props: {
@@ -86,7 +88,7 @@ export default {
   },
   computed: {
     filteredMessages() {
-      const allMessages = this.reportMessages.concat(this.followMessages).concat(this.purchasesMessages);
+      const allMessages = this.reportMessages.concat(this.followMessages).concat(this.purchasesMessages).concat(this.activityMessages);
 
       if (this.activeTab === 'all') {
         return allMessages;
@@ -103,12 +105,17 @@ export default {
       if (this.activeTab === 'tip-off') {
         //  this.$router.push({ name: 'myPostReport', params: { id: 1 } });
       }
-      if (message.type === 'purchased') {
+      else if (message.type === 'purchased') {
         this.$router.push({
           path: `/home/userspace/leaseorder/${message.order_id}`,
           query: {
             ldleitemsPostId: message.order_id
           }
+        })
+      }
+      else if (message.type === 'activity') {
+        this.$router.push({
+          path: `/home/forum/post/recruit/${message.recruitmentPost.post_id}`
         })
       }
     },
@@ -148,7 +155,19 @@ export default {
   } catch (error) {  
     console.error('Error fetching purchases:', error);  
   }
-  },  
+    },
+
+    async fetchActivityMessages() {  
+    try {  
+    const response = await axios.get(`/api/Users/GetUserActivities/${global.userId}`);  
+    this.activityMessages = response.data;
+    this.activityMessages.forEach(item => {
+      item.type='activity'
+    })
+  } catch (error) {  
+    console.error('Error fetching purchases:', error);  
+  }
+    },    
 
     goToUserSpace(user_id) {
       this.$router.push({
@@ -166,6 +185,7 @@ export default {
     this.fetchReportMessages();
     this.fetchFollowMessages();
     this.fetchRentMessages();
+    this.fetchActivityMessages();
   }
 }
 </script>

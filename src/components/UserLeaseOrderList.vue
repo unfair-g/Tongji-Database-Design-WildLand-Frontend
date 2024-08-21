@@ -1,17 +1,23 @@
 <template>
   <div>
-      <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
-        <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
+      <div v-for="order in purchase" :key="order.post_id" justify="center" >
+        <el-card class="post-item" @click="goToOrderDetail(order.order_id)">
 
     <div class="post-content">
-      <img :src="ldleitemspost.image" class="image" alt="order image">
+      <img :src="order.post_pics[0]" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
-            <h1>{{ ldleitemspost.item_name}}</h1>
-              <div><span>简介: {{ ldleitemspost.item_summary}}</span></div>
-              <div><span>新旧程度：{{ ldleitemspost.condition}}</span></div>
+            <h1>{{ order.item_name}}</h1>
+              <div><span>简介: {{ order.item_summary}}</span></div>
+              <div><span>新旧程度：{{ order.condition}}</span></div>
+              <div style="margin-top: 5px;margin-bottom: 10px;">
+                <span>订单状态：</span>
+                <span v-if="order.order_status==='1'" style="color:grey">已支付</span>
+                <span v-if="order.order_status==='2'" style="color:red">已发货</span>
+                <span v-else style="color:green">已收货</span>
+              </div>
               <div class="bottom clearfix">
-                <span class="price">¥{{ ldleitemspost.price }}</span>
-                <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
+                <span class="price">¥{{ order.price }}</span>
+                <el-button type="text" class="button" @click="goToOrderDetail(order.order_id)">查看详情</el-button>
               </div>
           </div>
         </div>
@@ -31,34 +37,30 @@ import  global  from '@/store/global.js'; // 引入 global.js 中的状态
           purchase: [],
         };
       },
-      create(){
-        this.fetchPosts();
-      },
     mounted(){
-     this.fetchPosts();
+     this.fetchPurchase();
     },
   methods: {
 
     async fetchPurchase() {
       try {
-        const response=await axios.get('/api/Purchases/GetSellerItems', {
+        const response=await axios.get('/api/Purchases/GetPurchasesByUserId', {
           params: {
             user_id:global.userId
           }
         })
-        this.purchase=response.data.data
+        this.purchase=response.data
       }
       catch (error) {
         console.error(error)
       }
     },
         
-        goToPostDetail (ldleitemspost) {
-          const ldleitemsPostId = ldleitemspost.order_id
+        goToOrderDetail () {
 
-          this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPostId}`,
+          this.$router.push({ path: `/home/userspace/leaseorder/67039`,
           query: {  
-            ldleitemsPostId: ldleitemsPostId
+            ldleitemsPostId: 67039
         }})
         },
         handleError(error, message) {

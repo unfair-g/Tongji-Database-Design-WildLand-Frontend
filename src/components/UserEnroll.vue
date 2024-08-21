@@ -174,7 +174,7 @@ const onSubmit = () => {
               }
             });
             ElMessage.success('注册成功！');
-            saveToSessionStorage(true, response.data.data.user_id)
+            saveToSessionStorage(true, response.data.data.user_id,true)
             global.Login = true;
             global.userId = response.data.data.user_id;
             toHomePage()
