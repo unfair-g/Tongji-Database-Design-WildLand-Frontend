@@ -1,8 +1,8 @@
 <template>
   <div class="table-wrapper">
-    <!-- 新增营地按钮 -->
-    <div class="button-container">
-      <el-button type="primary" @click="handleAdd">新增营地</el-button>
+     <!-- 新增营地按钮 -->
+    <div class="btn-container">
+      <el-button type="primary" icon="Plus" @click="handleAdd" class="add-btn">新增营地</el-button>
     </div>
 
     <!-- 营地信息表格 -->
@@ -112,18 +112,21 @@ export default {
 
 
 <style scoped>
-.button-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
-  margin-right: 100px;
+.add-btn {
+  margin-left:73%;
 }
 
 .table-wrapper {
-  width: 85%;
-  min-width: 1200px;
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  height:100%;
+  flex-direction: column; /* 子元素垂直排列 */
   margin: 0 auto;
-  overflow-x: auto;
+}
+.camp-table {
+  width: 100%; /* 表格宽度占满父容器 */
+  margin: 0 auto; /* 确保表格居中 */
 }
 .el-button {
   background-color: #1D5B5E;
