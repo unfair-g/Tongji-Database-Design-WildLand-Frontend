@@ -67,14 +67,18 @@
   </div>
   <div v-else-if="view === 'lease'">
     <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
+<<<<<<< Updated upstream
       <el-card class="post-item" v-if="ldleitemspost.exhibit_status === 1&&ldleitemspost.post_kind===1">
+=======
+      <el-card class="post-item">
+>>>>>>> Stashed changes
         <template #header>
          <div class="post-header">
             <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
             <div class="post-details">
               <div class="post-info">
-                <span class="username">{{ ldleitemspost.author_name }}</span>
-                <span class="time">{{ ldleitemspost.time }}</span>
+                <span class="username">{{ ldleitemspost.user_name }}</span>
+                <span class="time">{{ formatTime(ldleitemspost.post_time) }}</span>
               </div>
               <div class="post-stats">
                 <!---->
@@ -200,8 +204,13 @@ export default {
       }
     },
     fetchLdlePosts() {
+<<<<<<< Updated upstream
       //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
       axios.get(`https://localhost:7218/api/LdleitemsPosts/GetAllLdleitemsPosts`)
+=======
+      //const userId = state.userId;  
+      axios.get(`https://localhost:7218/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
+>>>>>>> Stashed changes
         .then(response => {
           this.ldleitemsposts = response.data;
           console.log(this.ldleitemsposts)

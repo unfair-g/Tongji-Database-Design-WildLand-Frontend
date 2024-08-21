@@ -4,7 +4,7 @@
         <el-card class="post-item" @click="goToPostDetail(ldleitemspost)">
 
     <div class="post-content">
-      <img :src="ldleitemspost.image" class="image" alt="order image">
+      <img :src="ldleitemspost.post_pics[0]" class="image" alt="order image">
           <div style="padding: 14px;flex:1;">
             <h1>{{ ldleitemspost.item_name}}</h1>
               <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
@@ -39,8 +39,9 @@ import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
      this.fetchPosts();
     },
       methods: {
-        async fetchPosts() {
+    async fetchPosts() {
           try {
+<<<<<<< Updated upstream
       // 从 Purchase 接口获取所有订单的 post_id 和 order_id
       const purchaseResponse = await axios.get(`https://localhost:7218/api/Purchases/GetPurchasesByUserId?user_id=${globalState.userId}`);
       const purchaseData = purchaseResponse.data;  
@@ -69,6 +70,12 @@ import  globalState  from '@/store/global.js'; // 引入 global.js 中的状态
       // 等待所有请求完成
       this.ldleitemsposts = await Promise.all(ldleitemspostsPromises);
       console.log(this.ldleitemsposts)
+=======
+      await axios.get(`https://localhost:7218/api/Purchases/GetPurchasesByUserId?user_id=${globalState.userId}`)
+        .then(response=>{
+          this.ldleitemsposts=response.data;
+        })
+>>>>>>> Stashed changes
       } catch (error) {
         console.error('Error fetching ldleitemsposts:', error);
         this.handleError(error, '获取闲置帖失败');

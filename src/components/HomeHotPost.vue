@@ -6,7 +6,11 @@
         </div>
         </template>
         <div class="hot-post">
+<<<<<<< Updated upstream
         <el-carousel style="width:100%" height="75vh" >
+=======
+        <el-carousel style="width:100%" height="75vh" :autoplay="false">
+>>>>>>> Stashed changes
             <el-carousel-item v-for="post in this.postDetails" :key="post.post_id">
                 <div style="width:90%;display: block;margin:0 auto;">
                 <el-card v-if="post" style="min-height: fit-content;" @click="toPostDetail(post)">
@@ -22,6 +26,7 @@
                         </el-carousel-item>
                     </el-carousel>
                     </div>
+<<<<<<< Updated upstream
                     <div style="width:50%">
                     <p style="margin-top:3%;margin-left:20px;">{{ post.content }}</p>
 
@@ -30,6 +35,18 @@
                     <p style="height:100%;margin-left: 1%;">{{ post.author_name }}</p>
                     <p style="margin-left: 25px;">{{ post.post_time }}</p>
                     </div>
+=======
+                    <div style="width:50%;display:flex;">
+                      <p v-html="formatContent(post.content)" class="content-text"></p>
+                      
+                      <div class="author-info">
+                        <el-avatar :src="post.portrait"></el-avatar>
+                        <div class="author-details">
+                          <p>{{ post.author_name }}</p>
+                          <p>{{ this.formatDate(post.post_time) }}</p>
+                        </div>
+                      </div>
+>>>>>>> Stashed changes
                     </div>
                  </div>
                  
@@ -43,7 +60,11 @@
 
 <script>
 import axios from '@/axios'
+<<<<<<< Updated upstream
 import State from '../store/global';
+=======
+//import State from '../store/global';
+>>>>>>> Stashed changes
 
 export default{
     data() {
@@ -60,6 +81,7 @@ export default{
     methods: {
         async fetchHotPosts() {  
             try {  
+<<<<<<< Updated upstream
                 const response = await axios.get('/api/Posts/TopPosts');  
                 this.hotPosts = response.data; // 假设后端返回包含 post_id 的数组  
 
@@ -91,6 +113,16 @@ export default{
       } catch (error) {
         console.error('Error fetching posts:', error);
       } 
+=======
+                await axios.get('/api/Posts/TopSharedPosts')
+                .then(response=>{
+                    this.postDetails=response.data;
+                })
+                console.log(this.postDetails)
+            } catch (error) {
+               console.error('Error fetching posts:', error);
+            } 
+>>>>>>> Stashed changes
         },  
         toPostDetail(post) {
             if(post.post_kind==0)
@@ -100,7 +132,29 @@ export default{
             else
               this.type='recruit'
             this.$router.push({ path: `/home/forum/post/${this.type}/${post.post_id}` });
+<<<<<<< Updated upstream
         }
+=======
+        },
+        formatContent(content) {
+            if (!content) return ''; // 如果 content 为 null 或 undefined，返回空字符串
+           // 按句号分段，每段前面插入两个空格
+           return content.split('。').map(sentence => '　　'+sentence + '。').join('<br><br>');
+        },
+        formatDate(dateTimeString) {  
+      // 创建一个Date对象  
+      const date = new Date(dateTimeString);  
+  
+      // 使用getFullYear(), getMonth() + 1, 和 getDate() 方法来获取年、月和日  
+      // 注意：getMonth() 返回的是从0开始的月份，所以需要加1  
+      const year = date.getFullYear();  
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 使用padStart确保月份是两位数  
+      const day = date.getDate().toString().padStart(2, '0'); // 使用padStart确保日期是两位数  
+  
+      // 返回格式化的日期字符串  
+      return `${year}-${month}-${day}`;   
+      }, 
+>>>>>>> Stashed changes
     }
 }
 </script>
@@ -116,6 +170,41 @@ export default{
     font-family: 'FZYaoti';
     font-style: italic;
     font-weight: bold;
+}
+
+.content-text {
+    margin-top:3%;
+    margin-left:20px;
+}
+
+.text-section {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-info {
+    margin-top: 10px;
+}
+
+.author-info {
+    display: flex;
+    align-items: flex-start;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.author-info .author-details {
+    margin-left: 10px;
+    margin-right:60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.author-info .author-details p {
+    margin: 0;
 }
 
 .userlist{

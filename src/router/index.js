@@ -24,6 +24,11 @@ const routes = [
                 component: () => import('../views/OutdoorGear.vue'),
             },
             {
+                path: 'admin_product_edit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
+            {
                 path: 'AdminCamp',
                 name: 'AdminCamp',
                 component: () => import('../views/AdminCamp.vue')
@@ -100,11 +105,7 @@ const routes = [
                 name:'AddProduct',
                 component: () => import('../views/AddOutProduct.vue')
             },
-            {
-                path: '/home/product/edit/:productId',
-                component: () => import('../views/AdminProductEdit.vue'),
-                props: true
-            },
+            
             {
                 path: "forum",
                 component: () => import('../views/ForumView.vue'),
@@ -182,7 +183,7 @@ const routes = [
             {
                 path: "product/:productID",
                 component: () => import('../views/ProductDetail.vue'),
-                props: true
+                props: true,
             },
             {
                 path: "flash/:flashID",

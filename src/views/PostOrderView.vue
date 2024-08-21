@@ -6,7 +6,7 @@
         </div>
         <div style="flex:2;position:relative;">
           <h2>{{ ldleitemsPost.item_name }}-十分好用，安利</h2>
-          <p>商品提供者: {{ ldleitemsPost.username }}</p>
+          <p>商品提供者: {{ ldleitemsPost.user_name }}</p>
           <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
           <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
           <div class="price-tag">￥{{ ldleitemsPost.price }}</div>
@@ -15,22 +15,27 @@
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单状态</h2></div>
+<<<<<<< Updated upstream
           <div style="text-align:center;justify-content:center;"><p>已支付</p></div>
+=======
+          <div style="text-align:center;justify-content:center;"><p>{{ this.Status(ldleitemsPost.order_status) }}</p></div>
+>>>>>>> Stashed changes
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>订单创建时间</h2></div>
-          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.order_date }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(ldleitemsPost.order_date) }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人姓名</h2></div>
-          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_name }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ ldleitemsPost.recipient_name }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人地址</h2></div>
-          <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_address }}</p></div>
+          <div style="text-align:center;justify-content:center;"><p>{{ ldleitemsPost.recipient_address }}</p></div>
         </div>
         <div class="order_2">
           <div style="margin:10px;"><h2>收件人电话</h2></div>
+<<<<<<< Updated upstream
           <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
         </div>
         <!--<div class="order_2">
@@ -40,6 +45,10 @@
         <!--<div class="order_3">
           <el-button class="pay">申请退款</el-button>
         </div>-->
+=======
+          <div style="text-align:center;justify-content:center;"><p>{{ ldleitemsPost.recipient_phone }}</p></div>
+        </div>
+>>>>>>> Stashed changes
       </div>
       </template>
       
@@ -58,7 +67,7 @@ import axios from '@/axios'; // 确保路径是正确的
     };
   },
   created() {
-    this.ldleitemsPostId = this.$route.query.ldleitemsPostId;
+    this.ldleitemsPostId = this.$route.query.ldleitemsPostId;//order_id
     this.fetchLeaseOrder();
   },
   watch: {
@@ -70,15 +79,18 @@ import axios from '@/axios'; // 确保路径是正确的
   },
   methods: {
     fetchLeaseOrder() {
-      axios.get(`/api/Purchases/${this.ldleitemsPostId}`)
+      axios.get(`/api/Purchases/GetPurchaseByPurchaseId?id=${this.ldleitemsPostId}`)
         .then(response => {
-          this.leaseOrder = response.data;
+          this.ldleitemsPost = response.data;
           console.log( this.leaseOrder);
+<<<<<<< Updated upstream
           if(this.leaseOrder.logistics_status==0)
               this.state='自提';
           else
             this.state='快递'
 
+=======
+>>>>>>> Stashed changes
         })
         .catch(error => {
           console.error('Error fetching lease order:', this.ldleitemsPostId);
@@ -108,6 +120,28 @@ import axios from '@/axios'; // 确保路径是正确的
         this.$message.error(`${message} - 错误信息: ${error.message}`);
       }
     },
+    Status(status)
+    {
+      if(status==1)
+        return '已支付';
+      else if(status==2)
+        return '已发货';
+      else
+        return '已收货';
+    },
+    formatDate(dateTimeString) {  
+      // 创建一个Date对象  
+      const date = new Date(dateTimeString);  
+  
+      // 使用getFullYear(), getMonth() + 1, 和 getDate() 方法来获取年、月和日  
+      // 注意：getMonth() 返回的是从0开始的月份，所以需要加1  
+      const year = date.getFullYear();  
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 使用padStart确保月份是两位数  
+      const day = date.getDate().toString().padStart(2, '0'); // 使用padStart确保日期是两位数  
+  
+      // 返回格式化的日期字符串  
+      return `${year}-${month}-${day}`;   
+      },
   },
 };
       </script>

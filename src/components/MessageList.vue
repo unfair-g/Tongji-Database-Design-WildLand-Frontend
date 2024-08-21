@@ -40,6 +40,7 @@
           </div>   
           <div v-else class="message-info" @click="handleClick(message)">  
             <div class="message-header">  
+<<<<<<< Updated upstream
               <span class="username">{{ message.title }}</span>
               <span class="username">{{ message.content }}</span>   
             </div>  
@@ -47,6 +48,15 @@
               <span  style="color:black">订单状态：</span>
               <span v-if="message.order_status===1">已支付</span>  
               <span v-else-if="message.order_state===2" style="color:green">已发货</span>  
+=======
+              <span class="username">{{ message.post.title }}</span>   
+              <span class="username" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;￥{{ message.price }}</span>
+            </div>  
+            <div class="message-content">  
+              <span  style="color:black">订单状态：</span>
+              <span v-if="message.orderStatus===1">已支付</span>  
+              <span v-else-if="message.orderStatus===2" style="color:green">已发货</span>  
+>>>>>>> Stashed changes
               <span v-else style="color:red">已收货</span>  
             </div>  
           </div> 
@@ -97,24 +107,37 @@ watch: {
       {
         console.log(message)
         console.log(message.order_id)
+<<<<<<< Updated upstream
         this.$router.push({ path: `/home/userspace/leaseorder/${message.order_id}`,
           query: {  
             ldleitemsPostId: message.order_id
+=======
+        this.$router.push({ path: `/home/userspace/leaseorder/${message.purchaseIds}`,
+          query: {  
+            ldleitemsPostId: message.purchaseIds
+>>>>>>> Stashed changes
         }})
       }
     },
     async fetchRentMessages() {  
     try {  
+<<<<<<< Updated upstream
       // 调用第一个API以获取购买信息  
     const response = await axios.get(`/api/Purchases/GetPurchasesByUserId?user_id=${globalState.userId}`);  
     let purchases = response.data;  
   
     // 初始化一个空数组来存储增强后的消息  
+=======
+    const response = await axios.get(`/api/Purchases/GetSellerItems?user_id=${globalState.userId}`);  
+    let purchases = response.data.soldItems;
+  
+>>>>>>> Stashed changes
     let enhancedMessages = [];  
   
     // 遍历购买信息，对每个购买项执行异步操作  
     for (let purchase of purchases) {  
       try {  
+<<<<<<< Updated upstream
         // 调用第二个API以获取帖子的详细信息  
         const postResponse = await axios.get(`api/Posts/GetPostDetail/${purchase.post_id}/${globalState.userId}`);  
         let post = postResponse.data;  
@@ -123,6 +146,9 @@ watch: {
         purchase.title = post.title;  
         purchase.content = post.content; 
         purchase.timestamp = this.formatDate(purchase.order_date);
+=======
+        purchase.timestamp = this.formatDate(purchase.post.post_time);
+>>>>>>> Stashed changes
         purchase.type='rent';
   
         // 将增强后的购买项添加到数组中  
@@ -133,6 +159,7 @@ watch: {
         console.error(`Error fetching post details for post_id ${purchase.post_id}:`, postError);  
       }  
     }  
+<<<<<<< Updated upstream
   
     // 将增强后的消息数组赋值给filteredMessages（假设这是组件的data属性）  
     this.filteredMessages = enhancedMessages;  
@@ -142,6 +169,12 @@ watch: {
     console.error('Error fetching purchases:', error);  
     // 处理错误，例如显示错误消息  
     // 注意：这里不能使用this.filteredMessages，除非这个函数是Vue组件的方法  
+=======
+    this.filteredMessages = enhancedMessages;  
+    console.log(this.filteredMessages)
+  } catch (error) {  
+    console.error('Error fetching purchases:', error);  
+>>>>>>> Stashed changes
   }
   },  
   formatDate(dateTimeString) {  
@@ -194,17 +227,33 @@ watch: {
 }  
 .message-header {  
   display: flex;  
+<<<<<<< Updated upstream
   justify-content: space-between;  
+=======
+  justify-content:flex-start;  
+>>>>>>> Stashed changes
   align-items: center;  
   font-weight: bold; 
   font-size: 18px;
   margin-bottom: 5px;
 }
 
+<<<<<<< Updated upstream
 .message-content{
   font-size: large;
   color:gray;
 }
+=======
+.username_money {
+  margin-left:30px;
+
+}
+
+.message-content{
+  font-size: large;
+  color:gray;
+}
+>>>>>>> Stashed changes
   
 .message-timestamp {  
   margin-left: auto; /* 将时间戳推到最右边 */  

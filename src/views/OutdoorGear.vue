@@ -4,12 +4,17 @@
       <el-table-column prop="product_name" label="名称" width="300" align="center" />
       <el-table-column prop="price" label="价格" width="200" align="center">
         <template #default="scope">
-          ¥{{ scope.row.price }}
+          <!-- 确保“新增”这一行没有显示价格 -->
+          <span v-if="!scope.row.isNewRow">¥{{ scope.row.price }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="stock_quantity" label="余量" width="200" align="center" />
       <el-table-column label="操作台" width="300" align="center">
         <template #default="scope">
+          <el-button v-if="scope.row.isNewRow" type="primary" color="#1D5B5E" @click="handleUpload" class="add-button">
+            新增
+          </el-button>
+          <template v-else>
           <el-button 
             type="primary" 
             @click="handleAction(scope.row, 'more')">
@@ -26,6 +31,7 @@
             <Delete />删除
           </el-button>
         </template>
+      </template>
       </el-table-column>
     </el-table>
     <!-- 当 filteredProducts 为空时显示提示信息 -->
@@ -35,10 +41,6 @@
       type="info"
       center
     />
-    <!-- 加大按钮大小并在中间加上+号 -->  
-    <button class="custom-button" @click="handleUpload">  
-      <!-- 这里没有直接的内容，加号将由CSS生成 -->  
-    </button> 
   </div>
 </template>
 
@@ -54,7 +56,19 @@ export default {
   },
   data() {
     return {
-      products:[]
+      products:[],
+      product_2:{
+        product_id: 0,
+          price: 0,
+          stock_quantity: 0,
+          size: '',
+          material: '',
+          suitable_users: 0,
+          brand: '',
+          introduction: '',
+          product_name:'',
+          product_tag:'',
+      }
     }
   },
   mounted() {
@@ -62,9 +76,11 @@ export default {
   },
   methods: {
     fetchProduct() {
-      axios.get('https://localhost:7218/api/OutdoorProducts')
+      axios.get('https://localhost:7218/api/OutdoorProducts/adminList')
         .then(response => {
           this.products = response.data;
+          // 添加一个特殊的“新增”行
+        this.products.push({ isNewRow: true });
         })
         .catch(error => {
           console.log(this.products)
@@ -86,6 +102,7 @@ export default {
     },
     goToProductEdit(product) {
       const productId = product.product_id;
+<<<<<<< Updated upstream
       this.$router.push({ path: `/home/product/edit/${productId}` });
       this.$alert('修改成功！', '提示', {  
         confirmButtonText: '确定',  
@@ -94,6 +111,9 @@ export default {
           location.reload(); // 刷新页面  
         } 
       });
+=======
+      this.$router.push({ path: `/administrator/admin_product_edit/${productId}` });
+>>>>>>> Stashed changes
     },
     deleteProduct(product) {
       // 提交删除请求
@@ -118,7 +138,11 @@ export default {
     },
     handleUpload()
     {
-      this.$router.push({ path: `/home/OutdoorGear/AddProduct` });
+      this.$router.push({ path: `/administrator/admin_product_edit/${this.product_2.product_id}` ,
+        query:{
+          productid:0
+        }
+      });
     }
   }
 }
@@ -130,6 +154,8 @@ export default {
   min-width: 1200px;
   margin: 0 auto;
   overflow-x: auto;
+  display: flex; /* 使用flexbox使内容居中 */
+  justify-content: center; /* 水平居中 */
 }
 .el-button {
   background-color: #1D5B5E;
@@ -181,4 +207,10 @@ export default {
   height: 80%; /* 竖线的高度与按钮相同 */  
   background-color: white; /* 竖线的颜色 */  
 } 
+
+.add-button {
+  display: block;
+  margin: 0 auto; /* 居中按钮 */
+  margin-bottom: 10px; /* 距离底部的间距 */
+}
 </style>

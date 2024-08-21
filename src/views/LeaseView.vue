@@ -5,6 +5,7 @@
             <div class="content">
             <img :src="order.pics[0]" class="image" alt="order image">
             <div style="padding: 14px;flex:1;">
+<<<<<<< Updated upstream
               <span>{{ order.product_name}}</span>
               <div><span>尺寸：{{ order.size}}</span></div>
               <div><span>材料：{{ order.material}}</span></div>
@@ -13,6 +14,16 @@
               <div><span>购买数量：{{ order.stock_quantity}}</span></div>
               <div class="bottom clearfix">
                 <span class="price">¥{{ order.price*order.lease.amount }}</span>
+=======
+              <span>{{ order.outdoorProduct.product_name}}</span>
+              <div><span>尺寸：{{ order.outdoorProduct.size}}</span></div>
+              <div><span>材料：{{ order.outdoorProduct.material}}</span></div>
+              <div><span>适用人数：{{ order.outdoorProduct.suitable_users}}</span></div>
+              <div><span>品牌：{{ order.outdoorProduct.brand}}</span></div>
+              <div><span>购买数量：{{ order.outdoorProduct.stock_quantity}}</span></div>
+              <div class="bottom clearfix">
+                <span class="price">¥{{ order.outdoorProduct.price*order.lease.amount }}</span>
+>>>>>>> Stashed changes
                 <el-button type="text" class="button" @click="goToOrderDetail(order)">查看详情</el-button>
               </div>
             </div>
@@ -38,8 +49,8 @@ export default {
   },
   methods: {
     async fetchOrders() {
-      try {
         // 从 Leases 接口获取订单信息
+<<<<<<< Updated upstream
         const ordersResponse = await axios.get(`/api/Leases/GetLeasesByUserId?userId=${globalState.userId}`);
         console.log(ordersResponse)
         const orders = ordersResponse.data;
@@ -80,8 +91,17 @@ export default {
         this.orders = ordersWithProducts;
         console.log('订单',this.orders)
       } catch (error) {
+=======
+        await axios.get(`/api/Leases/GetLeasesByUserId?user_id=${globalState.userId}`)
+        .then(response=>{
+          this.orders=response.data;
+          console.log(this.products)
+        })
+        .catch (error => {
+          console.log(this.products)
+>>>>>>> Stashed changes
         console.error('Error fetching orders or products:', error);
-      }
+      })
     },
     goToOrderDetail(order) {
       const orderId = order.lease.lease_id;
