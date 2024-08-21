@@ -116,19 +116,6 @@
                     style="width:500px"
                 />
                 </el-form-item>
-                 <el-form-item label="地址">
-                 <el-select
-                    v-model="user.location"
-                    placeholder="请选择您所在的城市"
-                    size="large"
-                >
-                <el-option
-                    v-for="city in citys"
-                    :key="city.value"
-                    :value="city.value"
-                />
-                </el-select>
-                </el-form-item>
                 <el-form-item label="手机号码" prop="phone_number">
                 <el-input v-model="user.phone_number" placeholder="请输入您的手机号码"/>
                 </el-form-item>
@@ -206,13 +193,6 @@ export default {
     data() {
         return {
             isListVisible:false,
-            citys: [
-                { value: '上海' },
-                { value: '北京' }, 
-                { value: '安徽' },
-                { value: '内蒙古' },
-                { value: '浙江' }
-            ]
         }
   },
   methods: {
