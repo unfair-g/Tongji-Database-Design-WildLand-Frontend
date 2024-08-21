@@ -11,8 +11,8 @@
               <div><span>新旧程度：{{ order.condition}}</span></div>
               <div style="margin-top: 5px;margin-bottom: 10px;">
                 <span>订单状态：</span>
-                <span v-if="order.order_status==='1'" style="color:grey">已支付</span>
-                <span v-if="order.order_status==='2'" style="color:red">已发货</span>
+                <span v-if="order.order_status===1" style="color:grey">已支付</span>
+                <span v-else-if="order.order_status===2" style="color:red">已发货</span>
                 <span v-else style="color:green">已收货</span>
               </div>
               <div class="bottom clearfix">
@@ -56,12 +56,9 @@ import  global  from '@/store/global.js'; // 引入 global.js 中的状态
       }
     },
         
-        goToOrderDetail () {
+        goToOrderDetail (order_id) {
 
-          this.$router.push({ path: `/home/userspace/leaseorder/67039`,
-          query: {  
-            ldleitemsPostId: 67039
-        }})
+          this.$router.push({ path: `/home/userspace/leaseorder/${order_id}`})
         },
         handleError(error, message) {
       if (error.response) {

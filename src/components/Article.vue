@@ -69,23 +69,23 @@
     </div>
   </div>
   <div v-else-if="view === 'lease'">
-    <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
-      <el-card class="post-item" v-if="ldleitemspost.exhibit_status === 1">
+   <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
+      <el-card class="post-item">
         <template #header>
          <div class="post-header">
             <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
             <div class="post-details">
               <div class="post-info">
-                <span class="username">{{ ldleitemspost.author_name }}</span>
-                <span class="time">{{ ldleitemspost.time }}</span>
+                <span class="username">{{ ldleitemspost.user_name }}</span>
+                <span class="time">{{ formatTime(ldleitemspost.post_time) }}</span>
               </div>
               <div class="post-stats">
                 <!---->
-                <span class="stat-item"><el-icon><View /></el-icon>0</span>
+                
                 <span class="stat-item" @click="toggleLike(ldleitemspost)">
                   <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemspost.isLiked, 'icon-dianzanxuanzhong': ldleitemspost.isLiked}"></i>{{ ldleitemspost.likes_number }}
                 </span>
-                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.total_floor }}</span>
+                
                 <span class="stat-item" @click="toggleStar(ldleitemspost)">
                   <el-icon v-if="!ldleitemspost.isStarred"><Star /></el-icon>
                   <el-icon v-else><StarFilled /></el-icon>
@@ -99,19 +99,16 @@
           <div style="flex:1;"><img :src="ldleitemspost.post_pics?.length>0?ldleitemspost.post_pics[0]:'pic'" class="image" alt="order image"></div>
           <div style="padding: 14px;flex:2;">
             <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
-            <div><span>商品简介: {{ ldleitemspost.content}}</span></div>
-            <div><span>商品新旧程度：{{ ldleitemspost.condition}}9成新</span></div>
+            <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
+            <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
-              <span class="price">¥{{ ldleitemspost.price }}90</span>
+              <span class="price">¥{{ ldleitemspost.price }}</span>
               <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
             </div>
           </div>
         </div>
       </el-card>
     </div>
-  </div>
-  <div v-else>
-    加载中……
   </div>
 </template>
 
@@ -247,15 +244,15 @@ export default {
     fetchLdlePosts() {
       if (this.user_id == null) {
         axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
-          .then(response => {
-            this.ldleitemsposts = response.data.filter(post => post.post_kind === 1);
-            if(this.star)
-              this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)            
-          })
-          .catch(error => {
-            console.log(this.ldleitemsposts)
-            console.error('Error fetching products:', error);
-          });
+        .then(response => {
+          this.ldleitemsposts = response.data;
+          if(this.star)
+            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
+        })
+        .catch(error => {
+          console.log(this.ldleitemsposts)
+          console.error('Error fetching products:', error);
+        });
       }
       else {
         axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByAuthorAndUserId`, {
@@ -269,7 +266,7 @@ export default {
           })
           .catch(error => {
             console.error('Error fetching share posts:', error);
-            this.handleError(error, '获取分享贴失败');
+            this.handleError(error, '获取闲置贴失败');
           });
       }
     },
@@ -527,7 +524,7 @@ i {
   width: 200px; /* 固定图片宽度 */
   height: 200px; /* 固定图片高度 */
   object-fit: cover;
-  margin-right: 60px;
+  margin-right: 10px;
 }
 .price {
   color: #ff4949;

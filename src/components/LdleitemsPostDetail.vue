@@ -2,7 +2,7 @@
   <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
       <div class="post-header">
-        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost[0].author_id)">
+        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost.author_id)">
         <div class="post-header-info">
           <span class="username">{{ ldleitemsPost.user_name }}</span>
         </div>
@@ -101,35 +101,21 @@
       <div class="dashed-line"></div>
 
       <!-- 新增的表单区域 -->
-      <div class="recipient-form" v-if="isButtonDisabled">
-        <el-form :model="recipientInfo">
-          <el-form-item label="收件人姓名">
+      <div class="recipient-form" v-if="userid!==ldleitemsPost.author_id">
+        <el-form :model="recipientInfo" :rules="rules" ref="recipientForm">
+          <el-form-item label="收件人姓名" prop="name">
             <el-input v-model="recipientInfo.name" placeholder="请输入收件人姓名"></el-input>
           </el-form-item>
-          <el-form-item label="收件人地址">
+          <el-form-item label="收件人地址" prop="address">
             <el-input v-model="recipientInfo.address" placeholder="请输入收件地址"></el-input>
           </el-form-item>
-          <el-form-item label="收件人电话">
+          <el-form-item label="收件人电话" prop="phone">
             <el-input v-model="recipientInfo.phone" placeholder="请输入收件人电话"></el-input>
           </el-form-item>
         </el-form>
       </div>
-      <!-- 新增的表单区域 -->
-      <div class="recipient-form" v-else>
-        <el-form >
-          <el-form-item label="收件人姓名">
-            <el-input :value="this.rent[0].recipient_name" readonly></el-input>
-          </el-form-item>
-          <el-form-item label="收件人地址">
-            <el-input :value="this.rent[0].recipient_address" readonly></el-input>
-          </el-form-item>
-          <el-form-item label="收件人电话">
-            <el-input :value="this.rent[0].recipient_phone" readonly></el-input>
-          </el-form-item>
-        </el-form>
-      </div>
-      
-      <div class="action-buttons">
+
+      <div class="action-buttons" v-if="userid!==ldleitemsPost.author_id">
         <el-button class="pay" id="rentButton" :disabled="!isButtonDisabled" @click="Rent_Success()" v-if="isButtonDisabled">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
@@ -152,7 +138,8 @@
 import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
 import ReportPost from '@/components/ReportPostWindow.vue'
-import  globalState  from '../store/global'; // 引入 global.js 中的状态
+import  globalState  from '@/store/global'; // 引入 global.js 中的状态
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'ldleitemsPost', 
@@ -190,14 +177,26 @@ export default {
       isLike:false,
       liStar:false,
       location:'',
-      rent:[],
-      isButtonDisabled: true, // 控制按钮的禁用状态  
+      rent:[], 
       userid:globalState.userId,
       isReportPostWindowVisible:false,//举报弹窗显示
+      rules: {
+      name: [
+        { required: true, message: '请输入收件人姓名', trigger: 'blur' }
+      ],
+      address: [
+        { required: true, message: '请输入收件地址', trigger: 'blur' }
+      ],
+      phone: [
+        { required: true, message: '请输入收件人电话', trigger: 'blur' },
+        { pattern: /^[0-9]{10}$/, message: '请输入有效的电话号', trigger: 'blur' }
+      ]
+    }
     };
   },
   created() {
     this.fetchLdleitemsPosts();
+    this.BanRent();
   },
   methods: {
       fetchLdleitemsPosts() {
@@ -211,48 +210,54 @@ export default {
           console.error('Error fetching products:', error);
         });
     },
-    toggleLike(ldleitemsPost) {
-      ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
-      ldleitemsPost.likes_number = ldleitemsPost.isLiked ? ldleitemsPost.likes_number + 1 : ldleitemsPost.likes_number - 1;
-      const likePost = {
-        post_id: this.ldleitemsPost.post_id,
-        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
-      };
-      console.log('点赞上传:', likePost.post_id);
-      console.log('点赞上传:', likePost.user_id);
-      axios.post('/api/LikePosts', likePost,{headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain'
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
       }
-    })
-        .then(response => {
-          console.log('点赞成功:', response.data);
-        })
-        .catch(error => {
-          console.error('点赞出错:', error);
-        });
     },
-    toggleStar(ldleitemsPost) {
-      ldleitemsPost.isStarred = !ldleitemsPost.isStarred;
-      const starPost = {
-        post_id: this.ldleitemsPost.post_id,
-        time:new Date().toISOString(), // 生成订单日期
-        tips:"闲置折叠椅",
-        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
-      };
-      console.log('点赞上传:', starPost.post_id);
-      console.log('点赞上传:', starPost.user_id);
-      axios.post('/api/StarPosts', starPost,{headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain'
-      }
-    })
-        .then(response => {
-          console.log('点赞成功:', response.data);
-        })
-        .catch(error => {
-          console.error('点赞出错:', error);
-        });
+    toggleLike(post) {
+      post.isLiked = !post.isLiked;
+      post.likes_number = post.isLiked ? post.likes_number + 1 : post.likes_number - 1;
+      axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: globalState.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes_number;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
+    },
+    toggleStar(post) {
+      post.isStarred = !post.isStarred;
+      axios.post('/api/StarPosts/starpost', {
+        post_id: post.post_id,
+        tips:"收藏测试",
+        user_id: globalState.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number+=1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number-=1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
@@ -288,7 +293,35 @@ export default {
       this.deleteDialogVisible = false;
     },
     Rent_Success(){
-      this.RentdialogVisible= true;
+      this.$refs.recipientForm.validate((valid) => {
+    if (valid) {
+      this.RentdialogVisible = true;
+    } else {
+      console.log('表单验证失败');
+      return false;
+    }
+  });
+    },
+    async BanRent()
+    {
+      try {  
+    const response = await axios.get(`https://localhost:7218/api/Purchases`);  
+    if (!Array.isArray(response.data)) {  
+      throw new Error('Expected an array from the server, but got something else.');  
+    }  
+    console.log(response.data)
+    console.log(this.ldleitemsPostID)
+    //console.log(response.data.filter(order => order.post_id === this.ldleitemsPostID))
+    this.rent = response.data.filter(order => order.post_id === Number(this.ldleitemsPostID));  
+    this.isButtonDisabled = this.rent.length === 0;  
+  
+    console.log('oooooo', this.rent);  
+    console.log('kkkkkk', this.isButtonDisabled);  
+  } catch (error) {  
+    console.error('Failed to fetch rental data:', error);  
+    // 可以在这里添加额外的错误处理逻辑，比如设置 isButtonDisabled 为 true  
+    this.isButtonDisabled = true;  
+  } 
     },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
@@ -328,7 +361,7 @@ export default {
         total_floor:this.ldleitemsPost.total_floor,
 
       }
-      axios.put(`/api/Posts/${this.ldleitemsPost[0].post_id}`,LdlePost).then(response => {  
+      axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost.post_id}`,LdlePost).then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
         console.log(LdlePost);

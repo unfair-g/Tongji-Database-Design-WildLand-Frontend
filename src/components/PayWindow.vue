@@ -8,17 +8,17 @@
     @close="handleClose">
     <div class="product-info-header" style="display:flex;" shadow="hover">
       <div class="product-img">
-        <img :src="this.image" alt="product image"> 
+        <img :src="product.pics[0]" alt="product image"> 
       </div>
       <div style="flex:2;">
-        <h2>{{ product.product_name }}</h2>
-        <p>尺寸: {{ product.size }}</p>
-        <p>材质: {{ product.material }}</p>
-        <p>品牌: {{ product.brand }}</p>
-        <p>适用人数: {{ product.suitable_users }}</p>
-        <p>商品余量: {{ product.stock_quantity }}</p>
+        <h2>{{ product.product.product_name }}</h2>
+        <p>尺寸: {{ product.product.size }}</p>
+        <p>材质: {{ product.product.material }}</p>
+        <p>品牌: {{ product.product.brand }}</p>
+        <p>适用人数: {{ product.product.suitable_users }}</p>
+        <p>商品余量: {{ product.product.stock_quantity }}</p>
         <!-- 数量输入框 -->  
-        <el-input-number v-model="quantity" :min="1" :max=product.stock_quantity label="数量" style="position:absolute;right:30px;"></el-input-number>
+        <el-input-number v-model="quantity" :min="1" :max=product.product.stock_quantity label="数量" style="position:absolute;right:30px;"></el-input-number>
       </div>
     </div>
 
@@ -121,7 +121,7 @@ export default {
       filteredCampOrders: [],
       startTime:null,
       endTime:null,
-      productID:this.product.product_id,
+      productID:this.product.product.product_id,
       ProductId:null,
       campOrders:[],
       order_ID:0,
@@ -162,7 +162,7 @@ export default {
         .catch(error => {
           console.error('Error fetching ldle items posts:', error);
         });
-        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product_id}`)
+        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product.product_id}`)
         .then(response =>{
            this.image=response.data?.length>0?response.data[0]:'图片'
            console.log('kkkk',this.image)
@@ -207,10 +207,10 @@ export default {
     },
     GoToOrder(product,orderId)   //查看订单
     {
-      const productId = product.product_id
+      const productId = product.product.product_id
       this.$router.push({ path: `/home/product/${productId}/order`,
         query: {  
-        productId: this.product.product_id,  
+        productId: this.product.product.product_id,  
         quantity: this.quantity,
         startDate: this.startDate,
         endDate: this.endDate,
@@ -246,9 +246,9 @@ export default {
   },
   computed: {
     TotalPrice(){
-      if (this.product && this.product.price && !isNaN(this.quantity)) {
+      if (this.product && this.product.product.price && !isNaN(this.quantity)) {
          // 确保 product.price 是一个数字
-         const price = parseFloat(this.product.price);
+         const price = parseFloat(this.product.product.price);
          console.log(`Product Price: ${price}, Quantity: ${this.quantity}`);
          if (!isNaN(price) && price > 0) {
           return (price * this.quantity).toFixed(2);

@@ -5,8 +5,8 @@
           <img  alt="product image">
         </div>
         <div style="flex:2;position:relative;">
-          <h2>{{ leaseOrder.item_name }}-十分好用，安利</h2>
-          <p>商品提供者: {{ leaseOrder.username }}</p>
+          <h2>{{ leaseOrder.item_name }}</h2>
+          <p>商品提供者: {{ leaseOrder.user_name }}</p>
           <p>商品简介: {{ leaseOrder.item_summary }}</p>
           <p>商品新旧程度: {{ leaseOrder.condition }}</p>
           <div class="price-tag">￥{{ leaseOrder.price }}</div>
@@ -16,7 +16,7 @@
           <div style="margin:10px;"><h2>订单状态</h2></div>
           <el-steps 
             style="max-width: 600px" 
-            :active=leaseOrder.status
+            :active=leaseOrder.order_status
             align-center 
             finish-status="success"
             process-status="error"
@@ -43,54 +43,58 @@
           <div style="margin:10px;"><h2>收件人电话</h2></div>
           <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
         </div>
+        <div class="order_2" v-if="global.userId===123">
+            <el-button v-if="leaseOrder.order_status===1" color="#1D5B5E" class="order_buttons" @click="handelClick(2)">确认发货</el-button>
+        </div>
+         <div class="order_2" v-else>
+            <el-button v-if="leaseOrder.order_status===2" color="#1D5B5E" class="order_buttons" @click="handelClick(3)">确认收货</el-button>
+        </div>
       </div>
-      </template>
+</template>
       
-<script>
+<script setup>
 import axios from '@/axios'; // 确保路径是正确的
+import global from '@/store/global'
+import { useRoute } from 'vue-router';
+import { ref,onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
 
-  export default {
-    name: 'PostOrderView',
-    data() {
-    return {
-      leaseOrder: null,
-      order_id:null
-    };
-  },
-  created() {
-    this.order_id = this.$route.query.ldleitemsPostId;
-    this.fetchLeaseOrder(this.order_id);
-  },
-  methods: {
-
-    async fetchLeaseOrder(order_id) {
+const leaseOrder = ref({
+})
+const route = useRoute();
+    
+    const fetchLeaseOrder = async(order_id) =>{
       try {
         const response = await axios.get('/api/Purchases/GetPurchaseByPurchaseId', {
            params: {
             id:order_id
           }
         })
-        this.leaseOrder=response.data
+        leaseOrder.value = response.data
       }catch(error){
-        this.handleError(error,'获取订单失败')
+       ElMessage.error(error.message)
       }
-    },
-    
-    handleError(error, message) {
-      if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        this.$message.error(`${message} - 错误代码: ${error.response.status}`);
-      } else if (error.request) {
-        console.error(`${message}: No response received`);
-        this.$message.error(`${message} - 没有收到响应`);
-      } else {
-        console.error(`${message}:`, error.message);
-        this.$message.error(`${message} - 错误信息: ${error.message}`);
+    }
+
+  const handelClick = async(order_status) => {
+    try {
+      console.log('status',order_status)
+      await axios.put('/api/Purchases/UpdateOrderStatus',{
+          params: {
+          orderId: route.params.ldleitemsPostId,
+          orderStatus: order_status
+          }
+      })
+    } catch (error) {
+        ElMessage.error(error.message)
       }
-    },
-  },
-};
-      </script>
+    }
+
+    onMounted(() => {
+      const order_id = route.params.ldleitemsPostId;
+      fetchLeaseOrder(order_id);
+    });
+</script>
       
       <style scoped>
       .order {
@@ -131,18 +135,6 @@ import axios from '@/axios'; // 确保路径是正确的
         background-color: #fff; /* 设置背景颜色 */
         margin: 0 auto; /* 水平居中 */
       }
-    
-      .order_3 {
-        display: flex;
-        justify-content: center; /* 水平居中 */
-        align-items: center; /* 垂直居中 */
-        width: 100%; /* 设置宽度 */
-        height:60px;
-        border: 1px solid #ddd; /* 设置边框 */
-        border-radius: 5px; /* 设置圆角 */
-        background-color: #fff; /* 设置背景颜色 */
-        margin: 0 auto; /* 水平居中 */
-      }
       
       .product-img {
         flex: 1;
@@ -174,9 +166,11 @@ import axios from '@/axios'; // 确保路径是正确的
       }
     
       .order_buttons {
-      font-size:x-large;
-      margin-left: auto;
-      margin-right: auto;
+      width:150px;
+      height:50px;
+      margin-left: 43%;
+      margin-top: 5px;
+      margin-bottom: 5px;
     }
-      </style>
+</style>
       
