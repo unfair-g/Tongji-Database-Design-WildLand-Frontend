@@ -38,6 +38,7 @@ import { ElMessage } from 'element-plus'
 import global from '@/store/global'
 import { saveToSessionStorage } from '@/store/global'
 import CryptoJS from 'crypto-js'
+import { provinceMap } from '@/store/global';
 
 const role = ref('游客')
 
@@ -50,6 +51,7 @@ const userRef=ref()
 const user = reactive({
     user_name: '',
     password: '',
+    IP:''
 })
 
 const rules = ref({
@@ -61,21 +63,40 @@ const rules = ref({
   ]
 })
 
+const addLocation = async () => {
+  try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        const ip = response.data.ip;
+
+        const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
+        const province = geoResponse.data.state_prov;
+      
+        const chineseProvince = provinceMap[province] || province;
+        user.IP = chineseProvince;
+
+  } catch (error) {
+        console.error('Error fetching location:', error);
+        ElMessage.error('获取定位信息失败');
+      }
+}
+
 const Login = () => {
   loginDisabled.value = true
   userRef.value.validate(async (valid) => {
     if(valid){
       if (role.value == "游客") {
         try {
+          await addLocation();
           const hashedPassword = CryptoJS.SHA256(user.password).toString()
           const response = await axios.post('/api/Users/login', {
             user_name: user.user_name,
-            password: hashedPassword
+            password: hashedPassword,
+            location:user.IP
           });
           router.push({ path: '/home' });
           global.Login = true;
           global.userId = response.data.data.user_id;
-          saveToSessionStorage(true,response.data.data.user_id);
+          saveToSessionStorage(true,response.data.data.user_id,response.data.data.mute_satus);
           ElMessage.success('登录成功！');
         } catch (error) {
           if(error.response)
@@ -91,7 +112,7 @@ const Login = () => {
               admin_name: user.user_name,
               password: user.password
           });
-          saveToSessionStorage(true, response.data.admin_id)
+          saveToSessionStorage(true, response.data.admin_id,true)
           global.Login = true;
           global.userId = response.data.admin_id;
           router.push({ path: '/administrator' });

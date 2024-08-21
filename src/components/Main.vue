@@ -20,20 +20,30 @@
     <div class="flex-grow" />
     <div class="menu-search">
       <el-input
-        v-model="input"
+        v-model="searchQuery"
         style="width: 240px;height:50px"
-        placeholder="搜索帖子"
+        :placeholder="localPlaceHolder"
         class="search-input"
         clearable
       />
-        <el-button type="primary" :icon="Search" color="#1D5B5E"  style="height:50px">搜索</el-button>
+        <el-button 
+          type="primary" 
+          color="#1D5B5E"  
+          style="height:50px" 
+          @click="searchPosts"
+        >
+          搜索
+        </el-button>
     </div>
    
   </el-menu>
   
   <el-main>
     <div>
-      <ArticleCard :view="currentView"/>
+      <ArticleCard 
+        :view="currentView"
+        :search-query="searchQuery"
+      />
     </div>
 
   </el-main>
@@ -51,25 +61,36 @@ export default {
   },
   methods: {
     toShare(){
-      this.currentView = 'share'
+      this.currentView = 'share';
+      this.localPlaceHolder = '搜索分享贴';
+
     },
     toRecruit(){
       this.currentView = 'recruit'
+      this.localPlaceHolder = '搜索招募贴';
+
     },
     toLease(){
       this.currentView = 'lease'
+      this.localPlaceHolder = '搜索闲置贴';
+    },
+    searchPosts() {
+      // 在这里可以执行一些额外的逻辑，例如发起请求或其他处理
+      console.log('搜索内容:', this.searchQuery)
+      // searchQuery 已自动通过 v-model 传递给 ArticleCard
     }
   },
   data() {
     return {
-      currentView: 'share' // 默认显示分享贴
+      currentView: 'share', // 默认显示分享贴
+      searchQuery: '', // 搜索输入框的内容
+      localPlaceHolder:'搜索分享贴',
     }
   }
 }
 </script>
 <script setup>
 import { ref } from 'vue'
-
 const activeIndex = ref('1')
 const handleSelect = (key, keyPath) => {
   console.log(key, keyPath)

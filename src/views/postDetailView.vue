@@ -52,20 +52,20 @@
             </div>
             
             <div class="post-location">
-          <el-icon><Location /></el-icon> {{ post.post_position }}
-          <span  v-if="isPostOwner" class="delete-button" @click="openDeleteDialog">删除</span>
-        </div>
-        <el-dialog
-          v-model="deleteDialogVisible"
-          title="确认删除"
-          width="30%"
-        >
-          <span>{{'您是否确认删除这条帖子'}}</span>
-          <template v-slot:footer>
-            <el-button @click="cancelDelete">否</el-button>
-            <el-button type="primary" @click="confirmDelete">是</el-button>
-          </template>
-        </el-dialog>
+              <el-icon><Location /></el-icon> {{ post.post_position }}
+              <span  v-if="isPostOwner" class="delete-button" @click="openDeleteDialog">删除</span>
+            </div>
+            <el-dialog
+              v-model="deleteDialogVisible"
+              title="确认删除"
+              width="30%"
+            >
+              <span>{{'您是否确认删除这条帖子'}}</span>
+              <template v-slot:footer>
+                <el-button @click="cancelDelete">否</el-button>
+                <el-button type="primary" @click="confirmDelete">是</el-button>
+              </template>
+            </el-dialog> 
             
           </div>
           <div class="post-stats">
@@ -122,24 +122,38 @@
           <h3 class="post-title">{{ post.title }}</h3>
           <h4 >
             <div class="recruit-number recruit-info">
-              <p>招募人数：{{ post.total_recruit }} </p>
-              <p>已招募到人数：{{ post.recruited_number }} </p>
-              <p>已报名人数：{{ post.signedup_number }} </p>
+              <p>招募人数：{{ post.planned_count }} </p>
+              <p>已招募到人数：{{ post.current_count }} </p>
+              <p>已报名人数：{{ this.signups.length }} </p>
             </div>
             <p class="recruit-info">活动时间：{{ post.activity_time }}</p>
-            <p class="recruit-info">活动地点：{{ post.activity_address}}</p>
-            <p class="recruit-info">活动要求：{{ post.requirements}}</p>
+            <p class="recruit-info">活动地点：{{ post.location}}</p>
+            <p class="recruit-info">活动介绍：{{ post.activity_summary}}</p>
+            <div class="image-gallery">
+              <div  v-for="(imageRow, rowIndex) in imageRows" :key="rowIndex" class="image-row">
+                <el-image v-for="(image, index) in imageRow" 
+                :key="index" 
+                style="width: 250px; height: 250px"
+                :fit="'cover'"
+                :src="image" 
+                :alt="'Image ' + (rowIndex * 3 + index + 1)" 
+                :class="imageClass"
+                :preview-src-list="allImages"
+                :initial-index="rowIndex * 3 + index"
+              />
+              </div>
+            </div>
           </h4>
           <div class="post-location">
-          <el-icon><Location /></el-icon> {{ post.location }}
-          <span v-if="isPostOwner" class="delete-button" @click="openDeleteDialog('post')">删除</span>
+          <el-icon><Location /></el-icon> {{ post.post_position }}
+          <span v-if="isPostOwner" class="delete-button" @click="openDeleteDialog">删除</span>
         </div>
         <el-dialog
           v-model="deleteDialogVisible"
           title="确认删除"
           width="30%"
         >
-          <span>{{deleteMessage}}</span>
+          <span>{{'您是否确认删除这条帖子'}}</span>
           <template v-slot:footer>
             <el-button @click="cancelDelete">否</el-button>
             <el-button type="primary" @click="confirmDelete">是</el-button>
@@ -148,15 +162,67 @@
         <div class="post-stats">
           <el-button class="stat-item" @click="toggleLike(post)">
             <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !post.isLiked, 'icon-dianzanxuanzhong': post.isLiked}"></i>
-            <span>点赞</span>
-            <span>{{ post.likes }}</span>
+            <span>{{ post.likes_number }}</span>
+            <span style="margin-left: 10px;">{{ post.isLiked ? '已点赞' : '点赞' }}</span>
           </el-button>
-          <el-button v-if="!isPostOwner" class="sign-up"  @click="toggleSignUpInput" ref="buttonRef" >
-             参与报名</el-button>
+          <div v-if="!isPostOwner">
+            <div v-if="post.recruit_status === 1">
+              <!-- 此时正在招募 -->
+              <el-button v-if="!post.isApplied" class="sign-up" v-click-outside="onClickOutside" @click="toggleSignUpInput" ref="buttonRef" >
+                参与报名
+              </el-button>
+              
+              <el-button v-if="post.isApplied" class="sign-up" :disabled="true" ref="buttonRef" >
+                已报名，等待审核
+              </el-button>
+            </div>
+            <div v-if="post.recruit_status === 0">
+              <!-- 此时已经停止招募 -->
+              <el-button class="sign-up" :disabled="true" ref="buttonRef" >
+                已停止招募
+              </el-button>
+            </div>
+          </div>
+            <el-popover
+                v-if="isAlertVisible"
+                ref="popoverRef"
+                :virtual-ref="buttonRef"
+                trigger="click"
+                virtual-triggering
+                width="400"
+                @hide="onPopoverHide"
+              >
+                <el-alert
+                  v-if="isAlertVisible"
+                  title="您已被禁言不可参与报名"
+                  type="error"
+                  show-icon
+                  class="custom-alert"
+                  @close="onAlertClose"
+                />
+              </el-popover>
 
-          <el-button v-if="isPostOwner" class="sign-up">
-             结束招募
-          </el-button>
+            
+          
+          <div v-if="isPostOwner" >
+            <el-button v-if="post.recruit_status === 1" class="sign-up" @click="openFinishDialog">
+              结束招募
+            </el-button>
+            <el-button v-if="post.recruit_status === 0" class="sign-up" :disabled="true">
+              已结束招募
+            </el-button>
+          </div>
+          <el-dialog
+            v-model="finishDialogVisible"
+            title="确认结束招募"
+            width="30%"
+          >
+            <span>{{'您是否确认结束招募此活动？'}}</span>
+            <template v-slot:footer>
+              <el-button @click="cancelFinish">否</el-button>
+              <el-button type="primary" @click="confirmFinish">是</el-button>
+            </template>
+          </el-dialog>
           <el-button class="stat-item" @click="goToReportPostWindow">
             <el-icon><Bell/></el-icon>举报
           </el-button>
@@ -164,41 +230,63 @@
         <div class="comments-section">
           <div v-if="showSignUpInput">
             <SignUpInput
-            :avatar="post.avatar"
-            v-model:signupContent="signup"
-            @submit-signup="addSignUp"
-          />
+              :postID="Number(this.postID)"
+              @signup-submitted="fetchPosts"
+            />
           </div>
-          <SignUpItem
-            v-for="signup in post.signups_details"
-            :isSignupOwner="isSignupOwner"
-            :isPostOwner="isPostOwner"
-            :key="signup.signup_id"
-            :signup="signup"
-            @delete-signup="openDeleteDialog('signup', $event)"
+          <div v-if="isPostOwner">
+            <h3>所有的报名信息：</h3>
+            <div v-for="signup in this.signups" :key="signup.application_id">
+              <SignUpItem
+                :postID="Number(this.postID)"
+                :signup="signup"
+                :is-post-owner="this.isPostOwner"
+                :current_count="post.current_count"
+                :planned_count="post.planned_count"
+                @change-signup="fetchPosts"
+                class="signup-card"
+              />
+            </div>
+          </div>
+          <div v-else>
+            <div  v-if="post.isApplied">
+              <h3>我的报名情况：</h3>
+              <div v-for="signup in this.signups.filter(signup => signup.user_id === this.localMyId)" :key="signup.application_id">
+                <SignUpItem
+                  :postID="Number(this.postID)"
+                  :signup="signup"
+                  :is-post-owner="this.isPostOwner"
+                  @change-signup="fetchPosts"
+                  class="signup-card"
+                />
+              </div>
+            </div>
+            
+            <h3 v-if="this.signups.filter(signup => signup.review_status === 1).length!==0">所有招募通过的报名情况</h3>
+            <div v-for="signup in this.signups.filter(signup => signup.review_status === 1)" :key="signup.application_id">
+              <SignUpItem
+                :postID="Number(this.postID)"
+                :signup="signup"
+                :is-post-owner="this.isPostOwner"
+                @change-signup="fetchPosts"
+                class="signup-card"
+              />
+            </div>
+          </div>
+  
           
-          />
-          <!-- <CommentItem
-            v-for="comment in post.comments_details"              
-            :key="comment.comment_id"
-            :comment="comment"
-            @delete-comment="openDeleteDialog('comment', $event)"
-            @delete-reply="openDeleteDialog('reply', $event, comment)"
-            @toggle-like="toggleLike"
-            @add-reply="addReply"
-          /> -->
+
         </div>
         </div>
         <!-- :Ptitle="post.title"
           :Pcontent="post.content"
           :Pusername="post.username"
           :PuserID="post.user_id" -->
-        <ReportPost
+        <ReportWindow
           v-model:isReportDialogVisible="isReportPostWindowVisible"
-          :isDetailShow="false"
-          :thisPostId="this.postID"
-          :post="post"
-          @closeDialog="isReportPostWindowVisible=false"
+          :reportID="Number(this.postID)"
+          :isReportPost="true"
+          
         />  
         <!-- 用于举报帖子 -->
         
@@ -212,13 +300,20 @@
     
   </el-card>
 </template>
+<script setup>
+import { ref } from 'vue'
+import { ClickOutside as vClickOutside } from 'element-plus'
 
+const buttonRef = ref(null)
+const popoverRef = ref(null)
+
+</script>
 <script>
 import CommentInput from '@/components/CommentInput.vue';
 import CommentItem from '@/components/CommentItem.vue';
 import SignUpInput from '@/components/SignUpInput.vue';
 import SignUpItem from '@/components/SignUpItem.vue';
-import ReportPost from '@/components/ReportPostWindow.vue'
+import ReportWindow from '@/components/ReportPostWindow.vue'
 import axios from '@/axios'; // 确保路径是正确的
 import state from '@/store/global.js'; // 引入映射表
 import { ElMessage } from "element-plus";
@@ -230,18 +325,19 @@ export default {
     CommentItem,
     SignUpInput,
     SignUpItem,
-    ReportPost,
+    ReportWindow,
   },
   props: ['type','postID'],
   data() {
     return {
       deleteDialogVisible: false, // 控制删除弹窗显示
+      finishDialogVisible: false, // 控制结束招募弹窗显示
       currentImage: '',
       currentIndex: 0,
       isStarSolid: true,
       value: '',
       comments: [],//存储所有评论
-      signup:'',
+      signups: [],
       isReportPostWindowVisible:false,//举报弹窗显示
       showSignUpInput: false, // 控制SignUpInput显示
       options: [
@@ -249,6 +345,9 @@ export default {
         { label: '所有人可见', value: 1 }
       ],
       post: null,
+      BeSilenced: state.mute_status, // 根据state.mute_status来确定
+      isAlertVisible: false,
+      
     };
   },
   watch: {
@@ -259,6 +358,9 @@ export default {
     }
   },
   computed: {
+    localMyId() {
+      return state.userId || null;  // 如果 userId 未定义，返回 null 或其他默认值
+    },
     directComments() {
       return this.comments.filter(comment => !comment.parent_comment_id);
     },
@@ -295,51 +397,86 @@ export default {
   },
   methods: {
     async fetchData() {
+      const user_id = state.userId || null;
+      if (!user_id) {
+        console.error('User ID is not defined');
+        return;
+      }
       if (this.type === 'share') {
         try {
-          const user_id = state.userId;
           
-          // 使用 Promise.all 并行执行两个请求
           const postResponse = await axios.get(`/api/Posts/GetPostDetail/${this.postID}/${user_id}`);
 
           // 分别处理两个请求的响应
           this.post = postResponse.data;
-          this.value=this.post.exhibit_status
-          
-
+          this.value = this.post.exhibit_status;
+  
           console.log('帖子数据获取成功:', this.post, this.comments);
         } catch (error) {
-          console.error('Error fetching post or comments data:', error);
-          ElMessage.error('获取帖子失败');
+          console.error('Error fetching sharepost data:', error);
+          ElMessage.error('获取分享贴详情失败');
         }
       }
-      // else if (this.type === 'recruit') {
-        
-      // }
+      else if (this.type === 'recruit') {
+        try {
+          const postResponse = await axios.get(`/api/RecruitmentPosts/GetPostDetail/${this.postID}/${user_id}`);
+          this.post = postResponse.data;
+          this.value = this.post.exhibit_status;
+
+          console.log('帖子数据获取成功:', this.post);
+        } catch (error) {
+          console.error('Error fetching recruitpost data:', error);
+          ElMessage.error('获取招募贴详情失败');
+        }
+      }
     },
     async fetchComments() {
-      try {
-        const user_id = state.userId;
-        console.log('Fetching comments for postID:', this.postID);
-        const commentsResponse = await axios.get(`/api/Comments/GetComment/${this.postID}/${user_id}`);
-          this.comments = commentsResponse.data.sort((a, b) => {
-            return new Date(a.comment_time) - new Date(b.comment_time);
-          }) || [];
+      const user_id = state.userId || null;
+      if (!user_id) {
+        console.error('User ID is not defined');
+        return;
+      }
+      if (this.type === 'share') {
+        try {
+          console.log('Fetching comments for postID:', this.postID);
+          const commentsResponse = await axios.get(`/api/Comments/GetComment/${this.postID}/${user_id}`);
+            this.comments = commentsResponse.data.sort((a, b) => {
+              return new Date(a.comment_time) - new Date(b.comment_time);
+            }) || [];
 
-        // 如果 comments 为空，且没有其他错误，避免弹窗
-        if (this.comments.length === 0) {
-          console.log('No comments found.');
-          return;
+          // 如果 comments 为空，且没有其他错误，避免弹窗
+          if (this.comments.length === 0) {
+            console.log('No comments found.');
+            return;
+          }
+
+          console.log('Comments fetched successfully:', this.comments);
+        } catch (error) {
+          if (error.response && error.response.data) {
+            // 处理响应数据中包含的错误信息
+          
+          } else {
+            // 处理技术错误，如连接问题
+            this.handleError(error, '获取评论失败');
+          }
         }
-
-        console.log('Comments fetched successfully:', this.comments);
-      } catch (error) {
-        if (error.response && error.response.data) {
-          // 处理响应数据中包含的错误信息
-        
-        } else {
-          // 处理技术错误，如连接问题
-          this.handleError(error, '获取评论失败');
+      } else if (this.type === 'recruit') {
+        try {
+          const signupResponse = await axios.get(`/api/Applications/ReviewingApplications/${this.postID}`);
+          this.signups = signupResponse.data || [];
+          if (this.signups.length === 0) {
+            console.log('No signups found.');
+            return;
+          }
+          console.log('Signups fetched successfully:', this.signups);
+          
+        }catch (error) {
+          if (error.response && error.response.data) {
+            // 处理响应数据中包含的错误信息
+          } else {
+            // 处理技术错误，如连接问题
+            this.handleError(error, '获取报名失败');
+          }
         }
       }
     },
@@ -414,6 +551,9 @@ export default {
     openDeleteDialog() {
       this.deleteDialogVisible = true;
     },
+    openFinishDialog() {
+      this.finishDialogVisible = true;
+    },
     confirmDelete() {
       this.deleteDialogVisible = false;
       axios.delete(`api/Posts/${this.postID}`)
@@ -428,8 +568,22 @@ export default {
 
       })    
     },
-    cancelDelete() {
-      this.deleteDialogVisible = false;
+    confirmFinish() {
+      this.finishDialogVisible = false;
+      const recruit_status = 0;
+      axios.put(`api/RecruitmentPosts/UpdateRecruitStatus/${this.postID}/${recruit_status}`)
+        .then(response => {
+          if (response.data !=null) {
+            this.goBackToForumView();          
+          }
+      })
+      .catch(error => {
+        this.handleError(error, '结束招募失败');
+        this.fetchPosts();
+      })    
+    },
+    cancelFinish() {
+      this.finishDialogVisible = false;
       this.fetchPosts();
 
     },
@@ -439,9 +593,14 @@ export default {
     },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
-      console.log('Dialog Visible:', this.isReportSharePostWindowVisible);
+      console.log('Dialog Visible:', this.isReportPostWindowVisible);
     },
     toggleSignUpInput() {
+      if (this.BeSilenced) {
+        this.isAlertVisible = true;
+        // console.log('已点击',this.isAlertVisible);
+        return;
+      }
       this.showSignUpInput = !this.showSignUpInput;
     },
     // addComment(newComment) {
@@ -470,11 +629,29 @@ export default {
         return new Date(a.comment_time) - new Date(b.comment_time);
       });
     },
+    onClickOutside() {
+      if (this.$refs.popoverRef && this.$refs.popoverRef.popperRef) {
+        this.$refs.popoverRef.popperRef.delayHide?.();
+      }
+    },
+    onAlertClose() {
+      this.isAlertVisible = false;
+      if (this.popoverRef && this.popoverRef.popperRef) {
+        this.popoverRef.popperRef.hide();
+      }
+    },
+    onPopoverHide() {
+      // 每次隐藏 popover 时重置 alert 的显示状态
+      this.isAlertVisible = true;
+    },
   }
 };
 </script>
 
 <style scoped>
+.username{
+  font-size: 16px;
+}
 .post-container {
   width: 65%;
   margin-top: 3vh;
@@ -634,5 +811,9 @@ export default {
   border-left: 2px solid #e0e0e0; /* 可选的左侧边框样式 */
   padding-left: 20px;
   margin-top: 10px;
+}
+.signup-card{
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 </style>

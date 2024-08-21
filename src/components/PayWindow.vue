@@ -8,7 +8,7 @@
     @close="handleClose">
     <div class="product-info-header" style="display:flex;" shadow="hover">
       <div class="product-img">
-        <img :src="product.product_image" alt="product image"> 
+        <img :src="this.image" alt="product image"> 
       </div>
       <div style="flex:2;">
         <h2>{{ product.product_name }}</h2>
@@ -124,7 +124,8 @@ export default {
       productID:this.product.product_id,
       ProductId:null,
       campOrders:[],
-      order_ID:0
+      order_ID:0,
+      image:''
     }
   },
   watch: {
@@ -161,15 +162,20 @@ export default {
         .catch(error => {
           console.error('Error fetching ldle items posts:', error);
         });
+        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product_id}`)
+        .then(response =>{
+           this.image=response.data?.length>0?response.data[0]:'图片'
+           console.log('kkkk',this.image)
+        })
     },
     createOrderAndUpload() {
       const orderData = {
         lease_id: this.generateOrderId(),
         user_id: globalState.userId,
         product_id: this.ProductId,
-        pick_time: dayjs(this.startTime).format('YYYY-MM-DDTHH:mm:ss'),
-        remark: `营地：${this.selectedCampOrder.campsiteName}     营位：${this.selectedCampOrder.campsiteNumber}`,
-        back_time: dayjs(this.endTime).format('YYYY-MM-DDTHH:mm:ss'),
+        pick_time: this.formatDateToFullDate(this.startTime),
+        remark: `营地：${this.selectedCampOrder.campgroundName}     营位：${this.selectedCampOrder.campsiteNumber}`,
+        back_time: this.formatDateToFullDate(this.endTime),
         amount:this.quantity
       };
       console.log('订单上传:', orderData.lease_id);
@@ -186,6 +192,7 @@ export default {
           this.PaySuccess = true
         })
         .catch(error => {
+          console.log(orderData)
           console.error('上传订单时出错:', error);
         });
     },
@@ -196,7 +203,7 @@ export default {
     formatDateToFullDate(dateStr) {
       // 假设 dateStr 是 "YYYY-MM-DD" 格式的日期字符串
       const [year, month, day] = dateStr.split('-');
-      return `${year}-${month}-${day}T00:00:00.000Z`; // ISO 8601 格式的午夜时间
+      return `${year}-${month}-${day}.000Z`; // ISO 8601 格式的午夜时间
     },
     GoToOrder(product,orderId)   //查看订单
     {
@@ -218,7 +225,7 @@ export default {
         this.filteredCampOrders = [this.selectedCampOrder];
         this.startTime=this.filteredCampOrders[0].reservedStartTime;
         this.endTime=this.filteredCampOrders[0].reservedEndTime;
-        console.log(this.startTime, this.endTime);
+        console.log('hhhhh',this.startTime, this.endTime);
       } else {
         this.filteredCampOrders = [];
       }

@@ -12,7 +12,7 @@
         </div>
         <div style="flex:2;">
           <h2>{{ ldleitemsPost.title }}</h2>
-          <p>商品提供者: {{ ldleitemsPost.author_name }}</p>
+          <p>商品提供者: {{ ldleitemsPost.user_name }}</p>
           <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
           <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
           <p>收件人姓名: {{ recipientInfo.name }}</p>
@@ -128,15 +128,17 @@
       confirmDialog() {
         this.localDialogVisible = false
         this.createOrderAndUpload();
-        //添加支付成功逻辑
+        this.changeState();
+
+        //添加支付成功逻辑 
         // 切换支付成功弹窗
       },
     createOrderAndUpload() {
       const orderData = {
         order_date: new Date().toISOString(), // 生成订单日期
         order_id: this.generateOrderId(), // 生成唯一订单ID
-        order_status: '已支付',
-        logistics:0,
+        order_status: 1,
+        logistics_status:0,
         post_id: this.ldleitemsPost.post_id,
         recipient_address: this.recipientInfo.address,
         recipient_name: this.recipientInfo.name,
@@ -145,7 +147,8 @@
       };
       console.log('订单上传:', orderData.order_id);
       console.log('订单上传:', orderData.user_id);
-      axios.post('https://localhost:7218/api/Purchases', orderData,{headers: {
+      console.log('订单上传:', orderData);
+      axios.post('https://localhost:7218/api/Purchases/PurchaseIdleProduct', orderData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -170,7 +173,35 @@
         }})
         this.PentSuccess = false
         this.Order=true
-      }
+      },
+      changeState()
+      {
+        const Post=this.ldleitemsPost;
+        Post.exhibit_status=0;
+        const visiblePost={
+          author_id:Post.author_id,
+          censor_status:Post.censor_status,
+          content:Post.content,
+          exhibit_status:Post.exhibit_status,
+          stars_number:Post.stars_number,
+          likes_number:Post.likes_number,
+          post_id:Post.post_id,
+          post_kind:Post.post_kind,
+          post_position:Post.post_position,
+          post_time:Post.post_time,
+          total_floor:Post.total_floor,
+        }
+        axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost.post_id}`,visiblePost)
+        .then(response => {  
+        // 更新成功后的处理，比如清空表单或显示成功消息  
+        console.log('Product updated successfully', response);  
+        console.log(this.ldleitemsPost);
+      })  
+      .catch(error => {  
+        // 处理错误，比如显示错误消息  
+        console.error('Error updating ldleitemsPost:', error);  
+      });
+      },
     }
   }
   </script>

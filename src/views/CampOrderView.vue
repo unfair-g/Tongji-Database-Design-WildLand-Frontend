@@ -102,7 +102,7 @@
       async fetchCampDetails() {
       const campId = this.$route.query.campID;
       try {
-        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}`);
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}/${global.userId}`);
           this.camp = response.data;
       } catch (error) {
         console.error('获取营地信息失败:', error);
@@ -175,7 +175,7 @@
   
   .container {
     width: 70%; /* 设置容器的最大宽度 */
-    height: 100vh; /* 设置容器高度为视口高度 */
+    height: 90.4vh; /* 设置容器高度为视口高度 */
     margin: 0 auto; /* 居中显示容器 */
     display: flex;
     flex-direction: column; /* 设置子元素为纵向排列 */

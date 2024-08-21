@@ -3,16 +3,16 @@
       <div v-for="order in orders" :key="order.id" justify="center" >
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToOrderDetail(order)">
             <div class="content">
-            <img :src="order.product_image" class="image" alt="order image">
+            <img :src="order.pics[0]" class="image" alt="order image">
             <div style="padding: 14px;flex:1;">
               <span>{{ order.product_name}}</span>
               <div><span>尺寸：{{ order.size}}</span></div>
               <div><span>材料：{{ order.material}}</span></div>
               <div><span>适用人数：{{ order.suitable_users}}</span></div>
               <div><span>品牌：{{ order.brand}}</span></div>
-              <div><span>购买数量：{{ order.purchase_quantity}}</span></div>
+              <div><span>购买数量：{{ order.stock_quantity}}</span></div>
               <div class="bottom clearfix">
-                <span class="price">¥{{ order.price*order.amount }}</span>
+                <span class="price">¥{{ order.price*order.lease.amount }}</span>
                 <el-button type="text" class="button" @click="goToOrderDetail(order)">查看详情</el-button>
               </div>
             </div>
@@ -40,13 +40,15 @@ export default {
     async fetchOrders() {
       try {
         // 从 Leases 接口获取订单信息
-        const ordersResponse = await axios.get('/api/Leases');
-        const orders = ordersResponse.data.filter(lease => lease.user_id===globalState.userId);
-        
+        const ordersResponse = await axios.get(`/api/Leases/GetLeasesByUserId?userId=${globalState.userId}`);
+        console.log(ordersResponse)
+        const orders = ordersResponse.data;
+        console.log(orders);
         // 提取所有产品 ID
         //const productIds = orders.map(order => order.product_id);
         // 提取所有产品 ID
-      const productIds = [...new Set(orders.map(order => order.product_id))];  // 使用 Set 去重
+      const productIds = [...new Set(orders.map(order => order.lease.product_id))];  // 使用 Set 去重
+      console.log(productIds)
         // 根据产品 ID 获取产品详情
         const productDetailsPromises = productIds.map(productId =>
           axios.get(`/api/OutdoorProducts/${productId}`)
@@ -64,10 +66,10 @@ export default {
           acc[response.data.product_id] = response.data;
           return acc;
         }, {});
-        
+        console.log(products)
         // 合并产品详情到订单中
         const ordersWithProducts = orders.map(order => {
-          const product = products[order.product_id] || {};
+          const product = products[order.lease.product_id] || {};
           return {
             ...order,
             ...product,  // 将产品详情合并到订单中
@@ -82,12 +84,12 @@ export default {
       }
     },
     goToOrderDetail(order) {
-      const orderId = order.lease_id;
+      const orderId = order.lease.lease_id;
       this.$router.push({
         path: `/home/userspace/order/${orderId}`,
         query: {
-          orderID: order.lease_id,
-          quantity: order.amount,
+          orderID: order.lease.lease_id,
+          quantity: order.lease.amount,
         },
       });
     },
