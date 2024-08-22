@@ -6,16 +6,10 @@
     >  
       <div class="tag-container">  
         <el-tag :color="tag.color" class="tag-name">{{ tag.tag_name }}</el-tag>  
-<<<<<<< HEAD
       </div>  
       <div class="detail">{{ tag.tag_id || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
-=======
->>>>>>> main
-      </div>  
-      <div class="update-tag">  
-        <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
       </div>  
       <div class="update-tag">  
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
