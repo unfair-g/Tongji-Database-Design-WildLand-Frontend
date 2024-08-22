@@ -72,7 +72,7 @@
 
   <script>
 
-  import axios from 'axios';
+  import axios from '@/axios';
   import  globalState  from '../store/global'; // 引入 global.js 中的状态
   
   export default {
@@ -134,7 +134,7 @@
           price: parseFloat(this.postForm.itemPrice),
         };
 
-        axios.post('https://localhost:7218/api/Posts/PushLdle', postData)
+        axios.post('/api/Posts/PushLdle', postData)
           .then((response) => {
             console.log('发布成功:', response.data);
             this.PostSuccess = true;
