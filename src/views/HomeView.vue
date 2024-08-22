@@ -28,19 +28,19 @@
         <span class="title">热销爆款</span>
         </div>
         </template>
-            <div class="hot-container" @click="ToHotProduct">
-                <img :src="hotproducts[currentproduct].product_image" style="width:70%;height:300px">
-                <div style="min-width:30%;max-width:30%;white-space:normal; word-break:break-all;overflow:hidden;">
-                <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">{{ hotproducts[currentproduct].product_name }}</p>
-                <p>{{ hotproducts[currentproduct].introduction }}</p>
-                <p style="font-weight:bold;font-size: 20px;margin-top: 50%;">${{ hotproducts[currentproduct].price }}</p>
-                </div>
+            <div class="hot-container" v-if="hotproducts.length > 0" @click="ToHotProduct">
+                <img :src="hotproducts[currentproduct-1].product_pic" class="product-image">
+            <div style="min-width:30%;max-width:30%;white-space:normal; word-break:break-all;overflow:hidden;">
+                <p style="font-weight: bold;font-size:25px;margin-bottom: 20%">{{ hotproducts[currentproduct-1].product_name }}</p>
+                <p>{{ hotproducts[currentproduct-1].introduction }}</p>
+                <p style="font-weight:bold;font-size: 20px;margin-top: 50%;">¥{{ hotproducts[currentproduct-1].price }}</p>
+            </div>
             </div>
         <template #footer>
             <div class="footer" >
             <el-pagination :size=large :page-size=1 layout="prev, pager, next" 
-            v-model:current-page="this.currentproduct"
-            :total="5" style="margin:auto;" />
+            v-model:current-page="currentproduct"
+            :total="hotproducts.length" style="margin:auto;" />
             </div>
         </template>
         </el-card>
@@ -58,6 +58,7 @@ export default {
             currentcamp: 1,
             currentproduct: 1,
             hotcamps: [], // 存储从接口获取的热门营地信息
+            hotproducts: [] // 存储从接口获取的热销户外用品信息
         }
     },
     components: {
@@ -65,11 +66,7 @@ export default {
     },
     created() {
       this.fetchHotCamps();
-    },
-    computed: {
-        hotproducts() {
-            return this.$store.state.product.products
-        }
+      this.fetchHotProducts();
     },
     methods: {
         //调用接口来获取hotcamps
@@ -81,11 +78,20 @@ export default {
         console.error('获取热门营地失败:', error);
         }
         },
+        // 调用接口获取热销户外用品信息
+        async fetchHotProducts() {
+            try {
+                const response = await axios.get('api/OutdoorProducts/RandomProducts');
+                this.hotproducts = response.data;
+            } catch (error) {
+                console.error('获取热销户外用品失败:', error);
+            }
+        },
         ToHotCamp() {
-            this.$router.push({ path: `/home/campdetail/${this.hotcamps[this.currentcamp].campground_id}` });
+            this.$router.push({ path: `/home/campdetail/${this.hotcamps[this.currentcamp-1].campground_id}` });
         },
         ToHotProduct() {
-            this.$router.push({ path: `/home/product/${this.hotproducts[this.currentproduct].product_id}` })
+            this.$router.push({ path: `/home/product/${this.hotproducts[this.currentproduct-1].product_id}` })
         }
     }
 }
@@ -130,5 +136,12 @@ export default {
   width: 75%;      /* 设定图片的宽度 */
   height: 260px;    /* 设定图片的高度 */
   object-fit: cover; /* 使图片内容覆盖容器 */
+}
+
+.product-image {
+  width: 60%;      /* 设定图片的宽度 */
+  height: 260px;    /* 设定图片的高度 */
+  object-fit: cover; /* 使图片内容覆盖容器 */
+  margin-right: 20px;
 }
 </style>
