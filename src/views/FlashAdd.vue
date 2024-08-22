@@ -39,17 +39,6 @@
               type="textarea"
             />
           </div>
-          <div class="post-body">添加图片:
-          <el-upload
-            style="margin-left: 150px;"
-            :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
-            @change="handleFileChange"
-          >
-            <el-avatar v-if="imageUrl" :src="imageUrl" />
-            <el-icon v-else><Plus /></el-icon>
-            </el-upload>
-          </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
@@ -63,7 +52,6 @@ import { Close } from '@element-plus/icons-vue'
 import { mapState, mapMutations } from 'vuex'  
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
-import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
 import global from '@/store/global'
 
@@ -79,7 +67,6 @@ export default {
 
   components: {
     Close,
-    Plus,
   },
   computed: {  
     ...mapState([  

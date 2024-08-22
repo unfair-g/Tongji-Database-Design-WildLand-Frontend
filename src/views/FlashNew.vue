@@ -16,37 +16,91 @@
       </div>
       <hr />
       <div class="post-detail-content">
-        <div class="post-title">资讯标签: 
+        <el-form-item label="资讯标签: " prop="name" class="post-title">
             <el-input
               v-model="flash.tagName"
               style="width: 240px"
             />
-        </div>
+        </el-form-item>
         <div class="post-info">
-          <div class="post-title">资讯标题: 
+          <el-form-item label="资讯标题: " prop="region" class="post-title">
             <el-input
               v-model="flash.flash_title"
               style="width: 240px"
             />
-          </div>
-          <div class="post-body">资讯内容: 
+          </el-form-item>
+          <el-form-item label="资讯内容: " prop="count" class="post-body">
             <el-input
               v-model="flash.flash_content"
               style="width: 1000px"
               :rows="10"
               type="textarea"
             />
-          </div>
-          <div class="post-body">上传图片:
-          <el-upload
-            style="margin-left: 150px;"
-            :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
-            @change="handleFileChange"
-          >
-            <el-avatar class="post-body" v-if="imageUrl" :src="imageUrl" />
-            <el-icon v-else><Plus /></el-icon>
+          </el-form-item>
+          <div class="post-body">
+            <el-form-item label="封面图片" required>
+            <el-upload
+              action=""
+              list-type="picture"
+              :file-list="coverPicList"
+              :on-change="handleCoverPicChange"
+              :on-remove="deleteCoverImage"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <el-button size="small" type="primary" class="upgrade-btn">选择封面图片</el-button>
+              <!-- eslint-disable-next-line -->
+              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
+          </el-form-item>
+          
+          <el-form-item label="营地地图" required>
+            <el-upload
+              action=""
+              list-type="picture"
+              :file-list="mapPicList"
+              :on-change="handleMapPicChange"
+              :on-remove="deleteMapImage"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <el-button size="small" type="primary" class="upgrade-btn">选择营地地图</el-button>
+              <!-- eslint-disable-next-line -->
+              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
+            </el-upload>
+          </el-form-item>
+
+          <el-form-item label="正文图片" required>
+            <el-upload
+              action=""
+              list-type="picture"
+              :file-list="introPicList"
+              :on-change="handleIntroPicChange"
+              :on-remove="deleteIntroImage"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <el-button size="small" type="primary" class="upgrade-btn">选择正文图片</el-button>
+              <!-- eslint-disable-next-line -->
+              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
+            </el-upload>
+          </el-form-item>
+
+          <el-form-item label="展示图片" required>
+            <el-upload
+              action=""
+              list-type="picture"
+              :file-list="displayPicList"
+              :on-change="handleDisplayPicChange"
+              :on-remove="deleteDisplayImage"
+              :auto-upload="false"
+              multiple
+            >
+              <el-button size="small" type="primary" class="upgrade-btn">选择展示图片</el-button>
+              <!-- eslint-disable-next-line -->
+              <div slot="tip" class="el-upload__tip">支持多张图片上传</div>
+            </el-upload>
+          </el-form-item>
           </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
@@ -59,7 +113,6 @@
 import { Close } from '@element-plus/icons-vue'
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
-import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
 
 export default {
@@ -79,14 +132,38 @@ export default {
         tagName: '营地'
       },
       tag:[],
-      currentDateTime : ref(new Date().toLocaleString())
+      currentDateTime : ref(new Date().toLocaleString()),
+      coverPicList: [],
+      mapPicList: [],
+      introPicList: [],
+      displayPicList: []
     };
   },
   components: {
     Close,
-    Plus
   },
   setup() {
+    const rules = ref({
+      name: [
+        { required: true, message: 'Please input Activity name', trigger: 'blur' },
+      ],
+      region: [
+        {
+          required: true,
+          message: 'Please select Activity zone',
+          trigger: 'blur',
+        },
+      ],
+      count: [
+        {
+          required: true,
+          message: 'Please select Activity count',
+          trigger: 'blur',
+        },
+      ],
+    })
+
+    
     const imageUrl = ref('')
     const avatarSrc = ref('') // 用于存储头像 URL
 
@@ -123,7 +200,8 @@ export default {
       beforeAvatarUpload,
       handleFileChange,
       ElMessage,
-      imageUrl
+      imageUrl,
+      rules
     }
   },
   methods: {  
@@ -133,31 +211,71 @@ export default {
     updateFlash() {   
       // 确保 flash 对象中有需要更新的数据  
       console.log(this.flash);
+      console.log(this.displayPicList[0].raw)
+      console.log(this.coverPicList[0].raw)
       if (!this.flash.flash_title || !this.flash.flash_content) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
-     // const formData = new FormData();
-      
-      // 发送 PUT 请求来更新 Flash  
-      this.currentDateTime.value = new Date().toLocaleString(); // 更新为新的日期和时间  
-      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=1${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=${this.flash.flash_image}&TagName=${this.flash.tagName}`, [{  
-        userId: this.flash.user_id,
-        flashTitle: this.flash.flash_title,  
-        flashDate:  this.flash.flash_date,
-        flashContent: this.flash.flash_content,  
-        flashImage:  this.flash.flash_image,
-        collectionNumber:  this.flash.collection_number,
-        viewsNumber:  this.flash.views_number,
-        tagId: this.flash.tagId,
-        tagName: this.flash.tagName
-        // 如果需要更新其他字段，也可以在这里添加  
-      }])  
-      .catch(error => {  
-        console.error('Error updating flash:', error);  
-        this.$message.error('资讯更新失败，请重试！');  
+      let formData = new FormData();  
+      formData.append('coverFile', this.coverPicList[0].raw, this.coverPicList[0].raw.name);  
+      formData.append('campFile', this.mapPicList[0].raw, this.mapPicList[0].raw.name);  
+      formData.append('contextFile', this.introPicList[0].raw, this.introPicList[0].raw.name);  
+      console.log(this.displayPicList)
+      this.displayPicList.forEach(file => {  
+          formData.append('displayFiles[]', file.raw, file.raw.name);  
       });  
-    },   
+      formData.append('displayFiles', this.displayPicList[0].raw, this.displayPicList[0].raw.name);  
+      // 使用Axios发送FormData  
+      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=123&FlashTitle=%E8%8D%89%E5%9D%AA&FlashContent=%E8%8D%89%E5%9D%AA%E5%92%8C%E8%9D%B4%E8%9D%B6&FlashImage=test&TagId=1&TagName=%E9%92%93%E9%B1%BC`, formData, {  
+          headers: {  
+              'Content-Type': 'multipart/form-data'  
+          }  
+      })  
+      .then(response => {  
+          console.log(response.data);  
+      })  
+      .catch(error => {  
+          console.error('Error uploading files:', error);  
+      });
+    },  
+    handleCoverPicChange(file, fileList) {
+      this.coverPicList = fileList;
+      console.log(fileList)
+      console.log(this.coverPicList)
+    },
+    handleMapPicChange(file, fileList) {
+      this.mapPicList = fileList;
+    },
+    handleIntroPicChange(file, fileList) {
+      this.introPicList = fileList;
+    },
+    handleDisplayPicChange(file, fileList) {
+      this.displayPicList = fileList;
+      
+    },
+    // 处理文件删除
+    deleteCoverImage(file, fileList) {
+        this.deleteImage(file.url, fileList);
+    },
+    deleteMapImage(file, fileList) {
+        this.deleteImage(file.url, fileList);
+    },
+    deleteIntroImage(file, fileList) {
+        this.deleteImage(file.url, fileList);
+    },
+    deleteDisplayImage(file, fileList) {
+        this.deleteImage(file.url, fileList);
+    },
+
+    // 更新图片列表以反映删除的图片
+    updateImageList(fileList, imageUrl) {
+        const index = fileList.findIndex(item => item.url === imageUrl);
+        if (index !== -1) {
+            fileList.splice(index, 1); // 从列表中移除已删除的图片
+        }
+    },
+    
   }  ,
 }
 </script>
@@ -236,10 +354,7 @@ export default {
 }
 
 .post-title,
-.post-category,
-.post-body,
-.post-publisher,
-.review-opinion {
+.post-body{
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
