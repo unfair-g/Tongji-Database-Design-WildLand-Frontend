@@ -59,7 +59,13 @@
     </el-scrollbar>
 
     <el-footer>
-      <el-button class="booking-button" type="primary" @click="goToCampOrder()">填写订单</el-button>
+      <el-button 
+      class="booking-button" 
+      :type="isOrderButtonEnabled ? 'primary' : ''" 
+      :disabled="!isOrderButtonEnabled" 
+      @click="goToCampOrder()"
+      >填写订单
+      </el-button>
     </el-footer>
   </div>
 </template>
@@ -98,6 +104,9 @@ export default {
         groups[section].push(campsite);
         return groups;
       }, {});
+    },
+    isOrderButtonEnabled() {
+      return this.startDate && this.endDate && this.selectedCampsiteIds.length > 0;
     }
   },
   methods: {
