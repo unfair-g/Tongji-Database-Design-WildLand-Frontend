@@ -2,16 +2,16 @@
   <flashaside  @menu-select="handleMenuSelect"/>
   <el-card class="flash">
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in filteredFlashes" :key="flash.flashTitle" @click="goToDetail(flash)">
+      <div class="flash-item" v-for="(flash) in flashes" :key="flash.flash_title" @click="goToDetail(flash)">
         <div class="img">
-            <img :src="flash.flashImage" />
+            <img :src="flash.flash_image" />
         </div>
         <div class="flash-info">
-            <span class="flash-title">{{ flash.flashTitle }}</span>
+            <span class="flash-title">{{ flash.flash_title }}</span>
             <span class="flash-meta">作者： {{ flash.user_id }}</span>
           <div>
-            <span class="flash-like">{{ flash.collectionNumber }}收藏</span>
-            <span class="flash-like">{{ flash.viewsNumber }}浏览</span>
+            <span class="flash-like">{{ flash.collection_number }}收藏</span>
+            <span class="flash-like">{{ flash.views_number }}浏览</span>
           </div>
         </div>
       </div>
@@ -33,22 +33,19 @@ export default {
 },
 data() {
     return {
-      currentMenu: 1, // 默认选中的菜单项
+      currentMenu:'', // 默认选中的菜单项
       flashes: []
     };
     
   },
-  computed: {
-    filteredFlashes() {
-      return this.flashes.filter(flash => {return flash.tagId === this.currentMenu;}  );
-    }
-  },
   methods: {
     handleMenuSelect(index) {
-      this.currentMenu = index;
+      if (index !== undefined && index !== null && index !== "") {  
+        this.currentMenu = index;  
+      }  
     },
-    fetchFlashes() {
-      axios.get('https://localhost:7218/api/Flashes/Display')
+    fetchFlashes() {  
+      axios.get(`https://localhost:7218/api/FlashTags/GetFlashInfoByTag?tag_name=${this.currentMenu}`)
         .then(response => {
           this.flashes = response.data;
         })
@@ -57,7 +54,7 @@ data() {
         });
     },
     goToDetail (flash) {
-      const flashId = flash.flashId;
+      const flashId = flash.flash_id;
       this.$router.push({ path: `/home/flash/${flashId}` })
     },
     handleError(error, message) {

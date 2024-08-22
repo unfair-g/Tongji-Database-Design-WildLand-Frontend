@@ -46,7 +46,6 @@
       <el-option value="女"/>
     </el-select>
     </el-form-item>
-    <div style="display: flex;">  
     <el-form-item label="生日" prop="birthday">
       <el-date-picker
         v-model="newuser.birthday"
@@ -55,23 +54,10 @@
         :disabled-date="disabledDate"
       />
     </el-form-item>
-    <el-form-item label="IP" style="margin-left: auto;width:40%;" prop="location">
-       <el-select
-          v-model="newuser.location"
-          placeholder="请选择您所在的城市"
-        >
-         <el-option
-            v-for="city in citys"
-            :key="city"
-            :value="city"
-          />
-      </el-select>
-    </el-form-item>
-    </div>
   </el-form>
   <div>
     <el-button class="cancelbutton" @click="toWelcomePage">取消</el-button>
-    <el-button class="checkbutton" v-bind:disabled="loginDisabled" tyype="primary" color="#1D5B5E" @click="onSubmit">登录</el-button>
+    <el-button class="checkbutton" v-bind:disabled="loginDisabled" tyype="primary" color="#1D5B5E" @click="onSubmit">确认</el-button>
     </div>
     </div>
 </div>
@@ -84,17 +70,9 @@ import { ref,reactive } from 'vue'
 import { User, Key, Iphone,Message,Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import CryptoJS from 'crypto-js'
-import global,{saveToSessionStorage} from '@/store/global'
+import global,{saveToSessionStorage,provinceMap} from '@/store/global'
 
 const loginDisabled = ref(false)
-
-const citys = ref([
-    '上海',
-    '北京' , 
-    '安徽' ,
-    '内蒙古',
-    '浙江' 
-])
 
 const disabledDate = (time) => {
   return time.getTime() > Date.now()
@@ -165,18 +143,37 @@ const beforeAvatarUpload = (file) => {
       formData.append('file', file);
       ElMessage.success('上传头像成功')
 
-      return false;
+      return true;
 }
 
 const handleFileChange=(file)=> {
       imageUrl.value = URL.createObjectURL(file.raw)
-    }
+      newuser.avatar = file;
+}
+
+const addLocation = async () => {
+  try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        const ip = response.data.ip;
+
+        const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
+        const province = geoResponse.data.state_prov;
+      
+        const chineseProvince = provinceMap[province] || province;
+        newuser.location = chineseProvince;
+        
+      } catch (error) {
+        console.error('Error fetching location:', error);
+        ElMessage.error('获取定位信息失败');
+      }
+}
 
 const onSubmit = () => {
       loginDisabled.value=true
       formRef.value.validate(async (valid) => {
         if (valid) {
           try {
+            await addLocation();
             const hashedPassword = CryptoJS.SHA256(newuser.password).toString()
             if (newuser.gender == '女')
               newuser.gender = 'f';
@@ -195,7 +192,7 @@ const onSubmit = () => {
               }
             });
             ElMessage.success('注册成功！');
-            saveToSessionStorage(true, response.data.data.user_id)
+            saveToSessionStorage(true, response.data.data.user_id,true)
             global.Login = true;
             global.userId = response.data.data.user_id;
             toHomePage()
@@ -231,7 +228,7 @@ function toWelcomePage() {
     left:0;
     height:100%;
     width:55%;
-    position: fixed;
+    position:absolute;
 }
 
 .form-container{

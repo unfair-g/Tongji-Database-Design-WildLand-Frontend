@@ -2,19 +2,20 @@
   <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
       <div class="post-header">
-        <img :src="ldleitemsPost[0].portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost[0].author_id)">
+        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost.author_id)">
         <div class="post-header-info">
-          <span class="username">{{ ldleitemsPost[0].author_name }}</span>
+          <span class="username">{{ ldleitemsPost.user_name }}</span>
         </div>
         <el-button @click="goBackToForumView" class="close-button">
           <el-icon><Close /></el-icon>
         </el-button>
       </div>
+
       <div style="display:flex;">
         <div style="flex:1;">
           <div class="post-details" style="display:flex;">
             <div class="details-text" style="flex:1;">
-            <span class="time">发布时间：{{ ldleitemsPost[0].post_time }}</span>
+            <span class="time">发布时间：{{ ldleitemsPost.post_time }}</span>
             <h1 class="item-name">{{ ldleitemsPost.title }}</h1>
             <span class="item-summary">商品简介: {{ ldleitemsPost.item_summary }}</span>
             <span class="item-condition">商品新旧程度：{{ ldleitemsPost.condition }}</span>
@@ -22,7 +23,7 @@
           </div>
       </div>
 
-      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>{{ldleitemsPost[0]. post_position }}</div>
+      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>{{ldleitemsPost. post_position }}</div>
         <div class="post-content">
           <el-dialog
           v-model="dialogVisible"
@@ -45,7 +46,7 @@
     </div>
     
       <div>
-        <div class="post-visible-states"  v-if="this.userid===ldleitemsPost[0].author_id">
+        <div class="post-visible-states"  v-if="this.userid===ldleitemsPost.author_id">
           <el-select
             v-model="value"
             placeholder="修改帖子可见状态"
@@ -70,7 +71,7 @@
         </div>
         <div class="image-gallery">
           <el-carousel indicator-position="outside">
-          <el-carousel-item v-for="(image, index) in ldleitemsPost[0].post_pics" :key="index">
+          <el-carousel-item v-for="(image, index) in ldleitemsPost.post_pics" :key="index">
             <img :src="image" class="carousel-image">
           </el-carousel-item>
         </el-carousel>
@@ -82,12 +83,12 @@
 
       <div class="post-stats">
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
-          <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost[0].isLiked, 'icon-dianzanxuanzhong': ldleitemsPost[0].isLiked}"></i>
+          <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost.isLiked, 'icon-dianzanxuanzhong': ldleitemsPost.isLiked}"></i>
           <span>点赞</span>
-          <span>{{ ldleitemsPost[0].likes_number }}</span>
+          <span>{{ ldleitemsPost.likes_number }}</span>
         </el-button>
         <el-button class="stat-item" @click="toggleStar(ldleitemsPost)">
-          <el-icon v-if="!ldleitemsPost[0].isStarred"><Star /></el-icon>
+          <el-icon v-if="!ldleitemsPost.isStarred"><Star /></el-icon>
           <el-icon v-else><StarFilled /></el-icon>
           收藏
         </el-button>
@@ -100,41 +101,26 @@
       <div class="dashed-line"></div>
 
       <!-- 新增的表单区域 -->
-      <div class="recipient-form" v-if="isButtonDisabled">
-        <el-form :model="recipientInfo">
-          <el-form-item label="收件人姓名">
+      <div class="recipient-form" v-if="userid!==ldleitemsPost.author_id">
+        <el-form :model="recipientInfo" :rules="rules" ref="recipientForm">
+          <el-form-item label="收件人姓名" prop="name">
             <el-input v-model="recipientInfo.name" placeholder="请输入收件人姓名"></el-input>
           </el-form-item>
-          <el-form-item label="收件人地址">
+          <el-form-item label="收件人地址" prop="address">
             <el-input v-model="recipientInfo.address" placeholder="请输入收件地址"></el-input>
           </el-form-item>
-          <el-form-item label="收件人电话">
+          <el-form-item label="收件人电话" prop="phone">
             <el-input v-model="recipientInfo.phone" placeholder="请输入收件人电话"></el-input>
           </el-form-item>
         </el-form>
       </div>
-      <!-- 新增的表单区域 -->
-      <div class="recipient-form" v-else>
-        <el-form >
-          <el-form-item label="收件人姓名">
-            <el-input :value="this.rent[0].recipient_name" readonly></el-input>
-          </el-form-item>
-          <el-form-item label="收件人地址">
-            <el-input :value="this.rent[0].recipient_address" readonly></el-input>
-          </el-form-item>
-          <el-form-item label="收件人电话">
-            <el-input :value="this.rent[0].recipient_phone" readonly></el-input>
-          </el-form-item>
-        </el-form>
-      </div>
-      
-      <div class="action-buttons">
+
+      <div class="action-buttons" v-if="userid!==ldleitemsPost.author_id">
         <el-button class="pay" id="rentButton" :disabled="!isButtonDisabled" @click="Rent_Success()" v-if="isButtonDisabled">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
 
     </div>
-    <div v-else>加载中......</div>
   </el-card>
 
   <ReportPost
@@ -145,13 +131,15 @@
           @closeDialog="isReportPostWindowVisible=false"
         />  
         <!-- 用于举报帖子 -->
+
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
 import ReportPost from '@/components/ReportPostWindow.vue'
-import  globalState  from '../store/global'; // 引入 global.js 中的状态
+import  globalState  from '@/store/global'; // 引入 global.js 中的状态
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'ldleitemsPost', 
@@ -189,10 +177,21 @@ export default {
       isLike:false,
       liStar:false,
       location:'',
-      rent:[],
-      isButtonDisabled: true, // 控制按钮的禁用状态  
+      rent:[], 
       userid:globalState.userId,
       isReportPostWindowVisible:false,//举报弹窗显示
+      rules: {
+      name: [
+        { required: true, message: '请输入收件人姓名', trigger: 'blur' }
+      ],
+      address: [
+        { required: true, message: '请输入收件地址', trigger: 'blur' }
+      ],
+      phone: [
+        { required: true, message: '请输入收件人电话', trigger: 'blur' },
+        { pattern: /^[0-9]{10}$/, message: '请输入有效的电话号', trigger: 'blur' }
+      ]
+    }
     };
   },
   created() {
@@ -200,88 +199,65 @@ export default {
     this.BanRent();
   },
   methods: {
-      async fetchLdleitemsPosts() {
-      //const userId = state.userId; // 确保 state.userId 是可访问的  
-  try {  
-    const overviewResponse = await axios.get(`https://localhost:7218/api/Posts/${this.ldleitemsPostID}`); 
-    console.log(overviewResponse)
-      // 你可以在这里对filteredPosts进行进一步处理  
-     const post=overviewResponse.data;
-     console.log(post)
-      // 第一步：获取 author_id  
-      const authorResponse = await axios.get(`https://localhost:7218/api/Posts/${post.post_id}`);  
-      const authorId = authorResponse.data.author_id; // 假设这是从响应中获取的 author_id  
-  
-      const LdleResponse = await axios.get(`https://localhost:7218/api/LdleitemsPosts/${post.post_id}`);  
-      const item_summary = LdleResponse.data.item_summary; 
-      const condition = LdleResponse.data.condition; 
-      const price = LdleResponse.data.price; 
-
-      const post_2=await axios.get(`https://localhost:7218/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=${authorId}`);
-      const post_mess=post_2.data.filter(post_2 => post_2.post_id ===post.post_id);
-  
-      // 返回一个新的对象，包含原始数据和额外数据  
-      this.ldleitemsPost= {  
-        ...post, // 展开原始帖子对象  
-        ... post_mess,
-        author_id: authorId, // 添加 author_id  
-
-        item_summary:item_summary,
-        condition:condition,
-        price:price,
-
-      };  
-    // 由于 map 返回的是 Promise 数组，我们需要等待所有 Promise 解决  
-    console.log(this.ldleitemsPost); // 输出筛选后的数据  
-  
-  } catch (error) {  
-    console.error('Error fetching overview posts:', error);  
-    // 在这里，你可能想设置 this.ldleitemsposts 为空数组或错误消息数组  
-    this.ldleitemsPost = []; // 或 [{ error: 'Failed to fetch posts' }]  
-  }
-    },
-    toggleLike(ldleitemsPost) {
-      ldleitemsPost.isLiked = !ldleitemsPost.isLiked;
-      ldleitemsPost.likes = ldleitemsPost.isLiked ? ldleitemsPost.likes + 1 : ldleitemsPost.likes - 1;
-      const likePost = {
-        post_id: this.ldleitemsPost.post_id,
-        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
-      };
-      console.log('点赞上传:', likePost.post_id);
-      console.log('点赞上传:', likePost.user_id);
-      axios.post('https://localhost:7218/api/LikePosts', likePost,{headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain'
-      }
-    })
+      fetchLdleitemsPosts() {
+        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
         .then(response => {
-          console.log('点赞成功:', response.data);
+          this.ldleitemsPost = response.data;
+          console.log(this.ldleitemsPost)
         })
         .catch(error => {
-          console.error('点赞出错:', error);
+          console.log(this.ldleitemsPost)
+          console.error('Error fetching products:', error);
         });
     },
-    toggleStar(ldleitemsPost) {
-      ldleitemsPost.isStarred = !ldleitemsPost.isStarred;
-      const starPost = {
-        post_id: this.ldleitemsPost.post_id,
-        time:new Date().toISOString(), // 生成订单日期
-        tips:"闲置折叠椅",
-        user_id: globalState.userId // 确保在 Vuex store 中有 user.id
-      };
-      console.log('点赞上传:', starPost.post_id);
-      console.log('点赞上传:', starPost.user_id);
-      axios.post('https://localhost:7218/api/StarPosts', starPost,{headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain'
+    handleError(error, message) {
+      if (error.response) {
+        console.error(`${message}:`, error.response.data);
+        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(`${message}: No response received`);
+        ElMessage.error(`${message} - 没有收到响应`);
+      } else {
+        console.error(`${message}:`, error.message);
+        ElMessage.error(`${message} - 错误信息: ${error.message}`);
       }
-    })
-        .then(response => {
-          console.log('点赞成功:', response.data);
-        })
-        .catch(error => {
-          console.error('点赞出错:', error);
-        });
+    },
+    toggleLike(post) {
+      post.isLiked = !post.isLiked;
+      post.likes_number = post.isLiked ? post.likes_number + 1 : post.likes_number - 1;
+      axios.post('/api/LikePosts/postlike', {
+        post_id: post.post_id,
+        user_id: globalState.userId
+      })
+      .then(response => {
+        response.data.isLiked=post.isLiked;
+        response.data.likesCount=post.likes_number;
+      })
+      .catch(error => {
+        console.error('Error toggling like:', error);
+        this.handleError(error, '点赞操作失败');
+      });
+    },
+    toggleStar(post) {
+      post.isStarred = !post.isStarred;
+      axios.post('/api/StarPosts/starpost', {
+        post_id: post.post_id,
+        tips:"收藏测试",
+        user_id: globalState.userId
+      })
+      .then(response => {
+        response.data.isStarred = post.isStarred;
+        if (post.isStarred === true) {
+          response.data.stars_number+=1;
+        }
+        else if (post.isStarred === false) {
+          response.data.stars_number-=1;
+        }
+      })
+      .catch(error => {
+        console.error('Error toggling star:', error);
+        this.handleError(error, '收藏操作失败');
+      });
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
@@ -317,7 +293,14 @@ export default {
       this.deleteDialogVisible = false;
     },
     Rent_Success(){
-      this.RentdialogVisible= true;
+      this.$refs.recipientForm.validate((valid) => {
+    if (valid) {
+      this.RentdialogVisible = true;
+    } else {
+      console.log('表单验证失败');
+      return false;
+    }
+  });
     },
     async BanRent()
     {
@@ -359,26 +342,26 @@ export default {
     handleChange(value) {  
       // 这里是用户更改选择时执行的代码 
       if(value=='仅自己可见')
-          this.ldleitemsPost[0].exhibit_status = 0;
+          this.ldleitemsPost.exhibit_status = 0;
       else
-          this.ldleitemsPost[0].exhibit_status = 1;
+          this.ldleitemsPost.exhibit_status = 1;
 
       const LdlePost={
-        author_id: this.ldleitemsPost[0].author_id,
-        censor_status:this.ldleitemsPost[0].censor_status,
-        content:this.ldleitemsPost[0].content,
-        exhibit_status:this.ldleitemsPost[0].exhibit_status,
-        likes_number:this.ldleitemsPost[0].likes_number,
-        stars_number:this.ldleitemsPost[0].stars_number,
-        post_id:this.ldleitemsPost[0].post_id,
-        post_kind:this.ldleitemsPost[0].post_kind,
-        post_position:this.ldleitemsPost[0].post_position,
-        post_time:this.ldleitemsPost[0].post_time,
-        title:this.ldleitemsPost[0].title,
-        total_floor:this.ldleitemsPost[0].total_floor,
+        author_id: this.ldleitemsPost.author_id,
+        censor_status:this.ldleitemsPost.censor_status,
+        content:this.ldleitemsPost.content,
+        exhibit_status:this.ldleitemsPost.exhibit_status,
+        likes_number:this.ldleitemsPost.likes_number,
+        stars_number:this.ldleitemsPost.stars_number,
+        post_id:this.ldleitemsPost.post_id,
+        post_kind:this.ldleitemsPost.post_kind,
+        post_position:this.ldleitemsPost.post_position,
+        post_time:this.ldleitemsPost.post_time,
+        title:this.ldleitemsPost.title,
+        total_floor:this.ldleitemsPost.total_floor,
 
       }
-      axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost[0].post_id}`,LdlePost).then(response => {  
+      axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost.post_id}`,LdlePost).then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
         console.log(LdlePost);
@@ -529,6 +512,7 @@ export default {
   border: 1px solid #1D5B5E;
   width:100%;
   height:240px;
+  
   align-items: center;
   align-content: center;
   overflow: hidden;
@@ -538,6 +522,8 @@ export default {
   max-width: 100%; /* 调整宽度适应容器 */
   max-height: 100%; /* 调整高度适应容器 */
   object-fit: contain;
+  display: block;
+  margin: auto; /* 居中对齐图片 */
 }
 
 .dashed-line {

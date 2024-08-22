@@ -9,7 +9,7 @@
           ref="UserformRef"
           >
       <div class="post-detail-header">
-        资讯编辑
+        资讯添加
         <el-icon @click="closeDetail">
           <Close />
         </el-icon>
@@ -25,18 +25,27 @@
         <div class="post-info">
           <div class="post-title">资讯标题: 
             <el-input
-              v-model="flash.flashTitle"
+              v-model="flash.flash_title"
               style="width: 240px"
             />
           </div>
           <div class="post-body">资讯内容: 
             <el-input
-              v-model="flash.flashContent"
+              v-model="flash.flash_content"
               style="width: 1000px"
               :rows="10"
               type="textarea"
             />
           </div>
+          <el-upload
+            class="avatar-uploader"
+            :show-file-list="false"
+            :before-upload="beforeAvatarUpload"
+            @change="handleFileChange"
+          >
+            <el-avatar v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            </el-upload>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
@@ -47,92 +56,92 @@
 <script>
 //import { ref } from 'vue'
 import { Close } from '@element-plus/icons-vue'
-import { mapState, mapMutations } from 'vuex'  
 import axios from '@/axios'; // 引入配置好的axios实例
+import { ref} from 'vue'
 
 export default {
   props: ['flashID'],
   data() {
     return {
-      flash: [],
-      tag:[]
+      flash: {
+        collection_number:  0,
+        views_number:  0,
+        flash_title: '填写标题',  
+        flash_content: '填写内容',  
+        flash_id: 111110,
+        user_id: 123,
+        flash_date: '2024-08-18T06:54:43.744Z',
+        flash_image: 'string',
+        tagId: 123,
+        tagName: '营地'
+      },
+      tag:[],
+      formData: new FormData(),  
+      imageUrl: ref('')
     };
   },
-
   components: {
     Close
   },
-  computed: {  
-    ...mapState([  
-      'tags', // 将state中的tags映射到组件的computed属性  
-      'selectedTags' // 将state中的selectedTags映射到组件的v-model上
-    ])  ,
-  },  
   methods: {  
+     beforeAvatarUpload(file) {  
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';  
+      const isLt2M = file.size / 1024 / 1024 < 2;  
+  
+      if (!isJPGorPNG) {  
+        this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!');  
+        return false;  
+      }  
+      if (!isLt2M) {  
+        this.$message.error('上传头像图片大小不能超过 2MB!');  
+        return false;  
+      }  
+  
+      // 清除 formData 中可能存在的旧文件  
+      this.formData = new FormData();  
+      this.formData.append('file', file);  
+  
+      // 这里通常不会直接显示成功消息，因为文件还没有上传  
+      // 你可以调用一个上传函数，并在那里处理成功或失败的逻辑  
+      // this.uploadAvatar(this.formData);  
+  
+      // 假设只是示例，我们返回 true 表示文件通过验证  
+      return true;  
+    },  
+    handleFileChange(file){
+      this.imageUrl.value = URL.createObjectURL(file.raw)
+    },
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })
     },
     updateFlash() {  
       // 确保 flash 对象中有需要更新的数据  
-      if (!this.flash.flashId || !this.flash.flashTitle || !this.flash.flashContent) {  
+      console.log(this.flash);
+      if (!this.flash.flash_title || !this.flash.flash_content) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
-
+     // const formData = new FormData();
+      
       // 发送 PUT 请求来更新 Flash  
-      axios.put(`https://localhost:7218/api/Flashes/${this.flashID}`, {  
-        flash_id:  this.flashID,
-        user_id: this.flash.user_id,
-        flash_date:  this.flash.flashDate,
-        flash_image:  this.flash.flashImage,
-        collection_number:  this.flash.collectioNumber,
-        views_number:  this.flash.viewsNumber,
-        flash_title: this.flash.flashTitle,  
-        flash_content: this.flash.flashContent,  
+      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag`, [{  
+        userId: this.flash.user_id,
+        flashTitle: this.flash.flash_title,  
+        flashDate:  this.flash.flash_date,
+        flashContent: this.flash.flash_content,  
+        flashImage:  this.flash.flash_image,
+        collectionNumber:  this.flash.collection_number,
+        viewsNumber:  this.flash.views_number,
+        tagId: this.flash.tagId,
+        tagName: this.flash.tagName
         // 如果需要更新其他字段，也可以在这里添加  
-      })  
-      .then(response => {  
-        this.$message.success('资讯更新成功！');  
-        console.log(response)
-        // 这里可以添加额外的逻辑，比如重新获取数据或关闭对话框  
-      })  
+      }])  
       .catch(error => {  
         console.error('Error updating flash:', error);  
         this.$message.error('资讯更新失败，请重试！');  
       });  
-    },  
-    fetchFlashes() {
-      axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
-        .then(response => {
-          this.flash = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
-    },
-    fetchTags() {
-      axios.get(`https://localhost:7218/api/FlashTags`)
-        .then(response => {
-          this.tag = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
-    },
-    getImageUrl(tag) {  
-      // 这里返回一个基于tag的图片URL，你可能需要根据实际情况来实现这个函数  
-      return tag.image// 示例URL  
-    },
-    ...mapMutations([  
-      'toggleTag' // 映射mutation到methods，但在这个例子中，我们实际上不需要直接调用它  
-      // 因为我们使用了v-model和Element UI的el-checkbox-group，它会自动处理选中状态  
-    ])    
+    },   
   }  ,
-  created() {
-    // 在组件创建时，从查询参数中获取flashId、title、content和tagName  
-    this.fetchFlashes();
-    this.fetchTags();
-  }
 }
 </script>
 

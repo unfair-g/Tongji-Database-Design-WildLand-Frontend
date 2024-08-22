@@ -12,31 +12,19 @@
         <div class="post-info">
           <div class="post-title">标签标题: 
             <el-input
-              v-model="textarea1"
+              v-model="tag.tag_id"
               style="width: 240px"
-              autosize
-              type="textarea"
-              placeholder="Please input"
             />
           </div>
           <div class="post-body">标签内容: 
             <el-input
-              v-model="textarea"
+              v-model="tag.tag_name"
               style="width: 1000px"
               :rows="2"
-              type="textarea"
-              placeholder="Please input"
             />
           </div>
-          <div class="post-title">选择相似标签:</div>
-        <el-checkbox-group v-model="selectedTags" class="checkbox-group-with-images">  
-          <div v-for="tag in tag" :key="tag" class="checkbox-with-image">  
-            <img :src="getImageUrl(tag)" alt="" class="checkbox-image">  
-            <el-checkbox :label="tag">{{ tag.title }}</el-checkbox>  
-          </div>  
-        </el-checkbox-group>  
         </div>
-        <el-button class="confirm-button" @click="confirmAction">确认</el-button>
+        <el-button class="confirm-button" @click="updateTag">确认</el-button>
       </div>
     </div>
   </div>
@@ -47,8 +35,15 @@
 import { Close } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { mapState, mapMutations } from 'vuex'  
+import axios from '@/axios'; // 引入配置好的axios实例
 
 export default {
+  props: ['tagID'],
+  data() {
+    return {
+      tag:[]
+    };
+  },
   setup() {
     const router = useRouter()
     const closeDetail = () => {
@@ -67,11 +62,29 @@ export default {
       'tags', // 将state中的tags映射到组件的computed属性  
       'selectedTags' // 将state中的selectedTags映射到组件的v-model上  
     ])  ,
-    tag() {
-      return this.$store.state.tag.tags;
-    },
   },  
   methods: {  
+    fetchTags() {
+      axios.get(`https://localhost:7218/api/FlashTags/${this.tagID}`)
+        .then(response => {
+          this.tag = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
+    updateTag() {  
+      // 发送 PUT 请求来更新 Flash  
+      axios.put(`https://localhost:7218/api/FlashTags/${this.tagID}`, {  
+          tag_name: this.tag.tag_name,
+          tag_id: this.tag.tag_id,
+        // 如果需要更新其他字段，也可以在这里添加  
+      })  
+      .catch(error => {  
+        console.error('Error updating flash:', error);  
+        this.$message.error('资讯更新失败，请重试！');  
+      });  
+    },  
     getImageUrl(tag) {  
       // 这里返回一个基于tag的图片URL，你可能需要根据实际情况来实现这个函数  
       return tag.image// 示例URL  
@@ -79,8 +92,11 @@ export default {
     ...mapMutations([  
       'toggleTag' // 映射mutation到methods，但在这个例子中，我们实际上不需要直接调用它  
       // 因为我们使用了v-model和Element UI的el-checkbox-group，它会自动处理选中状态  
-    ])    
-  }  
+    ])    ,
+  }  ,
+  created() {
+    this.fetchTags();
+  }
 }
 </script>
 

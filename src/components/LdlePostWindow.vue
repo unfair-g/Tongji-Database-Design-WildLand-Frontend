@@ -32,17 +32,16 @@
         </el-form-item>
 
         <div class="form-row">
-          <div class="left-side">
+          <div class="top-section">
             <el-form-item label="物品位置：" prop="itemLocation" style="font-weight: bold;">
               <el-button type="primary" color="#1D5B5E" @click="addLocation" :loading="locationLoading" :disabled="locationLoading">点击添加定位</el-button>
               <div v-if="postForm.itemLocation" class="location-info">
                 您的IP获取成功,IP所在地:{{ postForm.itemLocation }}
               </div>
             </el-form-item>
-            <div class="map-container"></div>
           </div>
 
-          <div class="right-side">
+          <div class="bottom-section">
             <el-form-item label="物品图片：" prop="itemImages" style="font-weight: bold;">
               <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
               <el-upload
@@ -85,7 +84,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">发布成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="Pbutton" @click="GoToOrder(product)">查看帖子</el-button>
+            <el-button type="text" class="Pbutton" @click="GoToOrder()">查看帖子</el-button>
           </div>
         </div>
       </div>
@@ -98,6 +97,7 @@
 import axios from 'axios';
 import { ElMessage } from "element-plus";
 import  globalState  from '../store/global'; // 引入 global.js 中的状态
+import { provinceMap } from '@/store/global';
 
 export default {
   name: 'LdlePost',
@@ -137,7 +137,9 @@ export default {
       fileList: [],
       locationLoading: false,
       localIsLdlePostDialogVisible: this.isLdlePostDialogVisible,
-      errors: {}
+      errors: {},
+      postId:0,
+      postNew:{}
     };
   },
   watch: {
@@ -178,19 +180,40 @@ export default {
           item_summary: this.postForm.itemDescription,
           price: parseFloat(this.postForm.itemPrice),
         };
-        console.log('订单上传:', postData);
+        console.log('帖子上传:', postData);
       axios.post('https://localhost:7218/api/Posts/PushLdle', postData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
     })
         .then(response => {
-          console.log('订单上传成功:', response.data);
+          console.log('帖子上传成功:', response.data);
+          this.postId=response.data.post_id
+          this.postNew={
+            ...response.data,
+            content:response.data.condition
+          };
+          // 在这里上传图片
+          this.uploadImage();  // 调用上传图片的方法
+        })
+        .catch(error => {
+          console.error('帖子出错:', error);
+        });
+    },
+    AddContent()
+    {
+       axios.put(`https://localhost:7218/api/Posts/${this.postNew.post_id}`, this.postNew,{headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      }
+    })
+    .then(response => {
+          console.log('帖子上传成功:', response.data);
           this.handleClose();
           this.PostSuccess = true;
         })
         .catch(error => {
-          console.error('上传订单时出错:', error);
+          console.error('帖子出错:', error);
         });
     },
     resetForm() {
@@ -198,6 +221,7 @@ export default {
       this.postForm.itemDescription = '';
       this.postForm.itemPrice = '';
       this.postForm.itemLocation = '';
+      this.postForm.itemCondition = '';
       this.postForm.itemImages = [];
       this.fileList = [];
       this.locationLoading = false;
@@ -210,7 +234,9 @@ export default {
         const ip = response.data.ip;
         const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
         const province = geoResponse.data.state_prov;
-        this.postForm.itemLocation = province;
+        const chineseProvince = provinceMap[province] || province;
+        this.postForm.itemLocation = chineseProvince;
+        console.log('Province:', chineseProvince);
       } catch (error) {
         this.handleError(error, '获取定位信息失败');
       } finally {
@@ -234,22 +260,57 @@ export default {
       }
       return true;
     },
-    handleImageSuccess(response) {
-      this.postForm.itemImages.push(response.url);
+    handleImageSuccess(response,file) {
+      if (response && response.message === "success") {
+    const url = URL.createObjectURL(file.raw);
+    this.postForm.itemImages.push(url);
+    ElMessage.success('图片上传成功');
+    // 在这里调用上传图片接口
+    this.uploadImage();  // 调用上传图片的方法
+  } else {
+    console.log('上传图片失败，服务器响应:', response);
+    ElMessage.error('上传图片失败');
+  }
+    },
+    uploadImage() {
+
+      // 创建一个 FormData 对象
+  const formData = new FormData();
+  //formData.append('post_id', this.postId);  // 使用帖子的ID
+
+  // 将所有文件添加到 FormData 对象
+  this.fileList.forEach(file => {
+    formData.append('files', file.raw);  // 绑定图片文件
+  });
+
+  // 发送 POST 请求
+  axios.post(`https://localhost:7218/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  .then(response => {
+    console.log('图片上传成功:', response.data);
+    this.AddContent();  // 上传图片成功后更新帖子内容
+    ElMessage.success('所有图片上传成功');
+  })
+  .catch(error => {
+    this.handleError(error, '上传图片失败');
+  });
     },
     handleFileChange(file, fileList) {
       this.fileList = fileList;
     },
     handlePictureCardPreview(file) {
-      const url = URL.createObjectURL(file.raw);
-      window.open(url);
+      //const url = URL.createObjectURL(file.raw);
+      //window.open(url);
+      console.log(file);
     },
     handleRemove(file, fileList) {
       this.fileList = fileList;
     },
-    GoToOrder(product) {
-      // navigate to order details or handle post success
-      this.$router.push({ path: `/order/${product.id}` });
+    GoToOrder() {
+      this.$router.push({ path: `/home/forum/post/lease/${this.postId}` });
     }
   }
 };
@@ -261,7 +322,8 @@ export default {
 }
 .form-row {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column; /* 从左右排列改为上下排列 */
+  gap: 20px; /* 控制上下间距 */
 }
 .left-side {
   width: 45%;
@@ -321,5 +383,26 @@ export default {
 .Pbutton {
   float: center;
   color:#ddd;
+}
+
+.top-section, .bottom-section {
+  width: 100%; /* 使每部分占满整个宽度 */
+}
+
+/* 新增样式 */
+.upload-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 图片之间的间隔 */
+}
+
+.upload-demo .el-upload-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 图片之间的间隔 */
+}
+
+.upload-demo .el-upload-list .el-upload-list__item {
+  width: calc(33.33% - 10px); /* 每行显示三个图片，并考虑间隔 */
 }
 </style>
