@@ -58,7 +58,7 @@
   </template>
   
   <script>
- import axios from '@/axios';
+ import axios from 'axios';
 
   export default {
     data() {
@@ -97,7 +97,7 @@
     const updatedProduct = {  
       ...this.product,  
     };  
-    axios.put(`/api/OutdoorProducts/${productId}`, updatedProduct)  
+    axios.put(`https://localhost:7218/api/OutdoorProducts/${productId}`, updatedProduct)  
       .then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
@@ -123,7 +123,7 @@
       // http://139.9.193.78:90/images/outdoor_product/4.png 
        // 构造要发送的数据  
        const productData = {  
-        product_id: this.product.product_id, // 注意：如果 product_id 是由后端生成的，这里可能不需要或应该设置为 null/undefined  
+        product_id: 0, // 注意：如果 product_id 是由后端生成的，这里可能不需要或应该设置为 null/undefined  
         product_name: this.product.product_name,  
         product_tag: this.product.product_tag,  
         size: this.product.size,  
@@ -135,7 +135,7 @@
         //product_image: this.product.product_image, // 假设这是图片的URL或Base64编码的字符串  
         introduction: this.product.introduction  
       };   
-      axios.post('/api/OutdoorProducts', productData, {  
+      axios.post('https://localhost:7218/api/OutdoorProducts', productData, {  
         headers: {  
             'accept': 'text/plain' ,
           'Content-Type': 'application/json'  
@@ -206,12 +206,11 @@
       if(this.isEdit)
           this.generateProductId();
     },
-    
     beforeRouteEnter(to, from, next) {
       const productId = to.params.productId;
       // 在 next 中使用 Vuex Store
       next(vm => {
-        axios.get(`/api/OutdoorProducts/${productId}`)
+        axios.get(`https://localhost:7218/api/OutdoorProducts/${productId}`)
         .then(response => {
           vm.product = response.data;
         })

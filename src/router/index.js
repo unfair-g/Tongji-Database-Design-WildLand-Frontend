@@ -259,8 +259,8 @@ const routes = [
                 props: true
             },
             {
-                path: `searchFlash`,
-                component: () => import('../views/SearchFlash.vue'),
+                path: `searchProduct`,
+                component: () => import('../views/SearchProduct.vue'),
                 props: true
             }
         ]
@@ -271,7 +271,6 @@ const routes = [
         children: [
             {
                 path: "login",
-                name: 'Login',
                 component: () => import('../components/LogIn.vue')
             },
             {

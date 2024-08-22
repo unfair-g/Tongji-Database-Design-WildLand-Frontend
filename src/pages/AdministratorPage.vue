@@ -251,7 +251,6 @@ export default {
   justify-content: space-between;
   padding: 0 20px;
   position: relative;
-  background-color: rgb(184, 222, 209);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加外阴影 */
 }
 

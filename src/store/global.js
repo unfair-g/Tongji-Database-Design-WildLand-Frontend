@@ -1,6 +1,6 @@
 const state = {
     Login: false,
-    mute_status:false,
+    mute_status:0,
     userId: 0,
 
 };
@@ -20,8 +20,8 @@ export function loadFromSessionStorage() {
         state.Login = true;
         const id = sessionStorage.getItem('userId')
         state.userId = JSON.parse(id);
-        console.log('从storage中读取', state.Login, state.userId);
         state.mute_status = JSON.parse(sessionStorage.getItem('mute'));
+        console.log('从storage中读取', state.Login, state.userId,state.mute_status);
     }
     else {
         console.log('读取失败');
