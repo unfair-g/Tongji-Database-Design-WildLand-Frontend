@@ -181,6 +181,7 @@ const onSubmit = () => {
               newuser.gender = 'm';
             const response = await axios.post(`/api/Users/register/${newuser.user_name}/${newuser.phone_number}/${hashedPassword}`,
               formData, {
+                
                 params: {
                   Email: newuser.email,
                   Gender: newuser.gender,
