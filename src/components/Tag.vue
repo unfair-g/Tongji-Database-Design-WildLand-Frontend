@@ -5,11 +5,15 @@
       :key="index"  
     >  
       <div class="tag-container">  
-        <el-tag :color="tag.color">{{ tag.tag_id }}</el-tag>  
+        <el-tag :color="tag.color" class="tag-name">{{ tag.tag_name }}</el-tag>  
+      </div>  
+      <div class="detail">{{ tag.tag_id || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
+      <div class="update-tag">  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
       </div>  
       <div class="detail">{{ tag.tag_name || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
-        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
       </div>  
       <div class="detail">{{ tag.tag_name || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
@@ -87,6 +91,10 @@ export default {
   font-size: 16px; /* 可选：调整字体大小 */  
   color: #333; /* 可选：调整文字颜色 */  
 }  
+
+.tag-name{
+  font-size: 20px;
+}
   
 .heading {  
   margin-bottom: 10px; /* 增加与下方标签组的间隔 */  
