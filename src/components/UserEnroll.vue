@@ -226,7 +226,7 @@ function toWelcomePage() {
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
-    height:100%;
+    min-height:100%;
     width:55%;
     position:absolute;
 }

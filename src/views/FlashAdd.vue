@@ -37,6 +37,17 @@
               type="textarea"
             />
           </div>
+          <div class="post-body">添加图片:
+          <el-upload
+            style="margin-left: 150px;"
+            :show-file-list="false"
+            :before-upload="beforeAvatarUpload"
+            @change="handleFileChange"
+          >
+            <el-avatar v-if="imageUrl" :src="imageUrl" />
+            <el-icon v-else><Plus /></el-icon>
+            </el-upload>
+          </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
@@ -49,6 +60,9 @@
 import { Close } from '@element-plus/icons-vue'
 import { mapState, mapMutations } from 'vuex'  
 import axios from '@/axios'; // 引入配置好的axios实例
+import { ref} from 'vue'
+import { Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus' // 导入 ElMessage
 
 export default {
   props: ['flashID'],
@@ -60,7 +74,8 @@ export default {
   },
 
   components: {
-    Close
+    Close,
+    Plus
   },
   computed: {  
     ...mapState([  
@@ -68,6 +83,49 @@ export default {
       'selectedTags' // 将state中的selectedTags映射到组件的v-model上
     ])  ,
   },  
+  setup() {
+    const admin_id = ref(global.userId)
+    const avatarSrc = ref('') // 用于存储头像 URL
+
+    const beforeAvatarUpload = (file) => {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPGorPNG) {
+        ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error('上传头像图片大小不能超过 2MB!')
+        return false
+      }
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      axios.post(`https://localhost:7218/api/FlashPics/UploadFlashPic?flashId=${admin_id.value}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      ElMessage.success('头像上传成功')
+      .catch(error => {
+        ElMessage.error(error.message)
+      });
+
+      return false;
+    }
+
+    const handleFileChange = (file) => {
+      avatarSrc.value = URL.createObjectURL(file.raw)
+    }
+
+    return {
+      avatarSrc,
+      beforeAvatarUpload,
+      handleFileChange,
+      ElMessage,
+    }
+  },
   methods: {  
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })
@@ -81,14 +139,14 @@ export default {
 
       // 发送 PUT 请求来更新 Flash  
       axios.put(`https://localhost:7218/api/Flashes/${this.flashID}`, {  
-        flash_id:  this.flashID,
-        user_id: this.flash.user_id,
+        user_id:123,
         flash_date:  this.flash.flashDate,
         flash_image:  this.flash.flashImage,
         collection_number:  this.flash.collectioNumber,
         views_number:  this.flash.viewsNumber,
         flash_title: this.flash.flashTitle,  
-        flash_content: this.flash.flashContent,  
+        flash_content: this.flash.flashContent, 
+        flash_id:  this.flashID, 
         // 如果需要更新其他字段，也可以在这里添加  
       })  
       .then(response => {  
@@ -203,16 +261,22 @@ export default {
   box-sizing: border-box; /* 包括内边距和边框 */
 }
 
-.post-title,
-.post-category,
-.post-body,
-.post-publisher,
-.review-opinion {
+.post-body{
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
   padding-left: 40px; /* Add more indentation */
   box-sizing: border-box; /* 包括内边距和边框 */
+  
+}
+
+.post-title{
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-left: 40px; /* Add more indentation */
+  box-sizing: border-box; /* 包括内边距和边框 */
+  
 }
 
 .post-content {
