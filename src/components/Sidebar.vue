@@ -75,7 +75,7 @@ export default {
       isLdlePostDialogVisible: false,
       isSharePostDialogVisible: false,
       isRecruitPostDialogVisible:false,
-      BeSilenced: state.mute_status // 根据state.mute_status来确定
+      BeSilenced: (state.mute_status===0?true:false) // 根据state.mute_status来确定
     };
   },
   methods: {
