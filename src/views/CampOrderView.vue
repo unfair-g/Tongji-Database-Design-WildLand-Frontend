@@ -42,7 +42,11 @@
             
       </div>
       
-      <CampPayWindow v-model:dialogVisible="dialogVisible" :totalPrice="totalPrice" />
+      <CampPayWindow
+        v-model:dialogVisible="dialogVisible"
+        :totalPrice="totalPrice"
+        :orderId="orderId"
+       />
       
       </el-main>
       <el-footer>
@@ -82,6 +86,7 @@
         dialogVisible: false,
         camp:null, //订单对应的营地
         selectedCampsites: [], //订单选中的营位
+        orderId: null,  // 新增orderId变量
       };
     },
     computed: {
@@ -94,13 +99,21 @@
       selectedCampsiteIds() {
         return this.$route.query.selectedCampsiteIds.split(',');
       },
+      // 计算天数
+      reservedDays() {
+        const startDate = dayjs(this.$route.query.startDate);
+        const endDate = dayjs(this.$route.query.endDate);
+        return endDate.diff(startDate, 'day') ; 
+      },
       totalPrice() {
-        return this.selectedCampsites.reduce((total, campsite) => {
+        const campsiteTotalPrice = this.selectedCampsites.reduce((total, campsite) => {
           return total + campsite.price;
         }, 0);
+        return campsiteTotalPrice * this.reservedDays; // 营位总价 * 预定天数
       },
       totalPriceDetail() {
-        return this.selectedCampsites.map(campsite => `¥${campsite.price}`).join(' + ');
+        const campsitePriceDetails = this.selectedCampsites.map(campsite => `¥${campsite.price}`).join(' + ');
+        return `(${campsitePriceDetails}) * ${this.reservedDays} 晚`;
       },
       isOrderButtonEnabled() {
       // 检查所有表单字段是否已填写
@@ -167,8 +180,8 @@
         console.log('开始提交订单')
         const response = await axios.post('/api/ReserveOrders/createreserveorder', campOrder);
         console.log('订单提交成功:', response.data);
+        this.orderId = response.data.orderId;  // 将orderId存储到父组件的data中
         this.dialogVisible = true;
-        
         } catch (error) {
         console.error('订单提交失败:', error);
         }
