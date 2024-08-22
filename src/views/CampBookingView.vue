@@ -59,13 +59,7 @@
     </el-scrollbar>
 
     <el-footer>
-      <el-button 
-      class="booking-button" 
-      :type="isOrderButtonEnabled ? 'primary' : ''" 
-      :disabled="!isOrderButtonEnabled" 
-      @click="goToCampOrder()"
-      >填写订单
-      </el-button>
+      <el-button class="booking-button" type="primary" @click="goToCampOrder()">填写订单</el-button>
     </el-footer>
   </div>
 </template>
@@ -104,9 +98,6 @@ export default {
         groups[section].push(campsite);
         return groups;
       }, {});
-    },
-    isOrderButtonEnabled() {
-      return this.startDate && this.endDate && this.selectedCampsiteIds.length > 0;
     }
   },
   methods: {
@@ -134,12 +125,18 @@ export default {
     async fetchAvailableCampsites() {
    try {
     const data={
-      campground_id: this.campID,  // 确保传递的是 campID，而不是 'available'
-      startTime: this.startDate,
-      endTime: this.endDate
+      campground_id: 11,
+      startTime: "2024-08-13T15:22:09.071Z",
+      endTime: "2024-08-13T15:22:09.071Z"
+
     }
     console.log('开始提交订单')
     const response = await axios.post('api/CampsiteReserves/available',data );
+      //campground_id: this.campID,  // 确保传递的是 campID，而不是 'available'
+      //startTime: this.startDate,
+      //endTime: this.endDate
+      
+    
     this.availableCampsiteIds = response.data;
   } catch (error) {
     console.error("获取空闲营位失败", error);

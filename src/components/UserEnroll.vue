@@ -1,7 +1,6 @@
 <template>
-  <div class="white-bg">
+<div class="white-bg">
     <div class="form-container">
-      <el-scrollbar height="85vh">
         <h1 style="color:#1D5B5E">游客注册</h1>
     <el-form
     :rules="rules"
@@ -60,9 +59,8 @@
     <el-button class="cancelbutton" @click="toWelcomePage">取消</el-button>
     <el-button class="checkbutton" v-bind:disabled="loginDisabled" tyype="primary" color="#1D5B5E" @click="onSubmit">确认</el-button>
     </div>
-  </el-scrollbar>
     </div>
-  </div>
+</div>
 </template>
 
 <script setup>
@@ -229,7 +227,7 @@ function toWelcomePage() {
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
-    min-height:100%;
+    height:100%;
     width:55%;
     position:absolute;
 }

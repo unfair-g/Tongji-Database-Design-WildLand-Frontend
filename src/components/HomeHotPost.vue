@@ -11,16 +11,7 @@
                 <div style="width:90%;display: block;margin:0 auto;">
                 <el-card v-if="post" style="min-height: fit-content;" @click="toPostDetail(post)">
                 <template #header>
-                    <div style="display: flex">
-                        <h2>{{ post.title }}</h2>
-                        <div class="author-info">
-                            <el-avatar :src="post.portrait"></el-avatar>
-                            <div class="author-details">
-                            <p>{{ post.author_name }}</p>
-                            <p>{{ this.formatDate(post.post_time) }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <h2>{{ post.title }}</h2>
                 </template>
                 <div style="display: flex;">
                     <div style="width:50%">
@@ -31,6 +22,13 @@
                         </el-carousel-item>
                     </el-carousel>
                     </div>
+                    <div class="author-info">
+                        <el-avatar :src="post.portrait"></el-avatar>
+                        <div class="author-details">
+                          <p>{{ post.author_name }}</p>
+                          <p>{{ this.formatDate(post.post_time) }}</p>
+                        </div>
+                      </div>
                     <div style="width:50%;display:flex;flex-direction: column;">
                       <p v-html="formatContent(post.content)" class="content-text"></p>
                     </div>
@@ -73,7 +71,13 @@ export default{
             } 
         },  
         toPostDetail(post) {
-            this.$router.push({ path: `/home/forum/post/share/${post.post_id}` });
+            if(post.post_kind==0)
+              this.type='share';
+            else if(post.post_kind==1)
+              this.type='lease';
+            else
+              this.type='recruit'
+            this.$router.push({ path: `/home/forum/post/${this.type}/${post.post_id}` });
         },
         formatContent(content) {
             if (!content) return ''; // 如果 content 为 null 或 undefined，返回空字符串
@@ -128,7 +132,9 @@ export default{
 .author-info {
     display: flex;
     align-items: flex-start;
-    margin-left: auto;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
 }
 
 .author-info .author-details {

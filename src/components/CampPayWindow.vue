@@ -33,8 +33,7 @@
     v-model="PaySuccess"
     width="40%"
     height="40%"
-    v-if="PaySuccess"
-    @close="handleClose">
+    v-if="PaySuccess">
       <div class="bg">
         <div class="bg-container">
           <div class="success-container">
@@ -62,11 +61,7 @@ export default {
       totalPrice:{
         type: Number,
         required: true,
-      },
-      orderId: {
-        type: Number, // 新增orderId属性
-        required: true,
-    }
+      }
 
     },
     data() {
@@ -88,7 +83,6 @@ export default {
     methods: {
       handleClose() {
         this.closeDialog();
-        this.redirectToHome();
       },
       closeDialog() {
         this.localDialogVisible = false;
@@ -103,11 +97,8 @@ export default {
       {
         this.PaySuccess = false
         this.Order=true
-        this.$router.push({ path: `/home/userspace/camporder/${this.orderId}` }); // 跳转到订单页面
-      },
-      redirectToHome() {
-        this.$router.push({ path: '/home' });
-      }  
+
+      }
     },
 
   }

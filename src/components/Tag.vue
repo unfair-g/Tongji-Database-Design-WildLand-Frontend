@@ -11,6 +11,7 @@
       <div class="update-tag">  
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
       </div>  
+      <div class="detail">{{ tag.tag_name || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
       </div>  
@@ -33,7 +34,7 @@ export default {
       // 弹出确认窗口  
       if (confirm('你确定要删除这个Flash吗？')) {  
         // 用户点击了确定，提交删除请求  
-        axios.delete(`/api/FlashTags/${tag.tag_id}`)  
+        axios.delete(`https://localhost:7218/api/FlashTags/${tag.tag_id}`)  
           .then(() => {  
             // 删除成功的处理逻辑，例如提示用户或刷新页面  
             alert('tag删除成功！');  
@@ -50,7 +51,7 @@ export default {
       }  
     },
     fetchTags() {
-      axios.get(`/api/FlashTags`)
+      axios.get(`https://localhost:7218/api/FlashTags`)
         .then(response => {
           this.tag = response.data;
         })

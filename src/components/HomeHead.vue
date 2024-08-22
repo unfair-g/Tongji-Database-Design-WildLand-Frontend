@@ -15,7 +15,7 @@
     <el-menu-item class="menuitem" index="/home/flash">经验资讯</el-menu-item>
     <div class="flex-grow" />
     <el-dropdown>
-        <el-avatar :src="avatar" style="height:75px;width:75px;margin-top: auto;margin-bottom: auto;"></el-avatar>
+        <el-avatar :src="avatar" style="height:80%;width:fit-content;margin-top: auto;margin-bottom: auto;"></el-avatar>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item :icon="SwitchButton" @click="Exit">退出登录</el-dropdown-item>

@@ -169,7 +169,7 @@ export default {
       return this.shareposts.filter(
         post =>
           post.title.toLowerCase().includes(query) ||
-          post.content.toLowerCase().includes(query) ||
+          post.shortContent.toLowerCase().includes(query) ||
           post.username.toLowerCase().includes(query) 
 
       );
@@ -203,7 +203,7 @@ export default {
               author_id:post.author_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content,
+              shortContent: post.short_content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
