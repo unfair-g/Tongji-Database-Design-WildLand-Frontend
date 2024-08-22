@@ -2,7 +2,7 @@
   <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
       <div class="post-header">
-        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost[0].author_id)">
+        <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost.author_id)">
         <div class="post-header-info">
           <span class="username">{{ ldleitemsPost.user_name }}</span>
         </div>
@@ -101,7 +101,7 @@
       <div class="dashed-line"></div>
 
       <!-- 新增的表单区域 -->
-      <div class="recipient-form" v-if="isButtonDisabled">
+      <div class="recipient-form" v-if="userid!==ldleitemsPost.author_id">
         <el-form :model="recipientInfo" :rules="rules" ref="recipientForm">
           <el-form-item label="收件人姓名" prop="name">
             <el-input v-model="recipientInfo.name" placeholder="请输入收件人姓名"></el-input>
@@ -114,28 +114,13 @@
           </el-form-item>
         </el-form>
       </div>
-      <!-- 新增的表单区域 -->
-      <div class="recipient-form" v-else>
-        <el-form >
-          <el-form-item label="收件人姓名">
-            <el-input :value="this.rent[0].recipient_name" readonly></el-input>
-          </el-form-item>
-          <el-form-item label="收件人地址">
-            <el-input :value="this.rent[0].recipient_address" readonly></el-input>
-          </el-form-item>
-          <el-form-item label="收件人电话">
-            <el-input :value="this.rent[0].recipient_phone" readonly></el-input>
-          </el-form-item>
-        </el-form>
-      </div>
-      
-      <div class="action-buttons">
+
+      <div class="action-buttons" v-if="userid!==ldleitemsPost.author_id">
         <el-button class="pay" id="rentButton" :disabled="!isButtonDisabled" @click="Rent_Success()" v-if="isButtonDisabled">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
 
     </div>
-    <div v-else>加载中......</div>
   </el-card>
 
   <ReportPost
@@ -153,7 +138,7 @@
 import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
 import ReportPost from '@/components/ReportPostWindow.vue'
-import  globalState  from '../store/global'; // 引入 global.js 中的状态
+import  globalState  from '@/store/global'; // 引入 global.js 中的状态
 import { ElMessage } from "element-plus";
 
 export default {
@@ -192,8 +177,7 @@ export default {
       isLike:false,
       liStar:false,
       location:'',
-      rent:[],
-      isButtonDisabled: true, // 控制按钮的禁用状态  
+      rent:[], 
       userid:globalState.userId,
       isReportPostWindowVisible:false,//举报弹窗显示
       rules: {
@@ -216,7 +200,7 @@ export default {
   },
   methods: {
       fetchLdleitemsPosts() {
-        axios.get(`https://localhost:7218/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
+        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
         .then(response => {
           this.ldleitemsPost = response.data;
           console.log(this.ldleitemsPost)

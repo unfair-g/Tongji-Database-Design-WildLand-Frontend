@@ -47,7 +47,13 @@
       </el-main>
       <el-footer>
         <span class="price-tag">¥{{ totalPrice }}</span>
-        <el-button class="go-to-pay-button" type="primary" @click="go_to_pay()">提交订单</el-button>
+        <el-button 
+        class="go-to-pay-button" 
+        :type="isOrderButtonEnabled ? 'primary' : ''" 
+        :disabled="!isOrderButtonEnabled" 
+        @click="go_to_pay()"
+        >提交订单
+        </el-button>
       </el-footer>
 
     </div>
@@ -95,7 +101,18 @@
       },
       totalPriceDetail() {
         return this.selectedCampsites.map(campsite => `¥${campsite.price}`).join(' + ');
-      }
+      },
+      isOrderButtonEnabled() {
+      // 检查所有表单字段是否已填写
+    return (
+      this.orderForm.order_person_name &&
+      this.orderForm.order_person_phone_number &&
+      this.orderForm.order_person_id &&
+      this.selectedCampsites.length > 0 &&
+      this.startDate && 
+      this.endDate
+    );
+    }
     },
     methods: {
       //接口1 获取营地信息
@@ -175,7 +192,7 @@
   
   .container {
     width: 70%; /* 设置容器的最大宽度 */
-    height: 100vh; /* 设置容器高度为视口高度 */
+    height: 90.4vh; /* 设置容器高度为视口高度 */
     margin: 0 auto; /* 居中显示容器 */
     display: flex;
     flex-direction: column; /* 设置子元素为纵向排列 */
@@ -228,6 +245,7 @@
     width: 260px;
     font-size: 20px;
     background-color: #1D5B5E;
+    border-width: 0;
   }
   .go-to-pay-button:hover {
     background-color: #2e7478; /* 更改为你希望的hover背景颜色 */

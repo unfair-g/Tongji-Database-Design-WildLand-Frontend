@@ -59,7 +59,13 @@
     </el-scrollbar>
 
     <el-footer>
-      <el-button class="booking-button" type="primary" @click="goToCampOrder()">填写订单</el-button>
+      <el-button 
+      class="booking-button" 
+      :type="isOrderButtonEnabled ? 'primary' : ''" 
+      :disabled="!isOrderButtonEnabled" 
+      @click="goToCampOrder()"
+      >填写订单
+      </el-button>
     </el-footer>
   </div>
 </template>
@@ -98,6 +104,9 @@ export default {
         groups[section].push(campsite);
         return groups;
       }, {});
+    },
+    isOrderButtonEnabled() {
+      return this.startDate && this.endDate && this.selectedCampsiteIds.length > 0;
     }
   },
   methods: {
@@ -203,7 +212,7 @@ export default {
   
   .container {
     width: 70%; /* 设置容器的最大宽度 */
-    height: 100vh; /* 设置容器高度为视口高度 */
+    height: 90.4vh; /* 设置容器高度为视口高度 */
     margin: 0 auto; /* 居中显示容器 */
     display: flex;
     flex-direction: column; /* 设置子元素为纵向排列 */

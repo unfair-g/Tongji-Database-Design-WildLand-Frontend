@@ -1,7 +1,5 @@
 import { createStore } from 'vuex'
 import admin from './modules/admin'
-import camp from './modules/camp'
-import product from './modules/product'
 
 export default createStore({
   state: {
@@ -16,7 +14,5 @@ export default createStore({
   },
   modules: {
     admin,
-    camp,
-    product
   }
 })

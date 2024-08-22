@@ -1,6 +1,7 @@
 <template>
-<div class="white-bg">
+  <div class="white-bg">
     <div class="form-container">
+      <el-scrollbar height="85vh">
         <h1 style="color:#1D5B5E">游客注册</h1>
     <el-form
     :rules="rules"
@@ -59,8 +60,9 @@
     <el-button class="cancelbutton" @click="toWelcomePage">取消</el-button>
     <el-button class="checkbutton" v-bind:disabled="loginDisabled" tyype="primary" color="#1D5B5E" @click="onSubmit">确认</el-button>
     </div>
+  </el-scrollbar>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup>
@@ -70,7 +72,7 @@ import { ref,reactive } from 'vue'
 import { User, Key, Iphone,Message,Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import CryptoJS from 'crypto-js'
-import global,{saveToSessionStorage} from '@/store/global'
+import global,{saveToSessionStorage,provinceMap} from '@/store/global'
 
 const loginDisabled = ref(false)
 
@@ -149,13 +151,31 @@ const beforeAvatarUpload = (file) => {
 const handleFileChange=(file)=> {
       imageUrl.value = URL.createObjectURL(file.raw)
       newuser.avatar = file;
-    }
+}
+
+const addLocation = async () => {
+  try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        const ip = response.data.ip;
+
+        const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
+        const province = geoResponse.data.state_prov;
+      
+        const chineseProvince = provinceMap[province] || province;
+        newuser.location = chineseProvince;
+        
+      } catch (error) {
+        console.error('Error fetching location:', error);
+        ElMessage.error('获取定位信息失败');
+      }
+}
 
 const onSubmit = () => {
       loginDisabled.value=true
       formRef.value.validate(async (valid) => {
         if (valid) {
           try {
+            await addLocation();
             const hashedPassword = CryptoJS.SHA256(newuser.password).toString()
             if (newuser.gender == '女')
               newuser.gender = 'f';
@@ -174,7 +194,7 @@ const onSubmit = () => {
               }
             });
             ElMessage.success('注册成功！');
-            saveToSessionStorage(true, response.data.data.user_id)
+            saveToSessionStorage(true, response.data.data.user_id,true)
             global.Login = true;
             global.userId = response.data.data.user_id;
             toHomePage()
@@ -208,7 +228,7 @@ function toWelcomePage() {
     background-color:rgb(255,255,255,80%);
     bottom :0;
     left:0;
-    height:100%;
+    min-height:100%;
     width:55%;
     position:absolute;
 }

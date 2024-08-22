@@ -116,19 +116,6 @@
                     style="width:500px"
                 />
                 </el-form-item>
-                 <el-form-item label="地址">
-                 <el-select
-                    v-model="user.location"
-                    placeholder="请选择您所在的城市"
-                    size="large"
-                >
-                <el-option
-                    v-for="city in citys"
-                    :key="city.value"
-                    :value="city.value"
-                />
-                </el-select>
-                </el-form-item>
                 <el-form-item label="手机号码" prop="phone_number">
                 <el-input v-model="user.phone_number" placeholder="请输入您的手机号码"/>
                 </el-form-item>
@@ -153,6 +140,7 @@
         v-model="dialogVisible"
         title="达人申请表"
         width="500"
+        :before-close="resetForm"
     >
         <el-form 
         :model="expert" 
@@ -182,8 +170,8 @@
         </el-form>
         <template #footer>
         <div class="dialog-footer">
-            <el-button @click="dialogVisible = false;expert.image=null">取消</el-button>
-            <el-button type="primary" @click="onSubmit; dialogVisible = false" color="#1D5B5E">确认</el-button>
+            <el-button @click="resetForm">取消</el-button>
+            <el-button type="primary" @click="onSubmit()" color="#1D5B5E">确认</el-button>
         </div>
         </template>
     </el-dialog>
@@ -204,15 +192,7 @@ export default {
   },
     data() {
         return {
-            dialogVisible: false,
             isListVisible:false,
-            citys: [
-                { value: '上海' },
-                { value: '北京' }, 
-                { value: '安徽' },
-                { value: '内蒙古' },
-                { value: '浙江' }
-            ]
         }
   },
   methods: {
@@ -231,9 +211,14 @@ export default {
       this.Proof.append('file', file);
       return true;
     },
+    resetForm() {
+      this.ExpertformRef.resetFields();
+      this.dialogVisible = false;
+    }
     },
     setup() {
         const dialogFormVisible = ref(false);
+        const dialogVisible = ref(false);
         const ifCharge = ref(false);
 
         const userInfo = ref({}); 
@@ -345,7 +330,7 @@ const handleFileChange=(file)=> {
           if (valid) {
               const gender = (user.gender === '女' ? 'f' : 'm')
           try {
-            const response = await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
+            await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
               userName: user.user_name,
               gender: gender,
               birthday: user.birthday,
@@ -366,10 +351,9 @@ const handleFileChange=(file)=> {
                 ElMessage.error(error.message);
               }
             }
+            dialogFormVisible.value = false;
+            window.location.reload();
             ElMessage.success('信息修改成功！');
-              console.log('User registered:', response.data);
-              fetchUser();
-              dialogFormVisible.value = false
           } catch (error) {
             ElMessage.error(error.message);
             console.error('Error update:', error);
@@ -399,7 +383,7 @@ const handleFileChange=(file)=> {
                 }
              });
             ElMessage.success('申请成功！');
-            expert.image=null
+            dialogVisible.value = false;
           } catch (error) {
               ElMessage.error(error.message);
             }
@@ -439,6 +423,7 @@ const handleFileChange=(file)=> {
 
     return {
         dialogFormVisible,
+        dialogVisible,
         ifCharge,
         userInfo,
         user,

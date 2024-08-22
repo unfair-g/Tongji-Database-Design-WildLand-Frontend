@@ -345,7 +345,7 @@ export default {
         { label: '所有人可见', value: 1 }
       ],
       post: null,
-      BeSilenced: state.mute_status, // 根据state.mute_status来确定
+      BeSilenced: (state.mute_status===0?true:false), // 根据state.mute_status来确定
       isAlertVisible: false,
       
     };
