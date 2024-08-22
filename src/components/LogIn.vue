@@ -96,7 +96,8 @@ const Login = () => {
           router.push({ path: '/home' });
           global.Login = true;
           global.userId = response.data.data.user_id;
-          saveToSessionStorage(true,response.data.data.user_id,response.data.data.mute_satus);
+          global.mute_status = response.data.data.mute_status;
+          saveToSessionStorage(true,response.data.data.user_id,response.data.data.mute_status);
           ElMessage.success('登录成功！');
         } catch (error) {
           if(error.response)
@@ -112,9 +113,10 @@ const Login = () => {
               admin_name: user.user_name,
               password: user.password
           });
-          saveToSessionStorage(true, response.data.admin_id,true)
+          saveToSessionStorage(true, response.data.admin_id,0)
           global.Login = true;
           global.userId = response.data.admin_id;
+          global.mute_status = 0;
           router.push({ path: '/administrator' });
           ElMessage.success('登录成功！');
           console.log('登录成功', response);

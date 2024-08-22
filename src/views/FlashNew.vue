@@ -131,6 +131,33 @@ export default {
     }
   },
   methods: {  
+     beforeAvatarUpload(file) {  
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';  
+      const isLt2M = file.size / 1024 / 1024 < 2;  
+  
+      if (!isJPGorPNG) {  
+        this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!');  
+        return false;  
+      }  
+      if (!isLt2M) {  
+        this.$message.error('上传头像图片大小不能超过 2MB!');  
+        return false;  
+      }  
+  
+      // 清除 formData 中可能存在的旧文件  
+      this.formData = new FormData();  
+      this.formData.append('file', file);  
+  
+      // 这里通常不会直接显示成功消息，因为文件还没有上传  
+      // 你可以调用一个上传函数，并在那里处理成功或失败的逻辑  
+      // this.uploadAvatar(this.formData);  
+  
+      // 假设只是示例，我们返回 true 表示文件通过验证  
+      return true;  
+    },  
+    handleFileChange(file){
+      this.imageUrl.value = URL.createObjectURL(file.raw)
+    },
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })
     },

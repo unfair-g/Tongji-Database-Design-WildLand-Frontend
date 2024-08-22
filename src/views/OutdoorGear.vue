@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     fetchProduct() {
-      axios.get('https://localhost:7218/api/OutdoorProducts')
+      axios.get('https://localhost:7218/api/OutdoorProducts/adminList')
         .then(response => {
           this.products = response.data;
           // 添加一个特殊的“新增”行
@@ -127,7 +127,7 @@ export default {
     },
     handleUpload()
     {
-      this.$router.push({ path: `/administrator/AdminProductEdit/${this.product_2.product_id}` ,
+      this.$router.push({ path: `/administrator/admin_product_edit/${this.product_2.product_id}` ,
         query:{
           productid:0
         }
