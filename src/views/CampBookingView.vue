@@ -182,6 +182,7 @@ export default {
       });
       return;
     }
+
     if (!this.isCampsiteAvailable(id)) {
     ElMessage({
       message: '此营位在所选时间段已被预定',

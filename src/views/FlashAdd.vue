@@ -17,10 +17,12 @@
       <hr />
       <div class="post-detail-content">
         <div class="post-title">资讯标签: 
-            <el-input
-              v-model="flash.tagName"
-              style="width: 240px"
-            />
+          <el-radio-group v-model="radio">
+            <el-radio 
+            v-for="(tag, index) in tag"  
+            :key="index"  
+            :value="tag.tag_id">{{tag.tag_name}}</el-radio>
+          </el-radio-group>
         </div>
         <div class="post-info">
           <div class="post-title">资讯标题: 
@@ -37,17 +39,6 @@
               type="textarea"
             />
           </div>
-          <div class="post-body">添加图片:
-          <el-upload
-            style="margin-left: 150px;"
-            :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
-            @change="handleFileChange"
-          >
-            <el-avatar v-if="imageUrl" :src="imageUrl" />
-            <el-icon v-else><Plus /></el-icon>
-            </el-upload>
-          </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
@@ -61,21 +52,21 @@ import { Close } from '@element-plus/icons-vue'
 import { mapState, mapMutations } from 'vuex'  
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
-import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
+import global from '@/store/global'
 
 export default {
   props: ['flashID'],
   data() {
     return {
       flash: [],
-      tag:[]
+      tag:[],
+      radio : ref()
     };
   },
 
   components: {
     Close,
-    Plus
   },
   computed: {  
     ...mapState([  
@@ -136,33 +127,45 @@ export default {
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
-
-      // 发送 PUT 请求来更新 Flash  
-      axios.put(`https://localhost:7218/api/Flashes/${this.flashID}`, {  
-        user_id:123,
-        flash_date:  this.flash.flashDate,
-        flash_image:  this.flash.flashImage,
-        collection_number:  this.flash.collectioNumber,
-        views_number:  this.flash.viewsNumber,
-        flash_title: this.flash.flashTitle,  
-        flash_content: this.flash.flashContent, 
-        flash_id:  this.flashID, 
+      axios.get(`https://localhost:7218/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
+    .then(response => {  
+      // 更新 flash 对象中的 tagName  
+      this.flash.tagName = response.data;  
+  
+      // 现在 tagName 已经更新，可以发送 PUT 请求来更新 Flash  
+      axios.put(`https://localhost:7218/api/Flashes/UpdateFlashAndTag`, [{  
+        userId: 123,  
+        flashDate: this.flash.flashDate,  
+        flashImage: this.flash.flashImage,  
+        collectionNumber: this.flash.collectionNumber,  
+        viewsNumber: this.flash.viewsNumber,  
+        flashTitle: this.flash.flashTitle,  
+        flashContent: this.flash.flashContent,  
+        flashId: this.flash.flashId,  
+        tagId: this.radio,  
+        tagName: this.flash.tagName // 这里使用更新后的 tagName  
         // 如果需要更新其他字段，也可以在这里添加  
-      })  
+      }])  
       .then(response => {  
         this.$message.success('资讯更新成功！');  
-        console.log(response)
+        console.log(response);  
         // 这里可以添加额外的逻辑，比如重新获取数据或关闭对话框  
       })  
       .catch(error => {  
         console.error('Error updating flash:', error);  
         this.$message.error('资讯更新失败，请重试！');  
       });  
+    })  
+    .catch(error => {  
+      console.error('Error getting tag name:', error);  
+      this.$message.error('获取标签名称失败，请重试！');  
+    }); 
     },  
     fetchFlashes() {
       axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
+          this.radio = ref(this.flash.tagId)
         })
         .catch(error => {
           console.error('Error fetching city names:', error);

@@ -67,7 +67,7 @@
 import { CircleCheck, CircleClose } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { mapState, mapActions } from 'vuex';
-import axios from 'axios';
+import axios from '@/axios';
 
 export default {
   data() {
@@ -97,7 +97,7 @@ export default {
       const status = action === 'approve' ? 1 : 0;
 
       try {
-        const response = await axios.post('https://localhost:7218/api/CertificationReviews/updateStatus', {
+        const response = await axios.post('/api/CertificationReviews/updateStatus', {
           admin_id: this.admin_id,
           applicant_id: row.applicant_id,
           status: status
