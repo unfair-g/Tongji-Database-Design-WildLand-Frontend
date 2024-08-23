@@ -13,7 +13,7 @@
         </el-button>
       </div>
         <p class="flash-content">{{ flash.flashContent }}</p>  
-        <img :src="flash.flashImage" :alt="flash.flashTitle" class="flash-image" />  
+        <img :src="flash.flash_pics" :alt="flash.flashTitle" class="flash-image" />  
       </div>  
     </div>  
     <div class="right-panel">  
@@ -54,6 +54,7 @@ methods: {
       axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
+          console.log(this.flash)
         })
         .catch(error => {
           console.error('Error fetching city names:', error);

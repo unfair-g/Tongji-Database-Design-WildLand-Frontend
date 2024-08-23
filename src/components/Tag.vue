@@ -9,14 +9,42 @@
       </div>  
       <div class="detail">{{ tag.tag_id || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
-        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail(tag)">更新标签</el-button>  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="showUpdateDialog(tag)">更新标签</el-button>  
       </div>  
-      <div class="detail">{{ tag.tag_name || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
       <div class="update-tag">  
         <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
       </div>  
+      <!-- 添加 el-dialog 组件 -->  
+      <el-dialog  
+        title="标签更改"   
+        v-model="dialogVisible" 
+        width="30%"  
+      >  
+        <div class="post-detail-content">  
+          <div class="post-info">  
+            <div class="post-title">标签标题:  
+              <el-input  
+                v-model="currentTag.tag_id"  
+                style="width: 240px"  
+              />  
+            </div>  
+            <div class="post-body">标签内容:  
+              <el-input  
+                v-model="currentTag.tag_name"  
+                style="width: 100%; height: 100px"  
+                type="textarea"  
+                autosize  
+              />  
+            </div>  
+          </div>   
+        </div>  
+        <template #footer>  
+            <el-button @click="dialogVisible = false">取 消</el-button>  
+            <el-button type="primary" @click="updateTag">确 认</el-button>  
+          </template> 
+      </el-dialog>  
     </el-card>  
-  </div>
+  </div>  
 </template>  
   
 <script>  
@@ -26,10 +54,32 @@ export default {
   name: 'HotPosts',
   data() {
     return {
-      tag:[]
+      tag:[],
+      dialogVisible: false,  
+      currentTag: {} 
     };
   },
   methods: {
+    showUpdateDialog(tag) {  
+      this.dialogVisible = true;  
+      this.currentTag = { ...tag }; // 浅拷贝当前标签数据到 currentTag  
+    },  
+    updateTag() {  
+      // 使用 currentTag 的数据发送 PUT 请求  
+      axios.put(`https://localhost:7218/api/FlashTags/${this.currentTag.tag_id}`, {  
+        tag_name: this.currentTag.tag_name,  
+        // 如果需要，可以添加其他字段  
+      })  
+      .then(() => {  
+        this.$message.success('标签更新成功！');  
+        this.dialogVisible = false; // 关闭对话框  
+        // 可能还需要重新获取或更新 tags 列表  
+      })  
+      .catch(error => {  
+        console.error('Error updating flash:', error);  
+        this.$message.error('标签更新失败，请重试！');  
+      });  
+    },  
     deleteTag(tag) {  
       // 弹出确认窗口  
       if (confirm('你确定要删除这个Flash吗？')) {  
