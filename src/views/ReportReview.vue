@@ -122,8 +122,8 @@ export default {
     ...mapActions('admin', ['fetchPostsTableData', 'fetchCommentsTableData']),
     async fetchReviewLogs() {
       try {
-        const postsResponse = await axios.get('https://localhost:7218/api/PostReports/reviewedList');
-        const commentsResponse = await axios.get('https://localhost:7218/api/CommentReports/reviewedList');
+        const postsResponse = await axios.get('/api/PostReports/reviewedList');
+        const commentsResponse = await axios.get('/api/CommentReports/reviewedList');
         // 打印帖子举报的响应数据
         console.log('Posts Response:', postsResponse.data);
 
