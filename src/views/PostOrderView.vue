@@ -78,14 +78,16 @@ const route = useRoute();
 
   const handelClick = async(order_status) => {
     try {
-      console.log('status',order_status)
       await axios.put('/api/Purchases/UpdateOrderStatus',{
           params: {
-          orderId: route.params.ldleitemsPostId,
+          orderId: parseInt(route.params.ldleitemsPostId),
           orderStatus: order_status
           }
       })
+      leaseOrder.value.order_status += 1;
+      ElMessage.success('订单状态更新成功！')
     } catch (error) {
+        console.log('error',error.message)
         ElMessage.error(error.message)
       }
     }

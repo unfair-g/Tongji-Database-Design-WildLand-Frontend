@@ -96,7 +96,7 @@
         </template>
 
         <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
-          <div style="flex:1;"><img :src="ldleitemspost.post_pics?.length>0?ldleitemspost.post_pics[0]:'pic'" class="image" alt="order image"></div>
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="order image"></div>
           <div style="padding: 14px;flex:2;">
             <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
