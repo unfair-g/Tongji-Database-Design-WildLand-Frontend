@@ -56,7 +56,7 @@
             </el-upload>
           </el-form-item>
           
-          <el-form-item label="营地地图" required>
+          <el-form-item label="引入图片" required>
             <el-upload
               action=""
               list-type="picture"
@@ -66,7 +66,7 @@
               :limit="1"
               :auto-upload="false"
             >
-              <el-button size="small" type="primary" class="upgrade-btn">选择营地地图</el-button>
+              <el-button size="small" type="primary" class="upgrade-btn">选择引入图片</el-button>
               <!-- eslint-disable-next-line -->
               <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
@@ -88,7 +88,7 @@
             </el-upload>
           </el-form-item>
 
-          <el-form-item label="展示图片" required>
+          <el-form-item label="结尾图片" required>
             <el-upload
               action=""
               list-type="picture"
@@ -98,9 +98,9 @@
               :auto-upload="false"
               multiple
             >
-              <el-button size="small" type="primary" class="upgrade-btn">选择展示图片</el-button>
+              <el-button size="small" type="primary" class="upgrade-btn">选择结尾图片</el-button>
               <!-- eslint-disable-next-line -->
-              <div slot="tip" class="el-upload__tip">支持多张图片上传</div>
+              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
           </el-form-item>
           </div>
@@ -228,7 +228,8 @@ export default {
       this.displayPicList.forEach(file => {  
           formData.append('displayFiles[]', file.raw, file.raw.name);  
           console.log(file)
-      });   
+      });  
+      formData.append('displayFiles', this.displayPicList[0].raw, this.displayPicList[0].raw.name);  
       // 使用Axios发送FormData  
       axios.get(`https://localhost:7218/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
     .then(response => {  

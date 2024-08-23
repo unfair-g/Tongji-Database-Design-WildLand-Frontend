@@ -55,10 +55,25 @@ methods: {
         .then(response => {
           this.flash = response.data;
           console.log(this.flash)
+          this.flash.viewsNumber=this.flash.viewsNumber+1
+          axios.put(`https://localhost:7218/api/Flashes/UpdateFlashAndTag`, [{  
+            userId: 123,  
+            flashDate: this.flash.flashDate,  
+            flashImage: this.flash.flashImage,  
+            collectionNumber: this.flash.collectionNumber,  
+            viewsNumber: this.flash.viewsNumber,  
+            flashTitle: this.flash.flashTitle,  
+            flashContent: this.flash.flashContent,  
+            flashId: this.flash.flashId,  
+            tagId: this.flash.tagId,  
+            tagName: this.flash.tagName // 这里使用更新后的 tagName  
+            // 如果需要更新其他字段，也可以在这里添加  
+          }])  
         })
         .catch(error => {
           console.error('Error fetching city names:', error);
         });
+        
     },
   toggleStar(flashId) {  
     console.log("Hello, Console!",global.userId);  
