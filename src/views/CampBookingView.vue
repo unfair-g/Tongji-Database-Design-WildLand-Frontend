@@ -46,8 +46,7 @@
                 :key="campsite.campsite_id"
                 :type="isCampsiteAvailable(campsite.campsite_id) ? 'primary' : 'info'"
                 :class="{ selected: selectedCampsiteIds.includes(campsite.campsite_id) , 'campsite-button': true}"
-                :disabled="!isCampsiteAvailable(campsite.campsite_id)"
-                @click="toggleSelection(campsite.campsite_id)"
+                @click="handleCampsiteClick(campsite.campsite_id)"
               >
                 {{ campsite.campsite_number }}
               </el-button>
@@ -73,6 +72,7 @@
 <script>
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ElDatePicker } from 'element-plus';
+import { ElMessage } from 'element-plus'; // 引入消息组件
 import global from '@/store/global.js';
 
 export default {
@@ -166,6 +166,20 @@ export default {
 
     isCampsiteAvailable(campsiteId) {
       return this.availableCampsiteIds.includes(campsiteId);
+    },
+
+    handleCampsiteClick(id) {
+    console.log('按钮被点击了'); // 调试信息
+    if (!this.startDate || !this.endDate) {
+      ElMessage({
+        message: '请先选择预约时间',
+        type: 'warning',
+        duration: 2000 // 持续时间（毫秒）
+      });
+      return;
+    }
+    // 日期已选择，继续执行选择逻辑
+    this.toggleSelection(id);
     },
 
     toggleSelection(id) {
