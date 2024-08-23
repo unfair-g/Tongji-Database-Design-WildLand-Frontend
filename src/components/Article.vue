@@ -367,16 +367,14 @@ export default {
       }      
     },
     toggleLike(post) {
-      post.isLiked = !post.isLiked;
-      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
-      
+
       axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked=post.isLiked;
-        response.data.likesCount=post.likes;
+        post.isLiked=response.data.isLiked;
+        post.likes=response.data.likesCount;
       })
       .catch(error => {
         console.error('Error toggling like:', error);
@@ -384,20 +382,13 @@ export default {
       });     
     },
     toggleStar(post) {
-      post.isStarred = !post.isStarred;
       axios.post('/api/StarPosts/starpost', {
         post_id: post.post_id,
         tips: "收藏测试",
         user_id: state.userId
       })
       .then(response => {
-        response.data.isStarred = post.isStarred;
-        if (post.isStarred === true) {
-          response.data.stars_number += 1;
-        }
-        else if (post.isStarred === false) {
-          response.data.stars_number -= 1;
-        }
+        post.isStarred=response.data.isStarred;
       })
       .catch(error => {
         console.error('Error toggling star:', error);
