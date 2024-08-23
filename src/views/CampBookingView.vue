@@ -45,7 +45,11 @@
                 v-for="campsite in campsites"
                 :key="campsite.campsite_id"
                 :type="isCampsiteAvailable(campsite.campsite_id) ? 'primary' : 'info'"
-                :class="{ selected: selectedCampsiteIds.includes(campsite.campsite_id) , 'campsite-button': true}"
+                :class="{ 
+                  selected: selectedCampsiteIds.includes(campsite.campsite_id), 
+                  'campsite-button': true,
+                  'disabled-button': !isCampsiteAvailable(campsite.campsite_id) // 新增条件类
+                }"
                 @click="handleCampsiteClick(campsite.campsite_id)"
               >
                 {{ campsite.campsite_number }}
@@ -178,7 +182,17 @@ export default {
       });
       return;
     }
-    // 日期已选择，继续执行选择逻辑
+
+    if (!this.isCampsiteAvailable(id)) {
+    ElMessage({
+      message: '此营位在所选时间段已被预定',
+      type: 'warning',
+      duration: 2000 // 持续时间（毫秒）
+    });
+    return;
+    }
+
+    // 日期已选择且营位可用，继续执行选择逻辑
     this.toggleSelection(id);
     },
 
@@ -316,6 +330,12 @@ export default {
   font-weight: bold;
 }
   
+.disabled-button {
+  background-color: #d3d3d3; /* 灰色背景 */
+  color: #888; /* 灰色文本 */
+  cursor: not-allowed; /* 鼠标悬停显示为不可点击状态 */
+}
+
 
 </style>
   
