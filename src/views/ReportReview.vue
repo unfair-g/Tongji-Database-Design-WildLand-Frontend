@@ -84,7 +84,7 @@
 import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { mapState, mapActions } from 'vuex'
-import axios from 'axios'
+import axios from '@/axios'
 
 export default {
   components: {
