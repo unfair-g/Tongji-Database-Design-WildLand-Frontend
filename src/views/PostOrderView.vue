@@ -43,7 +43,7 @@
           <div style="margin:10px;"><h2>收件人电话</h2></div>
           <div style="text-align:center;justify-content:center;"><p>{{ leaseOrder.recipient_phone }}</p></div>
         </div>
-        <div class="order_2" v-if="global.userId===123">
+        <div class="order_2" v-if="global.userId===leaseOrder.author_id">
             <el-button v-if="leaseOrder.order_status===1" color="#1D5B5E" class="order_buttons" @click="handelClick(2)">确认发货</el-button>
         </div>
          <div class="order_2" v-else>
@@ -78,10 +78,14 @@ const route = useRoute();
 
   const handelClick = async(order_status) => {
     try {
+      console.log(order_status)
       await axios.put('/api/Purchases/UpdateOrderStatus',{
+          orderStatus: order_status,
+          orderId: parseInt(route.params.ldleitemsPostId)
+          },{
           params: {
-          orderId: parseInt(route.params.ldleitemsPostId),
-          orderStatus: order_status
+          orderStatus: order_status,
+          orderId: parseInt(route.params.ldleitemsPostId)
           }
       })
       leaseOrder.value.order_status += 1;

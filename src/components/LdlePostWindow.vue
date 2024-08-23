@@ -94,7 +94,7 @@
 
 <script>
 
-import axios from '@/axios';
+import axios from 'axios';
 import { ElMessage } from "element-plus";
 import  globalState  from '../store/global'; // 引入 global.js 中的状态
 import { provinceMap } from '@/store/global';
@@ -181,7 +181,7 @@ export default {
           price: parseFloat(this.postForm.itemPrice),
         };
         console.log('帖子上传:', postData);
-      axios.post('/api/Posts/PushLdle', postData,{headers: {
+      axios.post('https://localhost:7218/api/Posts/PushLdle', postData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -197,13 +197,12 @@ export default {
           this.uploadImage();  // 调用上传图片的方法
         })
         .catch(error => {
-          ElMessage.error('帖子发布失败，请稍后重试！')
           console.error('帖子出错:', error);
         });
     },
     AddContent()
     {
-       axios.put(`/api/Posts/${this.postNew.post_id}`, this.postNew,{headers: {
+       axios.put(`https://localhost:7218/api/Posts/${this.postNew.post_id}`, this.postNew,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -285,7 +284,7 @@ export default {
   });
 
   // 发送 POST 请求
-  axios.post(`/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
+  axios.post(`https://localhost:7218/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

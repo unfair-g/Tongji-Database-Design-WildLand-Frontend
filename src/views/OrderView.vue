@@ -5,27 +5,27 @@
       <img :src="product.outdoorProductWithPics.pics[0]" alt="product image">
     </div>
     <div style="flex:2;position:relative;">
-      <h2>{{ product.outdoorProductWithPics.productName }}</h2>
-      <p>尺寸: {{ product.outdoorProductWithPics.size }}</p>
-      <p>材质: {{ product.outdoorProductWithPics.material }}</p>
-      <p>品牌: {{ product.outdoorProductWithPics.brand }}</p>
-      <p>适用人数: {{ product.outdoorProductWithPics.suitableUsers }}</p>
+      <h2 style="margin-bottom:20px;">{{ product.outdoorProductWithPics.productName }}</h2>
+      <p style="margin-bottom:20px;">尺寸: {{ product.outdoorProductWithPics.size }}</p>
+      <p style="margin-bottom:20px;">材质: {{ product.outdoorProductWithPics.material }}</p>
+      <p style="margin-bottom:20px;">品牌: {{ product.outdoorProductWithPics.brand }}</p>
+      <p style="margin-bottom:20px;">适用人数: {{ product.outdoorProductWithPics.suitableUsers }}</p>
       <div class="price-tag">￥{{ TotalPrice }}</div>
       <!-- 数量输入框 -->
-       <el-input-number v-model="Lquantity" :min=Lquantity :max=Lquantity label="数量" style="position:absolute;bottom:-20px;right:0px;"></el-input-number>
+       <el-input-number v-model="product.lease.amount" :min=product.lease.amount :max=product.lease.amount label="数量" style="position:absolute;bottom:-20px;right:0px;"></el-input-number>
       </div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(product.lease.pick_time) }}</p></div>
+      <div style="text-align:center;justify-content:center;margin-bottom:20px;"><p>{{ this.formatDate(product.lease.pick_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ this.formatDate(product.lease.back_time) }}</p></div>
+      <div style="text-align:center;justify-content: center;margin-bottom:20px; "><p>{{ this.formatDate(product.lease.back_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ product.lease.remark }}</p></div>
+      <div style="text-align:center;justify-content: center;margin-bottom:20px; "><p>{{ product.lease.remark }}</p></div>
     </div>
   </div>
   </template>
@@ -79,7 +79,7 @@
             // 确保 product.price 是一个数字
             const price = parseFloat(this.product.outdoorProductWithPics.price);
             console.log(`Product Price: ${price}, Quantity: ${this.Lquantity}`);
-            return (price * this.Lquantity).toFixed(2);
+            return (price * this.product.lease.amount).toFixed(2);
           }
           return 0;
         }
@@ -107,7 +107,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* 水平居中 */
-  justify-content: start; /* 根据需要调整 */
+  justify-content:center; /* 根据需要调整 */
   width: 80%;
   max-width: 1200px; /* 最大宽度 */
   margin: 20px auto 20px auto; /* 水平居中 */
