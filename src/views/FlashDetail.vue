@@ -12,8 +12,10 @@
           <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
         </el-button>
       </div>
+      <img :src="this.pic1" :alt="flash.flashTitle" class="flash-image" />  
         <p class="flash-content">{{ flash.flashContent }}</p>  
-        <img :src="flash.flash_pics" :alt="flash.flashTitle" class="flash-image" />  
+        <img :src="this.pic2" :alt="flash.flashTitle" class="flash-image" />  
+        <img :src="this.pic3" :alt="flash.flashTitle" class="flash-image" />  
       </div>  
     </div>  
     <div class="right-panel">  
@@ -46,7 +48,10 @@ props: ['flashID'],
 data() {
     return {
       flash: [],
-      isStarred:0
+      isStarred:0,
+      pic1:'',
+      pic2:'',
+      pic3:'',
     };
   },
 methods: {  
@@ -54,7 +59,10 @@ methods: {
       axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
-          console.log(this.flash)
+          console.log(this.flash.flash_pics[0])
+          this.pic1=this.flash.flash_pics[1]
+          this.pic2=this.flash.flash_pics[2]
+          this.pic3=this.flash.flash_pics[3]
           this.flash.viewsNumber=this.flash.viewsNumber+1
           axios.put(`https://localhost:7218/api/Flashes/UpdateFlashAndTag`, [{  
             userId: 123,  
@@ -73,7 +81,6 @@ methods: {
         .catch(error => {
           console.error('Error fetching city names:', error);
         });
-        
     },
   toggleStar(flashId) {  
     console.log("Hello, Console!",global.userId);  
@@ -133,6 +140,7 @@ methods: {
   display: flex;  
 }  
 .flash-tag{
+  margin: 1%;
   display: flex;  
   width:9%
 }
