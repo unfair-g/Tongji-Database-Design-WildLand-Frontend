@@ -731,7 +731,6 @@ export default {
   margin-top:20px ;
   display: flex;
   align-items:center;
-  gap:150px;
   justify-content: space-between;
   width: 100%;
 }

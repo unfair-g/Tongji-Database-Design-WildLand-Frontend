@@ -69,7 +69,7 @@
     </div>
   </div>
   <div v-else-if="view === 'lease'">
-   <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
+   <div v-for="ldleitemspost in filteredLdlePosts" :key="ldleitemspost.post_id" justify="center" >
       <el-card class="post-item">
         <template #header>
          <div class="post-header">
@@ -189,7 +189,20 @@ export default {
           
       );
     },
-    
+    filteredLdlePosts() {
+      if (!this.searchQuery) {
+        return this.ldleitemsposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.ldleitemsposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.item_summary.toLowerCase().includes(query) ||
+          post.user_name.toLowerCase().includes(query) ||
+          post.condition.toLowerCase().includes(query) 
+          
+      );
+    },
   },
   methods: {
     fetchSharePosts() {

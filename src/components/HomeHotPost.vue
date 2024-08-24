@@ -78,7 +78,7 @@ export default{
         formatContent(content) {
             if (!content) return ''; // 如果 content 为 null 或 undefined，返回空字符串
            // 按句号分段，每段前面插入两个空格
-           return content.split('。').map(sentence => '　　'+sentence + '。').join('<br><br>');
+           return content.split('。').map(sentence => '　　'+sentence + '。').join('<br>');
         },
         formatDate(dateTimeString) {  
       // 创建一个Date对象  
@@ -113,6 +113,7 @@ export default{
 .content-text {
     margin-top:3%;
     margin-left:20px;
+    line-height: 2.8; /* 增大行距 */
 }
 
 .text-section {

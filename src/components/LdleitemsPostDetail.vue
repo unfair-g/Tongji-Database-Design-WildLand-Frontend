@@ -135,16 +135,14 @@
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
 
-    </div>
-  </el-card>
-
-  <ReportPost
+      <ReportWindow
           v-model:isReportDialogVisible="isReportPostWindowVisible"
-          :isDetailShow="false"
-          :thisPostId="this.postID"
-          :post="post"
-          @closeDialog="isReportPostWindowVisible=false"
-        />  
+          :reportID="Number(ldleitemsPost.post_id)"
+          :isReportPost="true"
+          
+        /> 
+    </div>
+  </el-card> 
         <!-- 用于举报帖子 -->
 
 </template>
@@ -152,7 +150,7 @@
 <script>
 import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
-import ReportPost from '@/components/ReportPostWindow.vue'
+import ReportWindow from '@/components/ReportPostWindow.vue'
 import  globalState  from '@/store/global'; // 引入 global.js 中的状态
 import { ElMessage } from "element-plus";
 
@@ -161,7 +159,7 @@ export default {
   props: ['ldleitemsPostID'],
   components: {
     PostPayWindow,
-    ReportPost
+    ReportWindow
   },
   data() {
     return {

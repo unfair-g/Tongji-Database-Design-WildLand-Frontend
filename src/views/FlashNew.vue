@@ -17,10 +17,12 @@
       <hr />
       <div class="post-detail-content">
         <el-form-item label="资讯标签: " prop="name" class="post-title">
-            <el-input
-              v-model="flash.tagName"
-              style="width: 240px"
-            />
+          <el-radio-group v-model="radio">
+            <el-radio 
+            v-for="(tag, index) in tag"  
+            :key="index"  
+            :value="tag.tag_id">{{tag.tag_name}}</el-radio>
+          </el-radio-group>
         </el-form-item>
         <div class="post-info">
           <el-form-item label="资讯标题: " prop="region" class="post-title">
@@ -54,7 +56,7 @@
             </el-upload>
           </el-form-item>
           
-          <el-form-item label="营地地图" required>
+          <el-form-item label="引入图片" required>
             <el-upload
               action=""
               list-type="picture"
@@ -64,7 +66,7 @@
               :limit="1"
               :auto-upload="false"
             >
-              <el-button size="small" type="primary" class="upgrade-btn">选择营地地图</el-button>
+              <el-button size="small" type="primary" class="upgrade-btn">选择引入图片</el-button>
               <!-- eslint-disable-next-line -->
               <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
@@ -86,7 +88,7 @@
             </el-upload>
           </el-form-item>
 
-          <el-form-item label="展示图片" required>
+          <el-form-item label="结尾图片" required>
             <el-upload
               action=""
               list-type="picture"
@@ -96,9 +98,9 @@
               :auto-upload="false"
               multiple
             >
-              <el-button size="small" type="primary" class="upgrade-btn">选择展示图片</el-button>
+              <el-button size="small" type="primary" class="upgrade-btn">选择结尾图片</el-button>
               <!-- eslint-disable-next-line -->
-              <div slot="tip" class="el-upload__tip">支持多张图片上传</div>
+              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
           </el-form-item>
           </div>
@@ -136,7 +138,8 @@ export default {
       coverPicList: [],
       mapPicList: [],
       introPicList: [],
-      displayPicList: []
+      displayPicList: [],
+      radio : ref()
     };
   },
   components: {
@@ -224,10 +227,16 @@ export default {
       console.log(this.displayPicList)
       this.displayPicList.forEach(file => {  
           formData.append('displayFiles[]', file.raw, file.raw.name);  
+          console.log(file)
       });  
       formData.append('displayFiles', this.displayPicList[0].raw, this.displayPicList[0].raw.name);  
       // 使用Axios发送FormData  
-      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=123&FlashTitle=%E8%8D%89%E5%9D%AA&FlashContent=%E8%8D%89%E5%9D%AA%E5%92%8C%E8%9D%B4%E8%9D%B6&FlashImage=test&TagId=1&TagName=%E9%92%93%E9%B1%BC`, formData, {  
+      axios.get(`https://localhost:7218/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
+    .then(response => {  
+      // 更新 flash 对象中的 tagName  
+      this.flash.tagName = response.data;  
+  
+      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=${this.flash.flash_image}&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  
@@ -238,6 +247,7 @@ export default {
       .catch(error => {  
           console.error('Error uploading files:', error);  
       });
+    })  
     },  
     handleCoverPicChange(file, fileList) {
       this.coverPicList = fileList;
@@ -267,7 +277,15 @@ export default {
     deleteDisplayImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
-
+    fetchTags() {
+      axios.get(`https://localhost:7218/api/FlashTags`)
+        .then(response => {
+          this.tag = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
     // 更新图片列表以反映删除的图片
     updateImageList(fileList, imageUrl) {
         const index = fileList.findIndex(item => item.url === imageUrl);
@@ -277,6 +295,10 @@ export default {
     },
     
   }  ,
+  created() {
+    // 在组件创建时，从查询参数中获取flashId、title、content和tagName  ;
+    this.fetchTags();
+  }
 }
 </script>
 

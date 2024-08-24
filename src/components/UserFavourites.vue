@@ -123,6 +123,7 @@ const fetchStarPosts = async () => {
 }
 
 const handleClick = async (tab) => {
+    tips.value = ''
     if (tab.props.name == 'camp')
         fetchStarCamps();
     else if (tab.props.name == 'product')
@@ -134,7 +135,6 @@ const handleClick = async (tab) => {
     }
     else
         fetchStarFlashes();
-    tips.value = ''
 }
 
 function goToProductDetail (product_id) {

@@ -23,18 +23,15 @@
       </div>
       <div class="price-tag">¥{{ ldleitemsPost.price }}</div>
       <div class="payment-options">
-        <p>请选择支付方式:</p>
+        <p style="margin-bottom:10px;">支付方式:</p>
         <el-radio-group v-model="selectedPayment">
-          <el-radio-button label="支付宝支付"><el-icon><Coin /></el-icon> 支付宝</el-radio-button>
-          <el-radio-button label="微信支付"><el-icon><ChatRound /></el-icon> 微信</el-radio-button>
-          <el-radio-button label="银行卡支付"><el-icon><Money /></el-icon> 银行卡</el-radio-button>
-          <el-radio-button label="银联卡支付"><el-icon><CreditCard /></el-icon> 银联卡</el-radio-button>
+          <el-radio-button label="支付宝支付"><el-icon><Coin /></el-icon> 钱包余额</el-radio-button>
         </el-radio-group>
       </div>
       <template v-slot:footer>
         <span class="dialog-footer">
           <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="confirmDialog()">立即支付</el-button>
+          <el-button type="primary" @click="confirmDialog(ldleitemsPost)">立即支付</el-button>
         </span>
       </template>
     </el-dialog>
@@ -89,12 +86,15 @@
         RentSuccess: false,
         Order: false,
         users: [], // 存储用户数据
-    selectedUserId: null,
-    orderId:0
+        selectedUserId: null,
+        orderId:0,
+        money:0
       }
     },
     created() {
       this.selectedUser();
+      this.fetchPoints();
+      console.log(this.money)
     },
     watch: {
       RentdialogVisible(newVal) {
@@ -117,7 +117,17 @@
       selectedUser() {
         this.selectedUserId = globalState.userId
       },
-      
+      async fetchPoints()
+      {
+        axios.get(`/api/Users/getUserInfo/${globalState.userId}`)
+        .then(response=>{
+          this.money=response.data.userInfo.points;
+          console.log('111111',this.money)
+        })
+        .catch(error=>{
+          console.error('Error fetching  points:', error);
+        })
+      },
 
       handleClose() {
         this.closeDialog();
@@ -125,10 +135,26 @@
       closeDialog() {
         this.localDialogVisible = false;
       },
-      confirmDialog() {
+      async confirmDialog(ldleitemsPost) {
+        
+        console.log(ldleitemsPost.price)
+        await this.fetchPoints();
+        console.log('22222222',this.money)
+        if(this.money<ldleitemsPost.price)
+      {
+        this.$alert('余额不足，请前往个人中心充值', '提示', {  
+        confirmButtonText: '确定',  
+        type: 'success',  
+        callback: () => {  
+          location.reload(); // 刷新页面  
+        } 
+      });
+      //this.localDialogVisible = false
+      }
+      else{
         this.localDialogVisible = false
         this.createOrderAndUpload();
-        this.changeState();
+      }
 
         //添加支付成功逻辑 
         // 切换支付成功弹窗
@@ -173,34 +199,6 @@
         }})
         this.PentSuccess = false
         this.Order=true
-      },
-      changeState()
-      {
-        const Post=this.ldleitemsPost;
-        Post.exhibit_status=0;
-        const visiblePost={
-          author_id:Post.author_id,
-          censor_status:Post.censor_status,
-          content:Post.content,
-          exhibit_status:Post.exhibit_status,
-          stars_number:Post.stars_number,
-          likes_number:Post.likes_number,
-          post_id:Post.post_id,
-          post_kind:Post.post_kind,
-          post_position:Post.post_position,
-          post_time:Post.post_time,
-          total_floor:Post.total_floor,
-        }
-        axios.put(`/api/Posts/${this.ldleitemsPost.post_id}`,visiblePost)
-        .then(response => {  
-        // 更新成功后的处理，比如清空表单或显示成功消息  
-        console.log('Product updated successfully', response);  
-        console.log(this.ldleitemsPost);
-      })  
-      .catch(error => {  
-        // 处理错误，比如显示错误消息  
-        console.error('Error updating ldleitemsPost:', error);  
-      });
       },
     }
   }
