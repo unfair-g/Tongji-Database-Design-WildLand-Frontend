@@ -61,7 +61,6 @@
             <span class="post-fix">活动时间：</span><span>{{recruitpost.activity_time}}；</span>
             <span class="post-fix">活动地点：</span><span>{{recruitpost.activity_address  }}；</span>
             <span class="post-fix">计划招募人数：</span><span>{{ recruitpost.total_recruit }}；</span>
-            <span class="post-fix">活动介绍: </span><span>{{ recruitpost.intro }}</span>
           </div>
         </div>
 
@@ -216,12 +215,13 @@ export default {
               author_id:post.author_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content,
+              content: post.content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
               isLiked: post.isLiked,
               isStarred: post.isStarred,
+              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
             }));
             if(this.star)
               this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
@@ -240,12 +240,14 @@ export default {
               author_id:this.user_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent: post.short_content,
+              content : post.content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
               isLiked: post.isLiked,
               isStarred: post.isStarred,
+              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
+
             }));
           })
           .catch(error => {
@@ -283,7 +285,7 @@ export default {
           });
       }
     },
-    async fetchRecruitPosts() {
+     async fetchRecruitPosts() {
       if (this.user_id == null) {
         const userId = state.userId;
         axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
@@ -294,7 +296,7 @@ export default {
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            shortContent:post.short_activity_summary,
+            content:post.activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
@@ -303,7 +305,9 @@ export default {
             activity_time: post.activity_time,
             activity_address: post.location,
             total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
+            intro: post.activity_summary,
+            shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
+            
           }))
           if(this.star)
             this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
@@ -322,7 +326,7 @@ export default {
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            shortContent:post.short_activity_summary,
+            content:post.activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
@@ -331,7 +335,9 @@ export default {
             activity_time: post.activity_time,
             activity_address: post.location,
             total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
+            intro: post.activity_summary,
+            shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
+            
           }));
         })
           .catch(error => {

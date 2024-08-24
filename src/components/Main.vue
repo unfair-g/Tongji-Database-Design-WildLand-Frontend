@@ -42,7 +42,7 @@
     <div>
       <ArticleCard 
         :view="currentView"
-        :search-query="searchQuery"
+        :searchQuery="searchQuery"
       />
     </div>
 
