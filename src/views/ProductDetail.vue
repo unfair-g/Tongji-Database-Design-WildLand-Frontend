@@ -6,14 +6,14 @@
       <div class="product-info">
         <div class="right">
           <div class="product-mess">
-           <h2>{{ this.product.product.product_name }}</h2>
-           <p>尺寸: {{ this.product.product.size }}</p>
-           <p>材质: {{ this.product.product.material }}</p>
-           <p>品牌: {{ this.product.product.brand }}</p>
-           <p>适用人数: {{ this.product.product.suitable_users }}</p>
-           <p>商品简介: {{ this.product.product.introduction }}</p>
-           <p>商品余量: {{ this.product.product.stock_quantity }}</p>
-           <div class="price">￥{{ this.product.product.price }}</div>
+           <h1 style="margin-bottom:20px;">{{ this.product.product.product_name }}</h1>
+           <p style="margin-bottom:15px;">尺寸: {{ this.product.product.size }}</p>
+           <p style="margin-bottom:15px;">材质: {{ this.product.product.material }}</p>
+           <p style="margin-bottom:15px;">品牌: {{ this.product.product.brand }}</p>
+           <p style="margin-bottom:15px;">适用人数: {{ this.product.product.suitable_users }}</p>
+           <p style="margin-bottom:15px;">商品简介: {{ this.product.product.introduction }}</p>
+           <p style="margin-bottom:15px;">商品余量: {{ this.product.product.stock_quantity }}</p>
+           <div class="price"><h3>￥{{ this.product.product.price }}</h3></div>
           </div>
           <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
             <span>
@@ -172,6 +172,7 @@ export default {
 
 .product-mess {
   flex: 1;
+  margin-bottom:10px;
 }
 
 .love {
@@ -212,7 +213,7 @@ export default {
 .price {
   color: #ff4949;
   font-size: 24px;
-  margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .pay {

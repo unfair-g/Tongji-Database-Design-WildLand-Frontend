@@ -96,7 +96,7 @@
         </template>
 
         <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
-          <div style="flex:1;"><img :src="ldleitemspost.post_pics?.length>0?ldleitemspost.post_pics[0]:'pic'" class="image" alt="order image"></div>
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="order image"></div>
           <div style="padding: 14px;flex:2;">
             <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
@@ -367,16 +367,14 @@ export default {
       }      
     },
     toggleLike(post) {
-      post.isLiked = !post.isLiked;
-      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
-      
+
       axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked=post.isLiked;
-        response.data.likesCount=post.likes;
+        post.isLiked=response.data.isLiked;
+        post.likes=response.data.likesCount;
       })
       .catch(error => {
         console.error('Error toggling like:', error);
@@ -384,20 +382,13 @@ export default {
       });     
     },
     toggleStar(post) {
-      post.isStarred = !post.isStarred;
       axios.post('/api/StarPosts/starpost', {
         post_id: post.post_id,
         tips: "收藏测试",
         user_id: state.userId
       })
       .then(response => {
-        response.data.isStarred = post.isStarred;
-        if (post.isStarred === true) {
-          response.data.stars_number += 1;
-        }
-        else if (post.isStarred === false) {
-          response.data.stars_number -= 1;
-        }
+        post.isStarred=response.data.isStarred;
       })
       .catch(error => {
         console.error('Error toggling star:', error);
@@ -459,6 +450,7 @@ export default {
   width: 50px;
   height: 50px;
   margin-right: 20px;
+  object-fit: cover;
 }
 .post-details {
   display: flex;

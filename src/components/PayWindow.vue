@@ -11,12 +11,12 @@
         <img :src="product.pics[0]" alt="product image"> 
       </div>
       <div style="flex:2;">
-        <h2>{{ product.product.product_name }}</h2>
-        <p>尺寸: {{ product.product.size }}</p>
-        <p>材质: {{ product.product.material }}</p>
-        <p>品牌: {{ product.product.brand }}</p>
-        <p>适用人数: {{ product.product.suitable_users }}</p>
-        <p>商品余量: {{ product.product.stock_quantity }}</p>
+        <h2 style="margin-bottom:20px;">{{ product.product.product_name }}</h2>
+        <p style="margin-bottom:20px;">尺寸: {{ product.product.size }}</p>
+        <p style="margin-bottom:20px;">材质: {{ product.product.material }}</p>
+        <p style="margin-bottom:20px;">品牌: {{ product.product.brand }}</p>
+        <p style="margin-bottom:20px;">适用人数: {{ product.product.suitable_users }}</p>
+        <p style="margin-bottom:20px;">商品余量: {{ product.product.stock_quantity }}</p>
         <!-- 数量输入框 -->  
         <el-input-number v-model="quantity" :min="1" :max=product.product.stock_quantity label="数量" style="position:absolute;right:30px;"></el-input-number>
       </div>
@@ -182,7 +182,7 @@ export default {
       console.log('订单上传:', orderData.user_id);
       console.log('订单上传成功:', orderData.pick_time);
       console.log(orderData)
-      axios.post('https://localhost:7218/api/Leases', orderData,{headers: {
+      axios.post('https://localhost:7218/api/Leases/OutdoorProductLease', orderData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }

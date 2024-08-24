@@ -23,7 +23,22 @@
           </div>
       </div>
 
-      <div style="padding-top:20px;margin-bottom:20px;"><el-icon><Location/></el-icon>{{ldleitemsPost. post_position }}</div>
+      <div style="padding-top:20px;margin-bottom:20px;">
+        <el-icon><Location/></el-icon>{{ldleitemsPost. post_position }}
+        <span v-if="this.userid===ldleitemsPost.author_id" class="delete-button" @click="openDeleteDialog">删除</span>
+      </div>
+      <el-dialog
+          v-model="deleteDialogVisible"
+          title="确认删除"
+          width="30%"
+        >
+          <span>{{'您是否确认删除这条帖子'}}</span>
+          <template v-slot:footer>
+            <el-button @click="cancelDelete">否</el-button>
+            <el-button type="primary" @click="confirmDelete">是</el-button>
+          </template>
+        </el-dialog>
+
         <div class="post-content">
           <el-dialog
           v-model="dialogVisible"
@@ -189,7 +204,7 @@ export default {
       ],
       phone: [
         { required: true, message: '请输入收件人电话', trigger: 'blur' },
-        { pattern: /^[0-9]{10}$/, message: '请输入有效的电话号', trigger: 'blur' }
+        { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入有效的电话号', trigger: 'blur' }
       ]
     }
     };
@@ -262,32 +277,22 @@ export default {
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
     },
-    openDeleteDialog(type, item = null, parentComment = null) {
-      this.deleteType = type;
-      if (type === 'reply') {
-        this.deleteReply = item;
-        this.parentComment = parentComment;
-      } else {
-        this.deleteComment = item;
-      }
-      this.deleteMessage = type === 'post' ? '您是否确认删除这条帖子？' : (type === 'comment' ? '您是否确认删除这条评论？' : '您是否确认删除这条回复？');
+    openDeleteDialog() {
       this.deleteDialogVisible = true;
     },
     confirmDelete() {
-      if (this.deleteType === 'post') {
-        // 这里处理帖子删除操作
-      } else if (this.deleteType === 'comment' && this.deleteComment) {
-        const index = this.ldleitemsPost.comments_details.indexOf(this.deleteComment);
-        if (index !== -1) {
-          this.ldleitemsPost.comments_details.splice(index, 1);
-        }
-      } else if (this.deleteType === 'reply' && this.deleteReply && this.parentComment) {
-        const index = this.parentComment.replies.indexOf(this.deleteReply);
-        if (index !== -1) {
-          this.parentComment.replies.splice(index, 1);
-        }
-      }
       this.deleteDialogVisible = false;
+      axios.delete(`api/Posts/${this.postID}`)
+        .then(response => {
+          if (response.data !=null) {
+            this.goBackToForumView();          
+          }
+      })
+      .catch(error => {
+        this.handleError(error, '删除帖子失败');
+        this.fetchLdleitemsPosts();
+
+      }) 
     },
     cancelDelete() {
       this.deleteDialogVisible = false;
@@ -309,14 +314,8 @@ export default {
     if (!Array.isArray(response.data)) {  
       throw new Error('Expected an array from the server, but got something else.');  
     }  
-    console.log(response.data)
-    console.log(this.ldleitemsPostID)
-    //console.log(response.data.filter(order => order.post_id === this.ldleitemsPostID))
     this.rent = response.data.filter(order => order.post_id === Number(this.ldleitemsPostID));  
     this.isButtonDisabled = this.rent.length === 0;  
-  
-    console.log('oooooo', this.rent);  
-    console.log('kkkkkk', this.isButtonDisabled);  
   } catch (error) {  
     console.error('Failed to fetch rental data:', error);  
     // 可以在这里添加额外的错误处理逻辑，比如设置 isButtonDisabled 为 true  
@@ -396,6 +395,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.delete-button {
+  color: red;
+  cursor: pointer;
+  margin-left: 15px; /* 调整位置 */
+}
+
+.delete-button:hover {
+  text-decoration: underline;
 }
 
 .avatar {

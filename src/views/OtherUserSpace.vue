@@ -86,7 +86,7 @@ const unFollow = async () => {
 const fetchUser=async (id) =>{
     try{
         const response = await axios.get(`/api/Users/getUserInfo/${id}`);
-        userInfo.value = response.data.data.user
+        userInfo.value = response.data.data.userInfo
         if (userInfo.value.birthday != null)
             userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
         userInfo.value.follows = response.data.data.followingCount;

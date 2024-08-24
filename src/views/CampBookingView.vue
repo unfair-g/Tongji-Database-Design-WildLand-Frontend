@@ -45,9 +45,12 @@
                 v-for="campsite in campsites"
                 :key="campsite.campsite_id"
                 :type="isCampsiteAvailable(campsite.campsite_id) ? 'primary' : 'info'"
-                :class="{ selected: selectedCampsiteIds.includes(campsite.campsite_id) , 'campsite-button': true}"
-                :disabled="!isCampsiteAvailable(campsite.campsite_id)"
-                @click="toggleSelection(campsite.campsite_id)"
+                :class="{ 
+                  selected: selectedCampsiteIds.includes(campsite.campsite_id), 
+                  'campsite-button': true,
+                  'disabled-button': !isCampsiteAvailable(campsite.campsite_id) // 新增条件类
+                }"
+                @click="handleCampsiteClick(campsite.campsite_id)"
               >
                 {{ campsite.campsite_number }}
               </el-button>
@@ -73,6 +76,7 @@
 <script>
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ElDatePicker } from 'element-plus';
+import { ElMessage } from 'element-plus'; // 引入消息组件
 import global from '@/store/global.js';
 
 export default {
@@ -134,18 +138,12 @@ export default {
     async fetchAvailableCampsites() {
    try {
     const data={
-      campground_id: 11,
-      startTime: "2024-08-13T15:22:09.071Z",
-      endTime: "2024-08-13T15:22:09.071Z"
-
+      campground_id: this.campID,  // 确保传递的是 campID，而不是 'available'
+      startTime: this.startDate,
+      endTime: this.endDate
     }
     console.log('开始提交订单')
     const response = await axios.post('api/CampsiteReserves/available',data );
-      //campground_id: this.campID,  // 确保传递的是 campID，而不是 'available'
-      //startTime: this.startDate,
-      //endTime: this.endDate
-      
-    
     this.availableCampsiteIds = response.data;
   } catch (error) {
     console.error("获取空闲营位失败", error);
@@ -172,6 +170,30 @@ export default {
 
     isCampsiteAvailable(campsiteId) {
       return this.availableCampsiteIds.includes(campsiteId);
+    },
+
+    handleCampsiteClick(id) {
+    console.log('按钮被点击了'); // 调试信息
+    if (!this.startDate || !this.endDate) {
+      ElMessage({
+        message: '请先选择预约时间',
+        type: 'warning',
+        duration: 2000 // 持续时间（毫秒）
+      });
+      return;
+    }
+
+    if (!this.isCampsiteAvailable(id)) {
+    ElMessage({
+      message: '此营位在所选时间段已被预定',
+      type: 'warning',
+      duration: 2000 // 持续时间（毫秒）
+    });
+    return;
+    }
+
+    // 日期已选择且营位可用，继续执行选择逻辑
+    this.toggleSelection(id);
     },
 
     toggleSelection(id) {
@@ -308,6 +330,12 @@ export default {
   font-weight: bold;
 }
   
+.disabled-button {
+  background-color: #d3d3d3; /* 灰色背景 */
+  color: #888; /* 灰色文本 */
+  cursor: not-allowed; /* 鼠标悬停显示为不可点击状态 */
+}
+
 
 </style>
   

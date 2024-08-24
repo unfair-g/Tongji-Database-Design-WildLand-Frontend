@@ -11,13 +11,13 @@
           <img :src="ldleitemsPost.post_pics[0]" alt="product image"> 
         </div>
         <div style="flex:2;">
-          <h2>{{ ldleitemsPost.title }}</h2>
-          <p>商品提供者: {{ ldleitemsPost.user_name }}</p>
-          <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
-          <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
-          <p>收件人姓名: {{ recipientInfo.name }}</p>
-          <p>收件人地址: {{ recipientInfo.address }}</p>
-          <p>收件人电话: {{ recipientInfo.phone }}</p>
+          <h2 style="margin-bottom:20px;">{{ ldleitemsPost.title }}</h2>
+          <p style="margin-bottom:20px;">商品提供者: {{ ldleitemsPost.user_name }}</p>
+          <p style="margin-bottom:20px;">商品简介: {{ ldleitemsPost.item_summary }}</p>
+          <p style="margin-bottom:20px;">商品新旧程度: {{ ldleitemsPost.condition }}</p>
+          <p style="margin-bottom:20px;">收件人姓名: {{ recipientInfo.name }}</p>
+          <p style="margin-bottom:20px;">收件人地址: {{ recipientInfo.address }}</p>
+          <p style="margin-bottom:20px;">收件人电话: {{ recipientInfo.phone }}</p>
           <!-- 数量输入框 -->  
         </div>
       </div>
@@ -62,7 +62,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import axios from '@/axios';
   import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
   export default {
@@ -106,7 +106,7 @@
     },
     methods: {
       fetchLdleitemsOrder() {
-      axios.get(`https://localhost:7218/api/Purchases/${this.ldleitemsOrderID}`)
+      axios.get(`/api/Purchases/${this.ldleitemsOrderID}`)
         .then(response => {
           this.ldleitemsOrder = response.data;
         })
@@ -148,7 +148,7 @@
       console.log('订单上传:', orderData.order_id);
       console.log('订单上传:', orderData.user_id);
       console.log('订单上传:', orderData);
-      axios.post('https://localhost:7218/api/Purchases/PurchaseIdleProduct', orderData,{headers: {
+      axios.post('/api/Purchases/PurchaseIdleProduct', orderData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -191,7 +191,7 @@
           post_time:Post.post_time,
           total_floor:Post.total_floor,
         }
-        axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost.post_id}`,visiblePost)
+        axios.put(`/api/Posts/${this.ldleitemsPost.post_id}`,visiblePost)
         .then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
