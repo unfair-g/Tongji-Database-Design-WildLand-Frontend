@@ -55,22 +55,6 @@
               <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
           </el-form-item>
-          
-          <el-form-item label="引入图片" required>
-            <el-upload
-              action=""
-              list-type="picture"
-              :file-list="mapPicList"
-              :on-change="handleMapPicChange"
-              :on-remove="deleteMapImage"
-              :limit="1"
-              :auto-upload="false"
-            >
-              <el-button size="small" type="primary" class="upgrade-btn">选择引入图片</el-button>
-              <!-- eslint-disable-next-line -->
-              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
-            </el-upload>
-          </el-form-item>
 
           <el-form-item label="正文图片" required>
             <el-upload
@@ -88,21 +72,6 @@
             </el-upload>
           </el-form-item>
 
-          <el-form-item label="结尾图片" required>
-            <el-upload
-              action=""
-              list-type="picture"
-              :file-list="displayPicList"
-              :on-change="handleDisplayPicChange"
-              :on-remove="deleteDisplayImage"
-              :auto-upload="false"
-              multiple
-            >
-              <el-button size="small" type="primary" class="upgrade-btn">选择结尾图片</el-button>
-              <!-- eslint-disable-next-line -->
-              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
-            </el-upload>
-          </el-form-item>
           </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
@@ -127,7 +96,7 @@ export default {
         flash_title: '填写标题',  
         flash_content: '填写内容',  
         flash_id: 111110,
-        user_id: 123,
+        user_id:  9000000040,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
         tagId: 123,
@@ -214,29 +183,22 @@ export default {
     updateFlash() {   
       // 确保 flash 对象中有需要更新的数据  
       console.log(this.flash);
-      console.log(this.displayPicList[0].raw)
-      console.log(this.coverPicList[0].raw)
       if (!this.flash.flash_title || !this.flash.flash_content) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
       let formData = new FormData();  
-      formData.append('coverFile', this.coverPicList[0].raw, this.coverPicList[0].raw.name);  
-      formData.append('campFile', this.mapPicList[0].raw, this.mapPicList[0].raw.name);  
-      formData.append('contextFile', this.introPicList[0].raw, this.introPicList[0].raw.name);  
-      console.log(this.displayPicList)
-      this.displayPicList.forEach(file => {  
-          formData.append('displayFiles[]', file.raw, file.raw.name);  
-          console.log(file)
-      });  
-      formData.append('displayFiles', this.displayPicList[0].raw, this.displayPicList[0].raw.name);  
+      formData.append('displayFiles', this.coverPicList[0].raw, this.coverPicList[0].raw.name);  
+      formData.append('displayFiles', this.introPicList[0].raw, this.introPicList[0].raw.name);  
+      console.log(this.coverPicList[0].raw)
+      console.log(this.introPicList[0].raw) 
+      console.log(formData) 
       // 使用Axios发送FormData  
       axios.get(`/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
     .then(response => {  
       // 更新 flash 对象中的 tagName  
       this.flash.tagName = response.data;  
-  
-      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=${this.flash.flash_image}&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
+      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=1&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  
