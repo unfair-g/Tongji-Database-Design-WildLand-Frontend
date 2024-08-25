@@ -11,11 +11,13 @@
           <el-icon v-else><StarFilled /></el-icon>
           <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
         </el-button>
-      </div>
-      <img :src="this.pic1" :alt="flash.flashTitle" class="flash-image" />  
-        <p class="flash-content">{{ flash.flashContent }}</p>  
-        <img :src="this.pic2" :alt="flash.flashTitle" class="flash-image" />  
-        <img :src="this.pic3" :alt="flash.flashTitle" class="flash-image" />  
+      </div> 
+        <p class="flash-content">{{ flash.flashContent }}</p> 
+        <el-carousel v-if="flash.flash_pics===true" indicator-position="outside" height="500px" style="margin-top: 100px;">
+        <el-carousel-item v-for="pic in flash.flash_pics" :key="pic" class="flash-image">
+          <img :src="pic" style="height:500px">
+        </el-carousel-item>
+      </el-carousel>
       </div>  
     </div>  
     <div class="right-panel">  
@@ -56,15 +58,12 @@ data() {
   },
 methods: {  
   fetchFlashes() {
-      axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
+      axios.get(`/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
-          console.log(this.flash.flash_pics[0])
-          this.pic1=this.flash.flash_pics[1]
-          this.pic2=this.flash.flash_pics[2]
-          this.pic3=this.flash.flash_pics[3]
+          console.log(this.flash)
           this.flash.viewsNumber=this.flash.viewsNumber+1
-          axios.put(`https://localhost:7218/api/Flashes/UpdateFlashAndTag`, [{  
+          axios.put(`/api/Flashes/UpdateFlashAndTag`, [{  
             userId: 123,  
             flashDate: this.flash.flashDate,  
             flashImage: this.flash.flashImage,  
@@ -81,11 +80,10 @@ methods: {
         .catch(error => {
           console.error('Error fetching city names:', error);
         });
-        
     },
   toggleStar(flashId) {  
     console.log("Hello, Console!",global.userId);  
-    axios.post(`https://localhost:7218/api/StarFlashes/PostStarFlash?userId=${global.userId}&flashId=${flashId}`,{
+    axios.post(`/api/StarFlashes/PostStarFlash?userId=${global.userId}&flashId=${flashId}`,{
       flash_id: flashId,
       user_id: global.userId
     })
@@ -93,7 +91,7 @@ methods: {
   }  ,
   fetchstar(){          
     console.log(this.flashID);
-    axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByFlashAndUserId?flash_id=${this.flashID}&user_id=${global.userId}`)
+    axios.get(`/api/StarFlashes/GetStarFlashByFlashAndUserId?flash_id=${this.flashID}&user_id=${global.userId}`)
         .then(response => {
           console.log(response);
           this.isStarred=1;
@@ -101,7 +99,6 @@ methods: {
         })
         .catch(error => {
           console.error('Error fetching city names:', error);
-          console.log(this.isStarred);
         });
   }
   },  
@@ -152,14 +149,12 @@ methods: {
   display:inline-block;
   margin-left: 3%;
 }  
-  
-.flash-image {  
-  width: 100%;  
-  height: auto;  
-  max-width: 730px;  
-  border-radius: 10px;  
-  margin-bottom: 20px;  
-}  
+
+.flash-image {
+  display: flex;
+  justify-content: center;
+  height: 500px; 
+}
   
 .left-panel, .right-panel {  
   padding: 20px;  

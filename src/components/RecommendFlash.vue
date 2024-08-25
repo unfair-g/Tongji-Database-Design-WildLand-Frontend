@@ -46,7 +46,7 @@ data() {
       }  
     },
     fetchFlashes() {  
-      axios.get(`https://localhost:7218/api/FlashTags/GetFlashInfoByTag?tag_name=${this.currentMenu}`)
+      axios.get(`/api/FlashTags/GetFlashInfoByTag?tag_name=${this.currentMenu}`)
         .then(response => {
           this.flashes = response.data;
         })
