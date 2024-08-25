@@ -231,12 +231,12 @@ export default {
       });  
       formData.append('displayFiles', this.displayPicList[0].raw, this.displayPicList[0].raw.name);  
       // 使用Axios发送FormData  
-      axios.get(`https://localhost:7218/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
+      axios.get(`/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
     .then(response => {  
       // 更新 flash 对象中的 tagName  
       this.flash.tagName = response.data;  
   
-      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=${this.flash.flash_image}&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
+      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=${this.flash.flash_image}&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  

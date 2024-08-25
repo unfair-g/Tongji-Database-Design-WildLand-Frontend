@@ -3,14 +3,14 @@
     <div class="flash-list">
       <div class="flash-item" v-for="(flash) in flashes" :key="flash.flash_id" @click="goToDetail(flash)">
         <div class="img">
-            <img :src="flash.flash_image" />
+            <img style="width: 253px; height: 171px;" :src="flash.flash_pics" />
         </div>
         <div class="flash-info">
-            <span class="flash-title">{{ flash.flash_title }}</span>
-            <span class="flash-meta">作者： {{ flash.user_id }}</span>
+            <span class="flash-title">{{ flash.flash.flash_title }}</span>
+            <span class="flash-meta">作者： {{ flash.flash.user_id }}</span>
           <div>
-            <span class="flash-like">{{ flash.collection_number }}收藏</span>
-            <span class="flash-like">{{ flash.views_number }}浏览</span>
+            <span class="flash-like">{{ flash.flash.collection_number }}收藏</span>
+            <span class="flash-like">{{ flash.flash.views_number }}浏览</span>
           </div>
         </div>
       </div>

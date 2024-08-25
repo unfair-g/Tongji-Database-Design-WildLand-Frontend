@@ -12,7 +12,7 @@
       添加标签
     </el-button>
   </div>
-  <el-dialog v-model="dialogFormVisible" title="Shipping address" width="500">
+  <el-dialog v-model="dialogFormVisible" title="输入新tag" width="500">
     <el-input
       v-model="tag.tag_name"
       style="margin-top: 20px; margin-bottom: 20px;"
