@@ -81,6 +81,7 @@ methods: {
         .catch(error => {
           console.error('Error fetching city names:', error);
         });
+        
     },
   toggleStar(flashId) {  
     console.log("Hello, Console!",global.userId);  

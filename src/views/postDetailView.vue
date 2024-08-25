@@ -507,43 +507,39 @@ export default {
       }
     },
     toggleLike(post) {
-      post.isLiked = !post.isLiked;
-      post.likes_number = post.isLiked ? post.likes_number + 1 : post.likes_number - 1;
       axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked=post.isLiked;
-        response.data.likesCount=post.likes_number;
+        post.isLiked=response.data.isLiked;
+        post.likes_number=response.data.likesCount;
+        console.log('点赞成功');
+        this.fetchPosts();
+
       })
       .catch(error => {
         console.error('Error toggling like:', error);
         this.handleError(error, '点赞操作失败');
+        this.fetchPosts();
+
       });
-      this.fetchPosts();
     },
     toggleStar(post) {
-      post.isStarred = !post.isStarred;
       axios.post('/api/StarPosts/starpost', {
         post_id: post.post_id,
         tips:"收藏测试",
         user_id: state.userId
       })
       .then(response => {
-        response.data.isStarred = post.isStarred;
-        if (post.isStarred === true) {
-          response.data.stars_number+=1;
-        }
-        else if (post.isStarred === false) {
-          response.data.stars_number-=1;
-        }
+        post.isStarred = response.data.isStarred;
+        this.fetchPosts();
       })
       .catch(error => {
         console.error('Error toggling star:', error);
         this.handleError(error, '收藏操作失败');
+        this.fetchPosts();
       });
-      this.fetchPosts();
     },
     goBackToForumView() {
       this.$router.push({ path: `/home/forum` });
@@ -735,7 +731,6 @@ export default {
   margin-top:20px ;
   display: flex;
   align-items:center;
-  gap:150px;
   justify-content: space-between;
   width: 100%;
 }

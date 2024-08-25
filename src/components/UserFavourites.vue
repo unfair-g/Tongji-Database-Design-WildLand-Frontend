@@ -27,7 +27,7 @@
   </el-row>
   <el-row :gutter="25" v-else-if="componentTab==='product'">
         <el-col :span="8" v-for="product in starproduct" :key="product.product_id">
-            <el-card  style="margin-bottom:8%" @click="goToProductDetail(product)">
+            <el-card  style="margin-bottom:8%" @click="goToProductDetail(product.product.product_id)">
                 <img :src="product.picUrl[0]" alt="product_img" style="width:100%;height:300px"/>
                 <template #footer>
                     <h3>{{ product.product.product_name }}</h3>
@@ -58,12 +58,11 @@
 <script setup>
 import Post from '../components/Article.vue'
 import global from '@/store/global'
+import router from '@/router'
 import axios from '@/axios'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router';  
 
-const router = useRouter();  
 const componentTab = ref('camp')  
 const starcamp = ref()
 const starflash = ref()
@@ -77,7 +76,7 @@ const fetchStarCamps = async () => {
         const response =await axios.get(`/api/Users/getStarCampground/${global.userId}`)
         starcamp.value = response.data.data
     } catch (error) {
-        if (error.response.code == 404)
+        if (error.response.status == 404)
             tips.value = '暂无收藏营地'
         else
             ElMessage.error(error.message)
@@ -88,9 +87,9 @@ const fetchStarCamps = async () => {
 const fetchStarProducts = async () => {
     try {
         const response =await axios.get(`/api/Users/getStarOutdoorProduct/${global.userId}`)
-        starproduct.value = response.data.data       
+        starproduct.value = response.data.data      
     } catch (error) {
-        if (error.response.code == 404)
+        if (error.response.status == 404)
             tips.value = '暂无收藏户外用品'
         else
             ElMessage.error(error.message)
@@ -100,12 +99,12 @@ const fetchStarProducts = async () => {
 
 const fetchStarFlashes = async () => {
     try {
-        const response =await axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
+        const response =await axios.get(`/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
         starflash.value = response.data
         ElMessage.success(response.data)
     } catch (error) {
-        if (error) 
-            tips.value = ' '
+        if (error.response.status==404) 
+            tips.value = '暂无收藏经验资讯'
         else
             ElMessage.error(error.message)
     }
@@ -124,6 +123,7 @@ const fetchStarPosts = async () => {
 }
 
 const handleClick = async (tab) => {
+    tips.value = ''
     if (tab.props.name == 'camp')
         fetchStarCamps();
     else if (tab.props.name == 'product')
@@ -135,16 +135,14 @@ const handleClick = async (tab) => {
     }
     else
         fetchStarFlashes();
-    tips.value = ''
 }
 
-function goToProductDetail (product) {
-    const productId = product.product_id
-    this.$router.push({ path: `/home/product/${productId}` })
+function goToProductDetail (product_id) {
+    router.push({ path: `/home/product/${product_id}` })
 }
         
 function goToCampDetail (camp) {
-    this.$router.push({ path: `/home/campdetail/${camp.campground_id}` })
+    router.push({ path: `/home/campdetail/${camp.campground_id}` })
 }
 
 function goToFlashDetail (flash) {

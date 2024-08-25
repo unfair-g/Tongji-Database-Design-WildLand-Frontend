@@ -42,8 +42,14 @@ export default {
     },
     goToPostDetail(post) {
       const postID = post.post_id;
-      const postKind =post.post_kind;
-      this.$router.push({ path: `/home/forum/post/${postKind}/${postID}` }); 
+      const postKind = post.post_kind;
+      if (postKind === 0) {
+        this.$router.push({ path: `/home/forum/post/share/${postID}` }); 
+      } else if (postKind === 1) {
+        this.$router.push({ path: `/home/forum/post/lease/${postID}` }); 
+      } else {
+        this.$router.push({ path: `/home/forum/post/recruit/${postID}` }); 
+      }
     }
   },
   mounted() {

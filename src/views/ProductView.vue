@@ -5,7 +5,7 @@
           <el-card :body-style="{ padding: '5px' }" shadow="hover" class="product-card" @click="goToProductDetail(product)">
             <img :src="product.pics[0]" class="image" alt="product image">
             <div style="padding: 14px;">
-              <span>{{ product.productName}}</span>
+              <span><h2>{{ product.productName}}</h2></span>
               <div><span>尺寸：{{ product.size}}</span></div>
               <div><span>材料：{{ product.material}}</span></div>
               <div><span>适用人数：{{ product.suitableUsers}}</span></div>
@@ -97,10 +97,13 @@ export default {
 }
 
 .image {
-  width: 100%;
-  max-height: 210px;
-  height:100%;
-  object-fit: cover;
+  width: 100%; /* 图片宽度填满容器 */  
+  height: 100%; /* 图片高度自动调整以保持宽高比 */  
+  min-width: 350px;
+  max-height: 210px; /* 设置最大高度，根据需要调整 */  
+  object-fit:cover; /* 保持图片的宽高比，图片将被缩放以适应容器，但不会被裁剪 */  
+  display: block; /* 去除图片下方的默认空间 */  
+  margin: 0 auto; /* 可选，如果图片小于容器宽度，则水平居中 */ 
 }
 
 .price {

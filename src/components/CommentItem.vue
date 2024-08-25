@@ -105,15 +105,13 @@ export default {
   },
   methods: {
     toggleLike() {
-      this.localComment.isLiked = !this.localComment.isLiked;
-      this.localComment.likes_number = this.localComment.isLiked ? this.localComment.likes_number + 1 : this.localComment.likes_number - 1;
       axios.post('/api/LikeComments/commentlike', {
         comment_id: this.localComment.comment_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked = this.localComment.isLiked;
-        response.data.likesCount = this.localComment.likes_number;
+        this.localComment.isLiked=response.data.isLiked;
+        this.localComment.likes_number=response.data.likesCount;
       })
       .catch(error => {
         console.error('Error toggling like:', error);
