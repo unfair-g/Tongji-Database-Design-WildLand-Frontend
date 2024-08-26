@@ -128,7 +128,7 @@ const Login = () => {
           });
           ElMessage.success('密码重置成功！');
           global.Login = true;
-          global.userId = response.data.data.user_id;
+          global.userId = 1433008655;
           saveToSessionStorage(true,response.data.data.user_id,true);
           router.push({ path: '/home' });
           console.log('登录成功', response)

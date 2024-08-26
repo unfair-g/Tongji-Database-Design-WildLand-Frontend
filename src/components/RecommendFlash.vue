@@ -4,7 +4,7 @@
     <div class="flash-list">
       <div class="flash-item" v-for="(flash) in flashes" :key="flash.flash_title" @click="goToDetail(flash)">
         <div class="img">
-            <img style="width: 253px; height: 171px;" :src="flash.picUrls" />
+            <img style="width: 253px; height: 171px;" :src="flash.flashImage" />
         </div>
         <div class="flash-info">
             <span class="flash-title">{{ flash.flashTitle }}</span>
@@ -35,7 +35,6 @@ data() {
     return {
       currentMenu:'营地', // 默认选中的菜单项
       flashes: [],
-      pic:''
     };
     
   },
@@ -47,9 +46,16 @@ data() {
     },
     fetchFlashes() {  
       axios.get(`/api/FlashTags/GetFlashInfoByTag?tag_name=${this.currentMenu}`)
-        .then(response => {
-          this.flashes = response.data;
-        })
+      .then(response => {  
+      // 假设 response.data 是一个数组，每个元素都是一个对象，且每个对象都有 picUrls 属性  
+      this.flashes = response.data.map(flash => {  
+        // 复制当前对象，并添加或修改 flashImage 属性  
+        return {  
+          ...flash, // 浅拷贝当前对象  
+          flashImage: flash.picUrls[0]  // 赋值 picUrls[0] 给 flashImage，如果 picUrls 不存在或长度为0，则 flashImage 为 null  
+        };  
+      })
+    })  
         .catch(error => {
           console.error('Error fetching city names:', error);
         });
@@ -69,7 +75,7 @@ data() {
         console.error(`${message}:`, error.message);
         ElMessage.error(`${message} - 错误信息: ${error.message}`);
       }
-    }
+    },
   },
   
   watch: {

@@ -39,7 +39,7 @@
   <el-row :gutter="25" v-else-if="componentTab==='flash'">
         <el-col :span="8" v-for="flash in starflash" :key="flash.flashId">
             <el-card  style="margin-bottom:8%" @click="goToFlashDetail(flash)">
-                <img :src="flash.flashImage" style="width:100%"/>
+                <img :src="flash.picUrls[0]" alt="flash-img" style="width:100%;height:300px"/>
                 <template #footer>
                     <h3>{{ flash.flashTitle }}</h3>
                     <div style="margin-top:3%">作者：{{ flash.userId }}</div>
@@ -101,12 +101,10 @@ const fetchStarFlashes = async () => {
     try {
         const response =await axios.get(`/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
         starflash.value = response.data
-        ElMessage.success(response.data)
-    } catch (error) {
-        if (error.response.status==404) 
+        if (starflash.value==null)
             tips.value = '暂无收藏经验资讯'
-        else
-            ElMessage.error(error.message)
+    } catch (error) {
+        ElMessage.error(error.message)
     }
 }
 

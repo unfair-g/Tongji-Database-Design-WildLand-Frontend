@@ -3,7 +3,7 @@
     <div class="left-panel">  
       <div class="flash-item">  
         <h2 class="flash-title">{{ flash.flashTitle }}</h2> 
-        <h2 class="flash-meta">{{ flash.user_id }}</h2>
+        <h2 class="flash-meta">作者：{{ flash.userName }}</h2>
         <el-tag type="info" class="flash-tag">{{ flash.tagName }}</el-tag>  
         <div class="flash-like">
         <el-button class="flash-like" @click="toggleStar(flash.flashId)">
@@ -12,12 +12,12 @@
           <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
         </el-button>
       </div> 
+      <el-carousel indicator-position="outside" height="500px" style="margin-top: 100px;">
+      <el-carousel-item v-for="pic in flash.flash_pics" :key="pic" class="flash-image">
+        <img :src="pic" style="height:500px">
+      </el-carousel-item>
+    </el-carousel>
         <p class="flash-content">{{ flash.flashContent }}</p> 
-        <el-carousel v-if="flash.flash_pics===true" indicator-position="outside" height="500px" style="margin-top: 100px;">
-        <el-carousel-item v-for="pic in flash.flash_pics" :key="pic" class="flash-image">
-          <img :src="pic" style="height:500px">
-        </el-carousel-item>
-      </el-carousel>
       </div>  
     </div>  
     <div class="right-panel">  
@@ -53,7 +53,6 @@ data() {
       isStarred:0,
       pic1:'',
       pic2:'',
-      pic3:'',
     };
   },
 methods: {  
@@ -61,10 +60,9 @@ methods: {
       axios.get(`/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
-          console.log(this.flash)
           this.flash.viewsNumber=this.flash.viewsNumber+1
           axios.put(`/api/Flashes/UpdateFlashAndTag`, [{  
-            userId: 123,  
+            userId: this.flash.userId,  
             flashDate: this.flash.flashDate,  
             flashImage: this.flash.flashImage,  
             collectionNumber: this.flash.collectionNumber,  
