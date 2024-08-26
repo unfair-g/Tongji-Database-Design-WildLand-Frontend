@@ -216,27 +216,14 @@ export default {
       console.log(fileList)
       console.log(this.coverPicList)
     },
-    handleMapPicChange(file, fileList) {
-      this.mapPicList = fileList;
-    },
     handleIntroPicChange(file, fileList) {
       this.introPicList = fileList;
-    },
-    handleDisplayPicChange(file, fileList) {
-      this.displayPicList = fileList;
-      
     },
     // 处理文件删除
     deleteCoverImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
-    deleteMapImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
-    },
     deleteIntroImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
-    },
-    deleteDisplayImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
     fetchTags() {

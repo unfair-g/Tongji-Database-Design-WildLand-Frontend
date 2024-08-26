@@ -12,9 +12,10 @@
           <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
         </el-button>
       </div> 
-      <img :src="this.pic1" style="height:500px">
         <p class="flash-content">{{ flash.flashContent }}</p> 
-        <img :src="this.pic2" style="height:500px">
+        <li v-for="(img, index) in this.flash.flash_pics" :key="index">
+          <img :src="img" style="height:500px">
+        </li> 
       </div>  
     </div>  
     <div class="right-panel">  
@@ -40,6 +41,7 @@
 <script>
 import axios from '@/axios'; // 引入配置好的axios实例
 import global from '@/store/global'
+import { ref} from 'vue'
 
 export default {
 name: 'R_Flash',
@@ -50,6 +52,8 @@ data() {
       isStarred:0,
       pic1:'',
       pic2:'',
+      pic3:'',
+      pic: ref([])
     };
   },
 methods: {  
@@ -60,6 +64,11 @@ methods: {
           console.log(this.flash);
           this.pic1=this.flash.flash_pics[0]
           this.pic2=this.flash.flash_pics[1]
+          this.pic3=this.flash.flash_pics[2]
+          console.log(this.flash)
+          this.flash.flash_pics.forEach(item => {  
+            this.pic.value.push(item);  
+          });  
           console.log(this.pic2)
           this.flash.viewsNumber=this.flash.viewsNumber+1
           axios.put(`/api/Flashes/UpdateFlashAndTag`, [{  

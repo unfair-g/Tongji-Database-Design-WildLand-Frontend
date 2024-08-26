@@ -40,6 +40,25 @@
             />
           </div>
         </div>
+        <div class="post-body">
+
+          <el-form-item label="正文图片" >
+            <el-upload
+              action=""
+              list-type="picture"
+              :file-list="introPicList"
+              :on-change="handleIntroPicChange"
+              :on-remove="deleteIntroImage"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <el-button size="small" type="primary" class="upgrade-btn">添加正文图片</el-button>
+              <!-- eslint-disable-next-line -->
+              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
+            </el-upload>
+          </el-form-item>
+
+          </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
       </div>
     </el-form>
@@ -53,7 +72,7 @@ import { mapState, mapMutations } from 'vuex'
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
-import global from '@/store/global'
+//import global from '@/store/global'
 
 export default {
   props: ['flashID'],
@@ -75,7 +94,8 @@ export default {
     ])  ,
   },  
   setup() {
-    const admin_id = ref(global.userId)
+    
+    const imageUrl = ref('')
     const avatarSrc = ref('') // 用于存储头像 URL
 
     const beforeAvatarUpload = (file) => {
@@ -93,11 +113,6 @@ export default {
       
       const formData = new FormData();
       formData.append('file', file);
-      axios.post(`https://localhost:7218/api/FlashPics/UploadFlashPic?flashId=${admin_id.value}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      })
       ElMessage.success('头像上传成功')
       .catch(error => {
         ElMessage.error(error.message)
@@ -107,6 +122,7 @@ export default {
     }
 
     const handleFileChange = (file) => {
+      imageUrl.value = URL.createObjectURL(file.raw)
       avatarSrc.value = URL.createObjectURL(file.raw)
     }
 
@@ -115,9 +131,31 @@ export default {
       beforeAvatarUpload,
       handleFileChange,
       ElMessage,
+      imageUrl
     }
   },
   methods: {  
+    updateImageList(fileList, imageUrl) {
+        const index = fileList.findIndex(item => item.url === imageUrl);
+        if (index !== -1) {
+            fileList.splice(index, 1); // 从列表中移除已删除的图片
+        }
+    },
+    handleCoverPicChange(file, fileList) {
+      this.coverPicList = fileList;
+      console.log(fileList)
+      console.log(this.coverPicList)
+    },
+    handleIntroPicChange(file, fileList) {
+      this.introPicList = fileList;
+    },
+    // 处理文件删除
+    deleteCoverImage(file, fileList) {
+        this.deleteImage(file.url, fileList);
+    },
+    deleteIntroImage(file, fileList) {
+        this.deleteImage(file.url, fileList);
+    },
     closeDetail(){
       this.$router.push({ path: `/administrator/flashaudit` })
     },
@@ -127,6 +165,19 @@ export default {
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
+      let formData = new FormData();  
+      if(this.introPicList)
+      {      
+        formData.append('file', this.introPicList[0].raw, this.introPicList[0].raw.name);  
+      }
+      axios.post(`https://localhost:7218/api/FlashPics/UploadFlashPic?flashId=${this.flash.flashId}`, formData, {  
+          headers: {  
+              'Content-Type': 'multipart/form-data'  
+          }  
+      })  
+      .then(response => {  
+          console.log(response.data);  
+      })  
       axios.get(`https://localhost:7218/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
     .then(response => {  
       // 更新 flash 对象中的 tagName  
