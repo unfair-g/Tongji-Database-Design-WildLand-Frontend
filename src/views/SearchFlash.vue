@@ -3,7 +3,7 @@
     <div class="flash-list">
       <div class="flash-item" v-for="(flash) in flashes" :key="flash.flash_id" @click="goToDetail(flash)">
         <div class="img">
-            <img style="width: 253px; height: 171px;" :src="flash.flash_pics" />
+            <img style="width: 253px; height: 171px;" :src="flash.flash_image" />
         </div>
         <div class="flash-info">
             <span class="flash-title">{{ flash.flash.flash_title }}</span>
@@ -29,16 +29,24 @@ export default {
     const route = useRoute();
     const flashes = ref([]);
     const keyword = route.query.keyword || '';
-
     const fetchFlash = () => {
       axios.get(`https://localhost:7218/api/Flashes/SearchFlashes?keyword=${encodeURIComponent(keyword)}`) 
         .then(response => {
-          flashes.value = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching products:', error);
-        });
-    };
+          // 使用 map 来处理每个元素并返回新数组  
+          flashes.value = response.data.map(flash => { 
+            console.log(flash.flash_pics[0]) 
+            // 复制当前对象并添加或更新 flashImage 属性  
+            return {  
+              ...flash, // 浅拷贝当前对象  
+              flash_image: flash.flash_pics[0] // 赋值 picUrls[0] 给 flashImage  
+            };  
+          });  
+          console.log(flashes.value[0])
+        })  
+        .catch(error => {  
+          console.error('Error fetching flashes:', error);  
+        });  
+    };  
 
     onMounted(() => {
       fetchFlash();
