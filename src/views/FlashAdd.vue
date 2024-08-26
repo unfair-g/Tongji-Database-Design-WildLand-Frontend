@@ -72,7 +72,7 @@ import { mapState, mapMutations } from 'vuex'
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
-//import global from '@/store/global'
+import global from '@/store/global'
 
 export default {
   props: ['flashID'],
@@ -185,7 +185,7 @@ export default {
   
       // 现在 tagName 已经更新，可以发送 PUT 请求来更新 Flash  
       axios.put(`https://localhost:7218/api/Flashes/UpdateFlashAndTag`, [{  
-        userId: 123,  
+        userId: global.userId,  
         flashDate: this.flash.flashDate,  
         flashImage: this.flash.flashImage,  
         collectionNumber: this.flash.collectionNumber,  
@@ -223,6 +223,7 @@ export default {
         });
     },
     fetchTags() {
+      console.log(global.userId)
       axios.get(`https://localhost:7218/api/FlashTags`)
         .then(response => {
           this.tag = response.data;

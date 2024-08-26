@@ -96,7 +96,7 @@ export default {
         flash_title: '填写标题',  
         flash_content: '填写内容',  
         flash_id: 111110,
-        user_id:  9000000040,
+        user_id:  global.userId,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
         tagId: 123,
