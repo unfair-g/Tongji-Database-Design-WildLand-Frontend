@@ -184,8 +184,8 @@
             order_person_phone_number: this.orderForm.order_person_phone_number,
             remark: this.orderForm.remark,
             total_price: parseInt(this.totalPrice),
-            reserved_start_time: dayjs(this.$route.query.startDate).toISOString(), //toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
-            reserved_end_time: dayjs(this.$route.query.endDate).toISOString(),
+            reserved_start_time: dayjs(this.$route.query.startDate).format(), //toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
+            reserved_end_time: dayjs(this.$route.query.endDate).format(),
             campsite_ids: this.selectedCampsiteIds.map(id => parseInt(id)),
             order_idcard: this.orderForm.order_person_id
           };

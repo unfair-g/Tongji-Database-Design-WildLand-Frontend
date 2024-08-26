@@ -38,26 +38,6 @@
             <el-button type="primary" @click="confirmDelete">是</el-button>
           </template>
         </el-dialog>
-
-        <div class="post-content">
-          <el-dialog
-          v-model="dialogVisible"
-          width="80%"
-          :show-close="true"
-          >
-          </el-dialog>
-          <el-dialog
-          v-model="deleteDialogVisible"
-          title="确认删除"
-          width="30%"
-        >
-          <span>{{ deleteMessage }}</span>
-          <template v-slot:footer>
-            <el-button @click="cancelDelete">否</el-button>
-            <el-button type="primary" @click="confirmDelete">是</el-button>
-          </template>
-        </el-dialog>
-      </div>
     </div>
     
       <div>
@@ -280,7 +260,7 @@ export default {
     },
     confirmDelete() {
       this.deleteDialogVisible = false;
-      axios.delete(`api/Posts/${this.postID}`)
+      axios.delete(`api/Posts/${this.ldleitemsPostID}`)
         .then(response => {
           if (response.data !=null) {
             this.goBackToForumView();          
@@ -288,8 +268,7 @@ export default {
       })
       .catch(error => {
         this.handleError(error, '删除帖子失败');
-        this.fetchLdleitemsPosts();
-
+        console.error(error)
       }) 
     },
     cancelDelete() {
@@ -308,7 +287,7 @@ export default {
     async BanRent()
     {
       try {  
-    const response = await axios.get(`https://localhost:7218/api/Purchases`);  
+    const response = await axios.get(`/api/Purchases`);  
     if (!Array.isArray(response.data)) {  
       throw new Error('Expected an array from the server, but got something else.');  
     }  
@@ -358,7 +337,7 @@ export default {
         total_floor:this.ldleitemsPost.total_floor,
 
       }
-      axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost.post_id}`,LdlePost).then(response => {  
+      axios.put(`/api/Posts/${this.ldleitemsPost.post_id}`,LdlePost).then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
         console.log(LdlePost);
