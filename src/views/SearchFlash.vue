@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -31,7 +31,7 @@ export default {
     const keyword = route.query.keyword || '';
 
     const fetchFlash = () => {
-      axios.get(`https://localhost:7218/api/Flashes/SearchFlashes?keyword=${encodeURIComponent(keyword)}`) 
+      axios.get(`/api/Flashes/SearchFlashes?keyword=${encodeURIComponent(keyword)}`) 
         .then(response => {
           flashes.value = response.data;
         })

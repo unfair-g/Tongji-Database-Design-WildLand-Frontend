@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 
 export default {
   name: 'ProductView',
@@ -47,7 +47,7 @@ export default {
   methods: {
     async fetchProduct() {
       try {
-        await axios.get('https://localhost:7218/api/OutdoorProducts')
+        await axios.get('/api/OutdoorProducts')
         .then(response=>{
           this.products=response.data;
         }); 

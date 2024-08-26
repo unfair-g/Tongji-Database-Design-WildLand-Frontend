@@ -21,7 +21,7 @@
   
   <script>
 
-  import axios from 'axios';
+  import axios from '@/axios';
   import { ref } from 'vue'
 
   export default {
@@ -39,7 +39,7 @@
         this.$emit('menu-select', index); // 触发父组件的事件，并传递选项的索引
       },
       fetchTagNames() {
-      axios.get('https://localhost:7218/api/FlashTags/GetTagNames')
+      axios.get('/api/FlashTags/GetTagNames')
         .then(response => {
           this.tags = response.data;
         })

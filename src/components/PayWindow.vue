@@ -94,7 +94,7 @@
 <script>
 import { ref } from 'vue';
 import dayjs from 'dayjs';
-import axios from 'axios';
+import axios from '@/axios';
 import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
 export default {
@@ -155,14 +155,14 @@ export default {
       // 切换支付成功弹窗
     },
     fetchProductId() {
-      axios.get(`https://localhost:7218/api/OutdoorProducts/${this.productID}`)
+      axios.get(`/api/OutdoorProducts/${this.productID}`)
         .then(response => {
           this.ProductId = response.data.product_id;
         })
         .catch(error => {
           console.error('Error fetching ldle items posts:', error);
         });
-        axios.get(`https://localhost:7218/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product.product_id}`)
+        axios.get(`/api/OutdoorProductPics/GetPicsByProductId?productId=${this.product.product.product_id}`)
         .then(response =>{
            this.image=response.data?.length>0?response.data[0]:'图片'
            console.log('kkkk',this.image)
@@ -182,7 +182,7 @@ export default {
       console.log('订单上传:', orderData.user_id);
       console.log('订单上传成功:', orderData.pick_time);
       console.log(orderData)
-      axios.post('https://localhost:7218/api/Leases/OutdoorProductLease', orderData,{headers: {
+      axios.post('/api/Leases/OutdoorProductLease', orderData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -234,7 +234,7 @@ export default {
       return dayjs(date).format('YYYY-MM-DD');
     },
     CampOrders() {
-      axios.get(`https://localhost:7218/api/ReserveOrders/GetReservationDetailsByUserId?orderPersonId=${globalState.userId}`)
+      axios.get(`/api/ReserveOrders/GetReservationDetailsByUserId?orderPersonId=${globalState.userId}`)
         .then(response => {
           this.campOrders = response.data;
           console.log(this.campOrders)
