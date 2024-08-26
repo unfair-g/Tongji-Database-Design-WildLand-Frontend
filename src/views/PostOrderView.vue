@@ -6,7 +6,6 @@
       </div>
       <div style="flex:2;position:relative;">
         <h2 style="margin-bottom:20px;">{{ leaseOrder.item_name }}</h2>
-        <p style="margin-bottom:20px;">商品提供者: {{ leaseOrder.user_name }}</p>
         <p style="margin-bottom:20px;">商品简介: {{ leaseOrder.item_summary }}</p>
         <p style="margin-bottom:20px;">商品新旧程度: {{ leaseOrder.condition }}</p>
         <div class="price-tag">￥{{ leaseOrder.price }}</div>
@@ -80,12 +79,18 @@ const route = useRoute();
 const handelClick = async(order_status) => {
   try {
     console.log('status',order_status)
-    await axios.put('/api/Purchases/UpdateOrderStatus',{
+    await axios.put('/api/Purchases/UpdateOrderStatus',
+      {
+          orderStatus: order_status,
+          orderId: parseInt(route.params.ldleitemsPostId)
+      },{
         params: {
         orderId: route.params.ldleitemsPostId,
         orderStatus: order_status
         }
     })
+     leaseOrder.value.order_status += 1;
+     ElMessage.success('订单状态更新成功！')
   } catch (error) {
       ElMessage.error(error.message)
     }
