@@ -43,7 +43,7 @@
       <div>
         <div class="post-visible-states"  v-if="this.userid===ldleitemsPost.author_id">
           <el-select
-            v-model="value"
+            v-model="ldleitemsPost.exhibit_status"
             placeholder="修改帖子可见状态"
             size="small"
             class="visibility-select"
@@ -156,8 +156,8 @@ export default {
       deleteReply: null,
       parentComment: null,
       options: [
-        { label: '仅自己可见', value: '仅自己可见' },
-        { label: '所有人可见', value: '所有人可见' }
+        { label: '仅自己可见', value: 0 },
+        { label: '所有人可见', value: 1 }
       ],
       RentSuccess:false,
       recipientInfo: {
@@ -317,7 +317,7 @@ export default {
     },
     handleChange(value) {  
       // 这里是用户更改选择时执行的代码 
-      if(value=='仅自己可见')
+      if(value==0)
           this.ldleitemsPost.exhibit_status = 0;
       else
           this.ldleitemsPost.exhibit_status = 1;

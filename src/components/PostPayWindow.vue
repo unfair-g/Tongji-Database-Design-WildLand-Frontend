@@ -121,8 +121,7 @@
       {
         axios.get(`/api/Users/getUserInfo/${globalState.userId}`)
         .then(response=>{
-          this.money=response.data.userInfo.points;
-          console.log('111111',this.money)
+          this.money=response.data.data.userInfo.points;
         })
         .catch(error=>{
           console.error('Error fetching  points:', error);

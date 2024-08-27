@@ -10,7 +10,7 @@
           </div>
           <div v-if="isPostOwner" class="post-visible-states">
             <el-select
-              v-model="value"
+              v-model="post.exhibit_status"
               placeholder="修改帖子可见状态"
               size="large"
               style="width: 240px"
@@ -335,7 +335,6 @@ export default {
       currentImage: '',
       currentIndex: 0,
       isStarSolid: true,
-      value: '',
       comments: [],//存储所有评论
       signups: [],
       isReportPostWindowVisible:false,//举报弹窗显示
