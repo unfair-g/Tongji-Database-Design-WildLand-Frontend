@@ -4,15 +4,15 @@
       <div class="flash-item">  
         <h2 class="flash-title">{{ flash.flashTitle }}</h2> 
         <h2 class="flash-meta">作者：{{ flash.userName }}</h2>
-        <el-tag type="info" class="flash-tag">{{ flash.tagName }}</el-tag>  
         <div class="flash-like">
-        <el-button class="flash-like" @click="toggleStar(flash.flashId)">
+        <el-tag effect="dark" color="#1D5B5E" class="flash-tag">{{ flash.tagName }}</el-tag>  
+        <el-button class="flash-like" @click="toggleStar(flash.flashId)" style="margin:1%;height:30px;margin-left: auto;">
           <el-icon v-if="!this.isStarred"><Star /></el-icon>
           <el-icon v-else><StarFilled /></el-icon>
           <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
         </el-button>
       </div> 
-      <el-carousel indicator-position="outside" height="500px" style="margin-top: 100px;">
+      <el-carousel indicator-position="outside" height="500px" style="margin-top: 50px;">
       <el-carousel-item v-for="pic in flash.flash_pics" :key="pic" class="flash-image">
         <img :src="pic" style="height:500px">
       </el-carousel-item>
@@ -51,8 +51,6 @@ data() {
     return {
       flash: [],
       isStarred:0,
-      pic1:'',
-      pic2:'',
     };
   },
 methods: {  
@@ -96,7 +94,7 @@ methods: {
           console.log(this.isStarred);
         })
         .catch(error => {
-          console.error('Error fetching city names:', error);
+          console.error(error);
         });
   }
   },  
@@ -120,7 +118,6 @@ methods: {
   justify-content: space-between; /* 保持其他内容的布局 */  
   align-items: center;  
   margin-bottom: 10px;  
-  
 }  
   
 .flash-title {  
@@ -138,7 +135,10 @@ methods: {
 .flash-tag{
   margin: 1%;
   display: flex;  
-  width:9%
+  font-size:18px;
+  width:9%;
+  height:30px;
+  margin-right: auto;
 }
 
 .flash-meta {  
@@ -173,7 +173,6 @@ methods: {
 .flash-stats, .flash-like {  
   font-size: 18px;  
   color: #666;  
-  justify-content: flex-end;
   display:flex;
 }  
   

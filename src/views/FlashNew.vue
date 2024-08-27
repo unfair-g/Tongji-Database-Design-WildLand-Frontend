@@ -96,7 +96,7 @@ export default {
         flash_title: '填写标题',  
         flash_content: '填写内容',  
         flash_id: 111110,
-        user_id:  9000000040,
+        user_id:  global.userId,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
         tagId: 123,
@@ -216,27 +216,14 @@ export default {
       console.log(fileList)
       console.log(this.coverPicList)
     },
-    handleMapPicChange(file, fileList) {
-      this.mapPicList = fileList;
-    },
     handleIntroPicChange(file, fileList) {
       this.introPicList = fileList;
-    },
-    handleDisplayPicChange(file, fileList) {
-      this.displayPicList = fileList;
-      
     },
     // 处理文件删除
     deleteCoverImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
-    deleteMapImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
-    },
     deleteIntroImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
-    },
-    deleteDisplayImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
     fetchTags() {
