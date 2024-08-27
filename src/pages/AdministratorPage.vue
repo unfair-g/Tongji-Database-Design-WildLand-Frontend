@@ -46,7 +46,7 @@
       <el-container style="height: calc(100% - 190px)">
         <el-aside class="aside">
           <el-scrollbar>
-            <el-menu :default-openeds="['1', '2', '3']" @select="handleSelect" class="sidebar">
+            <el-menu :default-openeds="['1', '2', '3', '4']" @select="handleSelect" class="sidebar">
               <el-sub-menu index="1">
                 <template #title>
                   <el-icon><View /></el-icon>审核
@@ -55,6 +55,7 @@
                 <el-menu-item index="1-2" @click="navigateTo('ReportReview', admin_id)">举报审核</el-menu-item>
                 <el-menu-item index="1-3" @click="navigateTo('GeekAudit', admin_id)">达人审核</el-menu-item>
               </el-sub-menu>
+
               <el-sub-menu index="2">
                 <template #title>
                   <el-icon><EditPen /></el-icon>内容管理
@@ -62,6 +63,7 @@
                 <el-menu-item index="2-1" @click="navigateTo('AdminCamp')">营地</el-menu-item>
                 <el-menu-item index="2-2" @click="navigateTo('OutdoorGear')">户外用品</el-menu-item>
               </el-sub-menu>
+
               <el-sub-menu index="3">
                 <template #title>
                   <el-icon><Document /></el-icon>经验资讯
@@ -69,6 +71,16 @@
                 <el-menu-item index="3-1" @click="navigateTo('TagAudit')">标签管理</el-menu-item>
                 <el-menu-item index="3-2" @click="navigateTo('FlashAudit')">资讯管理</el-menu-item>
               </el-sub-menu>
+
+              <!-- New Order Management Menu -->
+              <el-sub-menu index="4">
+                <template #title>
+                  <el-icon><ShoppingCart /></el-icon>订单管理
+                </template>
+                <el-menu-item index="4-1" @click="navigateTo('CampOrders')">营地</el-menu-item>
+                <el-menu-item index="4-2" @click="navigateTo('OutdoorGearOrders')">户外用品</el-menu-item>
+              </el-sub-menu>
+
               <div class="flex-grow" />
               <li style="flex:1;"></li>
               <el-menu-item index="5" @click="exit">
@@ -76,6 +88,7 @@
                 <span>退出登录</span>
               </el-menu-item>
             </el-menu>
+
           </el-scrollbar>
         </el-aside>
         <el-main>
