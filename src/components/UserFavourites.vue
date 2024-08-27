@@ -49,7 +49,7 @@
   </el-row>
   <div v-else v-loading="loading" element-loading-text="Loading...">
     <div v-for="post in starpost" :key="post.post_id">
-    <Post :view="post.post_kind" :post_id="post.post_id" star=true />
+    <Post :view="post.post_kind" :post_id="post.post_id" star=true @loaded="onChildLoaded" />
     </div>
   </div>
 </div>
@@ -60,7 +60,7 @@ import Post from '../components/Article.vue'
 import global from '@/store/global'
 import router from '@/router'
 import axios from '@/axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const componentTab = ref('camp')  
@@ -108,6 +108,17 @@ const fetchStarFlashes = async () => {
     }
 }
 
+const loadedCount = ref(0); // 跟踪已加载的子组件数量
+
+const onChildLoaded = () => {
+  loadedCount.value++;
+    if (loadedCount.value === starpost.value.length) {
+        nextTick(()=> {
+            loading.value = false; // 当所有子组件都加载完成时停止 loading
+        })
+  }
+};
+
 const fetchStarPosts = async () => {
     try {
         const response =await axios.get(`/api/Users/getStarPost/${global.userId}`)
@@ -128,8 +139,6 @@ const handleClick = async (tab) => {
         fetchStarProducts();
     else if (tab.props.name == 'post') {
         fetchStarPosts();
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        loading.value = false
     }
     else
         fetchStarFlashes();

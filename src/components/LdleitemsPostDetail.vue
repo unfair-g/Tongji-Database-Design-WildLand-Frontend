@@ -82,13 +82,13 @@
       <div class="post-stats">
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
           <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost.isLiked, 'icon-dianzanxuanzhong': ldleitemsPost.isLiked}"></i>
-          <span>点赞</span>
           <span>{{ ldleitemsPost.likes_number }}</span>
+          <span style="margin-left: 10px;">{{ ldleitemsPost.isLiked ? '已点赞' : '点赞' }}</span>
         </el-button>
         <el-button class="stat-item" @click="toggleStar(ldleitemsPost)">
           <el-icon v-if="!ldleitemsPost.isStarred"><Star /></el-icon>
           <el-icon v-else><StarFilled /></el-icon>
-          收藏
+          {{ ldleitemsPost.isStarred ? '已收藏' : '收藏' }}
         </el-button>
         <el-button class="stat-item" @click="goToReportPostWindow">
           <el-icon><Bell/></el-icon>举报
@@ -199,7 +199,7 @@ export default {
   },
   methods: {
       fetchLdleitemsPosts() {
-        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
+        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}&user_id=${globalState.userId}`)
         .then(response => {
           this.ldleitemsPost = response.data;
           console.log(this.ldleitemsPost)

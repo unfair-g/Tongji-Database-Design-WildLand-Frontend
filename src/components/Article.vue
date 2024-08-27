@@ -95,9 +95,9 @@
         </template>
 
         <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
-          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="order image"></div>
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="image"></div>
           <div style="padding: 14px;flex:2;">
-            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
             <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
@@ -223,8 +223,10 @@ export default {
               isStarred: post.isStarred,
               shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
             }));
-            if(this.star)
-              this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
+            if (this.star) {
+              this.shareposts = this.shareposts.filter(element => element.post_id == this.post_id)
+              this.$emit('loaded');
+            }
           })
           .catch(error => {
             console.error('Error fetching share posts:', error);
@@ -261,8 +263,10 @@ export default {
         axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
         .then(response => {
           this.ldleitemsposts = response.data;
-          if(this.star)
-            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
+          if (this.star) {
+            this.ldleitemsposts = this.ldleitemsposts.filter(element => element.post_id == this.post_id)
+            this.$emit('loaded');
+          }
         })
         .catch(error => {
           console.log(this.ldleitemsposts)
@@ -309,8 +313,10 @@ export default {
             shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
             
           }))
-          if(this.star)
-            this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
+          if (this.star) {
+            this.recruitposts = this.recruitposts.filter(element => element.post_id == this.post_id)
+            this.$emit('loaded');
+          }
         })
         .catch(error => {
           console.error('Error fetching recruit posts:', error);
