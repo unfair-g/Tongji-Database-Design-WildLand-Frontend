@@ -48,7 +48,7 @@
   </template>
   
   <script>
- import axios from 'axios';
+ import axios from '@/axios';
 
   export default {
     data() {
@@ -95,7 +95,7 @@
       };  
   
       // 发送 POST 请求到 /api/OutdoorProducts  
-      axios.post('https://localhost:7218/api/OutdoorProducts', productData, {  
+      axios.post('/api/OutdoorProducts', productData, {  
         headers: {  
             'accept': 'text/plain' ,
           'Content-Type': 'application/json'  

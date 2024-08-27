@@ -1,20 +1,26 @@
 <template>  
   <el-timeline>  
     <el-timeline-item  
-      v-for="(flash, index) in flash"  
+      v-for="(flashes, index) in flash"  
       :key="index"  
       :timestamp="flash.flash_date"  
       placement="top"  
-      @click="goToDetail(flash)"
+      @click="goToDetail(flashes)"
     >  
       <template #dot>  
         <i class="el-icon-info"></i>  
       </template>  
       <el-card class="flash-item">  
         <div class="flash-info">  
-          <span class="flash-title">{{ flash.flash_title }}</span>  
+          <span class="flash-title">{{ flashes.flash.flash_title }}</span>  
           <div class="flex gap-2">  
-            <el-tag type="info">{{ flash.tag }}</el-tag>  
+            <el-tag  
+              v-for="tag in flashes.tags"  
+              :key="tag.tag_id"  
+              type="info"  
+            >  
+              {{ tag.tag_name }}  
+            </el-tag>  
           </div>  
         </div>  
       </el-card>  
@@ -35,18 +41,20 @@ export default {
   },
   methods: {
     fetchFlashes() {
-      axios.get('https://localhost:7218/api/Flashes/GetLatestNFlash?n=3')
+      axios.get('https://localhost:7218/api/Flashes/GetLatestNFlashWithTags?n=3')
         .then(response => {
           this.flash = response.data;
         })
         .catch(error => {
           console.error('Error fetching city names:', error);
+          
         });
+      
     },
-    goToDetail (flash) {
-      const flashId = flash.flash_id
+    goToDetail (flashes) {
+      const flashId = flashes.flash.flash_id;
       this.$router.push({ path: `/home/flash/${flashId}` })
-    }
+    },
   },
   created() {
     this.fetchFlashes();

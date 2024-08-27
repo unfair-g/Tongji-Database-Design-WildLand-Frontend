@@ -27,39 +27,41 @@
           <div v-if="errors.itemCondition" class="error-message">{{ errors.itemCondition }}</div>
         </el-form-item>
         <el-form-item label="物品价格：" prop="itemPrice" style="font-weight: bold;">
-          <el-input v-model="postForm.itemPrice" placeholder="请输入物品参考价格"/>
+          <el-input type="number" v-model.number="postForm.itemPrice" placeholder="请输入物品参考价格"/>
           <div v-if="errors.itemPrice" class="error-message">{{ errors.itemPrice }}</div>
         </el-form-item>
 
         <div class="form-row">
-          <div class="left-side">
+          <div class="top-section">
             <el-form-item label="物品位置：" prop="itemLocation" style="font-weight: bold;">
               <el-button type="primary" color="#1D5B5E" @click="addLocation" :loading="locationLoading" :disabled="locationLoading">点击添加定位</el-button>
               <div v-if="postForm.itemLocation" class="location-info">
                 您的IP获取成功,IP所在地:{{ postForm.itemLocation }}
               </div>
             </el-form-item>
-            <div class="map-container"></div>
           </div>
 
-          <div class="right-side">
-            <el-form-item label="物品图片：" prop="itemImages" style="font-weight: bold;">
-              <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
-              <el-upload
-                ref="uploadRef"
-                class="upload-demo"
-                action="#"
-                list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :before-upload="beforeImageUpload"
-                :on-success="handleImageSuccess"
-                :file-list="fileList"
-                :auto-upload="false"
-                @change="handleFileChange"
-              >
+          <div class="bottom-section">
+            <el-form-item label="物品图片：" style="font-weight: bold;">
+              <div style="display: flex; flex-direction: column;">
+                <el-button type="primary" color="#1D5B5E" @click="triggerUpload" style="margin-bottom:10px;">点击添加图片</el-button>
+                <el-upload
+                  ref="uploadRef"
+                  class="upload-demo"
+                  action="#"
+                  list-type="picture-card"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :before-upload="beforeImageUpload"
+                  :on-success="handleImageSuccess"
+                  :file-list="fileList"
+                  :auto-upload="false"
+                  @change="handleFileChange"
+                >
                 <i class="el-icon-plus"></i>
-              </el-upload>
+                </el-upload>
+              </div>
+              <div v-if="errors.itemImages" class="error-message">{{ errors.itemImages }}</div>
             </el-form-item>
           </div>
         </div>
@@ -85,7 +87,7 @@
             <div style="font-size:x-large;margin-top:20px;text-align:center;margin-bottom:20px;">发布成功</div>
           </div>
           <div class="success">
-            <el-button type="text" class="Pbutton" @click="GoToOrder(product)">查看帖子</el-button>
+            <el-button type="text" class="Pbutton" @click="GoToOrder()">查看帖子</el-button>
           </div>
         </div>
       </div>
@@ -95,9 +97,10 @@
 
 <script>
 
-import axios from 'axios';
+import axios from '@/axios';
 import { ElMessage } from "element-plus";
 import  globalState  from '../store/global'; // 引入 global.js 中的状态
+import { provinceMap } from '@/store/global';
 
 export default {
   name: 'LdlePost',
@@ -125,7 +128,8 @@ export default {
           { required: true, message: '请输入物品简介', trigger: 'blur' }
         ],
         itemPrice: [
-          { required: true, message: '请输入物品参考价格', trigger: 'blur' }
+          { required: true, message: '请输入物品参考价格', trigger: 'blur' },
+          { type: 'number', message: '请输入有效的数字', trigger: 'blur' }
         ],
         itemLocation: [
           { required: true, message: '请添加物品位置', trigger: 'blur' }
@@ -137,7 +141,9 @@ export default {
       fileList: [],
       locationLoading: false,
       localIsLdlePostDialogVisible: this.isLdlePostDialogVisible,
-      errors: {}
+      errors: {},
+      postId:0,
+      postNew:{}
     };
   },
   watch: {
@@ -166,9 +172,11 @@ export default {
       }
     },
     async submitForm() {
+      this.$refs.postFormRef.validate(async (valid) => {
+        if (valid) {
         const postData = {
           author_id: globalState.userId,
-          title: `${this.postForm.itemName} - 十分好用，安利`,
+          title: this.postForm.itemName,
           post_time: new Date().toISOString(),
           post_position: this.postForm.itemLocation,
           post_kind: 1,
@@ -178,26 +186,38 @@ export default {
           item_summary: this.postForm.itemDescription,
           price: parseFloat(this.postForm.itemPrice),
         };
-        console.log('订单上传:', postData);
-      axios.post('https://localhost:7218/api/Posts/PushLdle', postData,{headers: {
+        console.log('帖子上传:', postData);
+      axios.post('/api/Posts/PushLdle', postData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
     })
         .then(response => {
-          console.log('订单上传成功:', response.data);
-          this.handleClose();
-          this.PostSuccess = true;
+          console.log('帖子上传成功:', response.data);
+          this.postId=response.data.post_id
+          this.postNew={
+            ...response.data,
+            content:response.data.condition
+          };
+          // 在这里上传图片
+          this.uploadImage();  // 调用上传图片的方法
         })
         .catch(error => {
-          console.error('上传订单时出错:', error);
+          console.error('帖子出错:', error);
         });
-    },
+      }
+      else{
+        ElMessage.error('表单验证失败');
+          return false;
+      }
+    })
+      },
     resetForm() {
       this.postForm.itemName = '';
       this.postForm.itemDescription = '';
       this.postForm.itemPrice = '';
       this.postForm.itemLocation = '';
+      this.postForm.itemCondition = '';
       this.postForm.itemImages = [];
       this.fileList = [];
       this.locationLoading = false;
@@ -210,7 +230,9 @@ export default {
         const ip = response.data.ip;
         const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
         const province = geoResponse.data.state_prov;
-        this.postForm.itemLocation = province;
+        const chineseProvince = provinceMap[province] || province;
+        this.postForm.itemLocation = chineseProvince;
+        console.log('Province:', chineseProvince);
       } catch (error) {
         this.handleError(error, '获取定位信息失败');
       } finally {
@@ -234,25 +256,60 @@ export default {
       }
       return true;
     },
-    handleImageSuccess(response) {
-      this.postForm.itemImages.push(response.url);
+    handleImageSuccess(response,file) {
+      if (response && response.message === "success") {
+        const url = URL.createObjectURL(file.raw);
+        this.postForm.itemImages.push(url);
+        ElMessage.success('图片上传成功');
+      } else {
+        console.log('上传图片失败，服务器响应:', response);
+      }
+    },
+    uploadImage() {
+
+      // 创建一个 FormData 对象
+  const formData = new FormData();
+  //formData.append('post_id', this.postId);  // 使用帖子的ID
+
+  // 将所有文件添加到 FormData 对象
+  this.fileList.forEach(file => {
+    formData.append('files', file.raw);  // 绑定图片文件
+  });
+
+  // 发送 POST 请求
+  axios.post(`/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  .then(response => {
+    console.log('图片上传成功:', response.data);
+    ElMessage.success('所有图片上传成功');
+    this.handleClose();
+    this.PostSuccess = true;
+  })
+    .catch(error => {
+    console.log('上传图片失败，服务器响应:', error);
+    ElMessage.error('请至少上传一张图片!');
+  });
     },
     handleFileChange(file, fileList) {
       this.fileList = fileList;
     },
     handlePictureCardPreview(file) {
-      const url = URL.createObjectURL(file.raw);
-      window.open(url);
+      //const url = URL.createObjectURL(file.raw);
+      //window.open(url);
+      console.log(file);
     },
     handleRemove(file, fileList) {
       this.fileList = fileList;
     },
-    GoToOrder(product) {
-      // navigate to order details or handle post success
-      this.$router.push({ path: `/order/${product.id}` });
+    GoToOrder() {
+      this.$router.push({ path: `/home/forum/post/lease/${this.postId}` });
     }
   }
-};
+}
+;
 </script>
 
 <style scoped>
@@ -261,7 +318,8 @@ export default {
 }
 .form-row {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column; /* 从左右排列改为上下排列 */
+  gap: 20px; /* 控制上下间距 */
 }
 .left-side {
   width: 45%;
@@ -321,5 +379,26 @@ export default {
 .Pbutton {
   float: center;
   color:#ddd;
+}
+
+.top-section, .bottom-section {
+  width: 100%; /* 使每部分占满整个宽度 */
+}
+
+/* 新增样式 */
+.upload-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 图片之间的间隔 */
+}
+
+.upload-demo .el-upload-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 图片之间的间隔 */
+}
+
+.upload-demo .el-upload-list .el-upload-list__item {
+  width: calc(33.33% - 10px); /* 每行显示三个图片，并考虑间隔 */
 }
 </style>

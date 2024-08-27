@@ -46,6 +46,7 @@
 <style scoped>
    .container {
     max-width: 70%; /* 设置容器的最大宽度 */
+    height: 90.4vh; /* 设置容器高度为视口高度 */
     margin: 0 auto; /* 居中显示容器 */
     display: flex;
     background-color: #ffffff; /* 设置容器的背景色为白色 */

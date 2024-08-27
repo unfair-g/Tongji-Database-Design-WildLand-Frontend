@@ -11,30 +11,27 @@
           <img :src="ldleitemsPost.post_pics[0]" alt="product image"> 
         </div>
         <div style="flex:2;">
-          <h2>{{ ldleitemsPost.title }}</h2>
-          <p>商品提供者: {{ ldleitemsPost.author_name }}</p>
-          <p>商品简介: {{ ldleitemsPost.item_summary }}</p>
-          <p>商品新旧程度: {{ ldleitemsPost.condition }}</p>
-          <p>收件人姓名: {{ recipientInfo.name }}</p>
-          <p>收件人地址: {{ recipientInfo.address }}</p>
-          <p>收件人电话: {{ recipientInfo.phone }}</p>
+          <h2 style="margin-bottom:20px;">{{ ldleitemsPost.title }}</h2>
+          <p style="margin-bottom:20px;">商品提供者: {{ ldleitemsPost.user_name }}</p>
+          <p style="margin-bottom:20px;">商品简介: {{ ldleitemsPost.item_summary }}</p>
+          <p style="margin-bottom:20px;">商品新旧程度: {{ ldleitemsPost.condition }}</p>
+          <p style="margin-bottom:20px;">收件人姓名: {{ recipientInfo.name }}</p>
+          <p style="margin-bottom:20px;">收件人地址: {{ recipientInfo.address }}</p>
+          <p style="margin-bottom:20px;">收件人电话: {{ recipientInfo.phone }}</p>
           <!-- 数量输入框 -->  
         </div>
       </div>
       <div class="price-tag">¥{{ ldleitemsPost.price }}</div>
       <div class="payment-options">
-        <p>请选择支付方式:</p>
+        <p style="margin-bottom:10px;">支付方式:</p>
         <el-radio-group v-model="selectedPayment">
-          <el-radio-button label="支付宝支付"><el-icon><Coin /></el-icon> 支付宝</el-radio-button>
-          <el-radio-button label="微信支付"><el-icon><ChatRound /></el-icon> 微信</el-radio-button>
-          <el-radio-button label="银行卡支付"><el-icon><Money /></el-icon> 银行卡</el-radio-button>
-          <el-radio-button label="银联卡支付"><el-icon><CreditCard /></el-icon> 银联卡</el-radio-button>
+          <el-radio-button label="支付宝支付"><el-icon><Coin /></el-icon> 钱包余额</el-radio-button>
         </el-radio-group>
       </div>
       <template v-slot:footer>
         <span class="dialog-footer">
           <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="confirmDialog()">立即支付</el-button>
+          <el-button type="primary" @click="confirmDialog(ldleitemsPost)">立即支付</el-button>
         </span>
       </template>
     </el-dialog>
@@ -62,7 +59,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import axios from '@/axios';
   import  globalState  from '../store/global'; // 引入 global.js 中的状态
 
   export default {
@@ -89,12 +86,15 @@
         RentSuccess: false,
         Order: false,
         users: [], // 存储用户数据
-    selectedUserId: null,
-    orderId:0
+        selectedUserId: null,
+        orderId:0,
+        money:0
       }
     },
     created() {
       this.selectedUser();
+      this.fetchPoints();
+      console.log(this.money)
     },
     watch: {
       RentdialogVisible(newVal) {
@@ -106,7 +106,7 @@
     },
     methods: {
       fetchLdleitemsOrder() {
-      axios.get(`https://localhost:7218/api/Purchases/${this.ldleitemsOrderID}`)
+      axios.get(`/api/Purchases/${this.ldleitemsOrderID}`)
         .then(response => {
           this.ldleitemsOrder = response.data;
         })
@@ -117,7 +117,16 @@
       selectedUser() {
         this.selectedUserId = globalState.userId
       },
-      
+      async fetchPoints()
+      {
+        axios.get(`/api/Users/getUserInfo/${globalState.userId}`)
+        .then(response=>{
+          this.money=response.data.data.userInfo.points;
+        })
+        .catch(error=>{
+          console.error('Error fetching  points:', error);
+        })
+      },
 
       handleClose() {
         this.closeDialog();
@@ -125,18 +134,36 @@
       closeDialog() {
         this.localDialogVisible = false;
       },
-      confirmDialog() {
+      async confirmDialog(ldleitemsPost) {
+        
+        console.log(ldleitemsPost.price)
+        await this.fetchPoints();
+        console.log('22222222',this.money)
+        if(this.money<ldleitemsPost.price)
+      {
+        this.$alert('余额不足，请前往个人中心充值', '提示', {  
+        confirmButtonText: '确定',  
+        type: 'success',  
+        callback: () => {  
+          location.reload(); // 刷新页面  
+        } 
+      });
+      //this.localDialogVisible = false
+      }
+      else{
         this.localDialogVisible = false
         this.createOrderAndUpload();
-        //添加支付成功逻辑
+      }
+
+        //添加支付成功逻辑 
         // 切换支付成功弹窗
       },
     createOrderAndUpload() {
       const orderData = {
         order_date: new Date().toISOString(), // 生成订单日期
         order_id: this.generateOrderId(), // 生成唯一订单ID
-        order_status: '已支付',
-        logistics:0,
+        order_status: 1,
+        logistics_status:0,
         post_id: this.ldleitemsPost.post_id,
         recipient_address: this.recipientInfo.address,
         recipient_name: this.recipientInfo.name,
@@ -145,7 +172,8 @@
       };
       console.log('订单上传:', orderData.order_id);
       console.log('订单上传:', orderData.user_id);
-      axios.post('https://localhost:7218/api/Purchases', orderData,{headers: {
+      console.log('订单上传:', orderData);
+      axios.post('/api/Purchases/PurchaseIdleProduct', orderData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -170,7 +198,7 @@
         }})
         this.PentSuccess = false
         this.Order=true
-      }
+      },
     }
   }
   </script>

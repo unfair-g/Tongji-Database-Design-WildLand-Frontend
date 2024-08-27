@@ -14,7 +14,7 @@
       
   
       <!-- 表单 -->
-      <el-form :model="orderForm" label-width="100px" class="order-form">
+      <el-form :model="orderForm" :rules="rules" label-width="100px" class="order-form" ref="orderForm">
         <span class="title">预订人信息</span>
         <div class="divider"></div> <!-- Divider line -->
         <el-form-item label="预约人姓名" prop="order_person_name" required>
@@ -42,12 +42,22 @@
             
       </div>
       
-      <CampPayWindow v-model:dialogVisible="dialogVisible" :totalPrice="totalPrice" />
+      <CampPayWindow
+        v-model:dialogVisible="dialogVisible"
+        :totalPrice="totalPrice"
+        :orderId="orderId"
+       />
       
       </el-main>
       <el-footer>
         <span class="price-tag">¥{{ totalPrice }}</span>
-        <el-button class="go-to-pay-button" type="primary" @click="go_to_pay()">提交订单</el-button>
+        <el-button 
+        class="go-to-pay-button" 
+        :type="isOrderButtonEnabled ? 'primary' : ''" 
+        :disabled="!isOrderButtonEnabled" 
+        @click="go_to_pay()"
+        >提交订单
+        </el-button>
       </el-footer>
 
     </div>
@@ -76,6 +86,17 @@
         dialogVisible: false,
         camp:null, //订单对应的营地
         selectedCampsites: [], //订单选中的营位
+        orderId: null,  // 新增orderId变量
+        rules: {
+        order_person_phone_number: [
+          { required: true, message: '请输入预约人电话', trigger: 'blur' },
+          { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的中国电话号码', trigger: 'blur' }
+        ],
+        order_person_id: [
+          { required: true, message: '请输入预约人身份证', trigger: 'blur' },
+          { pattern: /^\d{15}|\d{18}|\d{17}[Xx]$/, message: '请输入有效的身份证号', trigger: 'blur' }
+        ]
+      }
       };
     },
     computed: {
@@ -88,21 +109,40 @@
       selectedCampsiteIds() {
         return this.$route.query.selectedCampsiteIds.split(',');
       },
+      // 计算天数
+      reservedDays() {
+        const startDate = dayjs(this.$route.query.startDate);
+        const endDate = dayjs(this.$route.query.endDate);
+        return endDate.diff(startDate, 'day') ; 
+      },
       totalPrice() {
-        return this.selectedCampsites.reduce((total, campsite) => {
+        const campsiteTotalPrice = this.selectedCampsites.reduce((total, campsite) => {
           return total + campsite.price;
         }, 0);
+        return campsiteTotalPrice * this.reservedDays; // 营位总价 * 预定天数
       },
       totalPriceDetail() {
-        return this.selectedCampsites.map(campsite => `¥${campsite.price}`).join(' + ');
-      }
+        const campsitePriceDetails = this.selectedCampsites.map(campsite => `¥${campsite.price}`).join(' + ');
+        return `(${campsitePriceDetails}) * ${this.reservedDays} 晚`;
+      },
+      isOrderButtonEnabled() {
+      // 检查所有表单字段是否已填写
+    return (
+      this.orderForm.order_person_name &&
+      this.orderForm.order_person_phone_number &&
+      this.orderForm.order_person_id &&
+      this.selectedCampsites.length > 0 &&
+      this.startDate && 
+      this.endDate
+    );
+    }
     },
     methods: {
       //接口1 获取营地信息
       async fetchCampDetails() {
       const campId = this.$route.query.campID;
       try {
-        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}`);
+        const response = await axios.get(`api/Campgrounds/getcampgrounddetails/${campId}/${global.userId}`);
           this.camp = response.data;
       } catch (error) {
         console.error('获取营地信息失败:', error);
@@ -135,28 +175,35 @@
       
       //接口4 提交订单，把信息传给后端
       async go_to_pay() {
-        const campOrder = {
-          order_person_id: global.userId,
-          order_person_name: this.orderForm.order_person_name,
-          order_person_phone_number: this.orderForm.order_person_phone_number,
-          remark: this.orderForm.remark,
-          total_price: parseInt(this.totalPrice),
-          reserved_start_time: dayjs(this.$route.query.startDate).toISOString(),//toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
-          reserved_end_time: dayjs(this.$route.query.endDate).toISOString(),
-          campsite_ids: this.selectedCampsiteIds.map(id => parseInt(id)),
-          order_idcard: this.orderForm.order_person_id
-        };
-        try {
-        console.log('开始提交订单')
-        const response = await axios.post('/api/ReserveOrders/createreserveorder', campOrder);
-        console.log('订单提交成功:', response.data);
-        this.dialogVisible = true;
-        
-        } catch (error) {
-        console.error('订单提交失败:', error);
+        // 表单验证
+      this.$refs.orderForm.validate(async (valid) => {
+        if (valid) {
+          const campOrder = {
+            order_person_id: global.userId,
+            order_person_name: this.orderForm.order_person_name,
+            order_person_phone_number: this.orderForm.order_person_phone_number,
+            remark: this.orderForm.remark,
+            total_price: parseInt(this.totalPrice),
+            reserved_start_time: dayjs(this.$route.query.startDate).format(), //toISOString() 方法将 Day.js 对象转换为 ISO 8601 标准格式的字符串，这种格式是 YYYY-MM-DDTHH:mm:ss.sssZ
+            reserved_end_time: dayjs(this.$route.query.endDate).format(),
+            campsite_ids: this.selectedCampsiteIds.map(id => parseInt(id)),
+            order_idcard: this.orderForm.order_person_id
+          };
+          try {
+            console.log('开始提交订单')
+            const response = await axios.post('/api/ReserveOrders/createreserveorder', campOrder);
+            console.log('订单提交成功:', response.data);
+            this.orderId = response.data.orderId;  // 将orderId存储到父组件的data中
+            this.dialogVisible = true;
+          } catch (error) {
+            console.error('订单提交失败:', error);
+          }
+        } else {
+          console.log('表单验证失败');
+          return false;
         }
-
-      },
+      });
+    },
   
     },
     created() {
@@ -175,7 +222,7 @@
   
   .container {
     width: 70%; /* 设置容器的最大宽度 */
-    height: 100vh; /* 设置容器高度为视口高度 */
+    height: 90.4vh; /* 设置容器高度为视口高度 */
     margin: 0 auto; /* 居中显示容器 */
     display: flex;
     flex-direction: column; /* 设置子元素为纵向排列 */
@@ -228,6 +275,7 @@
     width: 260px;
     font-size: 20px;
     background-color: #1D5B5E;
+    border-width: 0;
   }
   .go-to-pay-button:hover {
     background-color: #2e7478; /* 更改为你希望的hover背景颜色 */

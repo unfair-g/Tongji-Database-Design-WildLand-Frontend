@@ -13,7 +13,11 @@
         </el-col>
         <el-col :span="10">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="4">{{ userInfo.user_name }} </el-col>
+                <el-col :span="5">
+                    <span>{{ userInfo.user_name }}</span>
+                    <span v-if="userInfo.gender==='f'" style="margin-left: 10%;color:#FF82BF"><el-icon><Female /></el-icon></span>
+                    <span v-if="userInfo.gender==='m'" style="margin-left: 10%;color:#3F48CC"><el-icon><Male /></el-icon></span>
+                </el-col>
                 <el-col :span="5">
                     <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
                     <el-tag v-else type="info" size="large" effect="dark" round>户外达人</el-tag>
@@ -86,7 +90,7 @@ const unFollow = async () => {
 const fetchUser=async (id) =>{
     try{
         const response = await axios.get(`/api/Users/getUserInfo/${id}`);
-        userInfo.value = response.data.data.user
+        userInfo.value = response.data.data.userInfo
         if (userInfo.value.birthday != null)
             userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
         userInfo.value.follows = response.data.data.followingCount;

@@ -1,29 +1,29 @@
 <template>
     <div class="product-detail" v-if="product">
       <div class="product-img">
-        <img :src="this.image" class="image" alt="product image">
+        <img :src="this.product.pics[0]" class="image" alt="product image">
       </div>
       <div class="product-info">
         <div class="right">
           <div class="product-mess">
-           <h2>{{ product.product_name }}</h2>
-           <p>尺寸: {{ product.size }}</p>
-           <p>材质: {{ product.material }}</p>
-           <p>品牌: {{ product.brand }}</p>
-           <p>适用人数: {{ product.suitable_users }}</p>
-           <p>商品简介: {{ product.introduction }}</p>
-           <p>商品余量: {{ product.stock_quantity }}</p>
-           <div class="price">￥{{ product.price }}</div>
+           <h1 style="margin-bottom:20px;">{{ this.product.product.product_name }}</h1>
+           <p style="margin-bottom:15px;">尺寸: {{ this.product.product.size }}</p>
+           <p style="margin-bottom:15px;">材质: {{ this.product.product.material }}</p>
+           <p style="margin-bottom:15px;">品牌: {{ this.product.product.brand }}</p>
+           <p style="margin-bottom:15px;">适用人数: {{ this.product.product.suitable_users }}</p>
+           <p style="margin-bottom:15px;">商品简介: {{ this.product.product.introduction }}</p>
+           <p style="margin-bottom:15px;">商品余量: {{ this.product.product.stock_quantity }}</p>
+           <div class="price"><h3>￥{{ this.product.product.price }}</h3></div>
           </div>
           <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
             <span>
               <el-button type="text" class="button">收藏</el-button>
-              <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="isStarSolid ? 'Star' : 'StarFilled'"></component></el-icon>
+              <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="!this.product.isStarred ? 'Star' : 'StarFilled'"></component></el-icon>
             </span>
           </el-tag>
           <div class="pay">
             <el-button class="pay" @click="openDialog">立即租赁</el-button>
-            <PayWindow v-model:dialogVisible="dialogVisible" :product="product" />
+            <PayWindow v-model:dialogVisible="dialogVisible" :product="this.product" />
           </div>
         </div>
       </div>
@@ -34,7 +34,7 @@
 
 import { ref } from 'vue'
 import PayWindow from '@/components/PayWindow.vue'
-import axios from 'axios';
+import axios from '@/axios';
 import globalState from '../store/global'; // 引入 global.js 中的状态
 
 export default {
@@ -48,7 +48,7 @@ export default {
       dialogVisible: false,
       product: null,
       thisUserId: globalState.userId,
-      image:''
+      image:'',
     }
   },
   props: ['productID'],
@@ -56,41 +56,24 @@ export default {
     this.fetchProduct();
   },
   methods: {
-    fetchProduct() {
-      axios.get(`https://localhost:7218/api/OutdoorProducts/${this.productID}`)
+    async fetchProduct() {
+      console.log(this.productID)
+      await axios.get(`/api/OutdoorProducts/GetProductByProductAndUserId?product_id=${this.productID}&user_id=${globalState.userId}`)
         .then(response => {
           this.product = response.data;
-          // Check if the product is already favorited
-          this.checkIfFavorited();
-          console.error('Error checking if product is favorited:', this.isStarSolid);
+          console.log(this.product)
         })
         .catch(error => {
-          console.error('Error fetching product:', error);
-        });
-        axios.get(`/api/OutdoorProductPics/GetPicsByProductId?productId=4`)
-        .then(response =>{
-           this.image=response.data?.length>0?response.data[0]:'图片'
-        })
-    },
-    checkIfFavorited() {
-      // Check if the product is already in the favorites on the backend
-      axios.get(`https://localhost:7218/api/StarProducts`)
-        .then(response => {
-          const favoriteProducts = response.data;
-          // 检查当前商品是否在收藏列表中
-          this.isStarSolid = !(favoriteProducts.some(favorite => favorite.product_id === this.product.product_id&&favorite.user_id === this.thisUserId));
-        })
-        .catch(error => {
-          console.error('Error checking if product is favorited:', error);
+          console.error('hhhhhh Error fetching product:', error);
         });
     },
     toggleStarColor() {     
-      if (!this.isStarSolid) {
+      if (this.product.isStarred) {
         // Remove from favorites
         // Remove from backend
-        axios.get(`https://localhost:7218/api/StarProducts`)
+        axios.get(`/api/StarProducts`)
   .then(response => {
-    const starProduct = response.data.find(favorite => favorite.product_id === this.product.product_id && favorite.user_id === this.thisUserId);
+    const starProduct = response.data.find(favorite => favorite.product_id === this.product.product.product_id && favorite.user_id === this.thisUserId);
     
     if (starProduct) {
       // 如果找到对应的StarProduct实体，使用它的id删除
@@ -106,8 +89,8 @@ export default {
         // Add to favorites
         
         // Add to backend
-        axios.post('https://localhost:7218/api/StarProducts', {
-          product_id: this.product.product_id,
+        axios.post('/api/StarProducts', {
+          product_id: this.product.product.product_id,
           user_id: this.thisUserId
         }, {
           headers: {
@@ -116,7 +99,7 @@ export default {
           }
         })
         .then(() => {
-          this.isStarSolid = false;
+          this.product.isStarred = true;
           console.log('Product added to favorites:', this.product.product_id);
         })
         .catch(error => {
@@ -131,7 +114,7 @@ export default {
     },
 
     deleteStarProduct(userId, productId) {
-      axios.delete(`https://localhost:7218/api/StarProducts/DeleteStarProduct`,  {
+      axios.delete(`/api/StarProducts/DeleteStarProduct`,  {
     params: {
       userId: userId,
       productId: productId
@@ -142,7 +125,7 @@ export default {
     }
   })
   .then(() => {
-    this.isStarSolid = true;
+    this.product.isStarred = false;
     console.log('Product removed from favorites:', this.product.product_id);
   })
   .catch(error => {
@@ -189,6 +172,7 @@ export default {
 
 .product-mess {
   flex: 1;
+  margin-bottom:10px;
 }
 
 .love {
@@ -218,7 +202,7 @@ export default {
 
 .image {
   width: 100%;
-  height: 300px;
+  height: 360px;
   object-fit: cover;
 }
 
@@ -229,7 +213,7 @@ export default {
 .price {
   color: #ff4949;
   font-size: 24px;
-  margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .pay {

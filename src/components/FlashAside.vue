@@ -8,11 +8,10 @@
         <div class="divider"></div> <!-- Divider line -->
        <el-menu-item
        v-for="(tag,index) in tags"  
-        :default-active="activeIndex"
-  :key="index"  
-  :index="tag"  
-  @click="handleMenuSelect(index)" 
-  class="menuitem"  
+        :key="index"  
+        :index="tag"  
+        @click="handleMenuSelect(tag.tag_name)" 
+        class="menuitem"  
       >
         {{ tag }}
       </el-menu-item>
@@ -22,22 +21,25 @@
   
   <script>
 
-  import axios from 'axios';
+  import axios from '@/axios';
+  import { ref } from 'vue'
+
   export default {
     name: 'TagMenu',
     data() {
     return {
       Names: [],
-      activeIndex: ' ',
-      tags:[]
+      tags:[],
+      activeIndex :ref('营地')
     };
   },
   methods: {
       handleMenuSelect(index) {
+        this.activeIndex = index
         this.$emit('menu-select', index); // 触发父组件的事件，并传递选项的索引
       },
       fetchTagNames() {
-      axios.get('https://localhost:7218/api/FlashTags/GetTagNames')
+      axios.get('/api/FlashTags/GetTagNames')
         .then(response => {
           this.tags = response.data;
         })

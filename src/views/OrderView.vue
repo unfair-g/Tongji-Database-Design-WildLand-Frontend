@@ -1,44 +1,38 @@
 <template>
-<div class="order">
+<div class="order" v-if="this.IsVisible">
   <div class="product-info-header" style="display:flex;align-items: center;" shadow="hover">
     <div class="product-img">
-      <img :src="product.product_image" alt="product image">
+      <img :src="product.outdoorProductWithPics.pics[0]" alt="product image">
     </div>
     <div style="flex:2;position:relative;">
-      <h2>{{ product.product_name }}</h2>
-      <p>尺寸: {{ product.size }}</p>
-      <p>材质: {{ product.material }}</p>
-      <p>品牌: {{ product.brand }}</p>
-      <p>适用人数: {{ product.suitable_users }}</p>
+      <h2 style="margin-bottom:20px;">{{ product.outdoorProductWithPics.productName }}</h2>
+      <p style="margin-bottom:20px;">尺寸: {{ product.outdoorProductWithPics.size }}</p>
+      <p style="margin-bottom:20px;">材质: {{ product.outdoorProductWithPics.material }}</p>
+      <p style="margin-bottom:20px;">品牌: {{ product.outdoorProductWithPics.brand }}</p>
+      <p style="margin-bottom:20px;">适用人数: {{ product.outdoorProductWithPics.suitableUsers }}</p>
       <div class="price-tag">￥{{ TotalPrice }}</div>
       <!-- 数量输入框 -->
-       <el-input-number v-model="Lquantity" :min=Lquantity :max=Lquantity label="数量" style="position:absolute;bottom:-20px;right:0px;"></el-input-number>
+       <el-input-number v-model="product.lease.amount" :min=product.lease.amount :max=product.lease.amount label="数量" style="position:absolute;bottom:-20px;right:0px;"></el-input-number>
       </div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>取货时间</h2></div>
-      <div style="text-align:center;justify-content:center;"><p>{{ this.formatDate(camp_order.pick_time) }}</p></div>
+      <div style="text-align:center;justify-content:center;margin-bottom:20px;"><p>{{ this.formatDate(product.lease.pick_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>归还时间</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ this.formatDate(camp_order.back_time) }}</p></div>
+      <div style="text-align:center;justify-content: center;margin-bottom:20px; "><p>{{ this.formatDate(product.lease.back_time) }}</p></div>
     </div>
     <div class="order_2">
       <div style="margin:10px;"><h2>配送需求</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>{{ camp_order.remark }}</p></div>
-    </div>
-    <!--<div class="order_2">
-      <div style="margin:10px;"><h2>物流详情</h2></div>
-      <div style="text-align:center;justify-content: center; "><p>现处于上海市/嘉定区</p></div>
-    </div>-->
-    <div class="order_3">
-      <el-button class="pay">申请退款</el-button>
+      <div style="text-align:center;justify-content: center;margin-bottom:20px; "><p>{{ product.lease.remark }}</p></div>
     </div>
   </div>
   </template>
   
   <script>
   import axios from '@/axios';
+  import globalState from '../store/global'; 
 
   export default {
     name: 'OrderView',
@@ -54,6 +48,7 @@
 
           product: {},
           camp_order: {},
+          IsVisible:false,
 
           startTime:null,
           endTime:null,
@@ -68,17 +63,11 @@
 
     // 获取订单详情
     try {
-      const orderResponse = await axios.get(`/api/Leases/${this.orderId}`);
-      const order = orderResponse.data;
-
-      // 更新订单数据
-      this.camp_order = order;
-      this.Lquantity = parseInt(this.$route.query.quantity) || this.quantity;
-
-      // 获取产品详情
-      const productId = order.product_id;
-      const productResponse = await axios.get(`/api/OutdoorProducts/${productId}`);
-      this.product = productResponse.data;
+      await axios.get(`/api/Leases/GetLease2?leaseId=${this.orderId}&userId=${globalState.userId}`)
+      .then(response=>{
+        this.product=response.data;
+      });
+      this.IsVisible=true;
       
     } catch (error) {
       console.error('Error fetching order or product details:', error);
@@ -86,11 +75,11 @@
   },
       computed: {
         TotalPrice(){
-          if (this.product && this.product.price && !isNaN(this.Lquantity)) {
+          if (this.product && this.product.outdoorProductWithPics.price && !isNaN(this.Lquantity)) {
             // 确保 product.price 是一个数字
-            const price = parseFloat(this.product.price);
+            const price = parseFloat(this.product.outdoorProductWithPics.price);
             console.log(`Product Price: ${price}, Quantity: ${this.Lquantity}`);
-            return (price * this.Lquantity).toFixed(2);
+            return (price * this.product.lease.amount).toFixed(2);
           }
           return 0;
         }
@@ -118,7 +107,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* 水平居中 */
-  justify-content: start; /* 根据需要调整 */
+  justify-content:center; /* 根据需要调整 */
   width: 80%;
   max-width: 1200px; /* 最大宽度 */
   margin: 20px auto 20px auto; /* 水平居中 */

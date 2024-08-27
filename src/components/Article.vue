@@ -1,6 +1,6 @@
 <template>
  <div v-if="view==='share'">
-  <div v-for="sharepost in shareposts" :key="sharepost.post_id" justify="center">
+  <div v-for="sharepost in filteredSharePosts" :key="sharepost.post_id" justify="center">
     <el-card class="post-item">
       <template #header>
         <div class="post-header">
@@ -31,7 +31,7 @@
     </div>  
 </div><!-- end of v-if="view=='share'" -->
   <div v-else-if="view ==='recruit'">
-    <div v-for="recruitpost in recruitposts" :key="recruitpost.post_id" justify="center">
+    <div v-for="recruitpost in filteredRecruitPosts" :key="recruitpost.post_id" justify="center">
       <el-card class="post-item">
         <template #header>
           <div class="post-header">
@@ -57,30 +57,34 @@
         
         <div class="post-content" @click="goToPostDetail(recruitpost)">
           <div class="post-title"><h4>{{recruitpost.title }}</h4></div>
-          <div class="post-text"><p>活动时间：{{recruitpost.activity_time}}；活动地点：{{recruitpost.activity_address  }}；计划招募人数：{{ recruitpost.total_recruit }}；活动介绍:{{ recruitpost.intro }}</p></div>
+          <div class="post-text">
+            <span class="post-fix">活动时间：</span><span>{{recruitpost.activity_time}}；</span>
+            <span class="post-fix">活动地点：</span><span>{{recruitpost.activity_address  }}；</span>
+            <span class="post-fix">计划招募人数：</span><span>{{ recruitpost.total_recruit }}；</span>
+          </div>
         </div>
 
       </el-card>
     </div>
   </div>
   <div v-else-if="view === 'lease'">
-    <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
-      <el-card class="post-item" v-if="ldleitemspost.exhibit_status === 1">
+   <div v-for="ldleitemspost in filteredLdlePosts" :key="ldleitemspost.post_id" justify="center" >
+      <el-card class="post-item">
         <template #header>
          <div class="post-header">
             <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
             <div class="post-details">
               <div class="post-info">
-                <span class="username">{{ ldleitemspost.author_name }}</span>
-                <span class="time">{{ ldleitemspost.time }}</span>
+                <span class="username">{{ ldleitemspost.user_name }}</span>
+                <span class="time">{{ formatTime(ldleitemspost.post_time) }}</span>
               </div>
               <div class="post-stats">
                 <!---->
-                <span class="stat-item"><el-icon><View /></el-icon>0</span>
+                
                 <span class="stat-item" @click="toggleLike(ldleitemspost)">
                   <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemspost.isLiked, 'icon-dianzanxuanzhong': ldleitemspost.isLiked}"></i>{{ ldleitemspost.likes_number }}
                 </span>
-                <span class="stat-item"><el-icon><ChatLineSquare /></el-icon> {{ ldleitemspost.total_floor }}</span>
+                
                 <span class="stat-item" @click="toggleStar(ldleitemspost)">
                   <el-icon v-if="!ldleitemspost.isStarred"><Star /></el-icon>
                   <el-icon v-else><StarFilled /></el-icon>
@@ -91,22 +95,19 @@
         </template>
 
         <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
-          <div style="flex:1;"><img :src="ldleitemspost.post_pics?.length>0?ldleitemspost.post_pics[0]:'pic'" class="image" alt="order image"></div>
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="image"></div>
           <div style="padding: 14px;flex:2;">
-            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
-            <div><span>商品简介: {{ ldleitemspost.content}}</span></div>
-            <div><span>商品新旧程度：{{ ldleitemspost.condition}}9成新</span></div>
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
+            <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
+            <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
-              <span class="price">¥{{ ldleitemspost.price }}90</span>
+              <span class="price">¥{{ ldleitemspost.price }}</span>
               <el-button type="text" class="button" @click="goToPostDetail(ldleitemspost)">查看详情</el-button>
             </div>
           </div>
         </div>
       </el-card>
     </div>
-  </div>
-  <div v-else>
-    加载中……
   </div>
 </template>
 
@@ -133,13 +134,18 @@ export default {
     post_id:{
       type: Number,
       default:null
+    },
+    searchQuery: {
+      type: String,
+      default:null
     }
   },
   data() {
     return {
       shareposts: [],
       ldleitemsposts: [],
-      recruitposts:[],
+      recruitposts: [],
+      localSearchQuery:'',
     };
   },
   mounted() {
@@ -153,6 +159,50 @@ export default {
       this.fetchRecruitPosts();
     }
   },
+  computed: {
+    filteredSharePosts() {
+      if (!this.searchQuery) {
+        return this.shareposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.shareposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.content.toLowerCase().includes(query) ||
+          post.username.toLowerCase().includes(query) 
+
+      );
+    },
+    filteredRecruitPosts() {
+      if (!this.searchQuery) {
+        return this.recruitposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.recruitposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.intro.toLowerCase().includes(query) ||
+          post.username.toLowerCase().includes(query) ||
+          post.activity_address.toLowerCase().includes(query) ||
+          post.activity_time.toLowerCase().includes(query) 
+          
+      );
+    },
+    filteredLdlePosts() {
+      if (!this.searchQuery) {
+        return this.ldleitemsposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.ldleitemsposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.item_summary.toLowerCase().includes(query) ||
+          post.user_name.toLowerCase().includes(query) ||
+          post.condition.toLowerCase().includes(query) 
+          
+      );
+    },
+  },
   methods: {
     fetchSharePosts() {
       if (this.user_id == null) {
@@ -165,15 +215,18 @@ export default {
               author_id:post.author_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent: post.short_content,
+              content: post.content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
               isLiked: post.isLiked,
               isStarred: post.isStarred,
+              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
             }));
-            if(this.star)
-              this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
+            if (this.star) {
+              this.shareposts = this.shareposts.filter(element => element.post_id == this.post_id)
+              this.$emit('loaded');
+            }
           })
           .catch(error => {
             console.error('Error fetching share posts:', error);
@@ -189,12 +242,14 @@ export default {
               author_id:this.user_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent: post.short_content,
+              content : post.content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
               isLiked: post.isLiked,
               isStarred: post.isStarred,
+              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
+
             }));
           })
           .catch(error => {
@@ -204,21 +259,37 @@ export default {
       }
     },
     fetchLdlePosts() {
-      //const userId = state.userId;  等待zsk添加获得全部帖子的接口--用户id筛选--帖子id筛选
-      axios.get(`/api/LdleitemsPosts/GetPostsByUserAndKind?user_id=123`)
+      if (this.user_id == null) {
+        axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
         .then(response => {
           this.ldleitemsposts = response.data;
-          if(this.star)
-            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
-          console.log(this.ldleitemsposts)
-        }
-        )
+          if (this.star) {
+            this.ldleitemsposts = this.ldleitemsposts.filter(element => element.post_id == this.post_id)
+            this.$emit('loaded');
+          }
+        })
         .catch(error => {
-          console.log(this.products)
+          console.log(this.ldleitemsposts)
           console.error('Error fetching products:', error);
         });
+      }
+      else {
+        axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByAuthorAndUserId`, {
+          params: {
+            author_id: this.user_id,
+            user_id:state.userId
+          }
+        })
+          .then(response => {
+           this.ldleitemsposts = response.data
+          })
+          .catch(error => {
+            console.error('Error fetching share posts:', error);
+            this.handleError(error, '获取闲置贴失败');
+          });
+      }
     },
-    async fetchRecruitPosts() {
+     async fetchRecruitPosts() {
       if (this.user_id == null) {
         const userId = state.userId;
         axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
@@ -229,7 +300,7 @@ export default {
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            shortContent:post.short_activity_summary,
+            content:post.activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
@@ -238,10 +309,14 @@ export default {
             activity_time: post.activity_time,
             activity_address: post.location,
             total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
+            intro: post.activity_summary,
+            shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
+            
           }))
-          if(this.star)
-            this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
+          if (this.star) {
+            this.recruitposts = this.recruitposts.filter(element => element.post_id == this.post_id)
+            this.$emit('loaded');
+          }
         })
         .catch(error => {
           console.error('Error fetching recruit posts:', error);
@@ -257,7 +332,7 @@ export default {
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            shortContent:post.short_activity_summary,
+            content:post.activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
@@ -266,7 +341,9 @@ export default {
             activity_time: post.activity_time,
             activity_address: post.location,
             total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
+            intro: post.activity_summary,
+            shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
+            
           }));
         })
           .catch(error => {
@@ -278,7 +355,7 @@ export default {
     handleError(error, message) {
       if (error.response) {
         if (error.response.status == '404') {
-          ElMessage.error('暂时未发布该类帖子！')
+          console.error('暂时未发布该类帖子！')
         }
         else {
           console.error(`${message}:`, error.response.data);
@@ -315,16 +392,14 @@ export default {
       }      
     },
     toggleLike(post) {
-      post.isLiked = !post.isLiked;
-      post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
-      
+
       axios.post('/api/LikePosts/postlike', {
         post_id: post.post_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked=post.isLiked;
-        response.data.likesCount=post.likes;
+        post.isLiked=response.data.isLiked;
+        post.likes=response.data.likesCount;
       })
       .catch(error => {
         console.error('Error toggling like:', error);
@@ -332,20 +407,13 @@ export default {
       });     
     },
     toggleStar(post) {
-      post.isStarred = !post.isStarred;
       axios.post('/api/StarPosts/starpost', {
         post_id: post.post_id,
         tips: "收藏测试",
         user_id: state.userId
       })
       .then(response => {
-        response.data.isStarred = post.isStarred;
-        if (post.isStarred === true) {
-          response.data.stars_number += 1;
-        }
-        else if (post.isStarred === false) {
-          response.data.stars_number -= 1;
-        }
+        post.isStarred=response.data.isStarred;
       })
       .catch(error => {
         console.error('Error toggling star:', error);
@@ -376,6 +444,9 @@ export default {
       else if (newValue === 'recruit') {
         this.fetchRecruitPosts();
       }
+    },
+    searchQuery(newVal) {
+      this.localSearchQuery = newVal;
     }
   },
   created() {
@@ -404,6 +475,7 @@ export default {
   width: 50px;
   height: 50px;
   margin-right: 20px;
+  object-fit: cover;
 }
 .post-details {
   display: flex;
@@ -446,6 +518,18 @@ i {
 .post-text:hover {
   text-decoration: underline; /* 添加下划线 */
 }
+
+.post-text span{
+  margin-right: 2%;
+  color: grey;
+}
+
+.post-text .post-fix{
+  margin-right: 0;
+  font-weight: bold;
+  color: rgb(98, 98, 98);
+}
+
 .product-card {
   width: 100%; /* 固定宽度 */
   height:30%;
@@ -457,7 +541,7 @@ i {
   width: 200px; /* 固定图片宽度 */
   height: 200px; /* 固定图片高度 */
   object-fit: cover;
-  margin-right: 60px;
+  margin-right: 10px;
 }
 .price {
   color: #ff4949;

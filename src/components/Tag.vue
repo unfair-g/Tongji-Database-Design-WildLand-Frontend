@@ -5,38 +5,117 @@
       :key="index"  
     >  
       <div class="tag-container">  
-        <el-tag :color="tag.color">{{ tag.title }}</el-tag>  
-      </div>  
-      <div class="detail">{{ tag.ps || '暂无备注' }}</div> <!-- 假设每个tag都有一个location属性，或者默认为未知地区 -->  
-      <h3 class="heading">相似标签</h3>  
-      <div class="tag-group">  
-        <el-tag  
-          type="info"  
-          class="tag-item"  
-        >  
-          {{ tag.similarTags }}  
-        </el-tag>  
+        <el-tag :color="tag.color" class="tag-name">{{ tag.tag_name }}</el-tag>  
       </div>  
       <div class="update-tag">  
-        <el-button :color="tag.updateColor || '#1D5B5E'" @click="goToDetail()">更新标签</el-button>  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="showUpdateDialog(tag)">更新标签</el-button>  
       </div>  
+      <div class="update-tag">  
+        <el-button :color="tag.updateColor || '#1D5B5E'" @click="deleteTag(tag)">删除标签</el-button>  
+      </div>  
+      <!-- 添加 el-dialog 组件 -->  
+      <el-dialog  
+        title="标签更改"   
+        v-model="dialogVisible" 
+        width="30%"  
+      >  
+        <div class="post-detail-content">  
+          <div class="post-info">  
+            <div class="post-title">标签标题:  
+              <el-input  
+                v-model="currentTag.tag_id"  
+                style="width: 240px"  
+              />  
+            </div>  
+            <div class="post-body">标签内容:  
+              <el-input  
+                v-model="currentTag.tag_name"  
+                style="width: 100%; height: 100px"  
+                type="textarea"  
+                autosize  
+              />  
+            </div>  
+          </div>   
+        </div>  
+        <template #footer>  
+            <el-button @click="dialogVisible = false">取 消</el-button>  
+            <el-button type="primary" @click="updateTag">确 认</el-button>  
+          </template> 
+      </el-dialog>  
     </el-card>  
-  </div>
+  </div>  
 </template>  
   
 <script>  
+import axios from '@/axios'; // 引入配置好的axios实例
+
 export default {  
   name: 'HotPosts',
-  computed: {
-    tag() {
-      return this.$store.state.tag.tags;
-    },
+  data() {
+    return {
+      tag:[],
+      dialogVisible: false,  
+      currentTag: {} 
+    };
   },
   methods: {
-    goToDetail () {
-      this.$router.push({ path: `/administrator/tagaudit/tagchange` })
+    showUpdateDialog(tag) {  
+      this.dialogVisible = true;  
+      this.currentTag = { ...tag }; // 浅拷贝当前标签数据到 currentTag  
+    },  
+    updateTag() {  
+      // 使用 currentTag 的数据发送 PUT 请求  
+      axios.put(`https://localhost:7218/api/FlashTags/${this.currentTag.tag_id}`, {  
+        tag_name: this.currentTag.tag_name,  
+        // 如果需要，可以添加其他字段  
+      })  
+      .then(() => {  
+        this.$message.success('标签更新成功！');  
+        this.dialogVisible = false; // 关闭对话框  
+        // 可能还需要重新获取或更新 tags 列表  
+      })  
+      .catch(error => {  
+        console.error('Error updating flash:', error);  
+        this.$message.error('标签更新失败，请重试！');  
+      });  
+    },  
+    deleteTag(tag) {  
+      // 弹出确认窗口  
+      if (confirm('你确定要删除这个Flash吗？')) {  
+        // 用户点击了确定，提交删除请求  
+        axios.delete(`https://localhost:7218/api/FlashTags/${tag.tag_id}`)  
+          .then(() => {  
+            // 删除成功的处理逻辑，例如提示用户或刷新页面  
+            alert('tag删除成功！');  
+            // 这里可以添加其他逻辑，比如从前端列表中移除该Flash  
+          })  
+          .catch(error => {  
+            // 删除失败的处理逻辑  
+            console.error('Error deleting flash:', error);  
+            alert('删除Flash时发生错误，请稍后再试！');  
+          });  
+      } else {  
+        // 用户点击了取消，不执行任何操作  
+        alert('删除已取消！');  
+      }  
+    },
+    fetchTags() {
+      axios.get(`https://localhost:7218/api/FlashTags`)
+        .then(response => {
+          this.tag = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
+    },
+    goToDetail (tag) {
+      const tagId = tag.tag_id
+      this.$router.push({ path: `/administrator/tagaudit/${tagId}` })
     }
-    }
+  },
+  created() {
+    this.fetchTags();
+  }
 }  
 </script>  
   
@@ -57,6 +136,10 @@ export default {
   font-size: 16px; /* 可选：调整字体大小 */  
   color: #333; /* 可选：调整文字颜色 */  
 }  
+
+.tag-name{
+  font-size: 20px;
+}
   
 .heading {  
   margin-bottom: 10px; /* 增加与下方标签组的间隔 */  
@@ -74,6 +157,6 @@ export default {
 }  
   
 .update-tag {  
-  margin-top: 20px; /* 增加与上方内容的间隔 */  
+  margin-top: 10px; /* 增加与上方内容的间隔 */  
 }  
 </style>

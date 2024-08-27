@@ -8,10 +8,14 @@
         <el-col :span="2">
             <el-avatar :src="userInfo.portrait" style="width:100px;height:100px" />
         </el-col>
-        <el-col :span="10">
+        <el-col :span="12">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="5">{{ userInfo.user_name }} </el-col>
-                <el-col :span="5">
+                <el-col :span="6">
+                  <span>{{ userInfo.user_name }} </span>
+                  <span v-if="userInfo.gender==='f'" style="margin-left: 10%;color:#FF82BF"><el-icon><Female /></el-icon></span>
+                  <span v-if="userInfo.gender==='m'" style="margin-left: 10%;color:#3F48CC"><el-icon><Male /></el-icon></span>
+                </el-col>
+                <el-col :span="6">
                     <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
                     <el-tag v-else-if="userInfo.outdoor_master_title==='0'&&!TalentStatus" type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
                     <el-tag v-else type="info" size="large" effect="dark" round>户外达人：审核中</el-tag>
@@ -24,7 +28,7 @@
             <FollowedList v-model="isListVisible"/>
             </el-row>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="10">
             <div style="font-weight:bold;margin-top:1%">个性签名</div>
             <div style="margin-top:2%">{{ userInfo.personal_signature }}</div>
         </el-col>
@@ -116,19 +120,6 @@
                     style="width:500px"
                 />
                 </el-form-item>
-                 <el-form-item label="地址">
-                 <el-select
-                    v-model="user.location"
-                    placeholder="请选择您所在的城市"
-                    size="large"
-                >
-                <el-option
-                    v-for="city in citys"
-                    :key="city.value"
-                    :value="city.value"
-                />
-                </el-select>
-                </el-form-item>
                 <el-form-item label="手机号码" prop="phone_number">
                 <el-input v-model="user.phone_number" placeholder="请输入您的手机号码"/>
                 </el-form-item>
@@ -141,7 +132,7 @@
             </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button @click="dialogFormVisible = false;">取消</el-button>
         <el-button type="primary" @click="ResetUserInfo" color="#1D5B5E">
           保存
         </el-button>
@@ -153,6 +144,7 @@
         v-model="dialogVisible"
         title="达人申请表"
         width="500"
+        :before-close="resetForm"
     >
         <el-form 
         :model="expert" 
@@ -182,8 +174,8 @@
         </el-form>
         <template #footer>
         <div class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="onSubmit" color="#1D5B5E">确认</el-button>
+            <el-button @click="resetForm">取消</el-button>
+            <el-button type="primary" @click="onSubmit()" color="#1D5B5E">确认</el-button>
         </div>
         </template>
     </el-dialog>
@@ -204,15 +196,7 @@ export default {
   },
     data() {
         return {
-            dialogVisible: false,
             isListVisible:false,
-            citys: [
-                { value: '上海' },
-                { value: '北京' }, 
-                { value: '安徽' },
-                { value: '内蒙古' },
-                { value: '浙江' }
-            ]
         }
   },
   methods: {
@@ -230,10 +214,15 @@ export default {
       }
       this.Proof.append('file', file);
       return true;
+    },
+    resetForm() {
+      this.ExpertformRef.resetFields();
+      this.dialogVisible = false;
     }
     },
     setup() {
         const dialogFormVisible = ref(false);
+        const dialogVisible = ref(false);
         const ifCharge = ref(false);
 
         const userInfo = ref({}); 
@@ -280,8 +269,7 @@ const TalentStatus=ref(false)
     const fetchUser = async () => {
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
-        userInfo.value = response.data.data.user;
-        console.log('用户信息',userInfo.value)
+        userInfo.value = response.data.data.userInfo;
         if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
           user.user_name = userInfo.value.user_name;
@@ -300,16 +288,6 @@ const TalentStatus=ref(false)
       } catch (error) {
         ElMessage.error(error.message);
       }
-      if (userInfo.value.outdoor_master_title == '0') {
-        try {
-          const TalentCertification = await axios.get(`/api/CertificationReviews/${global.userId}`);
-          if (TalentCertification.data.status == '2') {
-            TalentStatus.value = true;
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
-      }
       }
 
       const fetchFollows = async () => {
@@ -323,42 +301,47 @@ const TalentStatus=ref(false)
 
       const formData = new FormData();
       const Proof = new FormData();
+      const avatar_upload=ref(false)
 
       const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPGorPNG) {
         ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
         return false
       }
-      if (!isLt2M) {
-        ElMessage.error('上传头像图片大小不能超过 2MB!')
-        return false
-      }
-      
+      avatar_upload.value=true
       formData.set('file', file);
       ElMessage.success('上传头像成功')
 
       return false;
 }
 
-const avatarchange=ref(false)
+      const avatarchange = ref(false)
 
-const handleFileChange=(file)=> {
-  user.avatar = URL.createObjectURL(file.raw)
-  avatarchange.value = true;
-}
+const handleFileChange = (file) => {
+  if (avatar_upload.value == true) {
+    user.avatar = URL.createObjectURL(file.raw)
+    avatarchange.value = true;
+  }
+      }
+
+      const formaDate = (dt) => {
+            let year = dt.getFullYear();
+            let month = (dt.getMonth() + 1).toString().padStart(2,'0');
+            let date = dt.getDate().toString().padStart(2,'0');
+            return `${year}-${month}-${date}`;
+      }
 
     const ResetUserInfo = () => {
       UserformRef.value.validate(async (valid) => {
           if (valid) {
               const gender = (user.gender === '女' ? 'f' : 'm')
-          try {
-            const response = await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
+            try {
+            await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
               userName: user.user_name,
               gender: gender,
-              birthday: user.birthday,
+              birthday: formaDate(user.birthday),
               location: user.location,
               phoneNumber: user.phone_number,
               email: user.email,
@@ -376,10 +359,9 @@ const handleFileChange=(file)=> {
                 ElMessage.error(error.message);
               }
             }
+            dialogFormVisible.value = false;
+            window.location.reload();
             ElMessage.success('信息修改成功！');
-              console.log('User registered:', response.data);
-              fetchUser();
-              dialogFormVisible.value = false
           } catch (error) {
             ElMessage.error(error.message);
             console.error('Error update:', error);
@@ -391,7 +373,7 @@ const handleFileChange=(file)=> {
       };
 
     const handleImageChange=(file)=> {
-       expert.image = URL.createObjectURL(file.raw);
+        expert.image = URL.createObjectURL(file.raw); 
       }
     
       const onSubmit = () => {
@@ -409,6 +391,7 @@ const handleFileChange=(file)=> {
                 }
              });
             ElMessage.success('申请成功！');
+            dialogVisible.value = false;
           } catch (error) {
               ElMessage.error(error.message);
             }
@@ -448,6 +431,7 @@ const handleFileChange=(file)=> {
 
     return {
         dialogFormVisible,
+        dialogVisible,
         ifCharge,
         userInfo,
         user,

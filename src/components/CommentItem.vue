@@ -51,11 +51,18 @@
         <el-button type="primary" @click="confirmDelete">是</el-button>
       </template>
     </el-dialog>
+    <ReportWindow
+      v-model:isReportDialogVisible="isReportPostWindowVisible"
+      :reportID="Number(comment.comment_id)"
+      :isReportPost="false"      
+    />  
+    <!-- 用于举报评论 -->
   </div>
 </template>
 
 <script>
 import CommentInput from '@/components/CommentInput.vue';
+import ReportWindow from '@/components/ReportPostWindow.vue'
 import axios from '@/axios';
 import state from '@/store/global.js';
 import { ElMessage } from 'element-plus';
@@ -65,7 +72,7 @@ export default {
   name: 'CommentItem',
   components: {
     CommentInput,
-
+    ReportWindow,
   },
   props: {
     postID: {
@@ -86,7 +93,7 @@ export default {
       localPostId: this.postID,
       replyContent: '',
       deleteDialogVisible: false,
-      isReportPostWindowVisible: false,
+      isReportPostWindowVisible:false,//举报弹窗显示
       localComment: { ...this.comment },
       showReplyInput: false, // 控制回复输入框显示与隐藏
     };
@@ -98,15 +105,13 @@ export default {
   },
   methods: {
     toggleLike() {
-      this.localComment.isLiked = !this.localComment.isLiked;
-      this.localComment.likes_number = this.localComment.isLiked ? this.localComment.likes_number + 1 : this.localComment.likes_number - 1;
       axios.post('/api/LikeComments/commentlike', {
         comment_id: this.localComment.comment_id,
         user_id: state.userId
       })
       .then(response => {
-        response.data.isLiked = this.localComment.isLiked;
-        response.data.likesCount = this.localComment.likes_number;
+        this.localComment.isLiked=response.data.isLiked;
+        this.localComment.likes_number=response.data.likesCount;
       })
       .catch(error => {
         console.error('Error toggling like:', error);
@@ -118,7 +123,6 @@ export default {
     },
     goToReportPostWindow() {
       this.isReportPostWindowVisible = true;
-
     },
     hideReplyInput() {
       this.showReplyInput = false;

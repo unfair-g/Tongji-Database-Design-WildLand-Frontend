@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 import { CircleCheck, CircleClose, MoreFilled } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { mapState, mapActions } from 'vuex';
@@ -87,7 +87,7 @@ export default {
       if (action === 'check' || action === 'close') {
         try {
           const status = action === 'check' ? 1 : 0;
-          const response = await axios.post('https://localhost:7218/api/PostReviews/updatePostReview', {
+          const response = await axios.post('/api/PostReviews/updatePostReview', {
             post_id: row.id,
             admin_id: this.admin_id,
             status: status

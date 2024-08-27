@@ -4,13 +4,13 @@
       <div class="flash-header">热门资讯</div>
     </template>
     <div class="flash-list">
-      <div class="flash-item" v-for="(flash) in flash" :key="flash.flash_title" @click="goToDetail(flash)">
+      <div class="flash-item" v-for="(flashes) in flash" :key="flashes.flash.flash_title" @click="goToDetail(flashes)">
         <div class="img">
-            <img :src="flash.flash_image" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
+            <img :src="flashes.flashImage" width="60" height="60" style="border-radius: 10px; margin-right: 10px;">
         </div>
         <div class="flash-info">
-          <span class="flash-title">{{ flash.flash_title }}</span>
-          <span class="flash-meta">作者：{{ flash.user_id }}</span>
+          <span class="flash-title">{{ flashes.flash.flash_title }}</span>
+          <span class="flash-meta">作者：{{ flashes.adminName }}</span>
         </div>
       </div>
     </div>
@@ -28,21 +28,32 @@ export default {
     return {
       flash: []
     };
-    
   },
   methods: {
-    goToDetail (flash) {
-      const flashId = flash.flash_id
+    goToDetail (flashes) {
+      const flashId = flashes.flash.flash_id;
       this.$router.push({ path: `/home/flash/${flashId}` })
     },
-    fetchFlashes() {
-      axios.get('https://localhost:7218/api/Flashes/GetMostPopularNFlash?n=3')
-        .then(response => {
-          this.flash = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching city names:', error);
-        });
+    fetchFlashes() {  
+      axios.get('/api/Flashes/GetLatestNPopularWithTags?n=3')  
+        .then(response => {  
+          // 假设 response.data 是一个数组，每个元素都是一个对象，且每个对象都有 picUrls 属性  
+          this.flash = response.data.map(flash => {  
+            // 复制当前对象，并添加或修改 flashImage 属性  
+            // 注意：这里使用扩展运算符进行浅拷贝  
+            return {  
+              ...flash, // 浅拷贝当前对象  
+              flashImage: flash.picUrls && flash.picUrls.length > 0 ? flash.picUrls[0] : null // 赋值 picUrls[0] 给 flashImage  
+            };  
+          }); 
+          console.log(this.flash) 
+        })  
+        .catch(error => {  
+          // 修改日志信息，以更准确地反映错误内容  
+          console.error('Error fetching flashes:', error);  
+          console.log(this.flashes)
+        });  
+        console.log(this.flash)
     },
   },
   created() {

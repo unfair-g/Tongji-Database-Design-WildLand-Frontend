@@ -15,7 +15,7 @@
         <el-tag class="love" style="color: 529A98" @click="toggleStarColor" >
             <span>
               <el-button type="text" class="like-button">收藏</el-button>
-              <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="isStarSolid ? 'Star' : 'StarFilled'"></component></el-icon>
+              <el-icon class="star" color="#ffed49" :size="30"><component class="is_solid" :is="camp.isStarred ? 'StarFilled' : 'Star'"></component></el-icon>
             </span>
         </el-tag>
      
@@ -68,7 +68,6 @@
 
 <script>
 import axios from '@/axios'; // 引入配置好的axios实例
-import { ref } from 'vue'
 import global from '@/store/global.js';
 
 export default {
@@ -77,7 +76,6 @@ export default {
   data () {
     return {
       camp: null,
-      isStarSolid: ref(true),
     }
   },
   created() {
@@ -105,7 +103,7 @@ export default {
       campground_id: this.camp.campground_id,
       user_id: global.userId,
     };
-
+    this.camp.isStarred=!this.camp.isStarred
     try {
       const response = await axios.post('/api/Starcampgrounds/starcampground', data);
       console.log('收藏成功:', response.data);
@@ -127,7 +125,7 @@ html, body {
 
 .container {
   width: 70%; /* 设置容器的最大宽度 */
-  height: 100vh; /* 设置容器高度为视口高度 */
+  height: 90.4vh; /* 设置容器高度为视口高度 */
   margin: 0 auto; /* 居中显示容器 */
   display: flex;
   flex-direction: column; /* 设置子元素为纵向排列 */
