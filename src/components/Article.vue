@@ -349,7 +349,7 @@ export default {
     handleError(error, message) {
       if (error.response) {
         if (error.response.status == '404') {
-          ElMessage.error('暂时未发布该类帖子！')
+          console.error('暂时未发布该类帖子！')
         }
         else {
           console.error(`${message}:`, error.response.data);

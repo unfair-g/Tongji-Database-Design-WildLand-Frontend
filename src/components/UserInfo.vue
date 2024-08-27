@@ -270,7 +270,6 @@ const TalentStatus=ref(false)
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
         userInfo.value = response.data.data.userInfo;
-        console.log('用户信息',userInfo.value)
         if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
           user.user_name = userInfo.value.user_name;
@@ -325,17 +324,24 @@ const handleFileChange = (file) => {
     user.avatar = URL.createObjectURL(file.raw)
     avatarchange.value = true;
   }
-}
+      }
+
+      const formaDate = (dt) => {
+            let year = dt.getFullYear();
+            let month = (dt.getMonth() + 1).toString().padStart(2,'0');
+            let date = dt.getDate().toString().padStart(2,'0');
+            return `${year}-${month}-${date}`;
+      }
 
     const ResetUserInfo = () => {
       UserformRef.value.validate(async (valid) => {
           if (valid) {
               const gender = (user.gender === '女' ? 'f' : 'm')
-          try {
+            try {
             await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
               userName: user.user_name,
               gender: gender,
-              birthday: user.birthday,
+              birthday: formaDate(user.birthday),
               location: user.location,
               phoneNumber: user.phone_number,
               email: user.email,

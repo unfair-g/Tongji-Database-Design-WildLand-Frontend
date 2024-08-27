@@ -1,6 +1,8 @@
 <template>
   <el-card class="post-container" v-if="ldleitemsPost">
     <div v-if="ldleitemsPost">
+      <div class="watermark" v-if="ldleitemsPost.orderId>0"></div>
+
       <div class="post-header">
         <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost.author_id)">
         <div class="post-header-info">
@@ -47,6 +49,7 @@
             placeholder="修改帖子可见状态"
             size="small"
             class="visibility-select"
+            :disabled="ldleitemsPost.orderId>0"
             @change="handleChange"  
           >
             <el-option
@@ -113,6 +116,9 @@
       <div class="action-buttons" v-if="userid!==ldleitemsPost.author_id">
         <el-button class="pay" id="rentButton" :disabled="!isButtonDisabled" @click="Rent_Success()" v-if="isButtonDisabled">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
+      </div>
+      <div class="action-buttons"  v-else>
+        <el-button class="pay" @click="GoToOrder(ldleitemsPost)" v-if="ldleitemsPost.orderId>0">查看订单</el-button>
       </div>
 
       <ReportWindow
@@ -350,11 +356,51 @@ export default {
       // 例如，你可能想根据这个值更新数据库中的帖子状态  
       // 你可以调用一个API或者更新你的应用状态  api/Posts/GetPostDetail/{post_id}/{user_id}
     },
+    GoToOrder(ldleitemsPost)
+    {
+      this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPost.orderId}`,
+          query: {  
+            ldleitemsPostId: ldleitemsPost.orderId
+        }})
+    }
   }
 };
 </script>
 
 <style scoped>
+.watermark {
+  position: fixed; /* 固定位置 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 确保水印不会阻挡页面上的其他交互 */
+  z-index: 1000; /* 确保水印在所有内容之上 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.watermark::before {
+  content: '已卖出'; /* 水印的文字内容 */
+  font-size: 4rem; /* 根据需要调整文字大小 */
+  color: rgba(4, 109, 56, 0.231); /* 文字颜色和透明度 */
+  white-space: nowrap; /* 确保文字不换行 */
+  text-align: center; /* 文本居中对齐 */
+  transform: rotate(-30deg); /* 斜着显示水印 */
+  position: absolute; /* 绝对定位 */
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg); /* 定位中心，并旋转 */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* 确保水印不会阻挡页面上的其他交互 */
+  overflow: hidden;
+}
+
 .post-container {
   width: 65%;
   margin-top: 3vh;

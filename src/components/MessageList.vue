@@ -48,7 +48,7 @@
             <div class="message-content">  
               <span  style="color:black">订单状态：</span>
               <span v-if="message.orderStatus===1">已支付</span>  
-              <span v-else-if="message.orderState===2" style="color:red">已发货</span>  
+              <span v-else-if="message.orderStatus===2" style="color:red">已发货</span>  
               <span v-else style="color:#00B146">已收货</span>  
             </div>  
           </div> 
