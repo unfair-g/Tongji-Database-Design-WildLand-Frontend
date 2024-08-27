@@ -10,7 +10,7 @@
         </div>
         <div class="flash-info">
           <span class="flash-title">{{ flashes.flash.flash_title }}</span>
-          <span class="flash-meta">作者：{{ flashes.flash.user_id }}</span>
+          <span class="flash-meta">作者：{{ flashes.adminName }}</span>
         </div>
       </div>
     </div>

@@ -92,7 +92,7 @@ import global,{saveToSessionStorage,provinceMap} from '@/store/global'
 
 const loginDisabled = ref(false)
 const sendDisabled = ref(true)
-const keyDisabled = ref(true)
+const keyDisabled = ref(false)
 const deadline = ref(); // 一分钟倒计时
 const phoneRegex = /^1[3-9]\d{9}$/;
 
@@ -174,29 +174,28 @@ const rules = ref({
 
 const imageUrl = ref('')
 const formData = new FormData();
+const avatar_upload=ref(false)
 
 const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPGorPNG) {
         ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
         return false
       }
-      if (!isLt2M) {
-        ElMessage.error('上传头像图片大小不能超过 2MB!')
-        return false
-      }
       
+      avatar_upload.value=true
       formData.append('file', file);
       ElMessage.success('上传头像成功')
 
       return true;
 }
 
-const handleFileChange=(file)=> {
-      imageUrl.value = URL.createObjectURL(file.raw)
-      newuser.avatar = file;
+const handleFileChange = (file) => {
+  if (avatar_upload.value==true) {
+    imageUrl.value = URL.createObjectURL(file.raw)
+    newuser.avatar = file;
+  }
 }
 
 const addLocation = async () => {
@@ -247,7 +246,7 @@ const onSubmit = () => {
             toHomePage()
             console.log('User registered:', response.data);
           } catch (error) {
-            ElMessage.error(error.response.data.message);
+            ElMessage.error(error.message);
             loginDisabled.value=false
           }
         } else {

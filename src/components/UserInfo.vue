@@ -28,7 +28,7 @@
             <FollowedList v-model="isListVisible"/>
             </el-row>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="10">
             <div style="font-weight:bold;margin-top:1%">个性签名</div>
             <div style="margin-top:2%">{{ userInfo.personal_signature }}</div>
         </el-col>
@@ -302,31 +302,29 @@ const TalentStatus=ref(false)
 
       const formData = new FormData();
       const Proof = new FormData();
+      const avatar_upload=ref(false)
 
       const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPGorPNG) {
         ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
         return false
       }
-      if (!isLt2M) {
-        ElMessage.error('上传头像图片大小不能超过 2MB!')
-        return false
-      }
-      
+      avatar_upload.value=true
       formData.set('file', file);
       ElMessage.success('上传头像成功')
 
       return false;
 }
 
-const avatarchange=ref(false)
+      const avatarchange = ref(false)
 
-const handleFileChange=(file)=> {
-  user.avatar = URL.createObjectURL(file.raw)
-  avatarchange.value = true;
+const handleFileChange = (file) => {
+  if (avatar_upload.value == true) {
+    user.avatar = URL.createObjectURL(file.raw)
+    avatarchange.value = true;
+  }
 }
 
     const ResetUserInfo = () => {
