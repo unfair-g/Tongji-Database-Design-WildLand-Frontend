@@ -233,6 +233,7 @@ export default {
     formatDate(date) {
       return dayjs(date).format('YYYY-MM-DD');
     },
+    //添加营地订单号
     CampOrders() {
       axios.get(`/api/ReserveOrders/GetReservationDetailsByUserId?orderPersonId=${globalState.userId}`)
         .then(response => {

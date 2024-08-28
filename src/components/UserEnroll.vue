@@ -92,7 +92,7 @@ import global,{saveToSessionStorage,provinceMap} from '@/store/global'
 
 const loginDisabled = ref(false)
 const sendDisabled = ref(true)
-const keyDisabled = ref(false)
+const keyDisabled = ref(true)
 const deadline = ref(); // 一分钟倒计时
 const phoneRegex = /^1[3-9]\d{9}$/;
 
@@ -122,8 +122,9 @@ const sendCode = async () => {
   }
 }
 
+const imageUrl = ref(require('../assets/default_avatar.png'))
 const newuser = reactive({
-  avatar:null,
+  avatar:imageUrl,
   user_name: '',
   password: '',
   confirmpassword:'',
@@ -172,7 +173,6 @@ const rules = ref({
   ]
 })
 
-const imageUrl = ref('')
 const formData = new FormData();
 const avatar_upload=ref(false)
 
@@ -216,7 +216,7 @@ const addLocation = async () => {
 }
 
 const onSubmit = () => {
-      loginDisabled.value=true
+  loginDisabled.value = true
       formRef.value.validate(async (valid) => {
         if (valid) {
           try {
