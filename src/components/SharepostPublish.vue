@@ -109,7 +109,7 @@ export default {
         ],
         content: [
           { required: true, message: '请输入帖子内容', trigger: 'blur' },
-          { min: 1, max: 400, message: '帖子长度不能超过 400 个字符', trigger: 'blur' }
+          { min: 1, max: 500, message: '帖子长度不能超过 300 个字', trigger: 'blur' }
 
         ],
         post_position: [
@@ -137,8 +137,11 @@ export default {
     },
     handleError(error, message) {
       if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        if (error.response.status == 500) {
+          ElMessage.error('帖子内容超过字数限制');
+        } else {
+          ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        }
       } else if (error.request) {
         console.error(`${message}: No response received`);
         ElMessage.error(`${message} - 没有收到响应`);
