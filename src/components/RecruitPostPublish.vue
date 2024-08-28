@@ -110,7 +110,9 @@ export default {
           { min: 1, max: 40, message: '标题长度不能超过 40 个字符', trigger: 'blur' }
         ],
         time: [
-          { required: true, message: '请选择时间', trigger: 'blur' }
+          { required: true, message: '请选择时间', trigger: 'blur' },
+          { min: 1, max: 400, message: '帖子长度不能超过 400 个字符', trigger: 'blur' }
+
         ],
         location: [
           { required: true, message: '请输入你的活动地点', trigger: 'blur' }
