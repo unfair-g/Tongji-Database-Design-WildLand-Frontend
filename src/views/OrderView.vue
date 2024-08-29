@@ -24,10 +24,39 @@
       <div style="text-align:center;justify-content: center;margin-bottom:20px; "><p>{{ this.formatDate(product.lease.back_time) }}</p></div>
     </div>
     <div class="order_2">
-      <div style="margin:10px;"><h2>配送需求</h2></div>
+      <div style="margin:10px;"><h2>对应营地信息</h2></div>
       <div style="text-align:center;justify-content: center;margin-bottom:20px; "><p>{{ product.lease.remark }}</p></div>
     </div>
+    <div class="order_3">
+      <el-button v-if="product.lease.lease_status==1" class="pay" @click="Refund">申请退款</el-button>
+      <el-button v-else-if="product.lease.lease_status==3" class="pay" @clcik="cancle=true">取消退款申请</el-button>
+      <el-button v-else-if="product.lease.lease_status==4" class="pay" disabled>退款成功</el-button>
+      <el-button v-else class="pay" disabled>订单已完成</el-button>
+    </div>
   </div>
+
+  <el-dialog
+    v-model="dialogVisible"
+    title="退款申请成功"
+    width="500"
+    center
+    align-center
+  >
+  <div style="text-align: center;color: red;font-size: 20px;">详情请添加管理员说明</div>
+  <img :src="require('../assets/QRcode.jpg')" style="width:450px;height: auto;"/>
+  </el-dialog>
+
+  <el-dialog
+    v-model="cancle"
+    width="500"
+    center
+    align-center
+  >
+  <div style="text-align: center;font-size: 20px;">确认取消退款吗？</div>
+  <template #footer>
+      <el-button color="#1D5B5E" @click="CancleRefund">确认</el-button>
+  </template>
+  </el-dialog>
   </template>
   
   <script>
@@ -48,7 +77,9 @@
 
           product: {},
           camp_order: {},
-          IsVisible:false,
+          IsVisible: false,
+          dialogVisible: false,
+          cancle:false,
 
           startTime:null,
           endTime:null,
@@ -98,6 +129,24 @@
       // 返回格式化的日期字符串  
       return `${year}-${month}-${day}`;   
       }, 
+      async Refund() {
+      try {
+        await axios.put(`/api/Leases/RequestRefund/${this.orderId}`)
+        this.dialogVisible = true
+        this.product.lease.lease_status=3
+      } catch (error) {
+        console.error('退款失败', error.response);
+      }
+      },
+      async CancleRefund() {
+      try {
+        await axios.put(`/api/Leases/CancelRefund/${this.orderId}`)
+        this.cancle = false
+        this.product.lease.lease_status=1
+      } catch (error) {
+        console.error('取消退款失败', error);
+      }
+    }
     }
   }
   </script>

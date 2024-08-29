@@ -101,7 +101,7 @@ const fetchStarFlashes = async () => {
     try {
         const response =await axios.get(`/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
         starflash.value = response.data
-        if (starflash.value==null)
+        if (starflash.value.length==0)
             tips.value = '暂无收藏经验资讯'
     } catch (error) {
         ElMessage.error(error.message)

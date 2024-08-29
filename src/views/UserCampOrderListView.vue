@@ -11,9 +11,10 @@
 
                   <div>
                     <span v-if="camporder.order_status == 0">订单状态：<span style="color:red;">支付失败</span></span>
-                    <span v-else-if="camporder.order_status == 1">订单状态：<span style="color:green;">支付成功</span></span>
-                    <span v-else-if="camporder.order_status == 2">订单状态：<span style="color:blue;">待支付</span></span>
-                   <span v-else>订单状态：未知状态</span>
+                    <span v-else-if="camporder.order_status == 1">订单状态：<span style="color:grey;">待入住</span></span>
+                    <span v-else-if="camporder.order_status == 3">订单状态：<span style="color:red;">退款审核中</span></span>
+                    <span v-else-if="camporder.order_status == 4">订单状态：<span style="color:green;">退款成功</span></span>
+                    <span v-else>订单状态：<span style="color:green;">已完成</span></span>
                    </div>
                   <div class="bottom clearfix">
                     <span class="price">总价：¥{{ camporder.total_price }}</span>

@@ -39,6 +39,7 @@ import global from '@/store/global'
 import { saveToSessionStorage } from '@/store/global'
 import CryptoJS from 'crypto-js'
 import { provinceMap } from '@/store/global';
+import { ElNotification } from 'element-plus'
 
 const role = ref('游客')
 
@@ -46,7 +47,7 @@ const options = ['游客', '管理员']
 
 const loginDisabled = ref(false)
 
-const userRef=ref()
+const userRef = ref()
 
 const user = reactive({
     user_name: '',
@@ -99,6 +100,8 @@ const Login = () => {
           global.mute_status = response.data.data.mute_status;
           saveToSessionStorage(true,response.data.data.user_id,response.data.data.mute_status);
           ElMessage.success('登录成功！');
+          if (global.mute_status == '1')
+            openNotification(response.data.data.punish_end_time)
         } catch (error) {
           if(error.response)
             ElMessage.error(error.response.data.message)
@@ -113,10 +116,10 @@ const Login = () => {
               admin_name: user.user_name,
               password: user.password
           });
-          saveToSessionStorage(true, response.data.admin_id,0)
+          saveToSessionStorage(true, response.data.admin_id,response.data.mute_status)
           global.Login = true;
           global.userId = response.data.admin_id;
-          global.mute_status = 0;
+          global.mute_status = response.data.mute_status;
           router.push({ path: '/administrator' });
           ElMessage.success('登录成功！');
           console.log('登录成功', response);
@@ -134,6 +137,16 @@ const Login = () => {
       ElMessage.error('请完善登录信息！');
       loginDisabled.value = false
     }
+  })
+}
+
+const openNotification = (end_time) => {
+  ElNotification({
+    title: '您因发布不当信息已被禁言',
+    message: '禁言至'+end_time+'结束',
+    type: 'warning',
+    duration: 0,
+    offset: 100,
   })
 }
 

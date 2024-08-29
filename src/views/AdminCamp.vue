@@ -6,9 +6,9 @@
     </div>
 
     <!-- 营地信息表格 -->
-    <el-table :data="camps" style="width: 100%; margin-top: 20px;">
-      <el-table-column prop="campground_name" label="营地名称" width="300" align="center" />
-      <el-table-column label="联系方法" width="300" align="center">
+    <el-table :data="camps" style="width: 100%; margin-top: 20px;" table-layout="auto">
+      <el-table-column prop="campground_name" label="营地名称" min-width="300" align="center"/>
+      <el-table-column label="联系方法" min-width="300" align="center">
         <template v-slot="scope">
           <div>
             <div>地址: {{ scope.row.address }}</div>
@@ -16,7 +16,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="操作台" width="300" align="center">
+      <el-table-column label="操作台" min-width="300" align="center">
         <template v-slot="scope">
           <el-button type="primary" @click="handleAction(scope.row, 'more')">
             <More />更多
@@ -113,7 +113,7 @@ export default {
 
 <style scoped>
 .add-btn {
-  margin-left:73%;
+  margin-left:90%;
 }
 
 .table-wrapper {

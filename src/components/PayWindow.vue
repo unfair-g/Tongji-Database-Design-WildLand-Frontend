@@ -124,7 +124,8 @@ export default {
       productID:this.product.product.product_id,
       ProductId:null,
       campOrders:[],
-      order_ID:0,
+      order_ID: 0,
+      camp_id:0,
       image:''
     }
   },
@@ -176,12 +177,9 @@ export default {
         pick_time: this.formatDateToFullDate(this.startTime),
         remark: `营地：${this.selectedCampOrder.campgroundName}     营位：${this.selectedCampOrder.campsiteNumber}`,
         back_time: this.formatDateToFullDate(this.endTime),
-        amount:this.quantity
+        amount: this.quantity,
+        order_id:this.camp_id
       };
-      console.log('订单上传:', orderData.lease_id);
-      console.log('订单上传:', orderData.user_id);
-      console.log('订单上传成功:', orderData.pick_time);
-      console.log(orderData)
       axios.post('/api/Leases/OutdoorProductLease', orderData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
@@ -224,8 +222,8 @@ export default {
       if (this.selectedCampOrder) {
         this.filteredCampOrders = [this.selectedCampOrder];
         this.startTime=this.filteredCampOrders[0].reservedStartTime;
-        this.endTime=this.filteredCampOrders[0].reservedEndTime;
-        console.log('hhhhh',this.startTime, this.endTime);
+        this.endTime = this.filteredCampOrders[0].reservedEndTime;
+        this.camp_id = this.filteredCampOrders[0].orderId;
       } else {
         this.filteredCampOrders = [];
       }
@@ -237,7 +235,9 @@ export default {
     CampOrders() {
       axios.get(`/api/ReserveOrders/GetReservationDetailsByUserId?orderPersonId=${globalState.userId}`)
         .then(response => {
-          this.campOrders = response.data;
+          this.campOrders = response.data.filter(order =>
+            order.orderStatus==1
+          )
           console.log(this.campOrders)
         })
         .catch(error => {

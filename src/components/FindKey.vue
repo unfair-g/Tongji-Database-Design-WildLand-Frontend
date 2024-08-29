@@ -33,7 +33,7 @@
             <el-input type="password" :disabled="keyDisabled" v-model="findkey.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
             </el-form-item>
         </el-form>
-        <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">登录</el-button>
+        <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">确认</el-button>
     </div>
 </div>
 </template>
@@ -44,8 +44,6 @@ import axios from '@/axios'
 import { reactive,ref } from 'vue'
 import { Key, Iphone, Check } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import global from '@/store/global'
-import { saveToSessionStorage } from '@/store/global'
 import CryptoJS from 'crypto-js'
 
 const findkey = reactive({
@@ -115,7 +113,7 @@ const Login = () => {
     if(valid){
       try {
           const hashedPassword = CryptoJS.SHA256(findkey.newpassword).toString()
-          const response = await axios.post('/api/Users/fetchPassword', {
+          await axios.post('/api/Users/fetchPassword', {
             phonenumber: findkey.phone_number,
             verificationCode:findkey.code,
             newPassword: hashedPassword
@@ -127,11 +125,7 @@ const Login = () => {
             }
           });
           ElMessage.success('密码重置成功！');
-          global.Login = true;
-          global.userId = response.data.user_id;
-          saveToSessionStorage(true,response.data.user_id,true);
-          router.push({ path: '/home' });
-          console.log('登录成功', response)
+          router.push({ path: '/enter/login' });
       } catch (error) {
           ElMessage.error(error.response.data.message)
         }
