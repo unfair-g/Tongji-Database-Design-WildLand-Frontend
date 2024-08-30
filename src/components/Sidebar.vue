@@ -108,6 +108,7 @@ export default {
     handleButtonClick() {
       if (this.BeSilenced) {
         this.isAlertVisible = true;
+        
       } else {
         // BeSilenced 为 false 时，不执行任何操作
         return;

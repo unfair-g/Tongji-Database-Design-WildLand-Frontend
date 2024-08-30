@@ -111,8 +111,6 @@ export default {
         ],
         time: [
           { required: true, message: '请选择时间', trigger: 'blur' },
-          { min: 1, max: 1000, message: '帖子长度不能超过 1000 个字符', trigger: 'blur' }
-
         ],
         location: [
           { required: true, message: '请输入你的活动地点', trigger: 'blur' }

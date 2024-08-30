@@ -1,5 +1,6 @@
 <template>
   <el-card class="post-container" v-if="ldleitemsPost">
+     <el-watermark :font="font" :content="waitforcensor">
     <div v-if="ldleitemsPost">
       <div class="watermark" v-if="ldleitemsPost.orderId>0"></div>
 
@@ -128,11 +129,20 @@
           
         /> 
     </div>
+    </el-watermark>
   </el-card> 
         <!-- 用于举报帖子 -->
 
 </template>
 
+<script setup>
+import { reactive } from 'vue'
+
+const font = reactive({
+  color: 'rgba(237, 28, 36, .35)',
+  fontSize: 25
+})
+</script>
 <script>
 import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
@@ -149,6 +159,7 @@ export default {
   },
   data() {
     return {
+      waitforcensor:'',
       dialogVisible: false,
       deleteDialogVisible: false,
       currentImage: '',
@@ -202,6 +213,8 @@ export default {
         axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}&user_id=${globalState.userId}`)
         .then(response => {
           this.ldleitemsPost = response.data;
+          if (this.ldleitemsPost.censor_status == '2')
+            this.waitforcensor="待审核"
           console.log(this.ldleitemsPost)
         })
         .catch(error => {

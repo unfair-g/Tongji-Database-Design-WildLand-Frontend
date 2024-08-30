@@ -61,7 +61,9 @@
             </el-descriptions-item>
         </el-descriptions>
     </div>
-
+    <el-alert v-if="userInfo.mute_status=='1'" type="error" show-icon :closable="false">
+      <template #title>您因发表不当评论已被禁言，禁言至{{ userInfo.punish_end_time }}结束</template>
+    </el-alert>
     <el-dialog
     v-model="ifCharge"
     title="钱包充值"
@@ -196,7 +198,7 @@ export default {
   },
     data() {
         return {
-            isListVisible:false,
+          isListVisible: false,
         }
   },
   methods: {
@@ -284,7 +286,7 @@ const TalentStatus=ref(false)
           user.personal_signature = userInfo.value.personal_signature;
           user.avatar = userInfo.value.portrait;
           userInfo.value.follows = response.data.data.followingCount;
-          userInfo.value.fans = response.data.data.followerCount;
+        userInfo.value.fans = response.data.data.followerCount;
       } catch (error) {
         ElMessage.error(error.message);
       }
@@ -457,6 +459,12 @@ const handleFileChange = (file) => {
 </script>
 
 <style scoped>
+.el-alert {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height:50px;
+}
+
    .personalcenter{
     height:fit-content;
     background-color: rgb(255,255,255,80%);
