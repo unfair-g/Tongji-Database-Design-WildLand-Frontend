@@ -163,8 +163,10 @@
             @change="handleImageChange"
             :before-upload="beforeImageUpload"
           >
+          <div>
             <img v-if="expert.image" :src="expert.image" class="image" />
             <el-icon v-else class="image-uploader-icon"><Plus /></el-icon>
+          </div>
           </el-upload>
         </el-form-item>
          <el-form-item label="擅长领域" prop="ept_field">
@@ -303,7 +305,6 @@ const TalentStatus=ref(false)
 
       const formData = new FormData();
       const Proof = new FormData();
-      const avatar_upload=ref(false)
 
       const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
@@ -312,7 +313,6 @@ const TalentStatus=ref(false)
         ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
         return false
       }
-      avatar_upload.value=true
       formData.set('file', file);
       ElMessage.success('上传头像成功')
 
@@ -322,10 +322,8 @@ const TalentStatus=ref(false)
       const avatarchange = ref(false)
 
 const handleFileChange = (file) => {
-  if (avatar_upload.value == true) {
     user.avatar = URL.createObjectURL(file.raw)
     avatarchange.value = true;
-  }
       }
 
       const formaDate = (dt) => {
@@ -480,14 +478,19 @@ const handleFileChange = (file) => {
    .avatar-uploader .avatar {
   width: 100px;
   height: 100px;
-  margin-left: 170px;
   margin-bottom: 20px;
+}
+
+.avatar-uploader{
+  display: flex;
+  justify-content: center;
 }
 
 .image-uploader .image {
   width: 150px;
   height: 150px;
   display: block;
+  margin-left: 30%;
 }
 
 .image-uploader{

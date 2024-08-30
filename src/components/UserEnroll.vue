@@ -122,9 +122,9 @@ const sendCode = async () => {
   }
 }
 
-const imageUrl = ref(require('../assets/default_avatar.png'))
+const imageUrl = ref(null)
 const newuser = reactive({
-  avatar:imageUrl,
+  avatar:null,
   user_name: '',
   password: '',
   confirmpassword:'',
@@ -174,7 +174,6 @@ const rules = ref({
 })
 
 const formData = new FormData();
-const avatar_upload=ref(false)
 
 const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
@@ -184,7 +183,6 @@ const beforeAvatarUpload = (file) => {
         return false
       }
       
-      avatar_upload.value=true
       formData.append('file', file);
       ElMessage.success('上传头像成功')
 
@@ -192,10 +190,8 @@ const beforeAvatarUpload = (file) => {
 }
 
 const handleFileChange = (file) => {
-  if (avatar_upload.value==true) {
     imageUrl.value = URL.createObjectURL(file.raw)
     newuser.avatar = file;
-  }
 }
 
 const addLocation = async () => {
@@ -246,7 +242,7 @@ const onSubmit = () => {
             toHomePage()
             console.log('User registered:', response.data);
           } catch (error) {
-            ElMessage.error(error.message);
+            ElMessage.error(error.response.message);
             loginDisabled.value=false
           }
         } else {
