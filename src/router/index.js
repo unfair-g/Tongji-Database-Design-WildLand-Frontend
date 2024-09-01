@@ -24,16 +24,6 @@ const routes = [
                 component: () => import('../views/OutdoorGear.vue'),
             },
             {
-                path: 'CampOrders',
-                name: 'CampOrders',
-                component: () => import('../views/CampOrders.vue'),
-            },
-            {
-                path: 'OutdoorGearOrders',
-                name: 'OutdoorGearOrders',
-                component: () => import('../views/OutdoorGearOrders.vue'),
-            },
-            {
                 path: 'AdminCamp',
                 name: 'AdminCamp',
                 component: () => import('../views/AdminCamp.vue')
@@ -50,6 +40,11 @@ const routes = [
             },
             {
                 path: 'AdminProductEdit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
+            {
+                path: 'AdminProductAdd/:productId',
                 component: () => import('../views/AdminProductEdit.vue'),
                 props: true
             },

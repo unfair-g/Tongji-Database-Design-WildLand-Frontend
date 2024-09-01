@@ -116,7 +116,7 @@ const Login = () => {
               admin_name: user.user_name,
               password: user.password
           });
-          saveToSessionStorage(true, response.data.admin_id,response.data.mute_status)
+          saveToSessionStorage(true, response.data.admin_id,0)
           global.Login = true;
           global.userId = response.data.admin_id;
           global.mute_status = response.data.mute_status;

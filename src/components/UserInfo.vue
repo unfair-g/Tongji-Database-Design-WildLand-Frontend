@@ -327,10 +327,12 @@ const handleFileChange = (file) => {
       }
 
       const formaDate = (dt) => {
-            let year = dt.getFullYear();
-            let month = (dt.getMonth() + 1).toString().padStart(2,'0');
-            let date = dt.getDate().toString().padStart(2,'0');
-            return `${year}-${month}-${date}`;
+        if (dt instanceof Date) {
+          let year = dt.getFullYear();
+          let month = (dt.getMonth() + 1).toString().padStart(2, '0');
+          let date = dt.getDate().toString().padStart(2, '0');
+          return `${year}-${month}-${date}`;
+        }
       }
 
     const ResetUserInfo = () => {

@@ -1,14 +1,14 @@
 <template>
   <div class="table-wrapper">
     <el-table :data="products" style="width: 100%">
-      <el-table-column prop="product_name" label="名称" min-width="300" align="center" />
-      <el-table-column prop="price" label="价格" min-width="200" align="center">
+      <el-table-column prop="product_name" label="名称" width="300" align="center" />
+      <el-table-column prop="price" label="价格" width="200" align="center">
         <template #default="scope">
           <!-- 确保“新增”这一行没有显示价格 -->
           <span v-if="!scope.row.isNewRow">¥{{ scope.row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="stock_quantity" label="余量" min-width="200" align="center" />
+      <el-table-column prop="stock_quantity" label="余量" width="200" align="center" />
       <el-table-column label="操作台" width="300" align="center">
         <template #default="scope">
           <el-button v-if="scope.row.isNewRow" type="primary" color="#1D5B5E" @click="handleUpload" class="add-button">
@@ -127,7 +127,7 @@ export default {
     },
     handleUpload()
     {
-      this.$router.push({ path: `/administrator/admin_product_edit/${this.product_2.product_id}` ,
+      this.$router.push({ path: `/administrator/AdminProductAdd/${this.product_2.product_id}` ,
         query:{
           productid:0
         }
