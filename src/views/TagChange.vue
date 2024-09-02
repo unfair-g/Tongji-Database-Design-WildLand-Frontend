@@ -65,7 +65,7 @@ export default {
   },  
   methods: {  
     fetchTags() {
-      axios.get(`https://localhost:7218/api/FlashTags/${this.tagID}`)
+      axios.get(`/api/FlashTags/${this.tagID}`)
         .then(response => {
           this.tag = response.data;
         })
@@ -75,7 +75,7 @@ export default {
     },
     updateTag() {  
       // 发送 PUT 请求来更新 Flash  
-      axios.put(`https://localhost:7218/api/FlashTags/${this.tagID}`, {  
+      axios.put(`/api/FlashTags/${this.tagID}`, {  
           tag_name: this.tag.tag_name,
           tag_id: this.tag.tag_id,
         // 如果需要更新其他字段，也可以在这里添加  

@@ -227,7 +227,7 @@ export default {
         this.deleteImage(file.url, fileList);
     },
     fetchTags() {
-      axios.get(`https://localhost:7218/api/FlashTags`)
+      axios.get(`/api/FlashTags`)
         .then(response => {
           this.tag = response.data;
         })

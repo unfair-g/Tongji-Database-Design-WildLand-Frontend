@@ -65,7 +65,7 @@ export default {
     },  
     updateTag() {  
       // 使用 currentTag 的数据发送 PUT 请求  
-      axios.put(`https://localhost:7218/api/FlashTags/${this.currentTag.tag_id}`, {  
+      axios.put(`/api/FlashTags/${this.currentTag.tag_id}`, {  
         tag_name: this.currentTag.tag_name,  
         // 如果需要，可以添加其他字段  
       })  
@@ -83,7 +83,7 @@ export default {
       // 弹出确认窗口  
       if (confirm('你确定要删除这个Flash吗？')) {  
         // 用户点击了确定，提交删除请求  
-        axios.delete(`https://localhost:7218/api/FlashTags/${tag.tag_id}`)  
+        axios.delete(`/api/FlashTags/${tag.tag_id}`)  
           .then(() => {  
             // 删除成功的处理逻辑，例如提示用户或刷新页面  
             alert('tag删除成功！');  
@@ -100,7 +100,7 @@ export default {
       }  
     },
     fetchTags() {
-      axios.get(`https://localhost:7218/api/FlashTags`)
+      axios.get(`/api/FlashTags`)
         .then(response => {
           this.tag = response.data;
         })

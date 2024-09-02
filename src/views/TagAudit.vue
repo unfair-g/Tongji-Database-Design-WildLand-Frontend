@@ -60,7 +60,7 @@ setup() {
 methods: {  
     updateTag() {  
       // 发送 PUT 请求来更新 Flash  
-      axios.post(`https://localhost:7218/api/FlashTags`, {  
+      axios.post(`/api/FlashTags`, {  
           tag_name: this.tag.tag_name
         // 如果需要更新其他字段，也可以在这里添加  
       })  

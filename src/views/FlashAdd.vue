@@ -170,7 +170,7 @@ export default {
       {      
         formData.append('file', this.introPicList[0].raw, this.introPicList[0].raw.name);  
       }
-      axios.post(`https://localhost:7218/api/FlashPics/UploadFlashPic?flashId=${this.flash.flashId}`, formData, {  
+      axios.post(`/api/FlashPics/UploadFlashPic?flashId=${this.flash.flashId}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  
@@ -178,13 +178,13 @@ export default {
       .then(response => {  
           console.log(response.data);  
       })  
-      axios.get(`https://localhost:7218/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
+      axios.get(`/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
     .then(response => {  
       // 更新 flash 对象中的 tagName  
       this.flash.tagName = response.data;  
   
       // 现在 tagName 已经更新，可以发送 PUT 请求来更新 Flash  
-      axios.put(`https://localhost:7218/api/Flashes/UpdateFlashAndTag`, [{  
+      axios.put(`/api/Flashes/UpdateFlashAndTag`, [{  
         userId: global.userId,  
         flashDate: this.flash.flashDate,  
         flashImage: this.flash.flashImage,  
@@ -213,7 +213,7 @@ export default {
     }); 
     },  
     fetchFlashes() {
-      axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
+      axios.get(`/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
           this.radio = ref(this.flash.tagId)
@@ -224,7 +224,7 @@ export default {
     },
     fetchTags() {
       console.log(global.userId)
-      axios.get(`https://localhost:7218/api/FlashTags`)
+      axios.get(`/api/FlashTags`)
         .then(response => {
           this.tag = response.data;
         })
