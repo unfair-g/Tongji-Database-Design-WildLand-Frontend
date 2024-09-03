@@ -72,7 +72,7 @@
       <el-card class="post-item">
         <template #header>
          <div class="post-header">
-            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
+            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemspost.author_id)">
             <div class="post-details">
               <div class="post-info">
                 <span class="username">{{ ldleitemspost.user_name }}</span>

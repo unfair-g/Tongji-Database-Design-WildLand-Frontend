@@ -14,11 +14,6 @@ const routes = [
         meta: { requiresAuth: true },
         children: [
             {
-                path: 'personalinformation',
-                name: 'PersonalInformation',
-                component: () => import('../views/PersonalInformation.vue')
-            },
-            {
                 path: 'OutdoorGear',
                 name: 'OutdoorGear',
                 component: () => import('../views/OutdoorGear.vue'),
@@ -112,7 +107,17 @@ const routes = [
                 path: 'tagaudit/:tagID',
                 component: () => import('../views/TagChange.vue'),
                 props: true
-            }
+            },
+            {
+                path: 'CampOrders',
+                name: 'CampOrders',
+                component: () => import('../views/CampOrders.vue'),
+            },
+            {
+                path: 'OutdoorGearOrders',
+                name: 'OutdoorGearOrders',
+                component: () => import('../views/OutdoorGearOrders.vue'),
+            },
         ]
     },
     {
@@ -131,8 +136,8 @@ const routes = [
                 props: true
             },
             {
-                path:'OutdoorGear/AddProduct',
-                name:'AddProduct',
+                path: 'OutdoorGear/AddProduct',
+                name: 'AddProduct',
                 component: () => import('../views/AddOutProduct.vue')
             },
             {
