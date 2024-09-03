@@ -216,6 +216,7 @@ export default {
     })
       },
     resetForm() {
+      this.$refs.postFormRef.resetFields(); // 重置表单验证状态和字段值
       this.postForm.itemName = '';
       this.postForm.itemDescription = '';
       this.postForm.itemPrice = '';

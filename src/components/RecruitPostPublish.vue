@@ -36,37 +36,33 @@
             />
           </el-form-item>
       
-          <div class="form-row">
-            <div class="left-side">
               <el-form-item label="IP定位：" prop="ip_position" style="font-weight: bold;" >      
                 <el-button type="primary" color="#1D5B5E" @click="addLocation" >点击添加定位</el-button>
                 <div v-if="postForm.ip_position" class="location-info">
                   您的IP获取成功，IP所在地：{{ postForm.ip_position }}
                 </div>
               </el-form-item>
-            </div>
 
-            <div class="right-side">
               <el-form-item label="帖子图片：" prop="previewImage" style="font-weight: bold;">
-                <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
-                <el-upload
-                  ref="uploadRef"
-                  class="upload-demo"
-                  action="#"
-                  list-type="picture-card"
-                  :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove"
-                  :before-upload="beforeImageUpload"
-                  :on-success="handleImageSuccess"
-                  :file-list="fileList"
-                  :auto-upload="false"
-                  @change="handleFileChange"
-                >
-                  <i class="el-icon-plus"></i>
-                </el-upload>
+                <div>
+                  <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
+                  <el-upload
+                    ref="uploadRef"
+                    class="upload-demo"
+                    action="#"
+                    list-type="picture-card"
+                    :on-preview="handlePictureCardPreview"
+                    :on-remove="handleRemove"
+                    :before-upload="beforeImageUpload"
+                    :on-success="handleImageSuccess"
+                    :file-list="fileList"
+                    :auto-upload="false"
+                    @change="handleFileChange"
+                  >
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                </div>
               </el-form-item>
-            </div>
-          </div>
           
           
           <el-form-item class="buttons">
@@ -159,6 +155,7 @@ export default {
       }
     },
     resetForm() {
+      this.$refs.postFormRef.resetFields(); // 重置表单验证状态和字段值
       this.postForm.previewImage = [];
       this.fileList = [];
       this.postForm.myTitle = '';
@@ -301,18 +298,9 @@ export default {
   margin-top: 2px;
   width: 75%;
 }
-.form-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.left-side, .right-side {
-  width: 48%;
-}
-.left-side{
-  width:auto;
-  display:flex;
-  flex-direction: column;
+.upload-demo {
+  width: 100%;
+  margin-top: 5px;
 }
 .location-info {
   margin-top: 10px;
