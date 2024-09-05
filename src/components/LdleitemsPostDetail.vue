@@ -1,6 +1,9 @@
 <template>
   <el-card class="post-container" v-if="ldleitemsPost">
+     <el-watermark :font="font" :content="waitforcensor">
     <div v-if="ldleitemsPost">
+      <div class="watermark" v-if="ldleitemsPost.orderId>0"></div>
+
       <div class="post-header">
         <img :src="ldleitemsPost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemsPost.author_id)">
         <div class="post-header-info">
@@ -38,35 +41,16 @@
             <el-button type="primary" @click="confirmDelete">是</el-button>
           </template>
         </el-dialog>
-
-        <div class="post-content">
-          <el-dialog
-          v-model="dialogVisible"
-          width="80%"
-          :show-close="true"
-          >
-          </el-dialog>
-          <el-dialog
-          v-model="deleteDialogVisible"
-          title="确认删除"
-          width="30%"
-        >
-          <span>{{ deleteMessage }}</span>
-          <template v-slot:footer>
-            <el-button @click="cancelDelete">否</el-button>
-            <el-button type="primary" @click="confirmDelete">是</el-button>
-          </template>
-        </el-dialog>
-      </div>
     </div>
     
       <div>
         <div class="post-visible-states"  v-if="this.userid===ldleitemsPost.author_id">
           <el-select
-            v-model="value"
+            v-model="ldleitemsPost.exhibit_status"
             placeholder="修改帖子可见状态"
             size="small"
             class="visibility-select"
+            :disabled="ldleitemsPost.orderId>0"
             @change="handleChange"  
           >
             <el-option
@@ -99,13 +83,13 @@
       <div class="post-stats">
         <el-button class="stat-item" @click="toggleLike(ldleitemsPost)">
           <i :class="{'iconfont': true, 'like-icon': true, 'icon-dianzan': !ldleitemsPost.isLiked, 'icon-dianzanxuanzhong': ldleitemsPost.isLiked}"></i>
-          <span>点赞</span>
           <span>{{ ldleitemsPost.likes_number }}</span>
+          <span style="margin-left: 10px;">{{ ldleitemsPost.isLiked ? '已点赞' : '点赞' }}</span>
         </el-button>
         <el-button class="stat-item" @click="toggleStar(ldleitemsPost)">
           <el-icon v-if="!ldleitemsPost.isStarred"><Star /></el-icon>
           <el-icon v-else><StarFilled /></el-icon>
-          收藏
+          {{ ldleitemsPost.isStarred ? '已收藏' : '收藏' }}
         </el-button>
         <el-button class="stat-item" @click="goToReportPostWindow">
           <el-icon><Bell/></el-icon>举报
@@ -134,25 +118,35 @@
         <el-button class="pay" id="rentButton" :disabled="!isButtonDisabled" @click="Rent_Success()" v-if="isButtonDisabled">立即租赁</el-button>
         <PostPayWindow v-model:RentdialogVisible="RentdialogVisible" :ldleitemsPost="ldleitemsPost" :recipientInfo="recipientInfo" />
       </div>
+      <div class="action-buttons"  v-else>
+        <el-button class="pay" @click="GoToOrder(ldleitemsPost)" v-if="ldleitemsPost.orderId>0">查看订单</el-button>
+      </div>
 
-    </div>
-  </el-card>
-
-  <ReportPost
+      <ReportWindow
           v-model:isReportDialogVisible="isReportPostWindowVisible"
-          :isDetailShow="false"
-          :thisPostId="this.postID"
-          :post="post"
-          @closeDialog="isReportPostWindowVisible=false"
-        />  
+          :reportID="Number(ldleitemsPost.post_id)"
+          :isReportPost="true"
+          
+        /> 
+    </div>
+    </el-watermark>
+  </el-card> 
         <!-- 用于举报帖子 -->
 
 </template>
 
+<script setup>
+import { reactive } from 'vue'
+
+const font = reactive({
+  color: 'rgba(237, 28, 36, .35)',
+  fontSize: 25
+})
+</script>
 <script>
 import axios from '@/axios';
 import PostPayWindow from '@/components/PostPayWindow.vue'
-import ReportPost from '@/components/ReportPostWindow.vue'
+import ReportWindow from '@/components/ReportPostWindow.vue'
 import  globalState  from '@/store/global'; // 引入 global.js 中的状态
 import { ElMessage } from "element-plus";
 
@@ -161,10 +155,11 @@ export default {
   props: ['ldleitemsPostID'],
   components: {
     PostPayWindow,
-    ReportPost
+    ReportWindow
   },
   data() {
     return {
+      waitforcensor:'',
       dialogVisible: false,
       deleteDialogVisible: false,
       currentImage: '',
@@ -178,8 +173,8 @@ export default {
       deleteReply: null,
       parentComment: null,
       options: [
-        { label: '仅自己可见', value: '仅自己可见' },
-        { label: '所有人可见', value: '所有人可见' }
+        { label: '仅自己可见', value: 0 },
+        { label: '所有人可见', value: 1 }
       ],
       RentSuccess:false,
       recipientInfo: {
@@ -215,9 +210,11 @@ export default {
   },
   methods: {
       fetchLdleitemsPosts() {
-        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}`)
+        axios.get(`/api/LdleitemsPosts/GetPostDetailsById?post_id=${this.ldleitemsPostID}&user_id=${globalState.userId}`)
         .then(response => {
           this.ldleitemsPost = response.data;
+          if (this.ldleitemsPost.censor_status == '2')
+            this.waitforcensor="待审核"
           console.log(this.ldleitemsPost)
         })
         .catch(error => {
@@ -282,7 +279,7 @@ export default {
     },
     confirmDelete() {
       this.deleteDialogVisible = false;
-      axios.delete(`api/Posts/${this.postID}`)
+      axios.delete(`api/Posts/${this.ldleitemsPostID}`)
         .then(response => {
           if (response.data !=null) {
             this.goBackToForumView();          
@@ -290,8 +287,7 @@ export default {
       })
       .catch(error => {
         this.handleError(error, '删除帖子失败');
-        this.fetchLdleitemsPosts();
-
+        console.error(error)
       }) 
     },
     cancelDelete() {
@@ -310,7 +306,7 @@ export default {
     async BanRent()
     {
       try {  
-    const response = await axios.get(`https://localhost:7218/api/Purchases`);  
+    const response = await axios.get(`/api/Purchases`);  
     if (!Array.isArray(response.data)) {  
       throw new Error('Expected an array from the server, but got something else.');  
     }  
@@ -340,7 +336,7 @@ export default {
     },
     handleChange(value) {  
       // 这里是用户更改选择时执行的代码 
-      if(value=='仅自己可见')
+      if(value==0)
           this.ldleitemsPost.exhibit_status = 0;
       else
           this.ldleitemsPost.exhibit_status = 1;
@@ -360,7 +356,7 @@ export default {
         total_floor:this.ldleitemsPost.total_floor,
 
       }
-      axios.put(`https://localhost:7218/api/Posts/${this.ldleitemsPost.post_id}`,LdlePost).then(response => {  
+      axios.put(`/api/Posts/${this.ldleitemsPost.post_id}`,LdlePost).then(response => {  
         // 更新成功后的处理，比如清空表单或显示成功消息  
         console.log('Product updated successfully', response);  
         console.log(LdlePost);
@@ -373,11 +369,51 @@ export default {
       // 例如，你可能想根据这个值更新数据库中的帖子状态  
       // 你可以调用一个API或者更新你的应用状态  api/Posts/GetPostDetail/{post_id}/{user_id}
     },
+    GoToOrder(ldleitemsPost)
+    {
+      this.$router.push({ path: `/home/userspace/leaseorder/${ldleitemsPost.orderId}`,
+          query: {  
+            ldleitemsPostId: ldleitemsPost.orderId
+        }})
+    }
   }
 };
 </script>
 
 <style scoped>
+.watermark {
+  position: fixed; /* 固定位置 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 确保水印不会阻挡页面上的其他交互 */
+  z-index: 1000; /* 确保水印在所有内容之上 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.watermark::before {
+  content: '已卖出'; /* 水印的文字内容 */
+  font-size: 4rem; /* 根据需要调整文字大小 */
+  color: rgba(4, 109, 56, 0.231); /* 文字颜色和透明度 */
+  white-space: nowrap; /* 确保文字不换行 */
+  text-align: center; /* 文本居中对齐 */
+  transform: rotate(-30deg); /* 斜着显示水印 */
+  position: absolute; /* 绝对定位 */
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg); /* 定位中心，并旋转 */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* 确保水印不会阻挡页面上的其他交互 */
+  overflow: hidden;
+}
+
 .post-container {
   width: 65%;
   margin-top: 3vh;

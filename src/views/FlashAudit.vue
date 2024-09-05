@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     fetchFlashes() {
-      axios.get('https://localhost:7218/api/Flashes/Display')
+      axios.get('/api/Flashes/Display')
         .then(response => {
           this.flashes = response.data;
         })
@@ -88,11 +88,12 @@ export default {
       // 弹出确认窗口  
       if (confirm('你确定要删除这个Flash吗？')) {  
         // 用户点击了确定，提交删除请求  
-        axios.delete(`https://localhost:7218/api/Flashes/${flash.flashId}`)  
+        axios.delete(`/api/Flashes/${flash.flashId}`)  
           .then(() => {  
             // 删除成功的处理逻辑，例如提示用户或刷新页面  
             alert('Flash删除成功！');  
-            // 这里可以添加其他逻辑，比如从前端列表中移除该Flash  
+            // 这里可以添加其他逻辑，比如从前端列表中移除该Flash 
+            window.location.reload(); 
           })  
           .catch(error => {  
             // 删除失败的处理逻辑  

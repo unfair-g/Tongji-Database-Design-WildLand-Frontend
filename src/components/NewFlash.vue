@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     fetchFlashes() {
-      axios.get('https://localhost:7218/api/Flashes/GetLatestNFlashWithTags?n=3')
+      axios.get('/api/Flashes/GetLatestNFlashWithTags?n=3')
         .then(response => {
           this.flash = response.data;
         })

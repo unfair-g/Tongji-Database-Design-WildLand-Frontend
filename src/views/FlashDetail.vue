@@ -3,17 +3,21 @@
     <div class="left-panel">  
       <div class="flash-item">  
         <h2 class="flash-title">{{ flash.flashTitle }}</h2> 
-        <h2 class="flash-meta">{{ flash.user_id }}</h2>
-        <el-tag type="info" class="flash-tag">{{ flash.tagName }}</el-tag>  
+        <h2 class="flash-meta">作者：{{ flash.userName }}</h2>
         <div class="flash-like">
-        <el-button class="flash-like" @click="toggleStar(flash.flashId)">
+        <el-tag effect="dark" color="#1D5B5E" class="flash-tag">{{ flash.tagName }}</el-tag>  
+        <el-button class="flash-like" @click="toggleStar(flash.flashId)" style="margin:1%;height:30px;margin-left: auto;">
           <el-icon v-if="!this.isStarred"><Star /></el-icon>
           <el-icon v-else><StarFilled /></el-icon>
           <span>{{ this.isStarred ? '已收藏' : '收藏' }}</span>
         </el-button>
-      </div>
-        <p class="flash-content">{{ flash.flashContent }}</p>  
-        <img :src="flash.flashImage" :alt="flash.flashTitle" class="flash-image" />  
+      </div> 
+      <el-carousel indicator-position="outside" height="500px" style="margin-top: 50px;">
+      <el-carousel-item v-for="pic in flash.flash_pics" :key="pic" class="flash-image">
+        <img :src="pic" style="height:500px">
+      </el-carousel-item>
+    </el-carousel>
+        <p class="flash-content">{{ flash.flashContent }}</p> 
       </div>  
     </div>  
     <div class="right-panel">  
@@ -46,14 +50,28 @@ props: ['flashID'],
 data() {
     return {
       flash: [],
-      isStarred:0
+      isStarred:0,
     };
   },
 methods: {  
   fetchFlashes() {
-      axios.get(`https://localhost:7218/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
+      axios.get(`/api/Flashes/GetFlashByFlashId?flashId=${this.flashID}`)
         .then(response => {
           this.flash = response.data;
+          this.flash.viewsNumber=this.flash.viewsNumber+1
+          axios.put(`/api/Flashes/UpdateFlashAndTag`, [{  
+            userId: this.flash.userId,  
+            flashDate: this.flash.flashDate,  
+            flashImage: this.flash.flashImage,  
+            collectionNumber: this.flash.collectionNumber,  
+            viewsNumber: this.flash.viewsNumber,  
+            flashTitle: this.flash.flashTitle,  
+            flashContent: this.flash.flashContent,  
+            flashId: this.flash.flashId,  
+            tagId: this.flash.tagId,  
+            tagName: this.flash.tagName // 这里使用更新后的 tagName  
+            // 如果需要更新其他字段，也可以在这里添加  
+          }])  
         })
         .catch(error => {
           console.error('Error fetching city names:', error);
@@ -61,7 +79,7 @@ methods: {
     },
   toggleStar(flashId) {  
     console.log("Hello, Console!",global.userId);  
-    axios.post(`https://localhost:7218/api/StarFlashes/PostStarFlash?userId=${global.userId}&flashId=${flashId}`,{
+    axios.post(`/api/StarFlashes/PostStarFlash?userId=${global.userId}&flashId=${flashId}`,{
       flash_id: flashId,
       user_id: global.userId
     })
@@ -69,15 +87,14 @@ methods: {
   }  ,
   fetchstar(){          
     console.log(this.flashID);
-    axios.get(`https://localhost:7218/api/StarFlashes/GetStarFlashByFlashAndUserId?flash_id=${this.flashID}&user_id=${global.userId}`)
+    axios.get(`/api/StarFlashes/GetStarFlashByFlashAndUserId?flash_id=${this.flashID}&user_id=${global.userId}`)
         .then(response => {
           console.log(response);
           this.isStarred=1;
           console.log(this.isStarred);
         })
         .catch(error => {
-          console.error('Error fetching city names:', error);
-          console.log(this.isStarred);
+          console.error(error);
         });
   }
   },  
@@ -101,7 +118,6 @@ methods: {
   justify-content: space-between; /* 保持其他内容的布局 */  
   align-items: center;  
   margin-bottom: 10px;  
-  
 }  
   
 .flash-title {  
@@ -117,8 +133,12 @@ methods: {
   display: flex;  
 }  
 .flash-tag{
+  margin: 1%;
   display: flex;  
-  width:9%
+  font-size:18px;
+  width:9%;
+  height:30px;
+  margin-right: auto;
 }
 
 .flash-meta {  
@@ -127,14 +147,12 @@ methods: {
   display:inline-block;
   margin-left: 3%;
 }  
-  
-.flash-image {  
-  width: 100%;  
-  height: auto;  
-  max-width: 730px;  
-  border-radius: 10px;  
-  margin-bottom: 20px;  
-}  
+
+.flash-image {
+  display: flex;
+  justify-content: center;
+  height: 500px; 
+}
   
 .left-panel, .right-panel {  
   padding: 20px;  
@@ -155,7 +173,6 @@ methods: {
 .flash-stats, .flash-like {  
   font-size: 18px;  
   color: #666;  
-  justify-content: flex-end;
   display:flex;
 }  
   

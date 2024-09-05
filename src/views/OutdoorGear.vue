@@ -46,7 +46,7 @@
 
 <script>
 import { More, Edit, Delete } from '@element-plus/icons-vue'
-import axios from 'axios';
+import axios from '@/axios';
 
 export default {
   components: {
@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     fetchProduct() {
-      axios.get('https://localhost:7218/api/OutdoorProducts/adminList')
+      axios.get('/api/OutdoorProducts/adminList')
         .then(response => {
           this.products = response.data;
           // 添加一个特殊的“新增”行
@@ -102,11 +102,11 @@ export default {
     },
     goToProductEdit(product) {
       const productId = product.product_id;
-      this.$router.push({ path: `/administrator/admin_product_edit/${productId}` });
+      this.$router.push({ path: `/administrator/AdminProductEdit/${productId}` });
     },
     deleteProduct(product) {
       // 提交删除请求
-      axios.delete(` https://localhost:7218/api/OutdoorProducts/${product.product_id}` )
+      axios.delete(`/api/OutdoorProducts/${product.product_id}` )
         .then(response => {
           console.log('0k',response.data);
           this.$alert('删除成功！', '提示', {  
@@ -127,7 +127,7 @@ export default {
     },
     handleUpload()
     {
-      this.$router.push({ path: `/administrator/admin_product_edit/${this.product_2.product_id}` ,
+      this.$router.push({ path: `/administrator/AdminProductAdd/${this.product_2.product_id}` ,
         query:{
           productid:0
         }

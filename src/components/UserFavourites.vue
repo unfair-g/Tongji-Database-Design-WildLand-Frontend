@@ -39,7 +39,7 @@
   <el-row :gutter="25" v-else-if="componentTab==='flash'">
         <el-col :span="8" v-for="flash in starflash" :key="flash.flashId">
             <el-card  style="margin-bottom:8%" @click="goToFlashDetail(flash)">
-                <img :src="flash.flashImage" style="width:100%"/>
+                <img :src="flash.picUrls[0]" alt="flash-img" style="width:100%;height:300px"/>
                 <template #footer>
                     <h3>{{ flash.flashTitle }}</h3>
                     <div style="margin-top:3%">作者：{{ flash.userId }}</div>
@@ -49,7 +49,7 @@
   </el-row>
   <div v-else v-loading="loading" element-loading-text="Loading...">
     <div v-for="post in starpost" :key="post.post_id">
-    <Post :view="post.post_kind" :post_id="post.post_id" star=true />
+    <Post :view="post.post_kind" :post_id="post.post_id" star=true @loaded="onChildLoaded" />
     </div>
   </div>
 </div>
@@ -60,7 +60,7 @@ import Post from '../components/Article.vue'
 import global from '@/store/global'
 import router from '@/router'
 import axios from '@/axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const componentTab = ref('camp')  
@@ -101,14 +101,23 @@ const fetchStarFlashes = async () => {
     try {
         const response =await axios.get(`/api/StarFlashes/GetStarFlashByUserId?user_id=${global.userId}`)
         starflash.value = response.data
-        ElMessage.success(response.data)
-    } catch (error) {
-        if (error.response.status==404) 
+        if (starflash.value.length==0)
             tips.value = '暂无收藏经验资讯'
-        else
-            ElMessage.error(error.message)
+    } catch (error) {
+        ElMessage.error(error.message)
     }
 }
+
+const loadedCount = ref(0); // 跟踪已加载的子组件数量
+
+const onChildLoaded = () => {
+  loadedCount.value++;
+    if (loadedCount.value === starpost.value.length) {
+        nextTick(()=> {
+            loading.value = false; // 当所有子组件都加载完成时停止 loading
+        })
+  }
+};
 
 const fetchStarPosts = async () => {
     try {
@@ -123,18 +132,16 @@ const fetchStarPosts = async () => {
 }
 
 const handleClick = async (tab) => {
+    tips.value = ''
     if (tab.props.name == 'camp')
         fetchStarCamps();
     else if (tab.props.name == 'product')
         fetchStarProducts();
     else if (tab.props.name == 'post') {
         fetchStarPosts();
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        loading.value = false
     }
     else
         fetchStarFlashes();
-    tips.value = ''
 }
 
 function goToProductDetail (product_id) {

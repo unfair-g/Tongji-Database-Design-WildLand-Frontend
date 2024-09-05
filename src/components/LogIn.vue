@@ -16,15 +16,18 @@
       <el-input v-model="user.user_name" placeholder="请输入您的用户名"  :prefix-icon="User"/>
     </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="user.password" placeholder="请输入密码" :prefix-icon="Key"/>
+      <el-input type="password" show-password v-model="user.password" placeholder="请输入密码" :prefix-icon="Key"/>
     </el-form-item>
   </el-form>
+  <div style="display: flex;padding-right: 10%">
+  <el-button class="loginbutton" @click="toWelcomePage">取消</el-button>
   <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">登录</el-button>
-  <div class="others">
-      <router-link to="/enter/findkey" style="color:#888888;text-decoration: none">忘记密码</router-link>
-      <router-link to="/enter/enrollment" style="margin-left:auto;margin-right: 5%;color:black;text-decoration: none">注册账号</router-link>
   </div>
-    </div>
+  <div class="others">
+    <router-link to="/enter/findkey" style="color:#888888;text-decoration: none">忘记密码</router-link>
+    <router-link to="/enter/enrollment" style="margin-left:auto;margin-right: 5%;color:black;text-decoration: none">注册账号</router-link>
+  </div>
+</div>
 </div>
 </template>
 
@@ -39,6 +42,7 @@ import global from '@/store/global'
 import { saveToSessionStorage } from '@/store/global'
 import CryptoJS from 'crypto-js'
 import { provinceMap } from '@/store/global';
+import { ElNotification } from 'element-plus'
 
 const role = ref('游客')
 
@@ -46,7 +50,7 @@ const options = ['游客', '管理员']
 
 const loginDisabled = ref(false)
 
-const userRef=ref()
+const userRef = ref()
 
 const user = reactive({
     user_name: '',
@@ -99,6 +103,8 @@ const Login = () => {
           global.mute_status = response.data.data.mute_status;
           saveToSessionStorage(true,response.data.data.user_id,response.data.data.mute_status);
           ElMessage.success('登录成功！');
+          if (global.mute_status == '1')
+            openNotification(response.data.data.punish_end_time)
         } catch (error) {
           if(error.response)
             ElMessage.error(error.response.data.message)
@@ -116,7 +122,7 @@ const Login = () => {
           saveToSessionStorage(true, response.data.admin_id,0)
           global.Login = true;
           global.userId = response.data.admin_id;
-          global.mute_status = 0;
+          global.mute_status = response.data.mute_status;
           router.push({ path: '/administrator' });
           ElMessage.success('登录成功！');
           console.log('登录成功', response);
@@ -135,6 +141,20 @@ const Login = () => {
       loginDisabled.value = false
     }
   })
+}
+
+const openNotification = (end_time) => {
+  ElNotification({
+    title: '您因发布不当信息已被禁言',
+    message: '禁言至'+end_time+'结束',
+    type: 'warning',
+    duration: 0,
+    offset: 100,
+  })
+}
+
+function toWelcomePage() {
+  router.push({path: '/'})
 }
 
  onMounted(() => {
@@ -180,7 +200,8 @@ const Login = () => {
 }
 
 .loginbutton{
-    margin-left: 32%;
+    margin-left: auto;
+    margin-right: auto;
     width:calc(200vw * 80 / 1920);
     height:calc(120vw * 30 / 1920);
 }

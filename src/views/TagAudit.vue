@@ -12,7 +12,7 @@
       添加标签
     </el-button>
   </div>
-  <el-dialog v-model="dialogFormVisible" title="Shipping address" width="500">
+  <el-dialog v-model="dialogFormVisible" title="输入新tag" width="500">
     <el-input
       v-model="tag.tag_name"
       style="margin-top: 20px; margin-bottom: 20px;"
@@ -60,7 +60,7 @@ setup() {
 methods: {  
     updateTag() {  
       // 发送 PUT 请求来更新 Flash  
-      axios.post(`https://localhost:7218/api/FlashTags`, {  
+      axios.post(`/api/FlashTags`, {  
           tag_name: this.tag.tag_name
         // 如果需要更新其他字段，也可以在这里添加  
       })  

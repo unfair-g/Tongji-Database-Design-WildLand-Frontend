@@ -1,5 +1,6 @@
 <template>
 <PersonInfo />
+
 <MyPost :user_id="userId"/>
 </template>
 

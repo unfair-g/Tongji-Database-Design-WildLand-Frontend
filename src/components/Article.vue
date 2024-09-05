@@ -61,7 +61,6 @@
             <span class="post-fix">活动时间：</span><span>{{recruitpost.activity_time}}；</span>
             <span class="post-fix">活动地点：</span><span>{{recruitpost.activity_address  }}；</span>
             <span class="post-fix">计划招募人数：</span><span>{{ recruitpost.total_recruit }}；</span>
-            <span class="post-fix">活动介绍: </span><span>{{ recruitpost.intro }}</span>
           </div>
         </div>
 
@@ -69,11 +68,11 @@
     </div>
   </div>
   <div v-else-if="view === 'lease'">
-   <div v-for="ldleitemspost in ldleitemsposts" :key="ldleitemspost.post_id" justify="center" >
+   <div v-for="ldleitemspost in filteredLdlePosts" :key="ldleitemspost.post_id" justify="center" >
       <el-card class="post-item">
         <template #header>
          <div class="post-header">
-            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar">
+            <img :src="ldleitemspost.portrait" alt="avatar" class="avatar" @click="goToUserSpace(ldleitemspost.author_id)">
             <div class="post-details">
               <div class="post-info">
                 <span class="username">{{ ldleitemspost.user_name }}</span>
@@ -96,9 +95,9 @@
         </template>
 
         <div class="post-content" @click="goToPostDetail(ldleitemspost)" style="display:flex;flex-direction: row;">
-          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="order image"></div>
+          <div style="flex:1;"><img :src="ldleitemspost.post_pics[0]" class="image" alt="image"></div>
           <div style="padding: 14px;flex:2;">
-            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div><!--带接口完善-->
+            <div class="post-title"><h4>{{ldleitemspost.title }}</h4></div>
             <div><span>商品简介: {{ ldleitemspost.item_summary}}</span></div>
             <div><span>商品新旧程度：{{ ldleitemspost.condition}}</span></div>
             <div class="bottom clearfix">
@@ -189,7 +188,20 @@ export default {
           
       );
     },
-    
+    filteredLdlePosts() {
+      if (!this.searchQuery) {
+        return this.ldleitemsposts;
+      }
+      const query = this.searchQuery.toLowerCase();
+      return this.ldleitemsposts.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.item_summary.toLowerCase().includes(query) ||
+          post.user_name.toLowerCase().includes(query) ||
+          post.condition.toLowerCase().includes(query) 
+          
+      );
+    },
   },
   methods: {
     fetchSharePosts() {
@@ -203,15 +215,18 @@ export default {
               author_id:post.author_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content,
+              content: post.content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
               isLiked: post.isLiked,
               isStarred: post.isStarred,
+              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
             }));
-            if(this.star)
-              this.shareposts=this.shareposts.filter(element=>element.post_id==this.post_id)
+            if (this.star) {
+              this.shareposts = this.shareposts.filter(element => element.post_id == this.post_id)
+              this.$emit('loaded');
+            }
           })
           .catch(error => {
             console.error('Error fetching share posts:', error);
@@ -227,12 +242,14 @@ export default {
               author_id:this.user_id,
               avatar: post.portrait,
               title: post.title,
-              shortContent: post.short_content,
+              content : post.content,
               likes: post.likes_number,
               comments: post.total_floor,
               post_time: post.post_time,
               isLiked: post.isLiked,
               isStarred: post.isStarred,
+              shortContent : post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content
+
             }));
           })
           .catch(error => {
@@ -246,8 +263,10 @@ export default {
         axios.get(`/api/LdleitemsPosts/GetLdleitemsPostsByUserId?user_id=${state.userId}`)
         .then(response => {
           this.ldleitemsposts = response.data;
-          if(this.star)
-            this.ldleitemsposts=this.ldleitemsposts.filter(element=>element.post_id==this.post_id)
+          if (this.star) {
+            this.ldleitemsposts = this.ldleitemsposts.filter(element => element.post_id == this.post_id)
+            this.$emit('loaded');
+          }
         })
         .catch(error => {
           console.log(this.ldleitemsposts)
@@ -270,7 +289,7 @@ export default {
           });
       }
     },
-    async fetchRecruitPosts() {
+     async fetchRecruitPosts() {
       if (this.user_id == null) {
         const userId = state.userId;
         axios.get(`/api/RecruitmentPosts/GetOverview/2/${userId}`)
@@ -281,7 +300,7 @@ export default {
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            shortContent:post.short_activity_summary,
+            content:post.activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
@@ -290,10 +309,14 @@ export default {
             activity_time: post.activity_time,
             activity_address: post.location,
             total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
+            intro: post.activity_summary,
+            shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
+            
           }))
-          if(this.star)
-            this.recruitposts=this.recruitposts.filter(element=>element.post_id==this.post_id)
+          if (this.star) {
+            this.recruitposts = this.recruitposts.filter(element => element.post_id == this.post_id)
+            this.$emit('loaded');
+          }
         })
         .catch(error => {
           console.error('Error fetching recruit posts:', error);
@@ -309,7 +332,7 @@ export default {
             username: post.author_name,
             avatar: post.portrait,
             title: post.title,
-            shortContent:post.short_activity_summary,
+            content:post.activity_summary,
             likes: post.likes_number,
             comments: post.total_floor,
             post_time: post.post_time,
@@ -318,7 +341,9 @@ export default {
             activity_time: post.activity_time,
             activity_address: post.location,
             total_recruit: post.planned_count,
-            intro:post.short_activity_summary,
+            intro: post.activity_summary,
+            shortContent : post.activity_summary.length > 40 ? post.activity_summary.substring(0, 40) + '...' : post.activity_summary
+            
           }));
         })
           .catch(error => {
@@ -330,7 +355,7 @@ export default {
     handleError(error, message) {
       if (error.response) {
         if (error.response.status == '404') {
-          ElMessage.error('暂时未发布该类帖子！')
+          console.error('暂时未发布该类帖子！')
         }
         else {
           console.error(`${message}:`, error.response.data);

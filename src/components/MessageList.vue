@@ -47,8 +47,8 @@
             </div>  
             <div class="message-content">  
               <span  style="color:black">订单状态：</span>
-              <span v-if="message.order_status===1">已支付</span>  
-              <span v-else-if="message.order_state===2" style="color:red">已发货</span>  
+              <span v-if="message.orderStatus===1">已支付</span>  
+              <span v-else-if="message.orderStatus===2" style="color:red">已发货</span>  
               <span v-else style="color:#00B146">已收货</span>  
             </div>  
           </div> 
@@ -107,7 +107,7 @@ export default {
       }
       else if (message.type === 'purchased') {
         this.$router.push({
-          path: `/home/userspace/leaseorder/${message.order_id}`,
+          path: `/home/userspace/leaseorder/${message.purchaseIds}`,
           query: {
             ldleitemsPostId: message.order_id
           }

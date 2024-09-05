@@ -8,10 +8,14 @@
         <el-col :span="2">
             <el-avatar :src="userInfo.portrait" style="width:100px;height:100px" />
         </el-col>
-        <el-col :span="10">
+        <el-col :span="12">
             <el-row style="font-weight: bold;font-size:25px;margin-top: 1%">
-                <el-col :span="5">{{ userInfo.user_name }} </el-col>
-                <el-col :span="5">
+                <el-col :span="6">
+                  <span>{{ userInfo.user_name }} </span>
+                  <span v-if="userInfo.gender==='f'" style="margin-left: 10%;color:#FF82BF"><el-icon><Female /></el-icon></span>
+                  <span v-if="userInfo.gender==='m'" style="margin-left: 10%;color:#3F48CC"><el-icon><Male /></el-icon></span>
+                </el-col>
+                <el-col :span="6">
                     <el-tag v-if="userInfo.outdoor_master_title==='1'" color="#1D5B5E" size="large" effect="dark" round>户外达人</el-tag>
                     <el-tag v-else-if="userInfo.outdoor_master_title==='0'&&!TalentStatus" type="info" size="large" effect="dark" @click="dialogVisible = true" round>户外达人</el-tag>
                     <el-tag v-else type="info" size="large" effect="dark" round>户外达人：审核中</el-tag>
@@ -24,7 +28,7 @@
             <FollowedList v-model="isListVisible"/>
             </el-row>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="10">
             <div style="font-weight:bold;margin-top:1%">个性签名</div>
             <div style="margin-top:2%">{{ userInfo.personal_signature }}</div>
         </el-col>
@@ -57,7 +61,9 @@
             </el-descriptions-item>
         </el-descriptions>
     </div>
-
+    <el-alert v-if="userInfo.mute_status=='1'" type="error" show-icon :closable="false">
+      <template #title>您因发表不当评论已被禁言，禁言至{{ userInfo.punish_end_time }}结束</template>
+    </el-alert>
     <el-dialog
     v-model="ifCharge"
     title="钱包充值"
@@ -157,8 +163,10 @@
             @change="handleImageChange"
             :before-upload="beforeImageUpload"
           >
+          <div>
             <img v-if="expert.image" :src="expert.image" class="image" />
             <el-icon v-else class="image-uploader-icon"><Plus /></el-icon>
+          </div>
           </el-upload>
         </el-form-item>
          <el-form-item label="擅长领域" prop="ept_field">
@@ -192,7 +200,7 @@ export default {
   },
     data() {
         return {
-            isListVisible:false,
+          isListVisible: false,
         }
   },
   methods: {
@@ -266,7 +274,6 @@ const TalentStatus=ref(false)
       try {
         const response = await axios.get(`/api/Users/getUserInfo/${global.userId}`);
         userInfo.value = response.data.data.userInfo;
-        console.log('用户信息',userInfo.value)
         if (userInfo.value.birthday != null)
           userInfo.value.birthday = userInfo.value.birthday.substring(0, 10);
           user.user_name = userInfo.value.user_name;
@@ -281,7 +288,7 @@ const TalentStatus=ref(false)
           user.personal_signature = userInfo.value.personal_signature;
           user.avatar = userInfo.value.portrait;
           userInfo.value.follows = response.data.data.followingCount;
-          userInfo.value.fans = response.data.data.followerCount;
+        userInfo.value.fans = response.data.data.followerCount;
       } catch (error) {
         ElMessage.error(error.message);
       }
@@ -301,39 +308,42 @@ const TalentStatus=ref(false)
 
       const beforeAvatarUpload = (file) => {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPGorPNG) {
         ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
         return false
       }
-      if (!isLt2M) {
-        ElMessage.error('上传头像图片大小不能超过 2MB!')
-        return false
-      }
-      
       formData.set('file', file);
       ElMessage.success('上传头像成功')
 
       return false;
 }
 
-const avatarchange=ref(false)
+      const avatarchange = ref(false)
 
-const handleFileChange=(file)=> {
-  user.avatar = URL.createObjectURL(file.raw)
-  avatarchange.value = true;
-}
+const handleFileChange = (file) => {
+    user.avatar = URL.createObjectURL(file.raw)
+    avatarchange.value = true;
+      }
+
+      const formaDate = (dt) => {
+        if (dt instanceof Date) {
+          let year = dt.getFullYear();
+          let month = (dt.getMonth() + 1).toString().padStart(2, '0');
+          let date = dt.getDate().toString().padStart(2, '0');
+          return `${year}-${month}-${date}`;
+        }
+      }
 
     const ResetUserInfo = () => {
       UserformRef.value.validate(async (valid) => {
           if (valid) {
               const gender = (user.gender === '女' ? 'f' : 'm')
-          try {
+            try {
             await axios.put(`/api/Users/updatePersonalInfo/${global.userId}`, {
               userName: user.user_name,
               gender: gender,
-              birthday: user.birthday,
+              birthday: formaDate(user.birthday),
               location: user.location,
               phoneNumber: user.phone_number,
               email: user.email,
@@ -449,6 +459,12 @@ const handleFileChange=(file)=> {
 </script>
 
 <style scoped>
+.el-alert {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height:50px;
+}
+
    .personalcenter{
     height:fit-content;
     background-color: rgb(255,255,255,80%);
@@ -464,14 +480,19 @@ const handleFileChange=(file)=> {
    .avatar-uploader .avatar {
   width: 100px;
   height: 100px;
-  margin-left: 170px;
   margin-bottom: 20px;
+}
+
+.avatar-uploader{
+  display: flex;
+  justify-content: center;
 }
 
 .image-uploader .image {
   width: 150px;
   height: 150px;
   display: block;
+  margin-left: 30%;
 }
 
 .image-uploader{

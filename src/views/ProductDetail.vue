@@ -34,7 +34,7 @@
 
 import { ref } from 'vue'
 import PayWindow from '@/components/PayWindow.vue'
-import axios from 'axios';
+import axios from '@/axios';
 import globalState from '../store/global'; // 引入 global.js 中的状态
 
 export default {
@@ -58,7 +58,7 @@ export default {
   methods: {
     async fetchProduct() {
       console.log(this.productID)
-      await axios.get(`https://localhost:7218/api/OutdoorProducts/GetProductByProductAndUserId?product_id=${this.productID}&user_id=${globalState.userId}`)
+      await axios.get(`/api/OutdoorProducts/GetProductByProductAndUserId?product_id=${this.productID}&user_id=${globalState.userId}`)
         .then(response => {
           this.product = response.data;
           console.log(this.product)
@@ -71,7 +71,7 @@ export default {
       if (this.product.isStarred) {
         // Remove from favorites
         // Remove from backend
-        axios.get(`https://localhost:7218/api/StarProducts`)
+        axios.get(`/api/StarProducts`)
   .then(response => {
     const starProduct = response.data.find(favorite => favorite.product_id === this.product.product.product_id && favorite.user_id === this.thisUserId);
     
@@ -89,7 +89,7 @@ export default {
         // Add to favorites
         
         // Add to backend
-        axios.post('https://localhost:7218/api/StarProducts', {
+        axios.post('/api/StarProducts', {
           product_id: this.product.product.product_id,
           user_id: this.thisUserId
         }, {
@@ -114,7 +114,7 @@ export default {
     },
 
     deleteStarProduct(userId, productId) {
-      axios.delete(`https://localhost:7218/api/StarProducts/DeleteStarProduct`,  {
+      axios.delete(`/api/StarProducts/DeleteStarProduct`,  {
     params: {
       userId: userId,
       productId: productId

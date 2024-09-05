@@ -22,20 +22,22 @@
             />
           </el-form-item>
           
-          <div class="form-row">
-            <div class="left-side">
+          <div>
+            <div>
               <el-form-item label="帖子位置：" prop="post_position" style="font-weight: bold;">
-                <el-button type="primary" color="#1D5B5E" @click="addLocation"  :loading="locationLoading" :disabled="locationLoading">点击添加定位</el-button>
+                <el-button type="primary" color="#1D5B5E" @click="addLocation" >点击添加定位</el-button>
                 <div v-if="postForm.post_position" class="location-info">
                   您的IP获取成功，IP所在地：{{ postForm.post_position }}
                 </div>
+                <!-- <staticMap ></staticMap> -->
               </el-form-item>
               <!-- <div class="map-container"></div> -->
             </div>
 
-            <div class="right-side">
+            <div>
               <el-form-item label="帖子图片：" prop="previewImage" style="font-weight: bold;">
-                <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
+                <div>
+                  <el-button style="margin-bottom: 10px;" type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
                 <el-upload
                   ref="uploadRef"
                   class="upload-demo"
@@ -51,11 +53,17 @@
                 >
                   <i class="el-icon-plus"></i>
                 </el-upload>
+                </div>
               </el-form-item>
             </div>
           </div>
 
-          <!-- <div> <MyMap /></div> -->
+         
+            <!-- <myMap
+              v-model:isMapDialogVisible="isMapDialogVisible"
+              :center="center"
+              :zoom="12"
+            /> -->
 
           <el-form-item class="buttons">
             <el-button type="default" @click="handleClose">取消</el-button>
@@ -72,8 +80,8 @@ import { ElMessage } from "element-plus";
 import axios from '@/axios';
 import { provinceMap } from '@/store/global';
 import state from '@/store/global'; // 引入state
-// import MyMap from '@/components/MapCard.vue';
-
+// import myMap from '@/components/Map.vue'
+// import staticMap from '@/components/staticMap.vue'
 export default {
   name: 'SharePublish',
   props: {
@@ -82,9 +90,10 @@ export default {
       default: false,
     },
   },
-  // components: {
-  //   MyMap
-  // },
+  components: {
+    // myMap,
+    // staticMap
+  },
   data() {
     return {
       postForm: {
@@ -99,15 +108,18 @@ export default {
           { min: 1, max: 40, message: '标题长度不能超过 40 个字符', trigger: 'blur' }
         ],
         content: [
-          { required: true, message: '请输入帖子内容', trigger: 'blur' }
+          { required: true, message: '请输入帖子内容', trigger: 'blur' },
+          { min: 1, max: 500, message: '帖子长度不能超过 300 个字', trigger: 'blur' }
+
         ],
         post_position: [
           { required: true, message: '请添加帖子位置', trigger: 'blur' }
         ]
       },
       fileList: [],
-      locationLoading: false, // 用于跟踪定位按钮的状态
-      localIsSharePostDialogVisible: this.isSharePostDialogVisible
+      isMapDialogVisible: false, 
+      localIsSharePostDialogVisible: this.isSharePostDialogVisible,
+      center:null,
     };
   },
   watch: {
@@ -125,8 +137,11 @@ export default {
     },
     handleError(error, message) {
       if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        if (error.response.status == 500) {
+          ElMessage.error('帖子内容超过字数限制');
+        } else {
+          ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        }
       } else if (error.request) {
         console.error(`${message}: No response received`);
         ElMessage.error(`${message} - 没有收到响应`);
@@ -181,15 +196,14 @@ export default {
       });
     },
     resetForm() {
+      this.$refs.postFormRef.resetFields(); // 重置表单验证状态和字段值
       this.postForm.title = '';
       this.postForm.content = '';
       this.postForm.previewImage = [];
       this.postForm.post_position = '';
       this.fileList = [];
-      this.locationLoading = false; // 重置定位按钮状态
     },
     async addLocation() {
-      this.locationLoading = true; // 开始加载状态
       try {
         const response = await axios.get('https://api.ipify.org?format=json');
         const ip = response.data.ip;
@@ -197,17 +211,24 @@ export default {
 
         const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=51f79bed5ff44b6dbfb814168e68d70d&ip=${ip}`);
         const province = geoResponse.data.state_prov;
-      
+
+        const { latitude, longitude } = geoResponse.data;
+
+        console.log('Latitude:', latitude);
+        console.log('Longitude:', longitude);
         const chineseProvince = provinceMap[province] || province;
         this.postForm.post_position = chineseProvince;
+
+        this.center = { lng: parseFloat(longitude), lat: parseFloat(latitude) };  // 设置center对象
+        console.log('center:', this.center);
+        // this.isMapDialogVisible = true;
+
         
         console.log('Province:', chineseProvince);
       } catch (error) {
         console.error('Error fetching location:', error);
         ElMessage.error('获取定位信息失败');
-      } finally {
-        this.locationLoading = false; // 结束加载状态
-      }
+      } 
     },
     triggerUpload() {
       this.$refs.uploadRef.$el.querySelector('input[type=file]').click();
@@ -276,9 +297,6 @@ export default {
   justify-content: space-between;
 }
 
-.left-side, .right-side {
-  width: 48%;
-}
 
 .location-info {
   margin-top: 10px;

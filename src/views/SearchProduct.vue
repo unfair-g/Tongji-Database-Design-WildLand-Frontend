@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from 'axios';  
+import axios from '@/axios';  
   
 export default {  
   name: 'SearchProduct',  
@@ -46,7 +46,7 @@ export default {
     {
       try {
         const Keyword = this.$route.query.keyword || ''; 
-        await axios.get('https://localhost:7218/api/OutdoorProducts/SearchProduct', {  
+        await axios.get('/api/OutdoorProducts/SearchProduct', {  
         params: {  
           keyword: Keyword  
         }  

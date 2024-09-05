@@ -10,7 +10,7 @@
               <div><span>材料：{{ order.outdoorProduct.material}}</span></div>
               <div><span>适用人数：{{ order.outdoorProduct.suitable_users}}</span></div>
               <div><span>品牌：{{ order.outdoorProduct.brand}}</span></div>
-              <div><span>购买数量：{{ order.outdoorProduct.stock_quantity}}</span></div>
+              <div><span>购买数量：{{ order.lease.amount}}</span></div>
               <div class="bottom clearfix">
                 <span class="price">¥{{ order.outdoorProduct.price*order.lease.amount }}</span>
                 <el-button type="text" class="button" @click="goToOrderDetail(order)">查看详情</el-button>

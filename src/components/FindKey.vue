@@ -10,20 +10,33 @@
         ref="formRef"
         style="max-width: 600px;margin-top: 5%;padding-right:5%"
         >
-            <el-form-item label="用户名" prop="user_name">
-            <el-input v-model="findkey.user_name" placeholder="请输入您的用户名"  :prefix-icon="User"/>
-            </el-form-item>
             <el-form-item label="手机号" prop="phone_number">
-            <el-input v-model="findkey.phone_number" placeholder="请输入您的手机号"  :prefix-icon="Iphone"/>
+            <div style="display: flex;width: 100%;">
+            <el-input v-model="findkey.phone_number" placeholder="请输入您的手机号"  :prefix-icon="Iphone" />
+            <el-button v-if="sendDisabled" color="#1D5B5E" @click="sendCode">发送验证码</el-button>
+            <el-button v-else color="#1D5B5E" disabled>
+            <el-countdown
+              format="ss"
+              :value="deadline"
+              @finish="sendDisabled=true"
+            />
+            </el-button>
+            </div>
+            </el-form-item>
+            <el-form-item label="确认验证码" prop="code">
+            <el-input v-model="findkey.code" placeholder="请输入验证码" :prefix-icon="Check"/>
             </el-form-item>
             <el-form-item label="密码" prop="newpassword">
-            <el-input type="password" v-model="findkey.newpassword" placeholder="请输入您的新密码" :prefix-icon="Key"/>
+            <el-input type="password" show-password :disabled="keyDisabled" v-model="findkey.newpassword" placeholder="请输入您的新密码" :prefix-icon="Key"/>
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmpassword">
-            <el-input type="password" v-model="findkey.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
+            <el-input type="password" show-password :disabled="keyDisabled" v-model="findkey.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
             </el-form-item>
         </el-form>
-        <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">登录</el-button>
+        <div style="display: flex;padding-right:10%;">
+        <el-button class="loginbutton" @click="toWelcomePage">取消</el-button>
+        <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">确认</el-button>
+        </div>
     </div>
 </div>
 </template>
@@ -32,14 +45,12 @@
 import router from '../router'
 import axios from '@/axios'
 import { reactive,ref } from 'vue'
-import { User, Key, Iphone } from '@element-plus/icons-vue'
+import { Key, Iphone, Check } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import global from '@/store/global'
-import { saveToSessionStorage } from '@/store/global'
 import CryptoJS from 'crypto-js'
 
 const findkey = reactive({
-    user_name: '',
+    code: '',
     phone_number: '',
     newpassword: '',
     confirmpassword: ''
@@ -47,6 +58,32 @@ const findkey = reactive({
 
 const formRef = ref()
 const loginDisabled = ref(false)
+const sendDisabled = ref(true)
+const keyDisabled = ref(true)
+const deadline = ref(); // 一分钟倒计时
+const phoneRegex = /^1[3-9]\d{9}$/;
+
+const sendCode = async () => {
+  if (phoneRegex.test(findkey.phone_number)) {
+    try {
+      await axios.post('/api/Register/SendVerificationCode',
+        {
+          phonenumber: findkey.phone_number,
+          type: '重置密码'
+      },{
+        params: {
+          phonenumber: findkey.phone_number,
+          type: '重置密码'
+        }
+      },);
+      keyDisabled.value = false;
+      sendDisabled.value = false;
+      deadline.value = Date.now() + 60000; // 重置为一分钟
+    } catch (error) {
+      ElMessage.error(error.message)
+    }
+  }
+}
 
 const validateConfirmPassword = (rule, value, callback) => {
       if (value !== findkey.newpassword) {
@@ -57,8 +94,8 @@ const validateConfirmPassword = (rule, value, callback) => {
     };
 
 const rules = ref({
-    user_name: [
-        { required: true, message: '请输入用户名', trigger: 'blur' }
+    code: [
+        { required: true, message: '请输入验证码', trigger: 'blur' }
     ],
     phone_number: [
     { required: true, message: '请输入您的手机号码',trigger: 'blur' },
@@ -79,20 +116,21 @@ const Login = () => {
     if(valid){
       try {
           const hashedPassword = CryptoJS.SHA256(findkey.newpassword).toString()
-          const response = await axios.post('/api/Users/resetPassword', {
-            user_name: findkey.user_name,
-            phone_number:findkey.phone_number,
-            new_password: hashedPassword
+          await axios.post('/api/Users/fetchPassword', {
+            phonenumber: findkey.phone_number,
+            verificationCode:findkey.code,
+            newPassword: hashedPassword
+          }, {
+            params: {
+              phonenumber: findkey.phone_number,
+              verificationCode:findkey.code,
+              newPassword: hashedPassword
+            }
           });
           ElMessage.success('密码重置成功！');
-          global.Login = true;
-          global.userId = response.data.data.user_id;
-          saveToSessionStorage(true,response.data.data.user_id,true);
-          router.push({ path: '/home' });
-          console.log('登录成功', response)
-        } catch (error) {
+          router.push({ path: '/enter/login' });
+      } catch (error) {
           ElMessage.error(error.response.data.message)
-          console.error('登录失败', error)
         }
       }
     else {
@@ -100,6 +138,10 @@ const Login = () => {
     }
   })
   loginDisabled.value = false
+}
+
+function toWelcomePage() {
+  router.push({path: '/'})
 }
 </script>
 
@@ -126,9 +168,14 @@ const Login = () => {
 }
 
 .loginbutton{
-    margin-left: 32%;
+    margin-left: auto;
+    margin-right: auto;
     width:calc(200vw * 80 / 1920);
     height:calc(120vw * 30 / 1920);
+}
+
+::v-deep .el-input-group__append{
+  color: #1D5B5E;
 }
 
 </style>

@@ -27,7 +27,7 @@
           <div v-if="errors.itemCondition" class="error-message">{{ errors.itemCondition }}</div>
         </el-form-item>
         <el-form-item label="物品价格：" prop="itemPrice" style="font-weight: bold;">
-          <el-input v-model="postForm.itemPrice" placeholder="请输入物品参考价格"/>
+          <el-input type="number" v-model.number="postForm.itemPrice" placeholder="请输入物品参考价格"/>
           <div v-if="errors.itemPrice" class="error-message">{{ errors.itemPrice }}</div>
         </el-form-item>
 
@@ -42,23 +42,26 @@
           </div>
 
           <div class="bottom-section">
-            <el-form-item label="物品图片：" prop="itemImages" style="font-weight: bold;">
-              <el-button type="primary" color="#1D5B5E" @click="triggerUpload">点击添加图片</el-button>
-              <el-upload
-                ref="uploadRef"
-                class="upload-demo"
-                action="#"
-                list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :before-upload="beforeImageUpload"
-                :on-success="handleImageSuccess"
-                :file-list="fileList"
-                :auto-upload="false"
-                @change="handleFileChange"
-              >
+            <el-form-item label="物品图片：" style="font-weight: bold;">
+              <div style="display: flex; flex-direction: column;">
+                <el-button type="primary" color="#1D5B5E" @click="triggerUpload" style="margin-bottom:10px;">点击添加图片</el-button>
+                <el-upload
+                  ref="uploadRef"
+                  class="upload-demo"
+                  action="#"
+                  list-type="picture-card"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :before-upload="beforeImageUpload"
+                  :on-success="handleImageSuccess"
+                  :file-list="fileList"
+                  :auto-upload="false"
+                  @change="handleFileChange"
+                >
                 <i class="el-icon-plus"></i>
-              </el-upload>
+                </el-upload>
+              </div>
+              <div v-if="errors.itemImages" class="error-message">{{ errors.itemImages }}</div>
             </el-form-item>
           </div>
         </div>
@@ -94,7 +97,7 @@
 
 <script>
 
-import axios from 'axios';
+import axios from '@/axios';
 import { ElMessage } from "element-plus";
 import  globalState  from '../store/global'; // 引入 global.js 中的状态
 import { provinceMap } from '@/store/global';
@@ -125,7 +128,8 @@ export default {
           { required: true, message: '请输入物品简介', trigger: 'blur' }
         ],
         itemPrice: [
-          { required: true, message: '请输入物品参考价格', trigger: 'blur' }
+          { required: true, message: '请输入物品参考价格', trigger: 'blur' },
+          { type: 'number', message: '请输入有效的数字', trigger: 'blur' }
         ],
         itemLocation: [
           { required: true, message: '请添加物品位置', trigger: 'blur' }
@@ -157,8 +161,11 @@ export default {
     },
     handleError(error, message) {
       if (error.response) {
-        console.error(`${message}:`, error.response.data);
-        ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        if (error.response.status == 500) {
+          ElMessage.error('帖子内容超过字数限制');
+        } else {
+          ElMessage.error(`${message} - 错误代码: ${error.response.status}`);
+        }
       } else if (error.request) {
         console.error(`${message}: No response received`);
         ElMessage.error(`${message} - 没有收到响应`);
@@ -168,9 +175,11 @@ export default {
       }
     },
     async submitForm() {
+      this.$refs.postFormRef.validate(async (valid) => {
+        if (valid) {
         const postData = {
           author_id: globalState.userId,
-          title: `${this.postForm.itemName} - 十分好用，安利`,
+          title: this.postForm.itemName,
           post_time: new Date().toISOString(),
           post_position: this.postForm.itemLocation,
           post_kind: 1,
@@ -181,7 +190,7 @@ export default {
           price: parseFloat(this.postForm.itemPrice),
         };
         console.log('帖子上传:', postData);
-      axios.post('https://localhost:7218/api/Posts/PushLdle', postData,{headers: {
+      axios.post('/api/Posts/PushLdle', postData,{headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/plain'
       }
@@ -199,24 +208,15 @@ export default {
         .catch(error => {
           console.error('帖子出错:', error);
         });
-    },
-    AddContent()
-    {
-       axios.put(`https://localhost:7218/api/Posts/${this.postNew.post_id}`, this.postNew,{headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/plain'
+      }
+      else{
+        ElMessage.error('表单验证失败');
+          return false;
       }
     })
-    .then(response => {
-          console.log('帖子上传成功:', response.data);
-          this.handleClose();
-          this.PostSuccess = true;
-        })
-        .catch(error => {
-          console.error('帖子出错:', error);
-        });
-    },
+      },
     resetForm() {
+      this.$refs.postFormRef.resetFields(); // 重置表单验证状态和字段值
       this.postForm.itemName = '';
       this.postForm.itemDescription = '';
       this.postForm.itemPrice = '';
@@ -262,15 +262,12 @@ export default {
     },
     handleImageSuccess(response,file) {
       if (response && response.message === "success") {
-    const url = URL.createObjectURL(file.raw);
-    this.postForm.itemImages.push(url);
-    ElMessage.success('图片上传成功');
-    // 在这里调用上传图片接口
-    this.uploadImage();  // 调用上传图片的方法
-  } else {
-    console.log('上传图片失败，服务器响应:', response);
-    ElMessage.error('上传图片失败');
-  }
+        const url = URL.createObjectURL(file.raw);
+        this.postForm.itemImages.push(url);
+        ElMessage.success('图片上传成功');
+      } else {
+        console.log('上传图片失败，服务器响应:', response);
+      }
     },
     uploadImage() {
 
@@ -284,18 +281,20 @@ export default {
   });
 
   // 发送 POST 请求
-  axios.post(`https://localhost:7218/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
+  axios.post(`/api/Posts/uploadpost_pics?post_id=${this.postId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   })
   .then(response => {
     console.log('图片上传成功:', response.data);
-    this.AddContent();  // 上传图片成功后更新帖子内容
     ElMessage.success('所有图片上传成功');
+    this.handleClose();
+    this.PostSuccess = true;
   })
-  .catch(error => {
-    this.handleError(error, '上传图片失败');
+    .catch(error => {
+    console.log('上传图片失败，服务器响应:', error);
+    ElMessage.error('请至少上传一张图片!');
   });
     },
     handleFileChange(file, fileList) {
@@ -313,7 +312,8 @@ export default {
       this.$router.push({ path: `/home/forum/post/lease/${this.postId}` });
     }
   }
-};
+}
+;
 </script>
 
 <style scoped>

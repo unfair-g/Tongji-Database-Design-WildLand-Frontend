@@ -1,5 +1,6 @@
 <template>
   <el-card class="post-container">
+    <el-watermark :font="font" :content="waitforcensor">
     <div v-if="post">
       <div class="post-header">
         <img :src="post.portrait" alt="avatar" class="avatar" @click="goToUserSpace(post.author_id)">
@@ -10,7 +11,7 @@
           </div>
           <div v-if="isPostOwner" class="post-visible-states">
             <el-select
-              v-model="value"
+              v-model="post.exhibit_status"
               placeholder="修改帖子可见状态"
               size="large"
               style="width: 240px"
@@ -298,11 +299,18 @@
       
     </div>
     
+  </el-watermark>
   </el-card>
 </template>
 <script setup>
 import { ref } from 'vue'
 import { ClickOutside as vClickOutside } from 'element-plus'
+import { reactive } from 'vue'
+
+const font = reactive({
+  color: 'rgba(237, 28, 36, .35)',
+  fontSize: 25
+})
 
 const buttonRef = ref(null)
 const popoverRef = ref(null)
@@ -335,7 +343,6 @@ export default {
       currentImage: '',
       currentIndex: 0,
       isStarSolid: true,
-      value: '',
       comments: [],//存储所有评论
       signups: [],
       isReportPostWindowVisible:false,//举报弹窗显示
@@ -347,7 +354,7 @@ export default {
       post: null,
       BeSilenced: (state.mute_status===0?true:false), // 根据state.mute_status来确定
       isAlertVisible: false,
-      
+      waitforcensor:''
     };
   },
   watch: {
@@ -410,7 +417,8 @@ export default {
           // 分别处理两个请求的响应
           this.post = postResponse.data;
           this.value = this.post.exhibit_status;
-  
+          if (this.post.censor_status == '2')
+            this.waitforcensor="待审核"
           console.log('帖子数据获取成功:', this.post, this.comments);
         } catch (error) {
           console.error('Error fetching sharepost data:', error);
@@ -422,7 +430,8 @@ export default {
           const postResponse = await axios.get(`/api/RecruitmentPosts/GetPostDetail/${this.postID}/${user_id}`);
           this.post = postResponse.data;
           this.value = this.post.exhibit_status;
-
+          if (this.post.censor_status == '2')
+            this.waitforcensor="待审核"
           console.log('帖子数据获取成功:', this.post);
         } catch (error) {
           console.error('Error fetching recruitpost data:', error);
@@ -731,7 +740,6 @@ export default {
   margin-top:20px ;
   display: flex;
   align-items:center;
-  gap:150px;
   justify-content: space-between;
   width: 100%;
 }

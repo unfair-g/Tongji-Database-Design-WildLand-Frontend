@@ -14,24 +14,34 @@ const routes = [
         meta: { requiresAuth: true },
         children: [
             {
-                path: 'personalinformation',
-                name: 'PersonalInformation',
-                component: () => import('../views/PersonalInformation.vue')
-            },
-            {
                 path: 'OutdoorGear',
                 name: 'OutdoorGear',
                 component: () => import('../views/OutdoorGear.vue'),
             },
             {
-                path: 'admin_product_edit/:productId',
+                path: 'AdminCamp',
+                name: 'AdminCamp',
+                component: () => import('../views/AdminCamp.vue')
+            },
+            {
+                path: 'AddCamp',
+                name: 'AddCamp',
+                component: () => import('../views/AddCamp.vue')
+            },
+            {
+                path: 'AdminCampEdit/:campID',
+                component: () => import('../views/AdminCampEdit.vue'),
+                props: true
+            },
+            {
+                path: 'AdminProductEdit/:productId',
                 component: () => import('../views/AdminProductEdit.vue'),
                 props: true
             },
             {
-                path: 'AdminCamp',
-                name: 'AdminCamp',
-                component: () => import('../views/AdminCamp.vue')
+                path: 'AdminProductAdd/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
             },
             {
                 path: 'GeekAudit',
@@ -64,9 +74,19 @@ const routes = [
                 component: () => import('../views/CommentReportDetail.vue')
             },
             {
-                path: 'flashadd',
-                name: 'FlashAdd',
-                component: () => import('../views/FlashAdd.vue')
+                path: 'flashnew',
+                name: 'FlashNew',
+                component: () => import('../views/FlashNew.vue')
+            },
+            {
+                path: "flashaudit/:flashID",
+                component: () => import('../views/FlashAdd.vue'),
+                props: true
+            },
+            {
+                path: "flashaudit/:flashID",
+                component: () => import('../views/FlashAdd.vue'),
+                props: true
             },
             {
                 path: 'flashaudit',
@@ -82,7 +102,22 @@ const routes = [
                 path: 'tagaudit',
                 name: 'TagAudit',
                 component: () => import('../views/TagAudit.vue')
-            }
+            },
+            {
+                path: 'tagaudit/:tagID',
+                component: () => import('../views/TagChange.vue'),
+                props: true
+            },
+            {
+                path: 'CampOrders',
+                name: 'CampOrders',
+                component: () => import('../views/CampOrders.vue'),
+            },
+            {
+                path: 'OutdoorGearOrders',
+                name: 'OutdoorGearOrders',
+                component: () => import('../views/OutdoorGearOrders.vue'),
+            },
         ]
     },
     {
@@ -101,11 +136,15 @@ const routes = [
                 props: true
             },
             {
-                path:'OutdoorGear/AddProduct',
-                name:'AddProduct',
+                path: 'OutdoorGear/AddProduct',
+                name: 'AddProduct',
                 component: () => import('../views/AddOutProduct.vue')
             },
-            
+            {
+                path: '/home/product/edit/:productId',
+                component: () => import('../views/AdminProductEdit.vue'),
+                props: true
+            },
             {
                 path: "forum",
                 component: () => import('../views/ForumView.vue'),
@@ -166,11 +205,6 @@ const routes = [
                 props: true
             },
             {
-                path: 'AdminCampEdit/:campID',
-                component: () => import('../views/AdminCampEdit.vue'),
-                props: true
-            },
-            {
                 path: "campbooking/:campID",
                 component: () => import('../views/CampBookingView.vue'),
                 props: true
@@ -183,7 +217,7 @@ const routes = [
             {
                 path: "product/:productID",
                 component: () => import('../views/ProductDetail.vue'),
-                props: true,
+                props: true
             },
             {
                 path: "flash/:flashID",
@@ -238,7 +272,7 @@ const routes = [
                 path: `searchProduct`,
                 component: () => import('../views/SearchProduct.vue'),
                 props: true
-            },
+            }
         ]
     },
     {

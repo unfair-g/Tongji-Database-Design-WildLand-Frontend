@@ -17,10 +17,12 @@
       <hr />
       <div class="post-detail-content">
         <el-form-item label="资讯标签: " prop="name" class="post-title">
-            <el-input
-              v-model="flash.tagName"
-              style="width: 240px"
-            />
+          <el-radio-group v-model="radio">
+            <el-radio 
+            v-for="(tag, index) in tag"  
+            :key="index"  
+            :value="tag.tag_id">{{tag.tag_name}}</el-radio>
+          </el-radio-group>
         </el-form-item>
         <div class="post-info">
           <el-form-item label="资讯标题: " prop="region" class="post-title">
@@ -53,22 +55,6 @@
               <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
             </el-upload>
           </el-form-item>
-          
-          <el-form-item label="营地地图" required>
-            <el-upload
-              action=""
-              list-type="picture"
-              :file-list="mapPicList"
-              :on-change="handleMapPicChange"
-              :on-remove="deleteMapImage"
-              :limit="1"
-              :auto-upload="false"
-            >
-              <el-button size="small" type="primary" class="upgrade-btn">选择营地地图</el-button>
-              <!-- eslint-disable-next-line -->
-              <div slot="tip" class="el-upload__tip">仅支持一张图片上传</div>
-            </el-upload>
-          </el-form-item>
 
           <el-form-item label="正文图片" required>
             <el-upload
@@ -86,21 +72,6 @@
             </el-upload>
           </el-form-item>
 
-          <el-form-item label="展示图片" required>
-            <el-upload
-              action=""
-              list-type="picture"
-              :file-list="displayPicList"
-              :on-change="handleDisplayPicChange"
-              :on-remove="deleteDisplayImage"
-              :auto-upload="false"
-              multiple
-            >
-              <el-button size="small" type="primary" class="upgrade-btn">选择展示图片</el-button>
-              <!-- eslint-disable-next-line -->
-              <div slot="tip" class="el-upload__tip">支持多张图片上传</div>
-            </el-upload>
-          </el-form-item>
           </div>
         </div>
         <el-button class="confirm-button" @click="updateFlash">确认</el-button>  
@@ -114,6 +85,7 @@ import { Close } from '@element-plus/icons-vue'
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
+import global from '@/store/global'
 
 export default {
   props: ['flashID'],
@@ -125,7 +97,7 @@ export default {
         flash_title: '填写标题',  
         flash_content: '填写内容',  
         flash_id: 111110,
-        user_id: 123,
+        user_id:  global.userId,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
         tagId: 123,
@@ -136,7 +108,8 @@ export default {
       coverPicList: [],
       mapPicList: [],
       introPicList: [],
-      displayPicList: []
+      displayPicList: [],
+      radio : ref()
     };
   },
   components: {
@@ -211,23 +184,22 @@ export default {
     updateFlash() {   
       // 确保 flash 对象中有需要更新的数据  
       console.log(this.flash);
-      console.log(this.displayPicList[0].raw)
-      console.log(this.coverPicList[0].raw)
       if (!this.flash.flash_title || !this.flash.flash_content) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
       let formData = new FormData();  
-      formData.append('coverFile', this.coverPicList[0].raw, this.coverPicList[0].raw.name);  
-      formData.append('campFile', this.mapPicList[0].raw, this.mapPicList[0].raw.name);  
-      formData.append('contextFile', this.introPicList[0].raw, this.introPicList[0].raw.name);  
-      console.log(this.displayPicList)
-      this.displayPicList.forEach(file => {  
-          formData.append('displayFiles[]', file.raw, file.raw.name);  
-      });  
-      formData.append('displayFiles', this.displayPicList[0].raw, this.displayPicList[0].raw.name);  
+      formData.append('displayFiles', this.coverPicList[0].raw, this.coverPicList[0].raw.name);  
+      formData.append('displayFiles', this.introPicList[0].raw, this.introPicList[0].raw.name);  
+      console.log(this.coverPicList[0].raw)
+      console.log(this.introPicList[0].raw) 
+      console.log(formData) 
       // 使用Axios发送FormData  
-      axios.post(`https://localhost:7218/api/Flashes/PostFlashAndTag?UserId=123&FlashTitle=%E8%8D%89%E5%9D%AA&FlashContent=%E8%8D%89%E5%9D%AA%E5%92%8C%E8%9D%B4%E8%9D%B6&FlashImage=test&TagId=1&TagName=%E9%92%93%E9%B1%BC`, formData, {  
+      axios.get(`/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
+    .then(response => {  
+      // 更新 flash 对象中的 tagName  
+      this.flash.tagName = response.data;  
+      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${global.userId}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=1&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  
@@ -238,36 +210,32 @@ export default {
       .catch(error => {  
           console.error('Error uploading files:', error);  
       });
+    })  
     },  
     handleCoverPicChange(file, fileList) {
       this.coverPicList = fileList;
       console.log(fileList)
       console.log(this.coverPicList)
     },
-    handleMapPicChange(file, fileList) {
-      this.mapPicList = fileList;
-    },
     handleIntroPicChange(file, fileList) {
       this.introPicList = fileList;
-    },
-    handleDisplayPicChange(file, fileList) {
-      this.displayPicList = fileList;
-      
     },
     // 处理文件删除
     deleteCoverImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
-    deleteMapImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
-    },
     deleteIntroImage(file, fileList) {
         this.deleteImage(file.url, fileList);
     },
-    deleteDisplayImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
+    fetchTags() {
+      axios.get(`/api/FlashTags`)
+        .then(response => {
+          this.tag = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching city names:', error);
+        });
     },
-
     // 更新图片列表以反映删除的图片
     updateImageList(fileList, imageUrl) {
         const index = fileList.findIndex(item => item.url === imageUrl);
@@ -277,6 +245,10 @@ export default {
     },
     
   }  ,
+  created() {
+    // 在组件创建时，从查询参数中获取flashId、title、content和tagName  ;
+    this.fetchTags();
+  }
 }
 </script>
 

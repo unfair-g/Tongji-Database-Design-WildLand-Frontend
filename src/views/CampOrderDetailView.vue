@@ -31,9 +31,36 @@
       <div style="text-align:center;"><p>{{ camporder.campsite_numbers && camporder.campsite_numbers.length > 0 ? camporder.campsite_numbers.join(', ') : '暂无数据' }}</p></div>
     </div>
     <div class="order_3">
-      <el-button class="pay">申请退款</el-button>
+      <el-button v-if="camporder.order_status==1" class="pay" @click="Refund">申请退款</el-button>
+      <el-button v-else-if="camporder.order_status==3" class="pay" @click="cancle=true">取消退款申请</el-button>
+      <el-button v-else-if="camporder.order_status==4" class="pay" disabled>退款成功</el-button>
+      <el-button v-else-if="camporder.order_status==5" class="pay" disabled>入住中</el-button>
+      <el-button v-else-if="camporder.order_status==6" class="pay" disabled>订单已完成</el-button>
     </div>
   </div>
+
+  <el-dialog
+    v-model="dialogVisible"
+    title="退款申请成功"
+    width="500"
+    center
+    align-center
+  >
+  <div style="text-align: center;color: red;font-size: 20px;">详情请添加管理员说明</div>
+  <img :src="require('../assets/QRcode.jpg')" style="width:450px;height: auto;"/>
+  </el-dialog>
+
+  <el-dialog
+    v-model="cancle"
+    width="500"
+    center
+    align-center
+  >
+  <div style="text-align: center;font-size: 20px;">确认取消退款吗？</div>
+  <template #footer>
+      <el-button color="#1D5B5E" @click="CancleRefund">确认</el-button>
+  </template>
+  </el-dialog>
 </template>
 
 <script>
@@ -51,6 +78,8 @@ export default {
   data() {
     return {
       camporder: {}, // 保存订单详情数据
+      dialogVisible: false,
+      cancle:false
     };
   },
   created() {
@@ -71,6 +100,24 @@ export default {
     },
     formatDate(date) {
       return dayjs(date).format('YYYY年MM月DD日');
+    },
+    async Refund() {
+      try {
+        await axios.put(`/api/ReserveOrders/Refund/${this.id}`)
+        this.dialogVisible = true
+        this.camporder.order_status=3
+      } catch (error) {
+        console.error('退款失败', error);
+      }
+    },
+    async CancleRefund() {
+      try {
+        await axios.put(`/api/ReserveOrders/CancelRefund/${this.id}`)
+        this.cancle = false
+        this.camporder.order_status=1
+      } catch (error) {
+        console.error('取消退款失败', error);
+      }
     }
   }
 };
@@ -89,6 +136,7 @@ export default {
       border: 1px solid #ddd;
       background-color: #fff;
       padding:70px;
+      padding-bottom: 10px;
     }
     
     .product-info-header {
@@ -152,6 +200,7 @@ export default {
       .pay {
       background-size: 60px;
       background-color: #3085887d;
+      margin-top: 10px;
       font-size:x-large;
       color: #0c0c0c;
     }
