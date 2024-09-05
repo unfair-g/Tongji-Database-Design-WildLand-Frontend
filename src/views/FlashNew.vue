@@ -85,6 +85,7 @@ import { Close } from '@element-plus/icons-vue'
 import axios from '@/axios'; // 引入配置好的axios实例
 import { ref} from 'vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
+import global from '@/store/global'
 
 export default {
   props: ['flashID'],
@@ -198,7 +199,7 @@ export default {
     .then(response => {  
       // 更新 flash 对象中的 tagName  
       this.flash.tagName = response.data;  
-      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${this.flash.user_id}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=1&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
+      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${global.userId}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=1&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  

@@ -92,7 +92,8 @@ export default {
           .then(() => {  
             // 删除成功的处理逻辑，例如提示用户或刷新页面  
             alert('Flash删除成功！');  
-            // 这里可以添加其他逻辑，比如从前端列表中移除该Flash  
+            // 这里可以添加其他逻辑，比如从前端列表中移除该Flash 
+            window.location.reload(); 
           })  
           .catch(error => {  
             // 删除失败的处理逻辑  
