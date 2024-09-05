@@ -16,15 +16,18 @@
       <el-input v-model="user.user_name" placeholder="请输入您的用户名"  :prefix-icon="User"/>
     </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="user.password" placeholder="请输入密码" :prefix-icon="Key"/>
+      <el-input type="password" show-password v-model="user.password" placeholder="请输入密码" :prefix-icon="Key"/>
     </el-form-item>
   </el-form>
+  <div style="display: flex;padding-right: 10%">
+  <el-button class="loginbutton" @click="toWelcomePage">取消</el-button>
   <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">登录</el-button>
-  <div class="others">
-      <router-link to="/enter/findkey" style="color:#888888;text-decoration: none">忘记密码</router-link>
-      <router-link to="/enter/enrollment" style="margin-left:auto;margin-right: 5%;color:black;text-decoration: none">注册账号</router-link>
   </div>
-    </div>
+  <div class="others">
+    <router-link to="/enter/findkey" style="color:#888888;text-decoration: none">忘记密码</router-link>
+    <router-link to="/enter/enrollment" style="margin-left:auto;margin-right: 5%;color:black;text-decoration: none">注册账号</router-link>
+  </div>
+</div>
 </div>
 </template>
 
@@ -150,6 +153,10 @@ const openNotification = (end_time) => {
   })
 }
 
+function toWelcomePage() {
+  router.push({path: '/'})
+}
+
  onMounted(() => {
    if (global.Login) {
      global.Login = false;
@@ -193,7 +200,8 @@ const openNotification = (end_time) => {
 }
 
 .loginbutton{
-    margin-left: 32%;
+    margin-left: auto;
+    margin-right: auto;
     width:calc(200vw * 80 / 1920);
     height:calc(120vw * 30 / 1920);
 }

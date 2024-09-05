@@ -21,7 +21,7 @@
       >  
         <div class="post-detail-content">  
           <div class="post-info">  
-            <div class="post-title">标签标题:  
+            <div class="post-title">标签ID:  
               <el-input  
                 v-model="currentTag.tag_id"  
                 style="width: 240px"  
@@ -73,6 +73,7 @@ export default {
         this.$message.success('标签更新成功！');  
         this.dialogVisible = false; // 关闭对话框  
         // 可能还需要重新获取或更新 tags 列表  
+        window.location.reload();
       })  
       .catch(error => {  
         console.error('Error updating flash:', error);  
@@ -88,6 +89,7 @@ export default {
             // 删除成功的处理逻辑，例如提示用户或刷新页面  
             alert('tag删除成功！');  
             // 这里可以添加其他逻辑，比如从前端列表中移除该Flash  
+            window.location.reload();
           })  
           .catch(error => {  
             // 删除失败的处理逻辑  

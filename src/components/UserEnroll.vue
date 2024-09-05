@@ -42,10 +42,10 @@
         <el-input v-model="newuser.code" placeholder="请输入验证码" :prefix-icon="Check"/>
       </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input :disabled="keyDisabled" type="password" v-model="newuser.password" placeholder="请输入密码" :prefix-icon="Key"/>
+      <el-input :disabled="keyDisabled" type="password" show-password v-model="newuser.password" placeholder="请输入密码" :prefix-icon="Key"/>
     </el-form-item>
      <el-form-item label="确认密码" prop="confirmpassword">
-      <el-input :disabled="keyDisabled" type="password" v-model="newuser.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
+      <el-input :disabled="keyDisabled" type="password" show-password v-model="newuser.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
     </el-form-item>
      <el-form-item label="邮箱" prop="email">
       <el-input :disabled="keyDisabled" v-model="newuser.email" placeholder="请输入您的邮箱" :prefix-icon="Message"/>

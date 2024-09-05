@@ -27,13 +27,16 @@
             <el-input v-model="findkey.code" placeholder="请输入验证码" :prefix-icon="Check"/>
             </el-form-item>
             <el-form-item label="密码" prop="newpassword">
-            <el-input type="password" :disabled="keyDisabled" v-model="findkey.newpassword" placeholder="请输入您的新密码" :prefix-icon="Key"/>
+            <el-input type="password" show-password :disabled="keyDisabled" v-model="findkey.newpassword" placeholder="请输入您的新密码" :prefix-icon="Key"/>
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmpassword">
-            <el-input type="password" :disabled="keyDisabled" v-model="findkey.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
+            <el-input type="password" show-password :disabled="keyDisabled" v-model="findkey.confirmpassword" placeholder="请确认密码" :prefix-icon="Key"/>
             </el-form-item>
         </el-form>
+        <div style="display: flex;padding-right:10%;">
+        <el-button class="loginbutton" @click="toWelcomePage">取消</el-button>
         <el-button v-bind:disabled="loginDisabled" class="loginbutton" type="primary" color="#1D5B5E" @click="Login">确认</el-button>
+        </div>
     </div>
 </div>
 </template>
@@ -136,6 +139,10 @@ const Login = () => {
   })
   loginDisabled.value = false
 }
+
+function toWelcomePage() {
+  router.push({path: '/'})
+}
 </script>
 
 <style scoped>
@@ -161,7 +168,8 @@ const Login = () => {
 }
 
 .loginbutton{
-    margin-left: 32%;
+    margin-left: auto;
+    margin-right: auto;
     width:calc(200vw * 80 / 1920);
     height:calc(120vw * 30 / 1920);
 }
