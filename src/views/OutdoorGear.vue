@@ -1,7 +1,7 @@
 <template>
   <div class="table-wrapper">
     <el-table :data="products" style="width: 100%">
-      <el-table-column prop="product_name" label="名称" width="300" align="center" />
+      <el-table-column prop="product_name" label="名称" width="auto" align="center" />
       <el-table-column prop="price" label="价格" width="200" align="center">
         <template #default="scope">
           <!-- 确保“新增”这一行没有显示价格 -->
@@ -9,7 +9,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="stock_quantity" label="余量" width="200" align="center" />
-      <el-table-column label="操作台" width="300" align="center">
+      <el-table-column label="操作台" width="500" align="center">
         <template #default="scope">
           <el-button v-if="scope.row.isNewRow" type="primary" color="#1D5B5E" @click="handleUpload" class="add-button">
             新增
@@ -140,7 +140,7 @@ export default {
 <style scoped>
 .table-wrapper {
   width: 85%;
-  min-width: 1200px;
+  min-width: 1000px;
   margin: 0 auto;
   overflow-x: auto;
   display: flex; /* 使用flexbox使内容居中 */

@@ -94,19 +94,9 @@ const routes = [
                 component: () => import('../views/FlashAudit.vue')
             },
             {
-                path: 'tagaudit/tagchange',
-                name: 'TagChange',
-                component: () => import('../views/TagChange.vue')
-            },
-            {
                 path: 'tagaudit',
                 name: 'TagAudit',
                 component: () => import('../views/TagAudit.vue')
-            },
-            {
-                path: 'tagaudit/:tagID',
-                component: () => import('../views/TagChange.vue'),
-                props: true
             },
             {
                 path: 'CampOrders',

@@ -18,7 +18,7 @@
       style="margin-top: 20px; margin-bottom: 20px;"
       :rows="10"
       type="textarea"
-      placeholder="Please input"
+      placeholder="输入新tag"
     />
     <template #footer>
       <div class="dialog-footer">
@@ -39,7 +39,7 @@
     return {
       tag:{
         tag_id:37,
-        tag_name:'输入新tag'
+        tag_name:''
       }
     };
   },
@@ -47,12 +47,10 @@
     tag
 },
 setup() {
-  const dialogTableVisible = ref(false)
   const dialogFormVisible = ref(false)
   const formLabelWidth = '140px'
 
   return{
-    dialogTableVisible,
     dialogFormVisible,
     formLabelWidth,
   }
@@ -62,11 +60,15 @@ methods: {
       // 发送 PUT 请求来更新 Flash  
       axios.post(`/api/FlashTags`, {  
           tag_name: this.tag.tag_name
-        // 如果需要更新其他字段，也可以在这里添加  
+        // 如果需要更新其他字段，也可以在这里添加
+      })
+      .then(() => {
+        this.dialogFormVisible = false
+        window.location.reload();
       })  
       .catch(error => {  
         console.error('Error updating flash:', error);  
-        this.$message.error('资讯更新失败，请重试！');  
+        this.$message.error('请输入标签内容！');  
       });  
     },   
   }  ,

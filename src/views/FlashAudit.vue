@@ -5,11 +5,10 @@
             @click="addnewflash()">
             <More />添加新资讯
           </el-button>
-    <el-table :data="filteredProducts" style="width: 100%">
-      <el-table-column prop="flashTitle" label="资讯标题" width="300" align="center" />
-      <el-table-column prop="tagName" label="资讯标签" width="200" align="center" />
-      <el-table-column prop="flashDate" label="发表时间" width="200" align="center" />
-      <el-table-column label="操作台" width="300" align="center">
+    <el-table :data="filteredProducts" style="width:100%">
+      <el-table-column prop="flashTitle" label="资讯标题" width="auto" align="center" />
+      <el-table-column prop="tagName" label="资讯标签" width="300" align="center" />
+      <el-table-column label="操作台" width="500" align="center">
         <template #default="scope">
           <el-button 
             type="primary" 
@@ -117,9 +116,9 @@ export default {
 
 <style scoped>
 .table-wrapper {
-  width: 85%;
-  min-width: 1200px;
-  margin: 0 auto;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
   overflow-x: auto;
 }
 .el-button {

@@ -6,7 +6,7 @@
           :model="flash"
           :rules="rules"
           :class="'post-detail-box'"
-          ref="UserformRef"
+          ref="formRef"
           >
       <div class="post-detail-header">
         资讯添加
@@ -16,8 +16,8 @@
       </div>
       <hr />
       <div class="post-detail-content">
-        <el-form-item label="资讯标签: " prop="name" class="post-title">
-          <el-radio-group v-model="radio">
+        <el-form-item label="资讯标签: " prop="radio" class="post-title">
+          <el-radio-group v-model="flash.radio">
             <el-radio 
             v-for="(tag, index) in tag"  
             :key="index"  
@@ -25,14 +25,16 @@
           </el-radio-group>
         </el-form-item>
         <div class="post-info">
-          <el-form-item label="资讯标题: " prop="region" class="post-title">
+          <el-form-item label="资讯标题: " prop="flash_title" class="post-title">
             <el-input
-              v-model="flash.flash_title"
+            placeholder="请输入资讯标题"
+            v-model="flash.flash_title"
               style="width: 240px"
             />
           </el-form-item>
-          <el-form-item label="资讯内容: " prop="count" class="post-body">
+          <el-form-item label="资讯内容: " prop="flash_content" class="post-body">
             <el-input
+              placeholder="请输入资讯内容"
               v-model="flash.flash_content"
               style="width: 1000px"
               :rows="10"
@@ -46,7 +48,6 @@
               list-type="picture"
               :file-list="coverPicList"
               :on-change="handleCoverPicChange"
-              :on-remove="deleteCoverImage"
               :limit="1"
               :auto-upload="false"
             >
@@ -62,7 +63,6 @@
               list-type="picture"
               :file-list="introPicList"
               :on-change="handleIntroPicChange"
-              :on-remove="deleteIntroImage"
               :limit="1"
               :auto-upload="false"
             >
@@ -83,10 +83,9 @@
 <script>
 import { Close } from '@element-plus/icons-vue'
 import axios from '@/axios'; // 引入配置好的axios实例
-import { ref} from 'vue'
 import { ElMessage } from 'element-plus' // 导入 ElMessage
 import global from '@/store/global'
-
+import { ref } from 'vue'
 export default {
   props: ['flashID'],
   data() {
@@ -94,14 +93,14 @@ export default {
       flash: {
         collection_number:  0,
         views_number:  0,
-        flash_title: '填写标题',  
-        flash_content: '填写内容',  
-        flash_id: 111110,
+        flash_title: '',  
+        flash_content: '',  
         user_id:  global.userId,
         flash_date: '2024-08-18T06:54:43.744Z',
         flash_image: 'string',
         tagId: 123,
-        tagName: '营地'
+        tagName: '营地',
+        radio : ref()
       },
       tag:[],
       currentDateTime : ref(new Date().toLocaleString()),
@@ -109,7 +108,6 @@ export default {
       mapPicList: [],
       introPicList: [],
       displayPicList: [],
-      radio : ref()
     };
   },
   components: {
@@ -117,63 +115,26 @@ export default {
   },
   setup() {
     const rules = ref({
-      name: [
-        { required: true, message: 'Please input Activity name', trigger: 'blur' },
+      radio: [
+        { required: true, message: '请选择资讯标签', trigger: 'change' },
       ],
-      region: [
+      flash_title: [
         {
           required: true,
-          message: 'Please select Activity zone',
+          message: '请输入资讯标题',
           trigger: 'blur',
         },
       ],
-      count: [
+      flash_content: [
         {
           required: true,
-          message: 'Please select Activity count',
+          message: '请输入资讯内容',
           trigger: 'blur',
         },
       ],
     })
 
-    
-    const imageUrl = ref('')
-    const avatarSrc = ref('') // 用于存储头像 URL
-
-    const beforeAvatarUpload = (file) => {
-      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPGorPNG) {
-        ElMessage.error('上传头像图片只能是 JPG 或 PNG 格式!')
-        return false
-      }
-      if (!isLt2M) {
-        ElMessage.error('上传头像图片大小不能超过 2MB!')
-        return false
-      }
-      
-      const formData = new FormData();
-      formData.append('file', file);
-      ElMessage.success('头像上传成功')
-      .catch(error => {
-        ElMessage.error(error.message)
-      });
-
-      return false;
-    }
-
-    const handleFileChange = (file) => {
-      imageUrl.value = URL.createObjectURL(file.raw)
-      avatarSrc.value = URL.createObjectURL(file.raw)
-    }
-
     return {
-      avatarSrc,
-      beforeAvatarUpload,
-      handleFileChange,
-      ElMessage,
-      imageUrl,
       rules
     }
   },
@@ -184,33 +145,50 @@ export default {
     updateFlash() {   
       // 确保 flash 对象中有需要更新的数据  
       console.log(this.flash);
-      if (!this.flash.flash_title || !this.flash.flash_content) {  
+       this.$refs.formRef.validate((valid) => {  
+        if (valid) {  
+        if (this.coverPicList.length === 0) {  
+            ElMessage.error('请上传封面图片！');  
+            return;  
+          }  
+          if (this.introPicList.length === 0) {  
+            ElMessage.error('请上传正文图片！');  
+            return;  
+          }  
+        if (!this.flash.flash_title || !this.flash.flash_content) {  
         this.$message.error('缺少必要的更新信息');  
         return;  
       }  
       let formData = new FormData();  
       formData.append('displayFiles', this.coverPicList[0].raw, this.coverPicList[0].raw.name);  
       formData.append('displayFiles', this.introPicList[0].raw, this.introPicList[0].raw.name);  
-      console.log(this.coverPicList[0].raw)
-      console.log(this.introPicList[0].raw) 
-      console.log(formData) 
       // 使用Axios发送FormData  
-      axios.get(`/api/FlashTags/GetTagNameById?tag_id=${this.radio}`)  
+      axios.get(`/api/FlashTags/GetTagNameById?tag_id=${this.flash.radio}`)  
     .then(response => {  
       // 更新 flash 对象中的 tagName  
       this.flash.tagName = response.data;  
-      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${global.userId}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=1&TagId=${this.radio}&TagName=${this.flash.tagName}`, formData, {  
+      axios.post(`/api/Flashes/PostFlashAndTag?UserId=${global.userId}&FlashTitle=${this.flash.flash_title}&FlashContent=${this.flash.flash_content}&FlashImage=1&TagId=${this.flash.radio}&TagName=${this.flash.tagName}`, formData, {  
           headers: {  
               'Content-Type': 'multipart/form-data'  
           }  
       })  
-      .then(response => {  
+        .then(response => {  
+        ElMessage.success('成功添加！')
           console.log(response.data);  
+          this.$router.push({ path: `/administrator/flashaudit` })  
       })  
-      .catch(error => {  
+        .catch(error => {
+          ElMessage.error(error.message)  
           console.error('Error uploading files:', error);  
       });
     })  
+        } else {  
+          console.log('error submit!!');  
+          // 注意：这里的 return false 不会阻止表单的提交，  
+          // 因为 validate 的回调是在异步或稍后执行的  
+          // 如果你需要阻止表单提交，你应该在表单的 @submit 事件处理程序中处理  
+        }  
+      });  
     },  
     handleCoverPicChange(file, fileList) {
       this.coverPicList = fileList;
@@ -219,13 +197,10 @@ export default {
     },
     handleIntroPicChange(file, fileList) {
       this.introPicList = fileList;
-    },
-    // 处理文件删除
-    deleteCoverImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
-    },
-    deleteIntroImage(file, fileList) {
-        this.deleteImage(file.url, fileList);
+      if (this.introPicList[0].raw.name == this.coverPicList[0].raw.name) {
+        ElMessage.error('正文图片需与封面图片不一致！')
+        this.introPicList.pop()
+      }
     },
     fetchTags() {
       axios.get(`/api/FlashTags`)
@@ -253,12 +228,6 @@ export default {
 </script>
 
 <style scoped>
-.avatar-uploader .avatar {
-  width: 120px;
-  height: 120px;
-  display:inline-block;
-}
-
 .checkbox-group-with-images {  
   display: flex; /* 使用Flexbox布局 */  
   flex-wrap: wrap; /* 如果需要，允许换行（但在这个场景下可能不需要） */  
