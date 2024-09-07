@@ -27,18 +27,18 @@
       <span class="title">| 筛选预定的营地订单</span>
       <div class="short-divider"></div>
       <div class="filter-container">
-        <el-select v-model="selectedCampOrder" placeholder="请选择营地名称——预约时间" @change="filterCampOrders">
+        <el-select v-model="selectedCampOrderId" placeholder="请选择营地名称——预约时间" @change="filterCampOrders">
           <el-option
             v-for="order in campOrders"
-            :key="order.order_id"
+            :key="order.orderId"
             :label="`${order.campgroundName} —— ${formatDate(order.reservedStartTime)}至${formatDate(order.reservedEndTime)}`"
-            :value="order">
+            :value="order.orderId">
           </el-option>
         </el-select>
 
       </div>
       <div v-if="filteredCampOrders.length > 0" class="camp-orders">
-        <div v-for="order in filteredCampOrders" :key="order.order_id" class="camp-order">
+        <div v-for="order in filteredCampOrders" :key="order.orderId" class="camp-order">
           <p>营地名称: {{ order.campgroundName }}</p>
           <p>预定时间: {{ formatDate(order.reservedStartTime) }} 至 {{ formatDate(order.reservedEndTime) }}</p>
           <p>营位:{{ order.campsiteNumber }}</p>
@@ -118,6 +118,7 @@ export default {
       Order: false,
       command:"",
       selectedCampOrder: null,
+      selectedCampOrderId:null,
       filteredCampOrders: [],
       startTime:null,
       endTime:null,
@@ -135,7 +136,13 @@ export default {
     },
     localDialogVisible(newVal) {
       this.$emit('update:dialogVisible', newVal);
+    },
+    selectedCampOrder(newVal) {
+    if (newVal) {
+      console.log('Selected Camp Order Changed:', newVal);
+      this.filterCampOrders();
     }
+  }
   },
   created() {
     this.fetchProductId();
@@ -175,7 +182,7 @@ export default {
         user_id: globalState.userId,
         product_id: this.ProductId,
         pick_time: this.formatDateToFullDate(this.startTime),
-        remark: `营地：${this.selectedCampOrder.campgroundName}     营位：${this.selectedCampOrder.campsiteNumber}`,
+        remark: `营地：${this.filteredCampOrders[0].campgroundName}     营位：${this.filteredCampOrders[0].campsiteNumber}`,
         back_time: this.formatDateToFullDate(this.endTime),
         amount: this.quantity,
         order_id:this.camp_id
@@ -219,13 +226,18 @@ export default {
       this.Order=true
     },
     filterCampOrders() {
-      if (this.selectedCampOrder) {
-        this.filteredCampOrders = [this.selectedCampOrder];
+      if (this.selectedCampOrderId>0) {
+        console.log(this.selectedCampOrder)
+        this.filteredCampOrders = this.campOrders.filter(order=>(order.orderId===this.selectedCampOrderId));
+        console.log(this.filteredCampOrders)
         this.startTime=this.filteredCampOrders[0].reservedStartTime;
         this.endTime = this.filteredCampOrders[0].reservedEndTime;
         this.camp_id = this.filteredCampOrders[0].orderId;
       } else {
         this.filteredCampOrders = [];
+        this.startTime = null;
+        this.endTime = null;
+        this.camp_id = 0;
       }
     },
     formatDate(date) {
@@ -236,7 +248,7 @@ export default {
       axios.get(`/api/ReserveOrders/GetReservationDetailsByUserId?orderPersonId=${globalState.userId}`)
         .then(response => {
           this.campOrders = response.data.filter(order =>
-            order.orderStatus==1
+            order.orderStatus==1||order.orderStatus==6
           )
           console.log(this.campOrders)
         })
