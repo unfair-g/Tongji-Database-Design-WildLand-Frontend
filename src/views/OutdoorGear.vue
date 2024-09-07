@@ -35,12 +35,7 @@
       </el-table-column>
     </el-table>
     <!-- 当 filteredProducts 为空时显示提示信息 -->
-    <el-alert
-      v-if="products.length === 0"
-      title="当前无户外用品数据"
-      type="info"
-      center
-    />
+    <el-alert v-if="products.length === 1" title="当前无营地数据" type="info" center />
   </div>
 </template>
 
@@ -71,7 +66,7 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     this.fetchProduct(); // 组件加载时获取所有产品
   },
   methods: {

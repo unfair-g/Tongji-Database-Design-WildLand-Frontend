@@ -119,10 +119,10 @@ export default {
 .table-wrapper {
   width: 70%;
   display: flex;
-  justify-content: center;
   height:100%;
   flex-direction: column; /* 子元素垂直排列 */
-  margin: 0 auto;
+  margin-right: auto;
+  margin-left: auto;
 }
 .camp-table {
   width: 100%; /* 表格宽度占满父容器 */
