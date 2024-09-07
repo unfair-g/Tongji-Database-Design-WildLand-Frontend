@@ -31,6 +31,7 @@
       <el-button v-if="product.lease.lease_status==1" class="pay" @click="Refund">申请退款</el-button>
       <el-button v-else-if="product.lease.lease_status==3" class="pay" @click="cancle=true">取消退款申请</el-button>
       <el-button v-else-if="product.lease.lease_status==4" class="pay" disabled>退款成功</el-button>
+      <el-button v-else-if="product.lease.lease_status==6" class="pay" disabled>使用中</el-button>
       <el-button v-else class="pay" disabled>订单已完成</el-button>
     </div>
   </div>

@@ -14,7 +14,8 @@
                     <span v-else-if="camporder.order_status == 1">订单状态：<span style="color:grey;">待入住</span></span>
                     <span v-else-if="camporder.order_status == 3">订单状态：<span style="color:red;">退款审核中</span></span>
                     <span v-else-if="camporder.order_status == 4">订单状态：<span style="color:green;">退款成功</span></span>
-                    <span v-else>订单状态：<span style="color:green;">已完成</span></span>
+                    <span v-else-if="camporder.order_status == 6">订单状态：<span style="color:green;">入住中</span></span>
+                    <span v-else>订单状态：<span>已完成</span></span>
                    </div>
                   <div class="bottom clearfix">
                     <span class="price">总价：¥{{ camporder.total_price }}</span>
